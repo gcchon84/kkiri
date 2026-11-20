@@ -881,11 +881,8 @@
         </div>
       </div>
       <div class="ctrl-foot">
-        <span id="tokenVal">0 토큰</span>
-        <span aria-hidden="true">·</span>
         <span id="runState">대기 중</span>
-        <span aria-hidden="true" id="creditSep" hidden>·</span>
-        <span id="creditUsed" hidden>0 크레딧</span>
+        <span id="creditEstimate" hidden></span>
         <span class="warn-badge" id="budgetWarn" hidden>⚠ 크레딧 80%</span>
       </div>
     </section>
@@ -1026,22 +1023,13 @@ Content-Type: application/json
   </div>
 </div>
 
-<!-- ================= 라운드테이블 설정 ================= -->
+<!-- ================= 라운드테이블 시작 시트 (안건 1칸) ================= -->
 <div class="modal" id="rtModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtTitle">
-    <div class="sheet-head"><h2 id="rtTitle">토론 설정</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><h2 id="rtTitle">토론 시작</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>토론 주제</span><textarea id="rtAgenda" placeholder="방 이름(주제)이 그대로 들어가요 · 필요하면 더 좁혀 적어도 돼요" maxlength="300"></textarea></label>
-      <div class="field"><span>참여 AI</span><div class="pick-row" id="rtMembers"></div></div>
-      <label class="field"><span>사회자</span><select id="rtModerator"></select></label>
-      <div class="field"><span>최대 턴</span><div class="pick-row" id="rtTurns">
-        <button type="button" class="pick" data-turns="5" aria-pressed="false">5턴</button>
-        <button type="button" class="pick" data-turns="10" aria-pressed="true">10턴</button>
-        <button type="button" class="pick" data-turns="15" aria-pressed="false">15턴</button>
-        <button type="button" class="pick" data-turns="20" aria-pressed="false">20턴</button>
-      </div></div>
-      <label class="field"><span>크레딧 상한</span><input id="rtBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
-      <p class="api-status busy" id="rtEstimate" style="display:block"></p>
+      <label class="field"><span>토론 주제(안건)</span><textarea id="rtAgenda" placeholder="방 이름(주제)이 그대로 들어가요 · 필요하면 더 좁혀 적어도 돼요" maxlength="300"></textarea></label>
+      <p class="modal-note" id="rtSummary"></p>
       <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">토론 시작</button></div>
     </div>
   </div>
@@ -1264,7 +1252,6 @@ function hash(s) { var h = 0; s = String(s || ""); for (var i = 0; i < s.length;
 function uid(p) { return (p || "x") + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function rand(a, b) { return Math.round(a + Math.random() * (b - a)); }
-function tok(n) { return Math.round(Number(n) || 0).toLocaleString("ko-KR") + " 토큰"; }
 function trunc(s, n) { s = String(s == null ? "" : s); return s.length > n ? s.slice(0, n) + "…" : s; }
 function escapeRe(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function timeLabel(ts) {
@@ -1823,7 +1810,7 @@ function renderRoom() {
     $("discussBtn").disabled = true;
     $("turnVal").textContent = "—";
     $("costVal").textContent = "—";
-    $("tokenVal").textContent = "—";
+    $("creditEstimate").hidden = true;
     $("runState").textContent = "대기 중";
     renderPresence();
     return;
@@ -2104,12 +2091,12 @@ function updateMeters() {
     var avg = cur > 0 && used > 0 ? used / cur : turnCreditCost(r.members);
     projected = used + (max - cur) * avg;
   }
-  $("tokenVal").textContent = tok((s.tin || 0) + (s.tout || 0)) + (discussing ? " · 예상 " + creditsLabel(projected) + " 크레딧" : "");
-  var cu = s.credits || 0;                                  /* 이 방에서 쓴 크레딧 */
-  var cuEl = $("creditUsed"), cuSep = $("creditSep");
-  var showCu = !!V3 && V3.mode !== "local";
-  if (cuEl) { cuEl.textContent = (cu || 0) + " 크레딧"; cuEl.hidden = !showCu; }
-  if (cuSep) cuSep.hidden = !showCu;
+  /* 사용량 단위는 크레딧 하나 — 토큰 표기는 두지 않는다. 예상치는 토론 중에만. */
+  var estEl = $("creditEstimate");
+  if (estEl) {
+    estEl.hidden = !discussing;
+    estEl.textContent = discussing ? "예상 " + creditsLabel(projected) + " 크레딧" : "";
+  }
 
   var warn = $("budgetWarn");
   if (used >= cap) { warn.hidden = false; warn.className = "warn-badge danger"; warn.textContent = "크레딧 상한 초과 · 자동 정지"; }
@@ -2194,8 +2181,7 @@ function cardHtml(m) {
   var stats = '<div class="c-stats">' +
     "<span>참여 " + c.stats.members.length + " AI</span>" +
     "<span>" + c.stats.turns + "턴</span>" +
-    "<span>" + tok(c.stats.tokens) + "</span>" +
-    (c.stats.credits != null ? "<span>" + creditsLabel(c.stats.credits) + " 크레딧</span>" : "") +
+    (c.stats.credits ? "<span>" + creditsLabel(c.stats.credits) + " 크레딧</span>" : "") +
     "<span>" + esc(c.stats.duration) + "</span></div>";
   return '<div class="card" data-card="' + esc(c.id) + '">' +
     '<div class="card-head"><h3>✅ ' + esc(c.title) + "</h3>" +
@@ -2221,7 +2207,6 @@ function hasRealMessages(r) {
 
 function emptyHtml(r) {
   var names = memberNames(r).join(" · ");
-  var first = r.members.length ? agentName(r.members[0]) : "";
   var roles = roomRoleMap(r);
   var roleLine = r.members.map(function (id) {
     var ro = roles[id];
@@ -2231,11 +2216,7 @@ function emptyHtml(r) {
     "아직 대화가 없어요</h3>" +
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + r.members.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
-    "<br><b>@이름</b>으로 부르면 그 AI가 답하고, 그냥 보내면 대화만 올라가요(크레딧 0). 필요할 때 <b>토론 시작</b>을 누르면 역할을 나눠 토론하고 합의안 카드를 만들어요.</p>" +
-    '<div class="e-actions">' +
-    (first ? '<button type="button" class="ghost-btn" data-act="mention">@' + esc(first) + ' 부르기</button>' : "") +
-    '<button type="button" class="ghost-btn primary" data-act="start">▶ 토론 시작</button>' +
-    '</div></div>';
+    "<br><b>@이름</b>으로 AI를 불러 바로 대화를 시작해 보세요. 토론이 필요하면 상단 <b>▶ 토론 시작</b>을 누르면 돼요.</p></div>";
 }
 
 var pendingCardScroll = null;
@@ -3257,7 +3238,7 @@ function cardMarkdown(c) {
   L.push("- 방: " + c.room);
   L.push("- 일시: " + c.atLabel);
   L.push("- 참여: " + c.stats.members.join(", "));
-  L.push("- 통계: " + c.stats.turns + "턴 · " + Math.round(c.stats.tokens).toLocaleString("ko-KR") + " 토큰 · " + (c.stats.credits != null ? creditsLabel(c.stats.credits) + " 크레딧" : "") + " · " + c.stats.duration);
+  L.push("- 통계: " + c.stats.turns + "턴 · " + (c.stats.credits ? creditsLabel(c.stats.credits) + " 크레딧 · " : "") + c.stats.duration);
   L.push("");
   function block(title, arr) {
     if (!arr || !arr.length) return;
@@ -3551,8 +3532,11 @@ function toggleMember(id) {
 
 /* =========================================================
    14. 라운드테이블 · 크레딧 상한 시트
+   ---------------------------------------------------------
+   ▶ 토론 시작 시트는 '토론 주제(안건)' 한 칸만 받는다.
+   참여 AI · 최대 턴 · 크레딧 상한은 방 설정(⋯) 값을 그대로 쓰고,
+   사회자는 방의 역할 배정에서 자동으로 고른다.
    ========================================================= */
-var rtState = { turns: 10 };
 /* 최대 턴 선택지 — 5 / 10 / 15 / 20턴만 씁니다 */
 var TURN_OPTIONS = [5, 10, 15, 20];
 /* 예전 방에 6턴처럼 다른 값이 저장돼 있으면 그 값을 옵션으로 함께 보여 주어 바꾸지 않고 보존합니다. */
@@ -3583,57 +3567,56 @@ function nearestTurn(cur) {
   return best;
 }
 
-function rtSelectedMembers() {
-  return Array.prototype.slice.call($("rtMembers").querySelectorAll('[aria-pressed="true"]')).map(function (b) { return b.getAttribute("data-id"); });
+function rtRoomParts(r) {
+  return (((r && r.members) || [])).filter(function (id) { return !!state.agents[id]; });
 }
-function rtRefreshEstimate() {
-  var turns = rtState.turns || 10;
-  var ids = rtSelectedMembers();
-  var n = ids.length;
-  var per = turnCreditCost(ids);
-  var est = turns * per;
-  $("rtEstimate").textContent = "예상 " + turns + "턴 · AI " + n + "명 · 약 " + creditsLabel(est) + " 크레딧 (턴당 " + creditsLabel(per) + "크레딧) · 시간 상한 10분";
+/* 사회자 자동 결정 — 방 역할이 사회자인 AI → 피크리 → 참여 AI 첫 번째 */
+function rtAutoModerator(r, parts) {
+  if (!parts.length) return null;
+  var byRole = parts.filter(function (id) {
+    var ro = roleOf(r, id);
+    var txt = ro ? [(ro.key || ""), (ro.label || ""), (ro.focus || "")].join(" ") : "";
+    return /moderator|사회/.test(txt);
+  });
+  if (byRole.length) return byRole[0];
+  if (parts.indexOf("pikri") > -1) return "pikri";
+  return parts[0];
 }
-function rtRefreshModerators() {
-  var ids = rtSelectedMembers();
-  var prev = $("rtModerator").value;
-  var h = "";
-  ids.forEach(function (id) { h += '<option value="' + esc(id) + '">' + esc(agentName(id)) + "</option>"; });
-  $("rtModerator").innerHTML = h || '<option value="">(선택)</option>';
-  if (ids.indexOf(prev) > -1) $("rtModerator").value = prev;
-  rtRefreshEstimate();
+/* 방 설정값을 그대로 옮긴 토론 계획 — 시트에는 숫자 입력이 없다 */
+function rtRoomPlan(r) {
+  var parts = rtRoomParts(r);
+  return {
+    participants: parts,
+    moderator: rtAutoModerator(r, parts),
+    turns: clamp(Number(r.maxTurns) || 10, 3, 24),
+    budget: clamp(Math.round(Number(r.budget) || 200), 100, 5000)
+  };
+}
+function rtSummaryText(plan) {
+  var txt = "참여 AI " + plan.participants.length + "명" +
+    (plan.moderator ? " · 사회자 " + agentName(plan.moderator) : "") +
+    " · 최대 " + plan.turns + "턴 · 상한 " + creditsLabel(plan.budget) + " 크레딧은 방 설정(⋯)을 따라갑니다.";
+  if (plan.participants.length < 2) txt += " AI 두 명 이상이어야 토론할 수 있어요.";
+  return txt;
 }
 function openRoundtable(prefill) {
   var r = activeRoom();
+  if (!r) return;
   if (run.active) { toast("이미 진행 중이에요"); return; }
   $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
-  var h = "";
-  allAgents().forEach(function (a) {
-    var on = r.members.indexOf(a.id) > -1;
-    h += '<button type="button" class="pick check" data-id="' + esc(a.id) + '" aria-pressed="' + (on ? "true" : "false") + '">' + esc(a.name) + "</button>";
-  });
-  $("rtMembers").innerHTML = h;
-  rtState.turns = nearestTurn(r.maxTurns);
-  Array.prototype.forEach.call($("rtTurns").querySelectorAll("[data-turns]"), function (b) {
-    b.setAttribute("aria-pressed", Number(b.getAttribute("data-turns")) === rtState.turns ? "true" : "false");
-  });
-  $("rtBudget").value = r.budget || 200;
-  rtRefreshModerators();
-  if (run.moderator && $("rtModerator").querySelector('option[value="' + run.moderator + '"]')) $("rtModerator").value = run.moderator;
+  $("rtSummary").textContent = rtSummaryText(rtRoomPlan(r));
   openModal("rtModal");
   setTimeout(function () { $("rtAgenda").focus(); }, 220);
 }
 function rtStart() {
+  var r = activeRoom();
+  if (!r) return;
   var agenda = $("rtAgenda").value.trim();
   if (!agenda) { toast("토론 주제를 적어 주세요"); $("rtAgenda").focus(); return; }
-  var parts = rtSelectedMembers();
-  if (parts.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
-  var mod = $("rtModerator").value;
-  if (parts.indexOf(mod) < 0) mod = parts[0];
-  var turns = rtState.turns || 10;
-  var budget = clamp(Math.round(Number($("rtBudget").value) || 200), 100, 5000);
+  var plan = rtRoomPlan(r);
+  if (plan.participants.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   closeModal("rtModal");
-  startRoundtable({ agenda: agenda, participants: parts, moderator: mod, turns: turns, budget: budget });
+  startRoundtable({ agenda: agenda, participants: plan.participants, moderator: plan.moderator, turns: plan.turns, budget: plan.budget });
 }
 function openBudgetSheet() {
   var r = activeRoom();
@@ -5287,7 +5270,7 @@ async function dbReload() {
 function ledgerLabel(reason) {
   var r = String(reason || "");
   if (r.indexOf("turn.reserve") === 0) return "끼리 AI 턴";
-  if (r.indexOf("turn.extra") === 0) return "토큰 추가 정산";
+  if (r.indexOf("turn.extra") === 0) return "크레딧 추가 정산";
   if (r.indexOf("turn.settle") === 0) return "정산 복구";
   if (r.indexOf("turn.refund") === 0) return "실패 복구";
   if (r.indexOf("topup") === 0) return "충전";
@@ -5710,24 +5693,7 @@ function wire() {
     }
   });
 
-  /* 라운드테이블 시트 */
-  $("rtMembers").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-id]");
-    if (!b) return;
-    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
-    rtRefreshModerators();
-  });
-  $("rtTurns").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-turns]");
-    if (!b) return;
-    rtState.turns = Number(b.getAttribute("data-turns"));
-    Array.prototype.forEach.call($("rtTurns").querySelectorAll("[data-turns]"), function (x) {
-      x.setAttribute("aria-pressed", Number(x.getAttribute("data-turns")) === rtState.turns ? "true" : "false");
-    });
-    rtRefreshEstimate();
-  });
-  $("rtAgenda").addEventListener("input", rtRefreshEstimate);
-  $("rtBudget").addEventListener("input", rtRefreshEstimate);
+  /* 라운드테이블 시작 시트 — 입력은 안건 한 칸, 나머지는 방 설정을 따른다 */
   $("rtStart").addEventListener("click", rtStart);
 
   /* 크레딧 상한 시트 */
