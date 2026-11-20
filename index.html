@@ -99,8 +99,6 @@
   .pres-row:hover{background:#16222d}
   .pres-row .p-ico{flex:0 0 auto;font-size:11px;line-height:1}
   .pres-row b{flex:1 1 auto;min-width:0;font-size:11.5px;font-weight:800;letter-spacing:-.01em;color:#ecf2f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pres-row.off b{color:#7f929e;font-weight:700}
-  .pres-row .kb{flex:0 0 auto}
   .switch{
     width:34px;height:20px;flex:0 0 34px;border:0;border-radius:999px;background:#2a3a47;
     position:relative;cursor:pointer;padding:0;transition:background .15s ease;
@@ -494,11 +492,6 @@
   .mode-chip{font-size:8px;font-weight:900;padding:2px 6px;border-radius:999px;background:#eef3f1;color:#5c6b78;white-space:nowrap;flex:0 0 auto}
   .mode-chip.cloud{background:var(--green-tint);color:#0d7a48}
   .mode-chip.mock{background:#eef1ff;color:#3b4bb0}
-  .kb.recent{background:var(--amber-tint);border-color:#f0dcb4;color:#8a5a12}
-  .kb.recent::before{background:#e0a33a;box-shadow:0 0 6px rgba(224,163,58,.7)}
-  .pres-row.recent b{color:#f0e2c8}
-  .pres-row .p-ago{flex:0 0 auto;font-style:normal;font-size:8.5px;font-weight:800;color:#8b9ca8;margin-right:2px}
-  .pres-pill.recent{color:#8a5a12;background:var(--amber-tint)}
   .expert-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
   .expert-card{
     border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fff;
@@ -629,7 +622,7 @@
     <div class="side-sec">
       <div class="sec-head"><span>지금 접속 중 <em id="presenceCount">0명</em></span></div>
       <div class="pres-list" id="sidePresence"></div>
-      <p class="sec-hint"><b>ON</b> = 지금 창을 열어 둔 참여자 · <b>방금 활동</b> = 창은 닫았지만 10분 안에 글을 남긴 참여자 · <b>OFF</b> = 그보다 오래된 참여자예요.</p>
+      <p class="sec-hint">지금 이 방에 접속해 있는 참여자만 보여요. 창을 닫으면 바로 사라져요.</p>
     </div>
 
     <div class="side-sec">
@@ -3139,7 +3132,7 @@ var HIDE_KEY = "kkiri.hidden.v1";
 var HOOK_KEY = "kkiri.hooks.v1";
 
 var db = { client: null, ready: false, channel: null, roomId: null, status: "idle" };
-var presence = { channel: null, roomId: null, seen: {} };
+var presence = { channel: null, roomId: null };
 var pendingJoin = null;
 var refreshTimer = null;
 var dbErrShown = {};
@@ -3346,7 +3339,7 @@ function dbSubscribe(roomId) {
 }
 
 /* =========================================================
-   17.6 실시간 접속자 · Presence (ON / OFF)
+   17.6 실시간 접속자 · Presence (지금 접속 중인 참여자)
    ========================================================= */
 function presenceLeave() {
   var ch = presence.channel;
@@ -3393,69 +3386,32 @@ function presenceState() {
   });
   return out;
 }
-var RECENT_ACTIVE_MS = 10 * 60 * 1000;   /* 창을 닫아도 '방금 활동'으로 보여 주는 시간 */
-function lastSpokeAt(r) {
-  var map = {};
-  r.messages.forEach(function (m) {
-    if (m.who !== "user" || !m.name) return;
-    var at = m.at || 0;
-    if (!map[m.name] || at > map[m.name]) map[m.name] = at;
-  });
-  return map;
-}
+/* 지금 이 방에 실제로 접속해 있는 참여자(닉네임)만 — 나간 사람은 남기지 않는다 */
 function presenceRows() {
   var r = activeRoom();
-  if (!r) return { on: [], recent: [], off: [] };
+  if (!r) return { on: [] };
   var on = [], onMap = {};
   presenceState().forEach(function (n) { if (!onMap[n]) { onMap[n] = 1; on.push(n); } });
-  var seen = presence.seen[r.id] || (presence.seen[r.id] = {});
-  on.forEach(function (n) { seen[n] = 1; });
-  var last = lastSpokeAt(r);
-  Object.keys(last).forEach(function (n) { seen[n] = 1; });
-  var recent = [], off = [], now = Date.now();
-  Object.keys(seen).forEach(function (n) {
-    if (onMap[n]) return;
-    var at = last[n] || 0;
-    if (at && now - at <= RECENT_ACTIVE_MS) recent.push({ name: n, at: at });
-    else off.push(n);
-  });
-  recent.sort(function (a, b) { return b.at - a.at; });
-  return { on: on, recent: recent, off: off };
-}
-function agoLabel(ms) {
-  var s = Math.max(0, Math.round(ms / 1000));
-  if (s < 60) return "방금 전";
-  return Math.round(s / 60) + "분 전";
+  return { on: on };
 }
 function renderPresence() {
   var rows = presenceRows();
   var h = "";
   rows.on.forEach(function (n) {
-    h += '<div class="pres-row"><span class="p-ico" aria-hidden="true">🟢</span><b>' + esc(n) + '</b><span class="kb on">ON</span></div>';
+    h += '<div class="pres-row"><span class="p-ico" aria-hidden="true">🟢</span><b>' + esc(n) + '</b></div>';
   });
-  rows.recent.forEach(function (x) {
-    h += '<div class="pres-row recent"><span class="p-ico" aria-hidden="true">🟡</span><b>' + esc(x.name) + '</b>' +
-      '<em class="p-ago">' + esc(agoLabel(Date.now() - x.at)) + '</em><span class="kb recent">방금 활동</span></div>';
-  });
-  rows.off.forEach(function (n) {
-    h += '<div class="pres-row off"><span class="p-ico" aria-hidden="true">⚪</span><b>' + esc(n) + '</b><span class="kb">OFF</span></div>';
-  });
-  if (!h) h = '<p class="sec-hint">접속 정보를 기다리는 중이에요.</p>';
+  if (!h) {
+    h = '<p class="sec-hint">' + (db.ready ? "지금은 접속 중인 참여자가 없어요." : "접속 정보를 기다리는 중이에요.") + '</p>';
+  }
   var el = $("sidePresence");
   if (el) el.innerHTML = h;
   var cnt = $("presenceCount");
-  if (cnt) {
-    cnt.textContent = rows.on.length + "명" + (rows.recent.length ? " · 방금 " + rows.recent.length : "");
-    cnt.title = rows.recent.length ? "최근 10분 안에 이 방에 글을 남긴 참여자 " + rows.recent.length + "명" : "";
-  }
+  if (cnt) cnt.textContent = rows.on.length + "명";
   var pill = $("roomPresence");
   if (pill) {
-    pill.textContent = "접속 " + rows.on.length + "명" + (rows.recent.length ? " · 방금 " + rows.recent.length : "");
-    pill.className = "pres-pill" + (rows.on.length ? " live" : rows.recent.length ? " recent" : "");
-    var tip = [];
-    if (rows.on.length) tip.push("지금 접속: " + rows.on.join(", "));
-    if (rows.recent.length) tip.push("최근 활동(10분): " + rows.recent.map(function (x) { return x.name; }).join(", "));
-    pill.title = tip.length ? tip.join(" · ") : "아직 아무도 접속하지 않았어요";
+    pill.textContent = "접속 " + rows.on.length + "명";
+    pill.className = "pres-pill" + (rows.on.length ? " live" : "");
+    pill.title = rows.on.length ? "지금 접속: " + rows.on.join(", ") : "아직 아무도 접속하지 않았어요";
   }
 }
 function dbOnMessage(row) {
