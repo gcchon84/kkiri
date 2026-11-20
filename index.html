@@ -200,7 +200,7 @@
   .avatar.lg{width:44px;height:44px;font-size:16px;border-radius:13px}
 
   /* ============ main ============ */
-  .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100dvh;background:#f4f7f6}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100dvh;background:#f4f7f6;position:relative}
   .room-head{
     display:flex;align-items:center;gap:10px;padding:11px 18px;background:rgba(255,255,255,.92);
     border-bottom:1px solid var(--line);backdrop-filter:blur(6px);flex:0 0 auto;
@@ -397,6 +397,10 @@
   .q-chip.agenda{color:#0d7a48;background:var(--green-tint);border-color:#c8ebd8;max-width:min(420px,70vw);overflow:hidden;text-overflow:ellipsis}
   .q-chip.start{background:var(--green);border-color:var(--green);color:#fff}
   .q-chip.start:hover{background:var(--green-deep)}
+  /* 지금 접속 중인 참여자(사람) 칩 — 초록 점으로 AI 칩과 구분. 누르면 @이름만 들어가고 AI는 부르지 않는다. */
+  .q-chip.guest{color:#0d7a48;background:#f3fbf7;border-color:#c8ebd8;max-width:46vw;overflow:hidden}
+  .q-chip.guest:hover{background:var(--green-tint);border-color:#a9e2c4}
+  .q-chip.guest::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green);flex:0 0 6px}
   .composer-row{display:flex;align-items:flex-end;gap:8px;max-width:860px;margin:0 auto}
   .composer textarea{
     flex:1 1 auto;min-height:44px;max-height:132px;border:1px solid #dfe8e4;border-radius:15px;background:#fff;
@@ -415,6 +419,15 @@
   .send:disabled{opacity:.5;cursor:default}
   .comp-hint{max-width:860px;margin:7px auto 0;font-size:9.5px;line-height:1.55;color:#93a0aa;padding:0 2px;letter-spacing:-.01em}
   .comp-hint b{color:#5d6c78;font-weight:900}
+  /* 위에서 읽는 중 새 발언이 올라오면 띄우는 플로팅 버튼 */
+  .new-msg{
+    position:absolute;left:50%;transform:translateX(-50%);bottom:110px;z-index:20;
+    display:inline-flex;align-items:center;gap:6px;border:1px solid #bfe7d2;background:#fff;color:#0d7a48;
+    font:inherit;font-size:11.5px;font-weight:900;letter-spacing:-.02em;border-radius:999px;padding:9px 15px;
+    cursor:pointer;box-shadow:0 8px 22px rgba(16,32,43,.18);white-space:nowrap;
+  }
+  .new-msg[hidden]{display:none}
+  .new-msg:hover{background:var(--green-tint);border-color:#a9e2c4}
 
   /* ============ 크레딧 사용 기준 안내 ============ */
   .credit-guide{margin-top:13px;padding:12px 13px 10px;background:#f4faf7;border:1px solid #d7ebdf;border-radius:15px}
@@ -554,6 +567,23 @@
     color:#5c6b78;background:#eef3f1;border-radius:999px;padding:5px 9px;white-space:nowrap;
   }
   .pres-pill.live{color:var(--green-deep);background:var(--green-tint)}
+  /* 방 머리 아래 참여 줄 — 모바일에서 사이드바를 열지 않아도 누가 들어와 있는지 한눈에 */
+  .people-bar{
+    display:flex;align-items:center;gap:7px;padding:7px 18px;background:#fbfdfc;
+    border-bottom:1px solid var(--line);flex:0 0 auto;
+  }
+  .people-bar[hidden]{display:none}
+  .pb-label{flex:0 0 auto;font-size:9.5px;font-weight:900;letter-spacing:-.01em;color:#8798a4}
+  .pb-chips{display:flex;align-items:center;gap:5px;min-width:0;flex:1 1 auto;overflow-x:auto;scrollbar-width:none}
+  .pb-chips::-webkit-scrollbar{display:none}
+  .pb-chip{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;max-width:130px;overflow:hidden;
+    font-size:10px;font-weight:800;letter-spacing:-.02em;color:#4c5b67;background:#fff;
+    border:1px solid var(--line);border-radius:999px;padding:3px 8px;white-space:nowrap;
+  }
+  .pb-chip.on{color:#0d7a48;background:var(--green-tint);border-color:#c8ebd8}
+  .pb-chip.ai{color:#3f4d59;background:#f4f7f9}
+  .pb-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex:0 0 6px}
   .live-pill.local{color:#8a5a12;background:var(--amber-tint)}
   .live-pill.off{color:#8b3a32;background:var(--red-tint)}
   .live-pill.wait{color:#5c6b78;background:#eef3f1}
@@ -720,6 +750,8 @@
     .room-head .room-emoji{display:none}
     .room-head .live-pill{display:none}
     .room-head .pres-pill{display:none}
+    .people-bar{padding:6px 10px;gap:5px}
+    .pb-chip{font-size:9.5px;padding:3px 7px;max-width:116px}
     .home{padding:12px 11px calc(22px + env(safe-area-inset-bottom))}
     .home-head h1{font-size:17px}
     .home-sum{padding:9px 10px;border-radius:16px}
@@ -735,6 +767,21 @@
     .rt-line h1{font-size:14.5px;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .kind-pill{font-size:8px}
     .room-titles p{font-size:9.5px}
+    /* 모바일: 대화 공간 확보 — 입력창 아래 안내는 숨기고(placeholder가 같은 안내를 한다),
+       상단은 제목 한 줄 + 얆은 참여 줄 + 슬림한 제어 바로 정리한다. */
+    .comp-hint{display:none !important}
+    .room-head{padding:6px 10px 7px;gap:5px 6px}
+    .room-titles{order:5;margin-top:0}
+    .room-titles p{display:none}
+    .people-bar{padding:4px 10px;gap:5px}
+    .ctrl{margin:6px 8px 0;padding:6px 8px 7px;border-radius:14px}
+    .ctrl-top{gap:6px}
+    .ctrl-lead{display:none}
+    .meters{margin-top:6px}
+    .bar{height:4px;margin-top:4px}
+    .ctrl-foot{margin-top:3px;min-height:0}
+    .ctrl-foot #runState,.ctrl-foot #creditEstimate{display:none}
+    .quick{padding:0 0 6px}
     .ghost-btn{padding:8px 10px;font-size:10.5px}
     .room-actions .ghost-btn .lbl{display:none}
     /* 합의안은 방 화면에서 한 곳(헤더)에만 두므로, 좁은 화면에서도 글자를 남겨 알아보게 한다 */
@@ -786,8 +833,8 @@
     .composer{padding:9px 12px calc(9px + env(safe-area-inset-bottom))}
     .composer textarea{font-size:16px;line-height:1.6;min-height:48px;padding:12px 13px}
     .send{height:48px;font-size:13.5px;padding:0 17px}
-    .q-chip{font-size:13px;padding:10px 14px;min-height:44px}
-    .comp-hint{font-size:11.5px;line-height:1.6}
+    .q-chip{font-size:12.5px;padding:7px 12px;min-height:36px}
+    .comp-hint{display:none !important}
     .btn{min-height:44px;font-size:13.5px}
     .send,.btn,.pick,.mini-btn,.q-chip{max-width:100%}
     .pick{min-height:44px;font-size:13px;padding:9px 12px}
@@ -916,6 +963,12 @@
       </div>
     </header>
 
+    <!-- 방 머리 아래 참여 줄 — 🟢 지금 접속 중인 참여자 / 🤖 이 방의 AI. 모바일에서도 사이드바 없이 보인다. -->
+    <div class="people-bar" id="peopleBar" hidden aria-label="이 방 참여자">
+      <span class="pb-label">이 방</span>
+      <div class="pb-chips" id="peopleChips"></div>
+    </div>
+
     <section class="ctrl" id="ctrl" aria-label="대화 제어" hidden>
       <div class="ctrl-top">
         <button type="button" class="rt-btn" id="discussBtn" title="이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><span aria-hidden="true">▶</span> 토론 시작</button>
@@ -954,6 +1007,9 @@
       </div>
       <p class="comp-hint" id="compHint"></p>
     </div>
+
+    <!-- 위에서 읽는 중 새 발언이 올라왔을 때만 뜨는 플로팅 버튼 -->
+    <button type="button" class="new-msg" id="newMsgBtn" hidden>↓ 새 발언</button>
   </main>
 </div>
 
@@ -1888,6 +1944,7 @@ function renderRoom() {
   $("compHint").innerHTML = hintFor(r);
   updateMeters();
   renderQuick();
+  renderPeople();
   renderTimeline(false);
 }
 
@@ -1962,7 +2019,7 @@ function renderHome() {
 function currentView() { return state.view === "room" ? "room" : "home"; }
 function applyView() {
   var home = currentView() === "home";
-  var map = { homeView: !home, roomHead: home, ctrl: home, timeline: home, composer: home };
+  var map = { homeView: !home, roomHead: home, peopleBar: home, ctrl: home, timeline: home, composer: home };
   Object.keys(map).forEach(function (id) {
     var el = $(id);
     if (el) el.hidden = map[id];
@@ -1974,6 +2031,7 @@ function applyView() {
   if (as) as.hidden = home;
   var r = activeRoom();
   document.title = home ? "끼리 · 내 홈" : (r ? "끼리 · " + r.name : "끼리");
+  renderPeople();
 }
 function goHome() {
   state.view = "home";
@@ -1987,6 +2045,7 @@ function homeInviteLink() {
   return String(location.href).split("#")[0].split("?")[0];
 }
 function openHomeInvite() {
+  if (needStartFirst()) return;
   $("homeLink").value = homeInviteLink();
   $("homeInviteHint").textContent = V3.mode === "local"
     ? "지금은 로컬 데모예요. 링크는 이 브라우저에서만 열립니다. 서버에 연결하면 같은 링크로 누구나 자기 홈을 받아요."
@@ -2191,34 +2250,121 @@ function renderTimeline(autoScroll) {
     var cel = box.querySelector('[data-card="' + cid + '"]');
     if (cel && cel.scrollIntoView) { cel.scrollIntoView({ block: "start" }); return; }
   }
-  if (autoScroll !== false) scrollBottom(true);
+  if (autoScroll !== false) scrollBottom(false);
 }
 
+/* 스마트 스크롤 — 맨 아래 근처에 있을 때만 따라 내려간다.
+   위로 올려 둔 채 읽는 중이면 화면을 움직이지 않고 `↓ 새 발언` 버튼을 띄운다. */
+var scrollWatch = { stick: true, pending: 0, lastId: "" };
+function nearBottom(el) { return el.scrollHeight - el.scrollTop - el.clientHeight < 80; }
+function syncNewMsg() {
+  var b = $("newMsgBtn");
+  if (!b) return;
+  if (!scrollWatch.pending) { b.hidden = true; return; }
+  b.textContent = scrollWatch.pending > 1 ? "↓ 새 글 " + scrollWatch.pending + "개" : "↓ 새 발언";
+  var c = $("composer");
+  b.style.bottom = ((c ? c.getBoundingClientRect().height : 96) + 12) + "px";
+  b.hidden = false;
+}
 function scrollBottom(force) {
   var el = $("timeline");
   if (!el) return;
-  if (force || el.scrollHeight - el.scrollTop - el.clientHeight < 200) {
+  var r = activeRoom();
+  var tail = r && r.messages.length ? r.messages[r.messages.length - 1].id : "";
+  if (force || scrollWatch.stick || nearBottom(el)) {
     el.scrollTop = el.scrollHeight;
+    scrollWatch.stick = true;
+    scrollWatch.pending = 0;
+    scrollWatch.lastId = tail;
+    syncNewMsg();
+    return;
   }
+  if (tail && tail !== scrollWatch.lastId) {
+    scrollWatch.lastId = tail;
+    scrollWatch.pending++;
+  }
+  syncNewMsg();
+}
+function jumpToLatest() {
+  var el = $("timeline");
+  if (!el) return;
+  scrollWatch.stick = true;
+  scrollWatch.pending = 0;
+  scrollWatch.lastId = "";
+  try { el.scrollTo({ top: el.scrollHeight, behavior: "smooth" }); } catch (e) { el.scrollTop = el.scrollHeight; }
+  syncNewMsg();
 }
 
 function renderQuick() {
   var r = activeRoom();
   var qb = $("quickBar");
+  if (!qb) return;
   if (!r) { qb.innerHTML = ""; qb.hidden = true; return; }
-  /* 실제로 이 방에 있는 AI만 — 0명이면 칩 줄 자체를 숨기고, @전원은 2명 이상일 때만. */
-  var ids = r.members.filter(function (id) { return !!state.agents[id]; });
-  if (!ids.length) { qb.innerHTML = ""; qb.hidden = true; return; }
+  /* 실제로 이 방에 있는 AI + 🟢 지금 접속 중인 다른 참여자를 함께 @이름 칩으로.
+     접속자와 이름이 같은 AI는 칩을 하나로 합친다(접속자 칩) — 같은 이름을 두 번 띄우지 않고,
+     그 이름의 @멘션은 AI가 아니라 그 사람에게 가는 말이기 때문(크레딧 0). */
+  var people = onlinePeople();
+  var online = {};
+  people.forEach(function (n) { online[String(n).toLowerCase()] = 1; });
+  var ids = r.members.filter(function (id) {
+    var a = state.agents[id];
+    return !!a && !online[String(a.name).toLowerCase()];
+  });
+  if (!ids.length && !people.length) { qb.innerHTML = ""; qb.hidden = true; return; }
   var h = "";
+  /* @전원은 방의 AI 멤버가 2명 이상일 때만 — 불필요한 크레딧 호출 방지 */
   if (ids.length >= 2) h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
   ids.forEach(function (id) {
     var a = state.agents[id];
     h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
   });
+  people.forEach(function (n) {
+    h += '<button type="button" class="q-chip guest" data-mention="' + esc(n) + '" title="지금 접속 중인 참여자 · 이 이름은 AI를 부르지 않아요">@' + esc(n) + "</button>";
+  });
   /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작).
      퀵바는 @이름 부르기만 — 합의안은 헤더의 📋 합의안 버튼 한 곳에서만 연다. */
   qb.innerHTML = h;
   qb.hidden = false;
+}
+
+/* =========================================================
+   5.6 지금 이 방에 누가 있는지 (접속자 · AI 멤버)
+   ========================================================= */
+/* 지금 접속 중인 다른 참여자(나 제외, 닉네임 기준) — 나간 사람은 남기지 않는다 */
+function onlinePeople() {
+  var me = String(nick() || "").toLowerCase();
+  var seen = {}, out = [];
+  presenceRows().on.forEach(function (n) {
+    var name = String(n == null ? "" : n).trim();
+    var k = name.toLowerCase();
+    if (!k || k === me || seen[k]) return;
+    seen[k] = 1;
+    out.push(name);
+  });
+  return out;
+}
+/* 접속자 이름(소문자) 맵 — 이 이름의 @멘션은 AI를 부르지 않는다 */
+function onlineNameMap() {
+  var map = {};
+  onlinePeople().forEach(function (n) { map[String(n).toLowerCase()] = 1; });
+  return map;
+}
+/* 방 머리 아래 참여 줄 — 🟢 접속 중인 참여자 · 🤖 이 방의 AI. 없으면 줄 자체를 숨긴다. */
+function renderPeople() {
+  var bar = $("peopleBar"), host = $("peopleChips");
+  if (!bar || !host) return;
+  var r = activeRoom();
+  if (!r || currentView() === "home") { host.innerHTML = ""; bar.hidden = true; return; }
+  var h = "";
+  onlinePeople().forEach(function (n) {
+    h += '<span class="pb-chip on" title="지금 접속 중인 참여자"><i class="pb-dot" aria-hidden="true"></i>' + esc(n) + "</span>";
+  });
+  r.members.forEach(function (id) {
+    var a = state.agents[id];
+    if (a) h += '<span class="pb-chip ai" title="이 방의 AI 멤버">🤖 ' + esc(a.name) + "</span>";
+  });
+  host.innerHTML = h;
+  bar.hidden = !h;
 }
 
 /* =========================================================
@@ -2231,6 +2377,7 @@ function addUserMessage(text) {
   if (!r.session.startedAt) r.session.startedAt = Date.now();
   save();
   renderTimeline(true);
+  scrollBottom(true);            /* 내가 보낸 말은 위를 보고 있었어도 바로 보이게 */
   renderSidebar();
   dbSendMessage(m);
   return m;
@@ -2578,6 +2725,21 @@ function waitWhilePaused(ep) {
     })();
   });
 }
+/* 토론 턴 사이 읽기 호흡 — 3~4초. 기다리는 중에도 정지·일시정지가 즉시 먹힌다.
+   중간에 멈추면 false를 돌려주고 루프를 바로 빠져나간다. */
+async function readingPause(ep, ms) {
+  var end = Date.now() + Math.max(0, Number(ms) || 0);
+  while (Date.now() < end) {
+    if (ep !== run.epoch) return false;
+    if (run.paused) {
+      await waitWhilePaused(ep);
+      if (ep !== run.epoch) return false;
+      continue;
+    }
+    await sleep(Math.min(240, end - Date.now()));
+  }
+  return ep === run.epoch;
+}
 
 async function cooldown(id, ep) {
   while (ep === run.epoch) {
@@ -2639,7 +2801,8 @@ async function loopRoundtable(room, ep) {
       if (ep !== run.epoch) return;
       if (budgetExceeded(room)) { endRun("budget", ep); return; }
       if (loopDetected()) { endRun("loop", ep); return; }
-      await sleep(rand(380, 760));
+      /* 읽기 호흡 — 다음 AI가 말하기 전 3~4초. 기다리는 동안에도 정지·일시정지가 바로 먹힌다. */
+      if (!(await readingPause(ep, rand(3000, 4000)))) return;
     }
     if (ep !== run.epoch) return;
     finishRoundtable(ep);
@@ -2881,11 +3044,21 @@ async function runMentions(text) {
 
 function parseMentions(text) {
   var r = activeRoom();
-  if (/@(전원|모두|all)/i.test(text)) return { ids: r.members.slice(), all: true };
-  var ids = [];
-  r.members.forEach(function (id) {
+  if (!r) return { ids: [], all: false };
+  /* 🟢 지금 접속 중인 참여자와 이름이 같은 AI는 부르지 않는다 — 그 @이름은 그 사람에게 가는 말이다.
+     접속자·나의 AI 멘션은 채팅만 올라가고 OpenAI·Gemini·끼리 서버 AI·크레딧을 건드리지 않는다(경고도 띄우지 않는다). */
+  var online = onlineNameMap();
+  var aiIds = r.members.filter(function (id) {
     var a = state.agents[id];
-    if (!a) return;
+    return !!a && !online[String(a.name).toLowerCase()];
+  });
+  if (/@(전원|모두|all)/i.test(text)) {
+    /* @전원은 방의 AI 멤버가 2명 이상일 때만 — 1명·0명이면 크레딧을 쓰지 않는다 */
+    return { ids: aiIds.length >= 2 ? aiIds.slice() : [], all: aiIds.length >= 2 };
+  }
+  var ids = [];
+  aiIds.forEach(function (id) {
+    var a = state.agents[id];
     if (new RegExp("@" + escapeRe(a.name), "i").test(text)) ids.push(id);
   });
   return { ids: ids, all: false };
@@ -2988,13 +3161,15 @@ async function callProvider(provider, key, model, systemText, userText) {
   return { text: text, tin: tin, tout: tout };
 }
 
-function systemFor(agent) {
+function systemFor(agent, phase) {
   var r = activeRoom();
   var team = memberNames(r).join(", ");
   var base = agent.prompt || (agent.type === "webhook" ? "너는 이 방의 AI 멤버다." : "너는 이 방의 AI 멤버다.");
+  /* 모바일에서 한눈에 들어오게: 보통 답변은 1~2문장, 합의안(converge)만 요약이라 2~4문장 */
+  var lengthRule = phase === "converge" ? "한국어로 2~4문장" : "한국어로 핵심만 1~2문장(짧고 읽기 쉽게)";
   return base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
     "\n함께 있는 AI: " + team +
-    "\n규칙: 한국어로 2~4문장. 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다.";
+    "\n규칙: " + lengthRule + ". 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다.";
 }
 
 function phaseInstruction(phase, r) {
@@ -3020,7 +3195,7 @@ function turnPrompt(agent, phase) {
 }
 
 async function liveTurn(agent, provider, phase) {
-  var res = await callProvider(provider, keyFor(provider), modelFor(provider), systemFor(agent), turnPrompt(agent, phase));
+  var res = await callProvider(provider, keyFor(provider), modelFor(provider), systemFor(agent, phase), turnPrompt(agent, phase));
   var tin = res.tin || estimateTin(activeRoom());
   var tout = res.tout || Math.max(40, Math.round(res.text.length / 1.5));
   return { text: res.text, src: provider, tin: tin, tout: tout, cost: computeCost(provider, tin, tout) };
@@ -3886,6 +4061,9 @@ function submitRoomForm() {
   renderAll();
   scrollBottom(true);
   if (db.ready) dbSubscribe(state.activeRoomId);
+  /* 방을 새로 만들거나 옮겼을 때 접속자(Presence)도 이 방으로 따라와야
+     초대 링크로 들어온 사람이 서로의 @이름 칩·참여 줄에 보인다. */
+  presenceJoin(state.activeRoomId, true);
 }
 /* ---- 방 삭제 / 나가기 (목록의 🗑·✕ 와 방 설정 시트가 같이 쓸니다) ---- */
 /* 확인은 앱 안 모달로 받는다(모바일 웹뷰에서 브라우저 확인창이 막히는 문제 대응). */
@@ -4587,6 +4765,9 @@ function renderPresence() {
     pill.className = "pres-pill" + (rows.on.length ? " live" : "");
     pill.title = rows.on.length ? "지금 접속: " + rows.on.join(", ") : "아직 아무도 접속하지 않았어요";
   }
+  /* 입장·퇴장 즉시 @멘션 칩과 머리 아래 참여 줄에 반영한다 */
+  renderQuick();
+  renderPeople();
 }
 function dbOnMessage(row) {
   var r = activeRoom();
@@ -4925,8 +5106,18 @@ function openNickModal() {
     try { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } catch (e) {}
   }, 60);
 }
+/* 서버 모드인데 아직 시작(로그인·게스트) 전 — 로컬 방만 만들어 헛돌지 않게 먼저 시작을 안내한다.
+   오프라인·mock 테스트 모드(?mock=1)는 기존 로컬 동작 그대로. */
+function needStartFirst() {
+  if (!(V3.mode === "cloud" && !V3.signedIn)) return false;
+  setAuthMsg("info", "서버에 방을 만들고 초대하려면 먼저 시작해 주세요 · 게스트로 시작하면 100크레딧이 들어와요.");
+  toast("서버에 방을 만들고 초대하려면 먼저 시작해 주세요(게스트 100크레딧)");
+  openModal("authModal");
+  return true;
+}
 /* 상단 🔗 이 방 초대 — 이 방 초대 링크만 */
 function openShare() {
+  if (needStartFirst()) return;
   var r = ensureRoomCode(activeRoom());
   if (!r) { toast("방을 먼저 만들어 주세요"); return; }
   $("shareTitle").textContent = "‘" + r.name + "’ 이 방 초대";
@@ -5710,6 +5901,16 @@ function wire() {
     var m = e.target.closest("[data-mention]");
     if (m) { insertMention(m.getAttribute("data-mention")); return; }
   });
+  /* 읽는 중이면 따라 내려가지 않고, `↓ 새 발언` 버튼으로만 내려가게 한다 */
+  var tlEl = $("timeline");
+  if (tlEl) tlEl.addEventListener("scroll", function () {
+    var el = $("timeline");
+    if (!el) return;
+    var near = nearBottom(el);
+    scrollWatch.stick = near;
+    if (near && scrollWatch.pending) { scrollWatch.pending = 0; syncNewMsg(); }
+  }, { passive: true });
+  if ($("newMsgBtn")) $("newMsgBtn").addEventListener("click", jumpToLatest);
   $("timelineInner").addEventListener("click", function (e) {
     var call = e.target.closest("[data-empty-call]");
     if (call) { invTarget = "room"; aiTab("kkiri"); openModal("inviteModal"); return; }
@@ -5730,7 +5931,10 @@ function wire() {
   $("menuBtn").addEventListener("click", openSidebar);
   $("sideClose").addEventListener("click", closeSidebar);
   $("backdrop").addEventListener("click", closeSidebar);
-  $("newRoomBtn").addEventListener("click", function () { closeSidebar(); openRoomForm(null); });
+  $("newRoomBtn").addEventListener("click", function () {
+    if (needStartFirst()) { closeSidebar(); return; }
+    closeSidebar(); openRoomForm(null);
+  });
   $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
   $("addAiBtn").addEventListener("click", function () {
     invTarget = "room";
@@ -5898,7 +6102,7 @@ function wire() {
     if (!v) { toast("홈 링크를 확인하지 못했어요"); return; }
     copyText(v, "홈 초대 링크를 복사했어요 · 받은 사람은 자기 홈에서 시작해요");
   });
-  if ($("homeNewRoomBtn")) $("homeNewRoomBtn").addEventListener("click", function () { openRoomForm(null); });
+  if ($("homeNewRoomBtn")) $("homeNewRoomBtn").addEventListener("click", function () { if (needStartFirst()) return; openRoomForm(null); });
   if ($("homeRoomGrid")) $("homeRoomGrid").addEventListener("click", function (e) {
     var b = e.target.closest("[data-home-room]");
     if (b) selectRoom(b.getAttribute("data-home-room"));
@@ -5920,6 +6124,7 @@ function wire() {
   });
   $("shareNewRoom").addEventListener("click", function () {
     closeModal("shareModal");
+    if (needStartFirst()) return;
     openRoomForm(null);
   });
 
