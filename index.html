@@ -1784,6 +1784,7 @@ function startRoundtable(opts) {
   run.roundId = uid("rd");
   run.schedule = buildSchedule(r);
   save();
+  dbSaveSettings(r);
   renderAll();
   scrollBottom(true);
   loopRoundtable(r, ep);
@@ -2484,6 +2485,7 @@ function setMode(mode) {
   r.mode = mode;
   if (mode === "roundtable" && !r.agenda) r.agenda = r.kind === "project" ? "오늘 안건 정리" : "이야기 정리";
   save();
+  dbSaveSettings(r);
   renderRoom();
   renderSidebar();
   toast("모드 · " + modeName(mode));
@@ -3341,6 +3343,17 @@ async function dbInit() {
     return false;
   }
 }
+function dbSaveSettings(r) {
+  if (!db.ready || !db.client || !r || !r.remote) return;
+  db.client.from("kkiri_rooms").update({
+    name: String(r.name || "방").slice(0, 60),
+    kind: r.kind === "chat" ? "lounge" : "project",
+    description: String(r.agenda || "").slice(0, 600),
+    settings: { emoji: r.emoji, mode: r.mode, maxTurns: r.maxTurns, budget: r.budget }
+  }).eq("id", r.id).then(function (res) {
+    if (res && res.error) dbToast("방 설정을 서버에 저장하지 못했어요 · " + res.error.message);
+  }, function () {});
+}
 function roomInviteLink(r) {
   if (!r) return "";
   var base = String(location.href).split("#")[0].split("?")[0];
@@ -3535,6 +3548,7 @@ function wire() {
     var v = Math.max(10, Number($("budgetInput").value) || 60);
     r.budget = v;
     save();
+    dbSaveSettings(r);
     closeModal("budgetModal");
     updateMeters();
     renderSidebar();
