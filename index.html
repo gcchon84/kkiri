@@ -5872,7 +5872,7 @@ function dbAgentFromRow(row) {
   var prov = row.provider || "demo";
   var isByok = prov === "gemini" || prov === "openai";
   var isCloud = row.billing === "cloud" && isByok;   /* v3: 끼리 AI (서버 프록시 과금) */
-  return {
+  var obj = {
     id: lid, name: row.name, role: row.role || "AI 멤버",
     color: COLORS[hash(lid) % COLORS.length],
     type: isCloud ? "expert" : prov === "webhook" ? "webhook" : isByok ? "byok" : "builtin",
@@ -5881,6 +5881,9 @@ function dbAgentFromRow(row) {
     prompt: row.persona || "", desc: row.role || "", avatar: row.avatar || "",
     url: row.webhook_url || ""
   };
+  /* 서버에서 내려온 옛 ‘끼리 표준(30크레딧)’도 화면·호출 모두 10크레딧 모델로 통일 */
+  if (obj.type === "expert" && obj.model === "kkiri-standard") obj.model = "kkiri-lite";
+  return obj;
 }
 function dbMsgFromRow(row) {
   var mt = row.meta || {};
