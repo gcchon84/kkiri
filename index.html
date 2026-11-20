@@ -749,8 +749,8 @@
           <div class="m-top"><span id="turnLabel">턴</span><span class="m-val" id="turnVal">0 / 10턴</span></div>
           <div class="bar"><i id="turnBar"></i></div>
         </div>
-        <div class="meter budget" id="budgetMeter" title="예산 상한 설정">
-          <div class="m-top"><span>예상 비용 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">₩0 / ₩200</span></div>
+        <div class="meter budget" id="budgetMeter" title="크레딧 상한 설정">
+          <div class="m-top"><span>소진 크레딧 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">0 / 200 크레딧</span></div>
           <div class="bar"><i id="costBar"></i></div>
         </div>
       </div>
@@ -760,7 +760,7 @@
         <span id="runState">대기 중</span>
         <span aria-hidden="true" id="creditSep" hidden>·</span>
         <span id="creditUsed" hidden>0 크레딧</span>
-        <span class="warn-badge" id="budgetWarn" hidden>⚠ 예산 80%</span>
+        <span class="warn-badge" id="budgetWarn" hidden>⚠ 크레딧 80%</span>
       </div>
     </section>
 
@@ -875,30 +875,22 @@ Content-Type: application/json
     <div class="sheet-body">
       <label class="field"><span>방 이름</span><input id="rfName" type="text" maxlength="30" placeholder="예: 프로젝트방" autocomplete="off"></label>
       <div class="field-row">
-        <div class="field"><span>방 종류</span>
-          <div class="pick-row" id="rfKind">
-            <button type="button" class="pick" data-kind="project" aria-pressed="true">프로젝트방</button>
-            <button type="button" class="pick" data-kind="chat" aria-pressed="false">사랑방</button>
-          </div>
-        </div>
         <div class="field"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
-      </div>
-      <label class="field"><span>안건 (프로젝트방)</span><input id="rfAgenda" type="text" maxlength="90" placeholder="예: 연말 캠페인 아이디어 3개 제안" autocomplete="off"></label>
-      <div class="field-row">
-        <div class="field"><span>역할 배정</span>
-          <div class="pick-row" id="rfRoleMode">
-            <button type="button" class="pick" data-rolemode="auto" aria-pressed="true">자동 (기본)</button>
-            <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
-          </div>
-        </div>
         <label class="field"><span>최대 턴</span>
-          <select id="rfTurns"><option value="6">6턴</option><option value="10" selected>10턴</option><option value="15">15턴</option></select>
+          <select id="rfTurns"><option value="5">5턴</option><option value="10" selected>10턴</option><option value="15">15턴</option><option value="20">20턴</option></select>
         </label>
       </div>
-      <label class="field"><span>회차 예산 상한 (원)</span><input id="rfBudget" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
+      <label class="field"><span>안건 (프로젝트방)</span><input id="rfAgenda" type="text" maxlength="90" placeholder="예: 연말 캠페인 아이디어 3개 제안" autocomplete="off"></label>
+      <div class="field"><span>역할 배정</span>
+        <div class="pick-row" id="rfRoleMode">
+          <button type="button" class="pick" data-rolemode="auto" aria-pressed="true">자동 (기본)</button>
+          <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
+        </div>
+      </div>
+      <label class="field"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
       <div class="field"><span>참여 AI</span><div class="pick-row" id="rfMembers"></div></div>
       <div class="field"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
-      <p class="modal-note">평상시엔 @이름으로 부르고, 부르지 않은 채팅은 비용 없이 그냥 올라갑니다. 필요할 때 ‘토론 시작’을 누르면 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요.</p>
+      <p class="modal-note">평상시엔 @이름으로 부르고, 부르지 않은 채팅은 크레딧 없이 그냥 올라갑니다. 필요할 때 ‘토론 시작’을 누르면 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요. 끼리 AI는 턴마다 10~30크레딧을 써요.</p>
       <div class="btn-row" id="rfActions">
         <button class="btn green" id="rfSubmit">만들기</button>
       </div>
@@ -916,31 +908,32 @@ Content-Type: application/json
       <div class="field"><span>참여 AI</span><div class="pick-row" id="rtMembers"></div></div>
       <label class="field"><span>사회자</span><select id="rtModerator"></select></label>
       <div class="field"><span>최대 턴</span><div class="pick-row" id="rtTurns">
-        <button type="button" class="pick" data-turns="6" aria-pressed="false">6턴</button>
+        <button type="button" class="pick" data-turns="5" aria-pressed="false">5턴</button>
         <button type="button" class="pick" data-turns="10" aria-pressed="true">10턴</button>
         <button type="button" class="pick" data-turns="15" aria-pressed="false">15턴</button>
+        <button type="button" class="pick" data-turns="20" aria-pressed="false">20턴</button>
       </div></div>
-      <label class="field"><span>회차 예산 (원)</span><input id="rtBudget" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
+      <label class="field"><span>크레딧 상한</span><input id="rtBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
       <p class="api-status busy" id="rtEstimate" style="display:block"></p>
       <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">토론 시작</button></div>
     </div>
   </div>
 </div>
 
-<!-- ================= 예산 설정 ================= -->
+<!-- ================= 크레딧 상한 설정 ================= -->
 <div class="modal" id="budgetModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="budgetTitle" style="max-width:420px">
-    <div class="sheet-head"><h2 id="budgetTitle">회차 예산</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><h2 id="budgetTitle">크레딧 상한</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>상한 (원)</span><input id="budgetInput" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
+      <label class="field"><span>상한 (크레딧)</span><input id="budgetInput" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
       <div class="pick-row" id="budgetChips" style="margin-top:9px">
-        <button type="button" class="pick" data-budget="30">₩30</button>
-        <button type="button" class="pick" data-budget="60">₩60</button>
-        <button type="button" class="pick" data-budget="120">₩120</button>
-        <button type="button" class="pick" data-budget="300">₩300</button>
+        <button type="button" class="pick" data-budget="100">100</button>
+        <button type="button" class="pick" data-budget="200">200</button>
+        <button type="button" class="pick" data-budget="300">300</button>
+        <button type="button" class="pick" data-budget="500">500</button>
       </div>
-      <p class="hint">80%에서 경고, 100%에서 자동으로 멈춰요. 지금까지 쓴 <b id="budgetSpent">₩0</b>은 이번 회차 기록입니다.</p>
-      <div class="btn-row"><button class="btn" id="budgetReset">회차 기록 초기화</button><button class="btn green" id="budgetSave">저장</button></div>
+      <p class="hint">끼리 AI는 턴마다 10~30크레딧을 써요. 상한의 80%에서 경고하고, 100%에서 자동으로 멈춰요. 지금까지 쓴 <b id="budgetSpent">0 크레딧</b>은 이 방의 사용 기록입니다.</p>
+      <div class="btn-row"><button class="btn" id="budgetReset">사용 기록 초기화</button><button class="btn green" id="budgetSave">저장</button></div>
     </div>
   </div>
 </div>
@@ -975,7 +968,7 @@ Content-Type: application/json
       <div class="panel-card" style="margin-top:14px">
         <div class="row"><div class="k">로컬 자동 저장<small id="storeMeta">아직 저장된 대화가 없어요</small></div><span class="pill" id="storeState">켜짐</span></div>
         <div class="row"><div class="k">대화 내역<small>이 방에 저장된 메시지</small></div><span class="pill gray" id="storeCount">0개</span></div>
-        <div class="row"><div class="k">총 비용 기록<small>모든 방의 이번 회차 합계</small></div><span class="pill gray" id="storeCost">₩0</span></div>
+        <div class="row"><div class="k">총 사용 크레딧<small>모든 방의 사용 합계</small></div><span class="pill gray" id="storeCost">0 크레딧</span></div>
       </div>
       <div class="btn-row"><button class="btn dark" id="exportBtn">대화 내역 JSON 내보내기</button><button class="btn danger" id="resetBtn">이 방 대화 초기화</button></div>
       <p class="modal-note" id="roomNote"></p>
@@ -1040,7 +1033,7 @@ Content-Type: application/json
     <div class="sheet-body">
       <div class="panel-card">
         <div class="row"><div class="k">남은 크레딧<small id="creditPlan">Free 플랜 · 게스트</small></div><span class="pill" id="creditNow">0</span></div>
-        <div class="row"><div class="k">이번 회차 사용<small>이 방에서 끼리 AI가 쓴 크레딧</small></div><span class="pill gray" id="creditRoom">0</span></div>
+        <div class="row"><div class="k">사용한 크레딧<small>이 방에서 끼리 AI가 쓴 크레딧</small></div><span class="pill gray" id="creditRoom">0</span></div>
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
@@ -1163,7 +1156,7 @@ var COOLDOWN = { global: 700, agent: 2600 };
 var PROMO_RE = /프로모션|할인|사은품|연말|12월|광고|캠페인|세일/;
 
 function freshSession() {
-  return { turn: 0, tin: 0, tout: 0, cost: 0, startedAt: null, endedAt: null, startIndex: 0, blocked: 0 };
+  return { turn: 0, tin: 0, tout: 0, cost: 0, credits: 0, startedAt: null, endedAt: null, startIndex: 0, blocked: 0 };
 }
 
 function seedAgents() {
@@ -1200,14 +1193,14 @@ function seedState() {
     rooms: [
       {
         id: "r_promo", emoji: "🚀", name: "프로젝트방", kind: "project",
-        agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 10, budget: 60,
+        agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 10, budget: 200,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
         messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 미리보기 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요." }]
       },
       {
         id: "r_lounge", emoji: "☕", name: "자유 수다방", kind: "chat",
-        agenda: "", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 0, budget: 20,
+        agenda: "", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 0, budget: 100,
         members: ["pikri", "kirini", "muu"], status: "idle", createdAt: now - 5000,
         session: freshSession(),
         messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "사랑방이에요. 편하게 이야기하면 그대로 올라가고, @이름으로 부르면 그 AI가 답해요." }]
@@ -1223,8 +1216,13 @@ var saveWarned = false;
 function normalizeRoom(r) {
   if (!Array.isArray(r.members)) r.members = ["pikri"];
   r.members = r.members.filter(function (id) { return !!state.agents[id]; });
-  if (!r.session || typeof r.session !== "object") r.session = freshSession();
-  if (typeof r.budget !== "number" || !isFinite(r.budget)) r.budget = 60;
+  if (typeof r.session !== "object" || !r.session) r.session = freshSession();
+  r.session.credits = Math.round(Number(r.session.credits) || 0);
+  /* 크레딧 단위 통일: 예전 원 단위 시절의 작은 budget(20·60 등)은 최소 100크레딧으로 올리고, 기본은 200크레딧. */
+  if (typeof r.budget !== "number" || !isFinite(r.budget)) r.budget = 200;
+  r.budget = Math.round(r.budget);
+  if (r.budget < 100) r.budget = 100;
+  if (r.budget > 5000) r.budget = 5000;
   if (typeof r.maxTurns !== "number") r.maxTurns = 10;
   if (!Array.isArray(r.messages)) r.messages = [];
   /* 예전 DB·브라우저에 남은 mode(roundtable·free)는 더 이상 고르지 않는 값이라 통합 흐름으로 맞춘다. */
@@ -1329,7 +1327,21 @@ function computeCost(provider, tin, tout) {
 function estimateTin(r) {
   return 900 + Math.min(2600, (r.session.turn || 0) * 220) + Math.min(400, String(r.agenda || "").length * 2);
 }
-function budgetExceeded(r) { return (r.session.cost || 0) >= (r.budget || 0); }
+function budgetExceeded(r) {
+  if (!r) return false;
+  var cap = Number(r.budget) || 0;
+  return cap > 0 && (Number(r.session && r.session.credits) || 0) >= cap;
+}
+/* 이 방(또는 주어진 AI 목록)의 턴당 평균 크레딧 — 끼리 AI만 크레딧을 쓴다. */
+function turnCreditCost(ids) {
+  var sum = 0, n = 0;
+  (ids || []).forEach(function (id) {
+    var a = state.agents[id];
+    if (a && a.type === "expert") { sum += configCost(a.model); n++; }
+  });
+  return n ? Math.round(sum / n) : 10;
+}
+function creditsLabel(n) { return Math.round(Number(n) || 0).toLocaleString("ko-KR"); }
 
 /* =========================================================
    3. 실행 상태
@@ -1500,7 +1512,7 @@ function isRoomOwner(rm) {
   return !!(rm.ownerId && V3.user && rm.ownerId === V3.user.id);
 }
 function roomRowHtml(rm) {
-  var meta = (rm.kind === "chat" ? "사랑방" : "프로젝트방") + " · " + rm.members.length + "명 · " + won(rm.session.cost);
+  var meta = (rm.kind === "chat" ? "사랑방" : "프로젝트방") + " · " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧";
   var mine = isRoomOwner(rm);
   var act = mine ? "삭제" : "나가기";
   return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + '" data-room="' + esc(rm.id) + '">' +
@@ -1589,7 +1601,7 @@ function renderSidebar() {
 
 function hintFor(r) {
   if (!r) return "";
-  return "<b>@이름</b>을 붙이면 그 AI가 답해요(@전원 = 모두). 그냥 보내면 비용 없이 대화만 올라가고, 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요.";
+  return "<b>@이름</b>을 붙이면 그 AI가 답해요(@전원 = 모두). 그냥 보내면 크레딧 없이 대화만 올라가고, 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요.";
 }
 
 function renderRoom() {
@@ -1654,27 +1666,28 @@ function updateMeters() {
   $("turnBar").style.width = pct + "%";
 
   var cap = Math.max(1, r.budget || 0);
-  var costPct = clamp((s.cost || 0) / cap * 100, 0, 100);
-  $("costVal").textContent = won(s.cost) + " / " + won(cap);
+  var used = s.credits || 0;
+  var costPct = clamp(used / cap * 100, 0, 100);
+  $("costVal").textContent = creditsLabel(used) + " / " + creditsLabel(cap) + " 크레딧";
   $("costBar").style.width = costPct + "%";
   $("budgetMeter").classList.toggle("warn", costPct >= 80 && costPct < 100);
   $("budgetMeter").classList.toggle("over", costPct >= 100);
 
-  var projected = s.cost || 0;
+  var projected = used;
   if (discussing && max > cur) {
-    var avg = cur > 0 ? (s.cost || 0) / cur : 3.1;
-    projected = (s.cost || 0) + (max - cur) * avg;
+    var avg = cur > 0 && used > 0 ? used / cur : turnCreditCost(r.members);
+    projected = used + (max - cur) * avg;
   }
-  $("tokenVal").textContent = tok((s.tin || 0) + (s.tout || 0)) + (discussing ? " · 예상 " + won(projected) : "");
-  var cu = s.credits || 0;                                  /* 이 방·이번 회차에 쓴 크레딧 */
+  $("tokenVal").textContent = tok((s.tin || 0) + (s.tout || 0)) + (discussing ? " · 예상 " + creditsLabel(projected) + " 크레딧" : "");
+  var cu = s.credits || 0;                                  /* 이 방에서 쓴 크레딧 */
   var cuEl = $("creditUsed"), cuSep = $("creditSep");
   var showCu = !!V3 && V3.mode !== "local";
   if (cuEl) { cuEl.textContent = (cu || 0) + " 크레딧"; cuEl.hidden = !showCu; }
   if (cuSep) cuSep.hidden = !showCu;
 
   var warn = $("budgetWarn");
-  if ((s.cost || 0) >= cap) { warn.hidden = false; warn.className = "warn-badge danger"; warn.textContent = "예산 초과 · 자동 정지"; }
-  else if (costPct >= 80) { warn.hidden = false; warn.className = "warn-badge"; warn.textContent = "⚠ 예산 80%"; }
+  if (used >= cap) { warn.hidden = false; warn.className = "warn-badge danger"; warn.textContent = "크레딧 상한 초과 · 자동 정지"; }
+  else if (costPct >= 80) { warn.hidden = false; warn.className = "warn-badge"; warn.textContent = "⚠ 크레딧 80%"; }
   else { warn.hidden = true; }
 
   var st = $("runState");
@@ -1726,7 +1739,7 @@ function msgHtml(m) {
   var a = state.agents[m.who];
   if (!a) return "";
   var meta = "<time>" + esc(timeLabel(m.at)) + "</time>" +
-    (m.cost ? "<span>· " + won(m.cost) + "</span>" : "") +
+    (m.credits ? "<span>· " + creditsLabel(m.credits) + " 크레딧</span>" : "") +
     (m.dup ? '<span class="src demo">중복 방지</span>' : "");
   var ro = roleOf(activeRoom(), m.who);
   return '<div class="msg">' + avatarHtml(m.who) + '<div class="body">' +
@@ -1756,7 +1769,7 @@ function cardHtml(m) {
     "<span>참여 " + c.stats.members.length + " AI</span>" +
     "<span>" + c.stats.turns + "턴</span>" +
     "<span>" + tok(c.stats.tokens) + "</span>" +
-    "<span>" + won(c.stats.cost) + "</span>" +
+    (c.stats.credits != null ? "<span>" + creditsLabel(c.stats.credits) + " 크레딧</span>" : "") +
     "<span>" + esc(c.stats.duration) + "</span></div>";
   return '<div class="card" data-card="' + esc(c.id) + '">' +
     '<div class="card-head"><h3>✅ ' + esc(c.title) + "</h3>" +
@@ -1793,7 +1806,7 @@ function emptyHtml(r) {
     (isProject ? esc(r.agenda || "안건을 한 줄 적어 보세요") : "아직 조용해요") + '</h3>' +
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + r.members.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
-    "<br><b>@이름</b>으로 부르면 그 AI가 답하고, 그냥 보내면 대화만 올라가요(비용 0). 필요할 때 <b>토론 시작</b>을 누르면 역할을 나눠 토론하고 합의안 카드를 만들어요.</p>" +
+    "<br><b>@이름</b>으로 부르면 그 AI가 답하고, 그냥 보내면 대화만 올라가요(크레딧 0). 필요할 때 <b>토론 시작</b>을 누르면 역할을 나눠 토론하고 합의안 카드를 만들어요.</p>" +
     '<div class="e-actions">' +
     (first ? '<button type="button" class="ghost-btn" data-act="mention">@' + esc(first) + ' 부르기</button>' : "") +
     '<button type="button" class="ghost-btn primary" data-act="start">▶ 토론 시작</button>' +
@@ -1921,12 +1934,12 @@ function addAgentMessage(agent, d, phase) {
 var DEMO = {
   open: {
     pikri: [
-      { t: "안건은 “{agenda}”입니다. 참여는 {members} {n}명, 최대 {turns}턴, 이번 회차 예산 {budget}으로 잡았습니다. 1차 의견을 듣고 쟁점을 두 개로 좁힌 뒤 합의안까지 정리하겠습니다." },
+      { t: "안건은 “{agenda}”입니다. 참여는 {members} {n}명, 최대 {turns}턴, 크레딧 상한 {budget}으로 잡았습니다. 1차 의견을 듣고 쟁점을 두 개로 좁힌 뒤 합의안까지 정리하겠습니다." },
       { t: "오늘 안건은 “{agenda}”입니다. 목표는 결정 1개와 다음 할 일 3개입니다. {members} 순서로 의견을 듣고, 중간에 제가 쟁점을 정리하겠습니다." },
       { t: "“{agenda}” 시작하겠습니다. 참여 {n}명, 최대 {turns}턴입니다. 서로 다른 관점을 먼저 듣고, 숫자로 확인할 것은 따로 표시하겠습니다." }
     ],
     generic: [
-      { t: "안건은 “{agenda}”입니다. 참여 {n}명, 최대 {turns}턴, 예산 {budget}입니다. 먼저 1차 의견을 듣고 쟁점을 정리하겠습니다." },
+      { t: "안건은 “{agenda}”입니다. 참여 {n}명, 최대 {turns}턴, 크레딧 상한 {budget}입니다. 먼저 1차 의견을 듣고 쟁점을 정리하겠습니다." },
       { t: "“{agenda}” 시작하겠습니다. 목표는 결정 1개와 다음 할 일 3개입니다. 순서대로 말씀해 주세요." }
     ]
   },
@@ -2075,7 +2088,7 @@ function fillTpl(tpl, room, agent) {
     .replace(/\{members\}/g, names)
     .replace(/\{n\}/g, String(room.members.length))
     .replace(/\{turns\}/g, String(room.maxTurns || 10))
-    .replace(/\{budget\}/g, won(room.budget))
+    .replace(/\{budget\}/g, creditsLabel(room.budget) + " 크레딧")
     .replace(/\{role\}/g, agent.role || "")
     .replace(/\{name\}/g, agent.name)
     .replace(/\{other2\}/g, others[1] || others[0] || "다른 AI")
@@ -2122,7 +2135,7 @@ function demoTurn(agent, phase) {
 }
 
 /* =========================================================
-   8. 실행 엔진 (턴 · 예산 · 루프 · 쿨다운)
+   8. 실행 엔진 (턴 · 크레딧 · 루프 · 쿨다운)
    ========================================================= */
 function waitWhilePaused(ep) {
   return new Promise(function (resolve) {
@@ -2242,7 +2255,7 @@ async function speak(agent, phase, ep) {
       save();
       updateMeters();
       renderSidebar();
-      addSystem(agent.name + " 답변이 앞선 발언과 겹쳐 이번 턴을 건너뛰었어요(중복 방지 · 호출 비용은 반영).", "warn");
+      addSystem(agent.name + " 답변이 앞선 발언과 겹쳐 이번 턴을 건너뛰었어요(중복 방지 · 쓴 크레딧은 반영).", "warn");
       return;
     }
     /* v3: 서버가 저장한 발언(id·noSend·credits)까지 그대로 넘겨 중복 저장/중복 표시를 막는다 */
@@ -2268,7 +2281,7 @@ function startRoundtable(opts) {
   r.agenda = agenda;
   r.members = parts;
   r.maxTurns = clamp(Number(opts.turns) || 10, 3, 24);
-  r.budget = Math.max(10, Number(opts.budget) || r.budget || 60);
+  r.budget = clamp(Math.round(Number(opts.budget) || r.budget || 200), 100, 5000);
   r.session = freshSession();
   r.session.startedAt = Date.now();
   r.session.startIndex = r.messages.length;
@@ -2307,7 +2320,7 @@ function endRun(reason, ep) {
   if (!r) return;
   r.status = "ended";
   r.session.endedAt = Date.now();
-  if (reason === "budget") addSystem("예산 상한 " + won(r.budget) + "에 닿아 자동으로 정지했어요. 대화는 그대로이고, 합의안으로 정리할 수 있습니다.", "warn");
+  if (reason === "budget") addSystem("크레딧 상한 " + creditsLabel(r.budget) + "에 닿아 자동으로 정지했어요. 대화는 그대로이고, 합의안으로 정리할 수 있습니다.", "warn");
   else if (reason === "loop") addSystem("같은 말이 반복되어 자동으로 정지했어요(루프 감지). 합의안 요약으로 정리해 보세요.", "warn");
   else if (reason === "stop") addSystem("멈췄어요. 대화는 남아 있고, 합의안으로 정리할 수 있습니다.", "info");
   else if (reason === "error") addSystem("오류로 진행이 멈췄어요. 다시 시작해 주세요.", "err");
@@ -2323,7 +2336,7 @@ async function runMentions(text) {
   var parsed = parseMentions(text);
   if (!parsed.ids.length) return;
   if (budgetExceeded(r)) {
-    addSystem("예산 상한에 닿아 AI가 답하지 못했어요 · 위 예상 비용을 눌러 예산을 올리거나 회차를 초기화해 주세요.", "warn");
+    addSystem("크레딧 상한에 닿아 AI가 답하지 못했어요 · 위 소진 크레딧을 눌러 상한을 올리거나 사용 기록을 초기화해 주세요.", "warn");
     return;
   }
   run.epoch++;
@@ -2653,6 +2666,7 @@ function buildCard(r, opts) {
   var tokens = (s.tin || 0) + (s.tout || 0);
   if (!tokens) tokens = all.reduce(function (a, m) { return a + (m.tin || 0) + (m.tout || 0); }, 0);
   var cost = s.cost || all.reduce(function (a, m) { return a + (m.cost || 0); }, 0);
+  var credits = s.credits || all.reduce(function (a, m) { return a + (Number(m.credits) || 0); }, 0);
   var st = s.startedAt || (all.length ? all[0].at : Date.now());
   var en = s.endedAt || Date.now();
   return {
@@ -2674,6 +2688,7 @@ function buildCard(r, opts) {
       turns: turns,
       tokens: tokens,
       cost: cost,
+      credits: credits,
       duration: dur(Math.max(0, en - st))
     }
   };
@@ -2721,7 +2736,7 @@ function cardMarkdown(c) {
   L.push("- 방: " + c.room + " (" + (c.kind === "project" ? "프로젝트방" : "사랑방") + ")");
   L.push("- 일시: " + c.atLabel);
   L.push("- 참여: " + c.stats.members.join(", "));
-  L.push("- 통계: " + c.stats.turns + "턴 · " + Math.round(c.stats.tokens).toLocaleString("ko-KR") + " 토큰 · " + won(c.stats.cost) + " · " + c.stats.duration);
+  L.push("- 통계: " + c.stats.turns + "턴 · " + Math.round(c.stats.tokens).toLocaleString("ko-KR") + " 토큰 · " + (c.stats.credits != null ? creditsLabel(c.stats.credits) + " 크레딧" : "") + " · " + c.stats.duration);
   L.push("");
   function block(title, arr) {
     if (!arr || !arr.length) return;
@@ -2976,18 +2991,49 @@ function toggleMember(id) {
 }
 
 /* =========================================================
-   14. 라운드테이블 · 예산 시트
+   14. 라운드테이블 · 크레딧 상한 시트
    ========================================================= */
 var rtState = { turns: 10 };
+/* 최대 턴 선택지 — 5 / 10 / 15 / 20턴만 씁니다 */
+var TURN_OPTIONS = [5, 10, 15, 20];
+/* 예전 방에 6턴처럼 다른 값이 저장돼 있으면 그 값을 옵션으로 함께 보여 주어 바꾸지 않고 보존합니다. */
+function turnOptionsFor(cur, sel) {
+  var v = Number(cur) || 10;
+  if (v < 1) v = 10;
+  if (sel) {
+    var opts = TURN_OPTIONS.slice();
+    if (opts.indexOf(v) < 0) { opts.push(v); opts.sort(function (a, b) { return a - b; }); }
+    var h = "";
+    opts.forEach(function (n) {
+      h += "<option value=\"" + n + "\">" + n + "턴" + (TURN_OPTIONS.indexOf(n) < 0 ? " (기존 값)" : "") + "</option>";
+    });
+    sel.innerHTML = h;
+  }
+  return v;
+}
+/* 선택지에 없는 값은 가장 가까운 턴으로 맞춥니다(토론 설정처럼 임시로 고르는 곳). */
+function nearestTurn(cur) {
+  var v = Number(cur) || 10;
+  if (v < 1) v = 10;
+  if (TURN_OPTIONS.indexOf(v) > -1) return v;
+  var best = TURN_OPTIONS[0], gap = Math.abs(v - best);
+  TURN_OPTIONS.forEach(function (o) {
+    var d = Math.abs(v - o);
+    if (d < gap) { best = o; gap = d; }
+  });
+  return best;
+}
 
 function rtSelectedMembers() {
   return Array.prototype.slice.call($("rtMembers").querySelectorAll('[aria-pressed="true"]')).map(function (b) { return b.getAttribute("data-id"); });
 }
 function rtRefreshEstimate() {
   var turns = rtState.turns || 10;
-  var n = rtSelectedMembers().length;
-  var est = turns * (2.6 + n * 0.12);
-  $("rtEstimate").textContent = "예상 " + turns + "턴 · AI " + n + "명 · 약 " + won(est) + " (예상 토큰 " + Math.round(turns * 1500).toLocaleString("ko-KR") + ") · 시간 상한 10분";
+  var ids = rtSelectedMembers();
+  var n = ids.length;
+  var per = turnCreditCost(ids);
+  var est = turns * per;
+  $("rtEstimate").textContent = "예상 " + turns + "턴 · AI " + n + "명 · 약 " + creditsLabel(est) + " 크레딧 (턴당 " + creditsLabel(per) + "크레딧) · 시간 상한 10분";
 }
 function rtRefreshModerators() {
   var ids = rtSelectedMembers();
@@ -3008,11 +3054,11 @@ function openRoundtable(prefill) {
     h += '<button type="button" class="pick check" data-id="' + esc(a.id) + '" aria-pressed="' + (on ? "true" : "false") + '">' + esc(a.name) + "</button>";
   });
   $("rtMembers").innerHTML = h;
-  rtState.turns = [6, 10, 15].indexOf(r.maxTurns) > -1 ? r.maxTurns : 10;
+  rtState.turns = nearestTurn(r.maxTurns);
   Array.prototype.forEach.call($("rtTurns").querySelectorAll("[data-turns]"), function (b) {
     b.setAttribute("aria-pressed", Number(b.getAttribute("data-turns")) === rtState.turns ? "true" : "false");
   });
-  $("rtBudget").value = r.budget || 60;
+  $("rtBudget").value = r.budget || 200;
   rtRefreshModerators();
   if (run.moderator && $("rtModerator").querySelector('option[value="' + run.moderator + '"]')) $("rtModerator").value = run.moderator;
   openModal("rtModal");
@@ -3026,14 +3072,14 @@ function rtStart() {
   var mod = $("rtModerator").value;
   if (parts.indexOf(mod) < 0) mod = parts[0];
   var turns = rtState.turns || 10;
-  var budget = Math.max(10, Number($("rtBudget").value) || 60);
+  var budget = clamp(Math.round(Number($("rtBudget").value) || 200), 100, 5000);
   closeModal("rtModal");
   startRoundtable({ agenda: agenda, participants: parts, moderator: mod, turns: turns, budget: budget });
 }
 function openBudgetSheet() {
   var r = activeRoom();
-  $("budgetInput").value = r.budget || 60;
-  $("budgetSpent").textContent = won(r.session.cost);
+  $("budgetInput").value = r.budget || 200;
+  $("budgetSpent").textContent = creditsLabel(r.session.credits) + " 크레딧";
   Array.prototype.forEach.call($("budgetChips").querySelectorAll("[data-budget]"), function (b) {
     b.setAttribute("aria-pressed", Number(b.getAttribute("data-budget")) === Number(r.budget) ? "true" : "false");
   });
@@ -3126,16 +3172,13 @@ function openRoomForm(roomId, kind) {
   $("rfName").value = r ? r.name : "";
   roomForm.kind = r ? r.kind : (kind === "chat" ? "chat" : "project");
   roomForm.colorEmoji = r ? r.emoji : (roomForm.kind === "chat" ? "☕" : "🚀");
-  Array.prototype.forEach.call($("rfKind").querySelectorAll("[data-kind]"), function (b) {
-    b.setAttribute("aria-pressed", b.getAttribute("data-kind") === roomForm.kind ? "true" : "false");
-  });
   renderEmojiPick();
   $("rfAgenda").value = r ? (r.agenda || "") : "";
   roomForm.roleMode = r ? roleModeOf(r) : "auto";
   try { roomForm.roles = r && r.roles ? JSON.parse(JSON.stringify(r.roles)) : {}; } catch (e) { roomForm.roles = {}; }
   renderRfRoleMode();
-  $("rfTurns").value = r ? String(r.maxTurns || 10) : "10";
-  $("rfBudget").value = r ? r.budget : (roomForm.kind === "chat" ? 20 : 60);
+  $("rfTurns").value = String(turnOptionsFor(r ? r.maxTurns : 10, $("rfTurns")));
+  $("rfBudget").value = r ? r.budget : 200;
   var sel = r ? r.members.slice() : allAgents().map(function (a) { return a.id; });
   renderRoomMemberPick(sel);
   renderRfRoles();
@@ -3178,7 +3221,7 @@ function submitRoomForm() {
     });
   }
   var maxTurns = Number($("rfTurns").value) || 10;
-  var budget = Math.max(10, Number($("rfBudget").value) || 60);
+  var budget = clamp(Math.round(Number($("rfBudget").value) || 200), 100, 5000);
   if (roomForm.id) {
     var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
     if (!r) return;
@@ -3478,8 +3521,8 @@ function renderStorage() {
   $("storeMeta").textContent = lastSaved ? timeLabel(lastSaved) + " · 저장됨" : (savedOk ? "저장된 대화가 있어요" : "아직 저장된 대화가 없어요");
   $("storeCount").textContent = r.messages.length + "개";
   var total = 0;
-  state.rooms.forEach(function (x) { total += x.session.cost || 0; });
-  $("storeCost").textContent = won(total);
+  state.rooms.forEach(function (x) { total += x.session.credits || 0; });
+  $("storeCost").textContent = creditsLabel(total) + " 크레딧";
   $("storeState").textContent = savedOk || !r.messages.length ? "켜짐" : "저장 불가";
 }
 async function testConnection() {
@@ -3530,7 +3573,7 @@ function resetRoom() {
   var r = activeRoom();
   if (!r.messages.length) { toast("초기화할 대화가 없어요"); return; }
   if (r.remote) {
-    if (!window.confirm("‘" + r.name + "’ 방의 회차 기록(턴·비용)만 초기화할까요? 저장된 대화는 서버에 그대로 남습니다.")) return;
+    if (!window.confirm("‘" + r.name + "’ 방의 사용 기록(턴·크레딧)만 초기화할까요? 저장된 대화는 서버에 그대로 남습니다.")) return;
     run.epoch++;
     run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
     r.session = freshSession();
@@ -3538,7 +3581,7 @@ function resetRoom() {
     save();
     renderAll();
     renderStorage();
-    toast("회차 기록을 초기화했어요 · 대화는 보존됩니다");
+    toast("사용 기록을 초기화했어요 · 대화는 보존됩니다");
     return;
   }
   if (!window.confirm("‘" + r.name + "’ 방의 대화와 완료 표시를 모두 지울까요? 되돌릴 수 없어요. (API 키는 그대로 남습니다)")) return;
@@ -3711,7 +3754,7 @@ function dbApply(roomRows, agentRows, fresh) {
       roleMode: s.roleMode === "manual" ? "manual" : "auto",
       roles: (s.roles && typeof s.roles === "object" && !Array.isArray(s.roles)) ? s.roles : {},
       maxTurns: typeof s.maxTurns === "number" ? s.maxTurns : (row.kind === "lounge" ? 0 : 10),
-      budget: typeof s.budget === "number" ? s.budget : 60,
+      budget: typeof s.budget === "number" ? clamp(Math.round(s.budget), 100, 5000) : 200,
       members: mem, status: p ? p.status : "idle",
       createdAt: Date.parse(row.created_at) || Date.now(),
       session: p ? p.session : freshSession(),
@@ -4846,7 +4889,7 @@ function onSend() {
   if (!r) return;
   var t = $("input").value.trim();
   if (!t) { $("input").focus(); return; }
-  /* 일반 채팅은 예산 상한과 무관하게 언제든 전송됩니다. 예산은 AI 호출에서만 봅니다. */
+  /* 일반 채팅은 크레딧 상한과 무관하게 언제든 전송됩니다. 크레딧은 끼리 AI 호출에서만 봅니다. */
   addUserMessage(t);
   $("input").value = "";
   growInput();
@@ -4984,7 +5027,7 @@ function wire() {
   $("rtBudget").addEventListener("input", rtRefreshEstimate);
   $("rtStart").addEventListener("click", rtStart);
 
-  /* 예산 시트 */
+  /* 크레딧 상한 시트 */
   $("budgetChips").addEventListener("click", function (e) {
     var b = e.target.closest("[data-budget]");
     if (!b) return;
@@ -4995,14 +5038,14 @@ function wire() {
   });
   $("budgetSave").addEventListener("click", function () {
     var r = activeRoom();
-    var v = Math.max(10, Number($("budgetInput").value) || 60);
+    var v = clamp(Math.round(Number($("budgetInput").value) || 200), 100, 5000);
     r.budget = v;
     save();
     dbSaveSettings(r);
     closeModal("budgetModal");
     updateMeters();
     renderSidebar();
-    toast("예산 상한을 " + won(v) + "로 저장했어요");
+    toast("크레딧 상한을 " + creditsLabel(v) + "로 저장했어요");
   });
   $("budgetReset").addEventListener("click", function () {
     var r = activeRoom();
@@ -5012,24 +5055,10 @@ function wire() {
     closeModal("budgetModal");
     renderRoom();
     renderSidebar();
-    toast("이번 회차 턴·비용 기록을 초기화했어요");
+    toast("턴·크레딧 기록을 초기화했어요");
   });
 
   /* 방 폼 */
-  $("rfKind").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-kind]");
-    if (!b) return;
-    roomForm.kind = b.getAttribute("data-kind");
-    Array.prototype.forEach.call($("rfKind").querySelectorAll("[data-kind]"), function (x) {
-      x.setAttribute("aria-pressed", x === b ? "true" : "false");
-    });
-    if (!roomForm.id) {
-      roomForm.colorEmoji = roomForm.kind === "chat" ? "☕" : "🚀";
-      renderEmojiPick();
-      $("rfBudget").value = roomForm.kind === "chat" ? 20 : 60;
-      renderRfRoles();
-    }
-  });
   $("rfEmoji").addEventListener("click", function (e) {
     var b = e.target.closest("[data-emoji]");
     if (!b) return;
