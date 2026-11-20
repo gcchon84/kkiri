@@ -1,0 +1,3063 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101a24">
+<meta name="description" content="끼리(Kkiri) — 여러 AI를 한 방에 초대해 같이 일하고 같이 노는 멀티 AI 메신저 프로토타입">
+<title>끼리 (Kkiri) · AI 협업 방</title>
+<style>
+  :root{
+    --bg:#eef2f0;
+    --panel:#ffffff;
+    --ink:#16202b;
+    --ink-2:#33414d;
+    --muted:#7c8894;
+    --muted-2:#93a0aa;
+    --line:#e4ebe8;
+    --line-2:#eef3f1;
+    --green:#12a05e;
+    --green-deep:#0d7a48;
+    --green-tint:#e7f7ee;
+    --amber:#a8691a;
+    --amber-tint:#fdf3e2;
+    --red:#c93c33;
+    --red-tint:#fdecea;
+    --side:#101a24;
+    --side-2:#17232e;
+    --side-3:#1e2c38;
+    --side-line:#263642;
+    --side-ink:#eaf1f4;
+    --side-muted:#8b9ca8;
+    --r-lg:20px;
+    --r-md:14px;
+    --shadow:0 1px 2px rgba(16,32,43,.05),0 8px 24px rgba(16,32,43,.06);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;overflow:hidden;background:#e6ecea;color:var(--ink);
+    font-family:"Pretendard","Pretendard Variable","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans CJK KR",system-ui,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  button{font-family:inherit;color:inherit}
+  h1,h2,h3,h4,p{margin:0}
+  ul{margin:0}
+  [hidden]{display:none !important}
+  .app{display:flex;height:100dvh;max-width:1500px;margin:0 auto;background:#f4f7f6;box-shadow:0 0 60px rgba(16,32,43,.08)}
+
+  /* ============ sidebar ============ */
+  .sidebar{
+    width:302px;flex:0 0 302px;display:flex;flex-direction:column;
+    background:var(--side);color:var(--side-ink);
+    padding:18px 12px 14px;overflow-y:auto;overscroll-behavior:contain;
+  }
+  .sidebar::-webkit-scrollbar{width:6px}
+  .sidebar::-webkit-scrollbar-thumb{background:#2b3b48;border-radius:9px}
+  .brand{display:flex;align-items:center;gap:10px;padding:2px 4px 0}
+  .logo{
+    width:40px;height:40px;flex:0 0 40px;border-radius:13px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#19b46c,#0b7a49);color:#fff;font-size:19px;font-weight:900;
+    box-shadow:0 5px 14px rgba(12,122,73,.35);
+  }
+  .brand-txt b{display:block;font-size:18px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+  .brand-txt small{display:block;font-size:10px;font-weight:700;color:var(--side-muted);margin-top:3px;letter-spacing:.01em}
+  .brand-line{margin:11px 4px 4px;font-size:11px;line-height:1.65;color:#8fa2ae;letter-spacing:-.01em}
+  .side-sec{margin-top:16px}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px 8px}
+  .sec-head > span{font-size:10px;font-weight:900;letter-spacing:.09em;color:#7f929e}
+  .mini-btn{
+    border:1px solid #2e4050;background:#1b2935;color:#dbe6eb;border-radius:9px;
+    font-size:10.5px;font-weight:800;padding:5px 8px;cursor:pointer;white-space:nowrap;letter-spacing:-.01em;
+  }
+  .mini-btn:hover{background:#223241;border-color:#3a5060}
+  .room-list{display:flex;flex-direction:column;gap:3px}
+  .room-item{
+    display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;
+    background:transparent;border:1px solid transparent;border-radius:14px;padding:9px 9px 10px;color:inherit;
+    transition:background .14s ease,border-color .14s ease;
+  }
+  .room-item:hover{background:#16222d}
+  .room-item.active{background:#172630;border-color:#284a3b;box-shadow:inset 0 0 0 1px rgba(18,160,94,.12)}
+  .room-item .r-emoji{font-size:17px;line-height:1.3;flex:0 0 auto}
+  .room-item .r-body{min-width:0;flex:1}
+  .room-item b{display:block;font-size:12.5px;font-weight:800;letter-spacing:-.02em;color:#eef4f6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .room-item small{display:block;font-size:9.5px;font-weight:600;color:#8b9da9;margin-top:3px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .room-item .r-live{width:5px;height:5px;border-radius:50%;background:var(--green);flex:0 0 5px;margin-top:7px;box-shadow:0 0 0 3px rgba(18,160,94,.14)}
+  .member-list{display:flex;flex-direction:column;gap:1px}
+  .member-row{display:flex;align-items:center;gap:9px;padding:6px 5px;border-radius:12px}
+  .member-row:hover{background:#16222d}
+  .member-row .m-txt{min-width:0;flex:1}
+  .member-row b{display:block;font-size:11.5px;font-weight:800;letter-spacing:-.01em;color:#ecf2f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-row small{display:block;font-size:9px;color:#8798a4;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-row.off b{color:#7f929e}
+  .member-row.off .avatar{opacity:.45;filter:grayscale(.4)}
+  .switch{
+    width:34px;height:20px;flex:0 0 34px;border:0;border-radius:999px;background:#2a3a47;
+    position:relative;cursor:pointer;padding:0;transition:background .15s ease;
+  }
+  .switch::after{
+    content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+    background:#8fa1ad;transition:left .15s ease,background .15s ease;
+  }
+  .switch[aria-checked="true"]{background:var(--green)}
+  .switch[aria-checked="true"]::after{left:16px;background:#fff}
+  .side-foot{margin-top:auto;padding:16px 4px 2px;display:flex;flex-direction:column;gap:9px}
+  .side-btn{
+    display:flex;align-items:center;gap:8px;width:100%;border:1px solid #2b3d4b;background:#1a2733;
+    color:#dbe6eb;border-radius:11px;padding:10px 11px;font-size:11.5px;font-weight:800;cursor:pointer;letter-spacing:-.01em;
+  }
+  .side-btn:hover{background:#223241}
+  .side-status{display:flex;align-items:center;gap:6px;padding:0 4px;font-size:9.5px;font-weight:800;color:#8798a4}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block}
+  .dot.demo{background:#e0a33a}
+  .sidebar .side-close{display:none;width:30px;height:30px;flex:0 0 30px;font-size:12px;background:#1b2935;border-color:#2e4050;color:#dbe6eb;margin-left:auto}
+
+  /* ============ avatars ============ */
+  .avatar{
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+    border-radius:12px;color:#fff;font-weight:900;letter-spacing:-.02em;
+    background:var(--c,#12a05e);box-shadow:inset 0 -8px 14px rgba(0,0,0,.14);
+    user-select:none;
+  }
+  .avatar.sm{width:26px;height:26px;font-size:10.5px;border-radius:9px}
+  .avatar.md{width:34px;height:34px;font-size:12.5px;border-radius:11px}
+  .avatar.lg{width:44px;height:44px;font-size:16px;border-radius:13px}
+
+  /* ============ main ============ */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100dvh;background:#f4f7f6}
+  .room-head{
+    display:flex;align-items:center;gap:10px;padding:11px 18px;background:rgba(255,255,255,.92);
+    border-bottom:1px solid var(--line);backdrop-filter:blur(6px);flex:0 0 auto;
+  }
+  .icon-btn{
+    border:1px solid var(--line);background:#fff;color:var(--ink-2);width:36px;height:36px;flex:0 0 36px;
+    border-radius:11px;display:inline-grid;place-items:center;font-size:15px;cursor:pointer;
+    transition:background .14s ease,border-color .14s ease;
+  }
+  .icon-btn:hover{background:#f2f6f4;border-color:#d6e2dd}
+  .icon-btn.stop{color:#b5342b}
+  .icon-btn.stop:hover{background:var(--red-tint);border-color:#f0cdc9}
+  .icon-btn:disabled{opacity:.42;cursor:default}
+  .room-head .room-emoji{font-size:22px;line-height:1;flex:0 0 auto}
+  .room-titles{min-width:0;flex:1}
+  .rt-line{display:flex;align-items:center;gap:7px;min-width:0}
+  .rt-line h1{font-size:15.5px;font-weight:900;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kind-pill{
+    flex:0 0 auto;font-size:9px;font-weight:900;letter-spacing:-.01em;color:#0d7a48;background:var(--green-tint);
+    padding:3px 7px;border-radius:999px;white-space:nowrap;
+  }
+  .kind-pill.chat{color:#8a5a12;background:var(--amber-tint)}
+  .room-titles p{
+    margin-top:3px;font-size:10.5px;color:#7c8894;font-weight:600;letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .room-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+  .ghost-btn{
+    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+    border-radius:11px;padding:9px 12px;font-size:11.5px;font-weight:800;letter-spacing:-.02em;cursor:pointer;
+  }
+  .ghost-btn:hover{background:#f2f6f4;border-color:#d6e2dd}
+  .ghost-btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+  .ghost-btn.primary:hover{background:var(--green-deep);border-color:var(--green-deep)}
+  .only-mobile{display:none}
+
+  /* ============ control bar ============ */
+  .ctrl{
+    flex:0 0 auto;margin:12px 16px 0;background:#fff;border:1px solid var(--line);border-radius:18px;
+    padding:11px 12px 10px;box-shadow:0 1px 2px rgba(16,32,43,.04);
+  }
+  .ctrl-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .seg{
+    display:inline-flex;align-items:center;gap:2px;background:#eef3f1;border-radius:12px;padding:3px;
+    flex:1 1 auto;min-width:0;
+  }
+  .seg button{
+    flex:1 1 0;border:0;background:transparent;color:#75838f;border-radius:9px;padding:8px 4px;
+    font-size:11px;font-weight:800;letter-spacing:-.03em;cursor:pointer;white-space:nowrap;
+    transition:background .14s ease,color .14s ease,box-shadow .14s ease;
+  }
+  .seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 2px 7px rgba(16,32,43,.1)}
+  .seg.wide{width:100%;margin-bottom:14px}
+  .seg.wide button{font-size:12px;padding:10px 4px}
+  .ctrl-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .ctrl-actions .icon-btn{width:34px;height:34px;flex:0 0 34px;font-size:13px;border-radius:10px}
+  .meters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+  .meter{min-width:0}
+  .m-top{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+  .m-top span{font-size:9.5px;font-weight:800;color:#7c8894;letter-spacing:-.01em;white-space:nowrap}
+  .m-top .pencil{font-style:normal;color:#b3bec6;font-size:9px;margin-left:2px}
+  .m-top .m-val{font-size:10.5px;font-weight:900;color:var(--ink-2);font-variant-numeric:tabular-nums}
+  .bar{height:5px;border-radius:999px;background:#e9efec;margin-top:5px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0%;border-radius:999px;background:var(--green);transition:width .35s ease,background .2s ease}
+  .meter.budget .bar i{background:#2f6ff0}
+  .meter.warn .bar i{background:#e0a33a}
+  .meter.over .bar i{background:var(--red)}
+  .meter.over .m-val{color:var(--red)}
+  .ctrl-foot{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;min-height:14px}
+  .ctrl-foot span{font-size:9.5px;font-weight:700;color:#93a0aa;letter-spacing:-.01em}
+  .ctrl-foot #runState{color:#5d6c78}
+  .warn-badge{
+    margin-left:auto;font-size:9px;font-weight:900;color:#8a5a12;background:var(--amber-tint);
+    border:1px solid #f0dcb4;padding:2px 7px;border-radius:999px;white-space:nowrap;
+  }
+  .warn-badge.danger{color:#9c2d25;background:var(--red-tint);border-color:#f3cfca}
+
+  /* ============ timeline ============ */
+  .timeline{
+    flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;padding:16px 18px 6px;
+    scroll-behavior:smooth;
+  }
+  .timeline-inner{max-width:860px;margin:0 auto;display:flex;flex-direction:column}
+  .day{align-self:center;font-size:9.5px;font-weight:800;color:#8b98a2;background:#e7eeeb;padding:4px 10px;border-radius:999px;margin:12px 0 4px}
+  .empty{
+    max-width:440px;margin:26px auto 12px;text-align:center;padding:26px 20px;
+    background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);
+  }
+  .empty .e-emoji{font-size:34px;line-height:1}
+  .empty h3{font-size:15px;font-weight:900;letter-spacing:-.03em;margin-top:10px}
+  .empty p{font-size:11.5px;line-height:1.7;color:#7c8894;margin-top:7px;letter-spacing:-.01em;word-break:keep-all}
+  .empty .e-actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .empty .e-agenda{
+    display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:#0d7a48;background:var(--green-tint);
+    padding:6px 11px;border-radius:10px;letter-spacing:-.01em;
+  }
+  .msg{display:flex;gap:9px;align-items:flex-start;margin:13px 0;max-width:100%}
+  .msg .body{min-width:0;max-width:min(640px,84%)}
+  .msg .who{display:flex;align-items:center;gap:6px;margin:1px 0 5px 2px;font-size:11px;font-weight:900;letter-spacing:-.02em}
+  .msg .who em{font-style:normal;font-size:9px;font-weight:700;color:#93a0aa;letter-spacing:-.01em}
+  .msg .who .src{font-size:8px;font-weight:900;color:#0d7a48;background:var(--green-tint);padding:2px 5px;border-radius:999px;letter-spacing:0}
+  .msg .who .src.ext{color:#2b5cc4;background:#eaf1ff}
+  .msg .who .src.demo{color:#8a5a12;background:var(--amber-tint)}
+  .bubble{
+    background:#fff;border:1px solid #e7edeb;border-radius:4px 16px 16px 16px;padding:10px 13px;
+    font-size:12.5px;line-height:1.68;letter-spacing:-.012em;color:#1d2a36;
+    white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;box-shadow:0 1px 2px rgba(16,32,43,.04);
+  }
+  .msg .meta{display:flex;align-items:center;gap:6px;margin-top:5px;padding-left:2px;font-size:9px;color:#9aa7b1;font-weight:700;flex-wrap:wrap}
+  .msg.me{justify-content:flex-end}
+  .msg.me .body{display:flex;flex-direction:column;align-items:flex-end;max-width:86%}
+  .msg.me .bubble{background:#16202b;border-color:#16202b;color:#fff;border-radius:16px 4px 16px 16px;box-shadow:0 2px 8px rgba(16,32,43,.16)}
+  .msg.me .meta{justify-content:flex-end;padding-right:2px}
+  .mention{font-weight:900;color:#0d7a48;background:var(--green-tint);border-radius:5px;padding:0 3px}
+  .msg.me .mention{color:#fff;background:rgba(255,255,255,.18)}
+  .msg.sys{justify-content:center;margin:11px 0}
+  .msg.sys .note{
+    font-size:10px;line-height:1.6;font-weight:700;color:#687682;background:#e9f0ed;border-radius:999px;
+    padding:6px 13px;text-align:center;letter-spacing:-.01em;max-width:92%;
+  }
+  .msg.sys.warn .note{color:#8a5a12;background:var(--amber-tint)}
+  .msg.sys.err .note{color:#9c2d25;background:var(--red-tint)}
+  .typing{display:flex;gap:9px;align-items:center;margin:11px 0 14px;color:#8b98a2;font-size:10.5px;font-weight:800}
+  .typing .bubble{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;font-size:11px;color:#7c8894}
+  .dots{display:inline-flex;gap:3px;align-items:flex-end}
+  .dots i{width:4px;height:4px;border-radius:50%;background:#9fb0bb;display:block;animation:bounce 1.1s infinite ease-in-out}
+  .dots i:nth-child(2){animation-delay:.15s}
+  .dots i:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-3px);opacity:1}}
+
+  /* ============ consensus card ============ */
+  .card{
+    margin:18px 0 8px;background:#fff;border:1px solid #cfe9db;border-radius:20px;overflow:hidden;
+    box-shadow:0 6px 22px rgba(18,120,78,.09);align-self:stretch;
+  }
+  .card-head{display:flex;align-items:center;gap:8px;padding:12px 15px;background:linear-gradient(180deg,#effaf4,#fff);border-bottom:1px solid #e2f2e9;flex-wrap:wrap}
+  .card-head h3{font-size:13.5px;font-weight:900;letter-spacing:-.03em;flex:1 1 auto;min-width:120px}
+  .card-head .c-badge{font-size:8.5px;font-weight:900;color:#0d7a48;background:#d9f4e6;padding:3px 7px;border-radius:999px;white-space:nowrap}
+  .card-head .c-badge.draft{color:#8a5a12;background:var(--amber-tint)}
+  .card-body{padding:13px 15px 4px}
+  .c-sec{margin-bottom:11px}
+  .c-sec h4{font-size:9.5px;font-weight:900;letter-spacing:.08em;color:#0d7a48;margin-bottom:5px}
+  .c-sec ul{margin:0;padding-left:15px}
+  .c-sec li{font-size:11.5px;line-height:1.62;color:#22303c;letter-spacing:-.012em;margin-bottom:2px;word-break:keep-all}
+  .c-sec.risk h4{color:#a8691a}
+  .c-sec.todo h4{color:#2b5cc4}
+  .c-sec.todo li{list-style:none;position:relative;padding-left:14px}
+  .c-sec.todo li::before{content:"☐";position:absolute;left:0;color:#8195a0;font-size:11px}
+  .c-sec.todo .own{color:#7c8894;font-size:10px;font-weight:700;margin-left:4px}
+  .c-stats{
+    display:flex;gap:6px;flex-wrap:wrap;padding:9px 0 0;border-top:1px dashed #e4ebe8;margin-top:2px;
+  }
+  .c-stats span{font-size:9px;font-weight:800;color:#6f7d89;background:#f1f6f4;padding:3px 7px;border-radius:999px}
+  .card-actions{display:flex;gap:6px;padding:11px 15px 14px;flex-wrap:wrap}
+  .card-actions button{
+    border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 11px;
+    font-size:10.5px;font-weight:800;color:var(--ink-2);cursor:pointer;letter-spacing:-.02em;
+  }
+  .card-actions button:hover{background:#f2f7f4;border-color:#cfe2d8}
+  .card-actions button.dark{background:#16202b;color:#fff;border-color:#16202b}
+  .card-actions button.dark:hover{background:#22303c}
+
+  /* ============ composer ============ */
+  .composer{
+    flex:0 0 auto;background:rgba(255,255,255,.96);border-top:1px solid var(--line);
+    padding:9px 16px calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(6px);
+  }
+  .quick{display:flex;gap:6px;overflow-x:auto;padding:1px 0 8px;scrollbar-width:none;max-width:860px;margin:0 auto}
+  .quick::-webkit-scrollbar{display:none}
+  .quick:empty{padding:0}
+  .q-chip{
+    flex:0 0 auto;border:1px solid var(--line);background:#fff;color:#4c5b67;border-radius:999px;
+    padding:6px 11px;font-size:10.5px;font-weight:800;letter-spacing:-.02em;cursor:pointer;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .q-chip:hover{background:#f2f7f4;border-color:#d3e4db}
+  .q-chip.agenda{color:#0d7a48;background:var(--green-tint);border-color:#c8ebd8;max-width:min(420px,70vw);overflow:hidden;text-overflow:ellipsis}
+  .q-chip.start{background:var(--green);border-color:var(--green);color:#fff}
+  .q-chip.start:hover{background:var(--green-deep)}
+  .composer-row{display:flex;align-items:flex-end;gap:8px;max-width:860px;margin:0 auto}
+  .composer textarea{
+    flex:1 1 auto;min-height:44px;max-height:132px;border:1px solid #dfe8e4;border-radius:15px;background:#fff;
+    padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.5;color:var(--ink);resize:none;outline:none;
+    letter-spacing:-.012em;transition:border-color .15s ease,box-shadow .15s ease;
+  }
+  .composer textarea:focus{border-color:#19a05e;box-shadow:0 0 0 3px rgba(18,160,94,.12)}
+  .composer textarea::placeholder{color:#a3aeb7}
+  .send{
+    flex:0 0 auto;border:0;border-radius:14px;background:#16202b;color:#fff;font-size:12.5px;font-weight:900;
+    padding:0 16px;height:44px;cursor:pointer;letter-spacing:-.02em;white-space:nowrap;
+    transition:opacity .15s ease,transform .08s ease;
+  }
+  .send:hover{background:#22303c}
+  .send:active{transform:scale(.98)}
+  .send:disabled{opacity:.5;cursor:default}
+  .comp-hint{max-width:860px;margin:7px auto 0;font-size:9.5px;line-height:1.55;color:#93a0aa;padding:0 2px;letter-spacing:-.01em}
+  .comp-hint b{color:#5d6c78;font-weight:900}
+
+  /* ============ modal ============ */
+  .modal{
+    position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+    padding:24px;background:rgba(9,16,22,.46);opacity:0;transition:opacity .18s ease;
+  }
+  .modal.show{opacity:1}
+  .sheet{
+    width:100%;max-width:560px;max-height:min(88dvh,760px);background:#fff;border-radius:22px;
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px rgba(8,18,26,.32);
+    transform:translateY(10px) scale(.99);transition:transform .18s ease;
+  }
+  .modal.show .sheet{transform:none}
+  .sheet-head{
+    display:flex;align-items:center;gap:8px;padding:15px 16px 12px;border-bottom:1px solid var(--line-2);flex:0 0 auto;
+  }
+  .sheet-head h2{font-size:15px;font-weight:900;letter-spacing:-.03em;flex:1}
+  .sheet-head .sub{font-size:10px;color:#8b98a2;font-weight:700;margin-left:2px}
+  .sheet-body{padding:14px 16px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
+  .sheet-foot{display:flex;gap:8px;padding:0 16px calc(16px + env(safe-area-inset-bottom));flex:0 0 auto}
+  .sheet-foot button{flex:1}
+  .btn{
+    border:0;border-radius:12px;padding:13px 14px;font-size:12.5px;font-weight:900;letter-spacing:-.02em;cursor:pointer;
+    background:#eef3f1;color:var(--ink-2);
+  }
+  .btn.dark{background:#16202b;color:#fff}
+  .btn.green{background:var(--green);color:#fff}
+  .btn.green:hover{background:var(--green-deep)}
+  .btn.danger{background:#fff;color:#b5342b;border:1px solid #f0cdc9}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn-row{display:flex;gap:8px;margin-top:12px}
+  .btn-row .btn{flex:1}
+  .field{display:block;margin-top:12px}
+  .field:first-child{margin-top:0}
+  .field > span{display:block;font-size:10px;font-weight:900;color:#5c6b78;margin:0 0 5px 2px;letter-spacing:-.01em}
+  .field input,.field textarea,.field select{
+    display:block;width:100%;border:1px solid #e2eae6;border-radius:11px;background:#fbfdfc;
+    padding:11px 12px;font-family:inherit;font-size:12.5px;color:var(--ink);outline:none;letter-spacing:-.01em;
+  }
+  .field textarea{resize:vertical;min-height:74px;line-height:1.6}
+  .field select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8b98a2 50%),linear-gradient(135deg,#8b98a2 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:32px}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:#19a05e;background:#fff;box-shadow:0 0 0 3px rgba(18,160,94,.12)}
+  .field input::placeholder,.field textarea::placeholder{color:#a9b4bd}
+  .key-wrap{position:relative}
+  .key-wrap input{padding-right:58px}
+  .eye{
+    position:absolute;right:5px;top:50%;transform:translateY(-50%);border:0;background:#eef3f1;color:#5c6b78;
+    font-size:9.5px;font-weight:900;padding:7px 9px;border-radius:8px;cursor:pointer;letter-spacing:-.01em;
+  }
+  .eye[aria-pressed="true"]{background:#16202b;color:#fff}
+  .hint{font-size:10px;line-height:1.6;color:#8b98a2;letter-spacing:-.01em;margin-top:8px}
+  .hint b{color:#5c6b78;font-weight:900}
+  .hint a{color:var(--green-deep);font-weight:900;text-decoration:none;border-bottom:1px solid rgba(13,122,72,.3)}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .swatches{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
+  .swatch{
+    width:26px;height:26px;border-radius:9px;border:2px solid transparent;cursor:pointer;padding:0;
+    box-shadow:inset 0 -6px 10px rgba(0,0,0,.12);
+  }
+  .swatch[aria-pressed="true"]{border-color:#16202b;box-shadow:0 0 0 3px rgba(22,32,43,.1)}
+  .pick-row{display:flex;gap:6px;flex-wrap:wrap}
+  .pick{
+    border:1px solid #e2eae6;background:#fff;border-radius:9px;padding:7px 10px;font-size:11px;font-weight:800;
+    cursor:pointer;color:#4c5b67;letter-spacing:-.01em;
+  }
+  .pick[aria-pressed="true"]{border-color:#19a05e;background:var(--green-tint);color:var(--green-deep)}
+  .pick.check::before{content:"☐ ";font-weight:900}
+  .pick.check[aria-pressed="true"]::before{content:"☑ "}
+  .api-status{margin:10px 0 0;font-size:10.5px;line-height:1.6;font-weight:800;letter-spacing:-.01em;border-radius:10px;padding:9px 11px;word-break:break-word}
+  .api-status.ok{background:#e8f7ee;color:#0d7a48}
+  .api-status.err{background:var(--red-tint);color:#a52f26}
+  .api-status.busy{background:#eef3f1;color:#5c6b78}
+  .panel-card{background:#f8fbfa;border:1px solid var(--line-2);border-radius:14px;padding:2px 13px;margin-bottom:10px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #eef3f1}
+  .row:last-child{border-bottom:0}
+  .row .k{font-size:11.5px;font-weight:900;letter-spacing:-.02em}
+  .row .k small{display:block;font-size:9.5px;font-weight:700;color:#93a0aa;margin-top:3px;letter-spacing:-.01em}
+  .pill{background:var(--green-tint);color:var(--green-deep);font-size:9px;font-weight:900;padding:4px 8px;border-radius:999px;white-space:nowrap}
+  .pill.gray{background:#eef3f1;color:#5c6b78}
+  .spec{margin-top:12px;border:1px solid var(--line-2);border-radius:11px;background:#f8fbfa;overflow:hidden}
+  .spec summary{cursor:pointer;padding:9px 11px;font-size:10.5px;font-weight:900;color:#4c5b67;letter-spacing:-.01em}
+  .spec pre{margin:0;padding:0 11px 11px;font-size:9.5px;line-height:1.6;color:#5c6b78;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .modal-note{font-size:9.5px;line-height:1.65;color:#93a0aa;margin-top:10px;letter-spacing:-.01em}
+  .modal-note b{color:#5c6b78}
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:90;
+    background:#16202b;color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-.01em;
+    padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;
+    transition:opacity .2s ease,transform .2s ease;max-width:92vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .backdrop{position:fixed;inset:0;background:rgba(6,12,18,.5);z-index:35;opacity:0;transition:opacity .18s ease}
+  .backdrop.show{opacity:1}
+
+  /* ============ responsive ============ */
+  @media (max-width:900px){
+    .app{display:block;height:100dvh;max-width:none}
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;width:min(320px,88vw);flex:none;z-index:40;
+      transform:translateX(-104%);transition:transform .22s ease;box-shadow:14px 0 40px rgba(8,18,26,.3);
+    }
+    .sidebar.open{transform:none}
+    .sidebar .side-close{display:inline-grid}
+    .main{height:100dvh}
+    .only-mobile{display:inline-grid}
+    .room-head{padding:9px 12px;gap:8px}
+    .room-head .room-emoji{display:none}
+    .rt-line h1{font-size:14.5px}
+    .kind-pill{font-size:8px}
+    .room-titles p{font-size:9.5px}
+    .ghost-btn{padding:8px 10px;font-size:10.5px}
+    .room-actions .ghost-btn .lbl{display:none}
+    .ctrl{margin:9px 10px 0;padding:9px 9px 8px;border-radius:16px}
+    .seg button{font-size:10.5px;padding:9px 2px;letter-spacing:-.04em}
+    .ctrl-actions .icon-btn{width:36px;height:36px;flex:0 0 36px}
+    .meters{gap:9px;margin-top:8px}
+    .m-top span{font-size:8.5px}
+    .m-top .m-val{font-size:9.5px}
+    .timeline{padding:10px 11px 2px}
+    .msg{margin:10px 0;gap:7px}
+    .msg .body{max-width:86%}
+    .msg .bubble{font-size:12px;padding:9px 11px}
+    .msg .who{font-size:10.5px}
+    .msg .who em{display:none}
+    .composer{padding:8px 11px calc(8px + env(safe-area-inset-bottom))}
+    .send{padding:0 13px;font-size:11.5px;height:42px}
+    .composer textarea{min-height:42px;font-size:12.5px;padding:11px 12px}
+    .comp-hint{font-size:9px}
+    .card{margin:14px 0 6px;border-radius:17px}
+    .card-body{padding:11px 12px 2px}
+    .card-actions{padding:9px 12px 12px}
+    .modal{padding:0;align-items:flex-end}
+    .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
+    .sheet{max-width:none;max-height:92dvh;border-radius:22px 22px 0 0;transform:translateY(18px)}
+    .empty{margin:16px auto;padding:22px 16px}
+    .empty h3{font-size:14px}
+  }
+  @media (max-width:380px){
+    .seg button{font-size:9.5px}
+    .ctrl-actions .icon-btn{width:30px;flex:0 0 30px}
+  }
+  @media (min-width:901px){
+    .modal{padding:32px}
+    .sheet{max-height:min(86dvh,780px)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ================= sidebar ================= -->
+  <aside class="sidebar" id="sidebar" aria-label="끼리 방 목록">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">끼</span>
+      <div class="brand-txt"><b>끼리</b><small>Kkiri · v2 프로토타입</small></div>
+      <button class="icon-btn side-close" id="sideClose" aria-label="방 목록 닫기">✕</button>
+    </div>
+    <p class="brand-line">AI들끼리, 우리끼리.<br>같이 일하고 같이 논다.</p>
+
+    <div class="side-sec">
+      <div class="sec-head"><span>방</span><button class="mini-btn" id="newRoomBtn">+ 새 방</button></div>
+      <div class="room-list" id="roomList"></div>
+    </div>
+
+    <div class="side-sec">
+      <div class="sec-head"><span>AI 멤버</span><button class="mini-btn" id="inviteBtn">+ AI 초대</button></div>
+      <div class="member-list" id="sideMembers"></div>
+    </div>
+
+    <div class="side-foot">
+      <button class="side-btn" id="settingsBtn"><span aria-hidden="true">⚙</span> 설정 · API 키</button>
+      <div class="side-status"><span class="dot demo" id="sideDot"></span><span id="sideMode">데모 모드</span></div>
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <!-- ================= main ================= -->
+  <main class="main">
+    <header class="room-head">
+      <button class="icon-btn only-mobile" id="menuBtn" aria-label="방 목록 열기">☰</button>
+      <span class="room-emoji" id="roomEmoji" aria-hidden="true">🚀</span>
+      <div class="room-titles">
+        <div class="rt-line"><h1 id="roomName">방</h1><span class="kind-pill" id="roomKind">프로젝트방</span></div>
+        <p id="roomSub"></p>
+      </div>
+      <div class="room-actions">
+        <button class="ghost-btn" id="cardBtn"><span aria-hidden="true">📋</span><span class="lbl">합의안</span></button>
+        <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정">⋯</button>
+      </div>
+    </header>
+
+    <section class="ctrl" id="ctrl" aria-label="대화 제어">
+      <div class="ctrl-top">
+        <div class="seg" id="modeSeg" role="group" aria-label="대화 모드">
+          <button type="button" data-mode="mention" aria-pressed="false">@멘션</button>
+          <button type="button" data-mode="roundtable" aria-pressed="true">라운드테이블</button>
+          <button type="button" data-mode="free" aria-pressed="false">자유 잡담</button>
+        </div>
+        <div class="ctrl-actions">
+          <button class="icon-btn" id="pauseBtn" title="일시정지" aria-label="일시정지">⏸</button>
+          <button class="icon-btn stop" id="stopBtn" title="즉시 정지" aria-label="즉시 정지">⏹</button>
+        </div>
+      </div>
+      <div class="meters">
+        <div class="meter" id="turnMeter" title="턴·안건 설정">
+          <div class="m-top"><span id="turnLabel">턴</span><span class="m-val" id="turnVal">0 / 10턴</span></div>
+          <div class="bar"><i id="turnBar"></i></div>
+        </div>
+        <div class="meter budget" id="budgetMeter" title="예산 상한 설정">
+          <div class="m-top"><span>예상 비용 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">₩0 / ₩200</span></div>
+          <div class="bar"><i id="costBar"></i></div>
+        </div>
+      </div>
+      <div class="ctrl-foot">
+        <span id="tokenVal">0 토큰</span>
+        <span aria-hidden="true">·</span>
+        <span id="runState">대기 중</span>
+        <span class="warn-badge" id="budgetWarn" hidden>⚠ 예산 80%</span>
+      </div>
+    </section>
+
+    <div class="timeline" id="timeline" role="log" aria-label="대화 내용">
+      <div class="timeline-inner" id="timelineInner"></div>
+    </div>
+
+    <div class="composer">
+      <div class="quick" id="quickBar"></div>
+      <div class="composer-row">
+        <textarea id="input" rows="1" placeholder="메시지를 입력하세요" aria-label="메시지 입력"></textarea>
+        <button class="send" id="sendBtn">보내기</button>
+      </div>
+      <p class="comp-hint" id="compHint"></p>
+    </div>
+  </main>
+</div>
+
+<!-- ================= AI 초대 ================= -->
+<div class="modal" id="inviteModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
+    <div class="sheet-head"><h2 id="inviteTitle">AI 멤버 초대</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <div class="seg wide" id="inviteSeg" role="group" aria-label="초대 방식">
+        <button type="button" data-tab="byok" aria-pressed="true">내장형 · BYOK</button>
+        <button type="button" data-tab="hook" aria-pressed="false">외부 에이전트 · Webhook</button>
+      </div>
+
+      <section id="invTabByok">
+        <label class="field"><span>이름</span><input id="invName" type="text" maxlength="14" placeholder="예: 카피봇" autocomplete="off"></label>
+        <div class="field-row">
+          <label class="field"><span>역할</span><input id="invRole" type="text" maxlength="20" placeholder="예: 카피라이터" autocomplete="off"></label>
+          <div class="field"><span>아바타 색</span><div class="swatches" id="invColors"></div></div>
+        </div>
+        <label class="field"><span>성격·역할 프롬프트</span><textarea id="invPrompt" placeholder="예: 너는 브랜드의 카피라이터다. 짧고 리듬 있는 한국어 문장을 쓰고, 늘 선택지 2개를 붙인다." maxlength="600"></textarea></label>
+        <label class="field"><span>모델</span>
+          <select id="invModel">
+            <option value="gemini">Gemini · gemini-2.5-flash (설정 키 사용)</option>
+            <option value="openai">OpenAI · gpt-4o-mini (설정 키 사용)</option>
+            <option value="demo">데모 · 키 없이 규칙 기반</option>
+          </select>
+        </label>
+        <p class="hint">키는 <b>설정</b>에 넣은 것을 함께 씁니다. 키가 없으면 이 멤버도 데모 답변으로 참여해요.</p>
+        <div class="btn-row"><button class="btn green" id="invAdd">이 방에 추가</button></div>
+      </section>
+
+      <section id="invTabHook" hidden>
+        <label class="field"><span>에이전트 이름</span><input id="hookName" type="text" maxlength="14" placeholder="예: 피크리" autocomplete="off"></label>
+        <label class="field"><span>Webhook URL</span><input id="hookUrl" type="text" placeholder="https://내-에이전트.example/hook" autocomplete="off" spellcheck="false"></label>
+        <label class="field"><span>토큰 (선택)</span><input id="hookToken" type="text" placeholder="에이전트가 확인할 비밀 토큰" autocomplete="off" spellcheck="false"></label>
+        <div class="btn-row">
+          <button class="btn" id="hookTest">연결 테스트</button>
+          <button class="btn green" id="hookAdd">등록하고 초대</button>
+        </div>
+        <p class="api-status" id="hookStatus" role="status" aria-live="polite" hidden></p>
+        <details class="spec">
+          <summary>요청·응답 규격 보기</summary>
+          <pre>POST {Webhook URL}
+X-Kkiri-Event: turn.request
+X-Kkiri-Token: {토큰}
+Content-Type: application/json
+
+{
+  "event": "turn.request",
+  "room": { "id": "r_promo", "name": "신규 프로젝트 기획", "agenda": "연말 캠페인 아이디어 3개 제안" },
+  "turn": { "no": 3, "phase": "rebuttal", "agent": "피크리" },
+  "context": [ { "speaker": "키리니", "text": "…" } ],
+  "deadline_ms": 20000
+}
+
+응답(JSON): { "text": "발언 내용" }
+(text·reply·message·output 중 하나도 인식)</pre>
+        </details>
+        <p class="modal-note">브라우저에서 직접 호출하므로 <b>외부 서버가 CORS를 허용해야</b> 연결 테스트가 통과합니다. 등록한 에이전트에는 <b>이 방의 대화 내용이 전송</b>되고, 주소·토큰은 이 브라우저에만 저장됩니다. 실패한 턴은 데모 답변으로 대체해 표시합니다.</p>
+      </section>
+
+      <div class="sheet-foot" style="padding-left:0;padding-right:0">
+        <button class="btn" id="inviteManage">방 멤버 관리</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 새 방 / 방 설정 ================= -->
+<div class="modal" id="roomFormModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rfTitle">
+    <div class="sheet-head"><h2 id="rfTitle">새 방 만들기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <label class="field"><span>방 이름</span><input id="rfName" type="text" maxlength="30" placeholder="예: 신규 프로젝트 기획" autocomplete="off"></label>
+      <div class="field-row">
+        <div class="field"><span>방 종류</span>
+          <div class="pick-row" id="rfKind">
+            <button type="button" class="pick" data-kind="project" aria-pressed="true">프로젝트방</button>
+            <button type="button" class="pick" data-kind="chat" aria-pressed="false">사랑방</button>
+          </div>
+        </div>
+        <div class="field"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
+      </div>
+      <label class="field"><span>안건 (프로젝트방)</span><input id="rfAgenda" type="text" maxlength="90" placeholder="예: 연말 캠페인 아이디어 3개 제안" autocomplete="off"></label>
+      <div class="field-row">
+        <label class="field"><span>기본 대화 모드</span>
+          <select id="rfMode">
+            <option value="roundtable">라운드테이블</option>
+            <option value="mention">@멘션 호출</option>
+            <option value="free">자유 잡담</option>
+          </select>
+        </label>
+        <label class="field"><span>최대 턴</span>
+          <select id="rfTurns"><option value="6">6턴</option><option value="10" selected>10턴</option><option value="15">15턴</option></select>
+        </label>
+      </div>
+      <label class="field"><span>회차 예산 상한 (원)</span><input id="rfBudget" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
+      <div class="field"><span>참여 AI</span><div class="pick-row" id="rfMembers"></div></div>
+      <p class="modal-note">프로젝트방은 라운드테이블과 합의안 카드에, 사랑방은 가벼운 자유 잡담에 맞춰져 있어요.</p>
+      <div class="btn-row" id="rfActions">
+        <button class="btn green" id="rfSubmit">만들기</button>
+      </div>
+      <div id="rfDeleteWrap" hidden><button class="btn danger" id="rfDelete" style="width:100%;margin-top:8px">이 방 삭제</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 라운드테이블 설정 ================= -->
+<div class="modal" id="rtModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtTitle">
+    <div class="sheet-head"><h2 id="rtTitle">라운드테이블 설정</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <label class="field"><span>안건</span><textarea id="rtAgenda" placeholder="예: 연말 캠페인 아이디어 3개 제안" maxlength="300"></textarea></label>
+      <div class="field"><span>참여 AI</span><div class="pick-row" id="rtMembers"></div></div>
+      <label class="field"><span>사회자</span><select id="rtModerator"></select></label>
+      <div class="field"><span>최대 턴</span><div class="pick-row" id="rtTurns">
+        <button type="button" class="pick" data-turns="6" aria-pressed="false">6턴</button>
+        <button type="button" class="pick" data-turns="10" aria-pressed="true">10턴</button>
+        <button type="button" class="pick" data-turns="15" aria-pressed="false">15턴</button>
+      </div></div>
+      <label class="field"><span>회차 예산 (원)</span><input id="rtBudget" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
+      <p class="api-status busy" id="rtEstimate" style="display:block"></p>
+      <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">시작</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 예산 설정 ================= -->
+<div class="modal" id="budgetModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="budgetTitle" style="max-width:420px">
+    <div class="sheet-head"><h2 id="budgetTitle">회차 예산</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <label class="field"><span>상한 (원)</span><input id="budgetInput" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
+      <div class="pick-row" id="budgetChips" style="margin-top:9px">
+        <button type="button" class="pick" data-budget="30">₩30</button>
+        <button type="button" class="pick" data-budget="60">₩60</button>
+        <button type="button" class="pick" data-budget="120">₩120</button>
+        <button type="button" class="pick" data-budget="300">₩300</button>
+      </div>
+      <p class="hint">80%에서 경고, 100%에서 자동으로 멈춰요. 지금까지 쓴 <b id="budgetSpent">₩0</b>은 이번 회차 기록입니다.</p>
+      <div class="btn-row"><button class="btn" id="budgetReset">회차 기록 초기화</button><button class="btn green" id="budgetSave">저장</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 설정 ================= -->
+<div class="modal" id="settingsModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="sheet-head"><h2 id="settingsTitle">설정</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <div class="panel-card">
+        <div class="row">
+          <div class="k">외부 AI 연결<small id="apiModeSub">키를 넣으면 실제 AI가 답해요</small></div>
+          <span class="pill gray" id="apiModePill">데모 모드</span>
+        </div>
+      </div>
+      <div class="seg wide" role="group" aria-label="AI 제공자 선택" style="margin-top:0">
+        <button type="button" class="seg-btn" data-provider="gemini" aria-pressed="true">Google Gemini</button>
+        <button type="button" class="seg-btn" data-provider="openai" aria-pressed="false">OpenAI</button>
+      </div>
+      <p class="hint" id="apiHint"></p>
+      <label class="field"><span>API 키</span>
+        <div class="key-wrap">
+          <input id="apiKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="API 키를 붙여넣으세요" aria-label="AI API 키">
+          <button type="button" class="eye" id="keyEye" aria-pressed="false" aria-label="키 보기">보기</button>
+        </div>
+      </label>
+      <label class="field"><span>모델</span><input id="apiModel" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="gemini-2.5-flash" aria-label="모델 이름"></label>
+      <div class="btn-row"><button class="btn dark" id="testBtn">연결 테스트</button><button class="btn danger" id="delBtn">키 삭제</button></div>
+      <p class="api-status" id="apiStatus" role="status" aria-live="polite" hidden></p>
+      <p class="hint">키는 이 브라우저(localStorage)에만 저장되고 이 파일 밖으로 나가지 않아요. 선택한 제공자의 API로만 호출합니다.</p>
+
+      <div class="panel-card" style="margin-top:14px">
+        <div class="row"><div class="k">로컬 자동 저장<small id="storeMeta">아직 저장된 대화가 없어요</small></div><span class="pill" id="storeState">켜짐</span></div>
+        <div class="row"><div class="k">대화 내역<small>이 방에 저장된 메시지</small></div><span class="pill gray" id="storeCount">0개</span></div>
+        <div class="row"><div class="k">총 비용 기록<small>모든 방의 이번 회차 합계</small></div><span class="pill gray" id="storeCost">₩0</span></div>
+      </div>
+      <div class="btn-row"><button class="btn dark" id="exportBtn">대화 내역 JSON 내보내기</button><button class="btn danger" id="resetBtn">이 방 대화 초기화</button></div>
+      <p class="modal-note" id="roomNote"></p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+"use strict";
+
+/* =========================================================
+   0. 기본 도구
+   ========================================================= */
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function pad(n) { return n < 10 ? "0" + n : "" + n; }
+function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+function hash(s) { var h = 0; s = String(s || ""); for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) % 1000003; } return h; }
+function uid(p) { return (p || "x") + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function rand(a, b) { return Math.round(a + Math.random() * (b - a)); }
+function won(n) { return "₩" + Math.round(Number(n) || 0).toLocaleString("ko-KR"); }
+function tok(n) { return Math.round(Number(n) || 0).toLocaleString("ko-KR") + " 토큰"; }
+function trunc(s, n) { s = String(s == null ? "" : s); return s.length > n ? s.slice(0, n) + "…" : s; }
+function escapeRe(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function timeLabel(ts) {
+  var d = new Date(ts), h = d.getHours(), ap = h < 12 ? "오전" : "오후", hh = h % 12;
+  if (hh === 0) hh = 12;
+  return ap + " " + hh + ":" + pad(d.getMinutes());
+}
+var WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+function dateKey(ts) { var d = new Date(ts); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+function dateLabel(ts) {
+  var d = new Date(ts), t = new Date();
+  var diff = Math.round((new Date(t.getFullYear(), t.getMonth(), t.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
+  var base = d.getFullYear() + ". " + (d.getMonth() + 1) + ". " + d.getDate() + ". " + WEEK[d.getDay()] + "요일";
+  if (diff === 0) return "오늘 · " + base;
+  if (diff === 1) return "어제 · " + base;
+  return base;
+}
+function dday(n) { var d = new Date(Date.now() + n * 86400000); return (d.getMonth() + 1) + "/" + d.getDate(); }
+function dur(ms) {
+  var s = Math.max(0, Math.round(ms / 1000));
+  if (s < 60) return pad(s) + "초";
+  return Math.floor(s / 60) + "분 " + pad(s % 60) + "초";
+}
+function bigrams(s) {
+  s = String(s).replace(/[^가-힣a-zA-Z0-9]/g, "");
+  var out = [];
+  for (var i = 0; i < s.length - 1; i++) out.push(s.substr(i, 2));
+  return out;
+}
+function similarity(a, b) {
+  var A = bigrams(a), B = bigrams(b);
+  if (!A.length || !B.length) return 0;
+  var map = {}, inter = 0;
+  A.forEach(function (g) { map[g] = (map[g] || 0) + 1; });
+  B.forEach(function (g) { if (map[g]) { map[g]--; inter++; } });
+  var uni = A.length + B.length - inter;
+  return uni ? inter / uni : 0;
+}
+
+/* =========================================================
+   1. 상태 · 시드
+   ========================================================= */
+var VERSION = 2;
+var STORE_KEY = "kkiri.state.v2";
+var API_KEY = "kkiri.api.v2";
+var COLORS = ["#12a05e", "#2f6ff0", "#a855f7", "#e2534d", "#e08a1e", "#0e9c9c", "#5b6ee1"];
+var DEFAULT_MODEL = { gemini: "gemini-2.5-flash", openai: "gpt-4o-mini" };
+/* 원/1K 토큰 (가정 단가 · 설정 화면과 카드에 '예상'으로 표시) */
+var PRICE = { gemini: { in: 1.38, out: 5.52 }, openai: { in: 2.07, out: 8.28 } };
+var COOLDOWN = { global: 700, agent: 2600 };
+var PROMO_RE = /프로모션|할인|사은품|연말|12월|광고|캠페인|세일/;
+
+function freshSession() {
+  return { turn: 0, tin: 0, tout: 0, cost: 0, startedAt: null, endedAt: null, startIndex: 0, blocked: 0 };
+}
+
+function seedAgents() {
+  var a = {};
+  a.pikri = {
+    id: "pikri", name: "피크리", role: "사회자 · 실행", color: "#12a05e", type: "builtin", model: "auto",
+    prompt: "너는 '피크리'다. 끼리장 님의 개인 AI 비서이자 이 방의 사회자다. 맡은 일: 안건을 확인하고 발언 순서를 진행하며, 실행할 일과 담당·기한을 정한다. 말투: 결론부터, 다정하지만 단호한 '제가 ~할게요' 체.",
+    desc: "끼리장 님의 일을 챙기는 비서 · 사회자"
+  };
+  a.kirini = {
+    id: "kirini", name: "키리니", role: "리서처 · 데이터", color: "#2f6ff0", type: "builtin", model: "auto",
+    prompt: "너는 '키리니'다. 이 방의 리서처다. 맡은 일: 숫자와 자료로 근거를 만들고, 비교 기준을 세운다. 확인한 수치와 추정을 구분해 표시한다. 말투: 담백하고 논리적, 짧은 문장.",
+    desc: "숫자와 근거로 정리하는 리서처"
+  };
+  a.muu = {
+    id: "muu", name: "뮤우즈", role: "카피라이터 · 기획", color: "#a855f7", type: "builtin", model: "auto",
+    prompt: "너는 '뮤우즈'다. 이 방의 카피라이터 겸 기획자다. 맡은 일: 사용자 관점의 문장과 캠페인 구성을 제안하고, 선택지 두 개를 만든다. 말투: 밝고 감각적, 과장 없이.",
+    desc: "카피와 캠페인을 만드는 기획자"
+  };
+  a.red = {
+    id: "red", name: "레드", role: "비판자 · 레드팀", color: "#e2534d", type: "builtin", model: "auto",
+    prompt: "너는 '레드'다. 이 방의 비판자다. 맡은 일: 전제의 약한 고리와 리스크를 찾아 반대 논리를 만든다. 확인되지 않은 것을 확인된 것처럼 두지 않는다. 말투: 직설적, 짧고 또렷하게.",
+    desc: "전제를 의심하는 레드팀"
+  };
+  return a;
+}
+
+function seedState() {
+  var now = Date.now();
+  return {
+    version: VERSION,
+    activeRoomId: "r_promo",
+    agents: seedAgents(),
+    rooms: [
+      {
+        id: "r_promo", emoji: "🚀", name: "신규 프로젝트 기획", kind: "project",
+        agenda: "연말 캠페인 아이디어 3개 제안", mode: "roundtable", maxTurns: 10, budget: 60,
+        members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
+        session: freshSession(),
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v2 프로토타입 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. '라운드테이블 시작'을 눌러 보세요." }]
+      },
+      {
+        id: "r_lounge", emoji: "☕", name: "자유 수다방", kind: "chat",
+        agenda: "", mode: "free", maxTurns: 0, budget: 20,
+        members: ["pikri", "kirini", "muu"], status: "idle", createdAt: now - 5000,
+        session: freshSession(),
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "사랑방이에요. AI가 먼저 말을 걸고, 연속 3발화가 지나면 조용해집니다." }]
+      }
+    ]
+  };
+}
+
+var state = { version: VERSION, activeRoomId: null, agents: {}, rooms: [] };
+var lastSaved = null;
+var saveWarned = false;
+
+function normalizeRoom(r) {
+  if (!Array.isArray(r.members)) r.members = ["pikri"];
+  r.members = r.members.filter(function (id) { return !!state.agents[id]; });
+  if (!r.session || typeof r.session !== "object") r.session = freshSession();
+  if (typeof r.budget !== "number" || !isFinite(r.budget)) r.budget = 60;
+  if (typeof r.maxTurns !== "number") r.maxTurns = 10;
+  if (!Array.isArray(r.messages)) r.messages = [];
+  if (!r.mode) r.mode = r.kind === "chat" ? "free" : "roundtable";
+  if (!r.emoji) r.emoji = r.kind === "chat" ? "☕" : "🚀";
+  if (r.status === "running") r.status = "idle";
+  return r;
+}
+
+function load() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return false;
+    var d = JSON.parse(raw);
+    if (!d || d.version !== VERSION || !Array.isArray(d.rooms) || !d.rooms.length) return false;
+    state = d;
+    if (!state.agents || typeof state.agents !== "object") state.agents = seedAgents();
+    Object.keys(state.agents).forEach(function (id) {
+      var a = state.agents[id];
+      if (a && a.type === "builtin" && a.model === "gemini") a.model = "auto";
+    });
+    state.rooms = state.rooms.map(normalizeRoom);
+    if (!state.rooms.some(function (r) { return r.id === state.activeRoomId; })) state.activeRoomId = state.rooms[0].id;
+    return true;
+  } catch (e) { return false; }
+}
+
+function save() {
+  lastSaved = Date.now();
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      version: VERSION, activeRoomId: state.activeRoomId, agents: state.agents, rooms: state.rooms
+    }));
+  } catch (e) {
+    if (!saveWarned) { saveWarned = true; toast("브라우저 저장 공간이 부족해 이번 대화는 저장되지 않아요"); }
+  }
+}
+
+function activeRoom() {
+  for (var i = 0; i < state.rooms.length; i++) if (state.rooms[i].id === state.activeRoomId) return state.rooms[i];
+  return state.rooms[0] || null;
+}
+function allAgents() { return Object.keys(state.agents).map(function (id) { return state.agents[id]; }); }
+function agentById(id) { return state.agents[id] || null; }
+function agentName(id) {
+  if (id === "user") return "끼리장";
+  if (id === "system") return "안내";
+  var a = state.agents[id];
+  return a ? a.name : "AI";
+}
+function memberNames(r) { return r.members.map(agentName); }
+
+/* =========================================================
+   2. API 키 · 모델
+   ========================================================= */
+var api = { provider: "gemini", geminiKey: "", openaiKey: "", geminiModel: DEFAULT_MODEL.gemini, openaiModel: DEFAULT_MODEL.openai };
+
+function loadApi() {
+  try {
+    var raw = localStorage.getItem(API_KEY);
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    if (!d || typeof d !== "object") return;
+    if (d.provider === "gemini" || d.provider === "openai") api.provider = d.provider;
+    if (typeof d.geminiKey === "string") api.geminiKey = d.geminiKey.trim();
+    if (typeof d.openaiKey === "string") api.openaiKey = d.openaiKey.trim();
+    if (typeof d.geminiModel === "string" && d.geminiModel.trim()) api.geminiModel = d.geminiModel.trim();
+    if (typeof d.openaiModel === "string" && d.openaiModel.trim()) api.openaiModel = d.openaiModel.trim();
+  } catch (e) {}
+}
+function saveApi() {
+  try {
+    localStorage.setItem(API_KEY, JSON.stringify({
+      version: 2, provider: api.provider, geminiKey: api.geminiKey, openaiKey: api.openaiKey,
+      geminiModel: api.geminiModel, openaiModel: api.openaiModel, savedAt: Date.now()
+    }));
+    return true;
+  } catch (e) { return false; }
+}
+function keyFor(p) { return p === "openai" ? api.openaiKey : api.geminiKey; }
+function modelFor(p) { return ((p === "openai" ? api.openaiModel : api.geminiModel) || DEFAULT_MODEL[p]).trim() || DEFAULT_MODEL[p]; }
+function providerLabel(p) { return p === "openai" ? "OpenAI" : "Gemini"; }
+function anyKey() { return !!(api.geminiKey || api.openaiKey); }
+function liveProviderFor(agent) {
+  if (agent.type === "webhook") return null;
+  var want = agent.model || api.provider;
+  if (want === "demo") return null;
+  if (want !== "openai" && want !== "gemini") want = api.provider;
+  if (keyFor(want)) return want;
+  var alt = want === "gemini" ? "openai" : "gemini";
+  if (keyFor(alt)) return alt;
+  return null;
+}
+function computeCost(provider, tin, tout) {
+  var p = PRICE[provider] || PRICE.gemini;
+  return (Number(tin) || 0) / 1000 * p.in + (Number(tout) || 0) / 1000 * p.out;
+}
+function estimateTin(r) {
+  return 900 + Math.min(2600, (r.session.turn || 0) * 220) + Math.min(400, String(r.agenda || "").length * 2);
+}
+function budgetExceeded(r) { return (r.session.cost || 0) >= (r.budget || 0); }
+
+/* =========================================================
+   3. 실행 상태
+   ========================================================= */
+var run = {
+  epoch: 0, active: false, paused: false, typingAgent: null, cooldownLeft: 0,
+  schedule: [], idx: 0, freeConsec: 0, lastSpeaker: null,
+  lastBy: {}, lastAt: {}, lastGlobalAt: 0, recent: [], moderator: null, mode: null
+};
+
+function modeName(m) { return m === "roundtable" ? "라운드테이블" : m === "free" ? "자유 잡담" : "@멘션"; }
+
+/* =========================================================
+   4. 렌더 · 사이드바 / 헤더 / 게이지
+   ========================================================= */
+function avatarHtml(id, size) {
+  var a = state.agents[id];
+  var c = a ? a.color : "#7c8894";
+  var n = a ? (a.name.charAt(0) || "?") : "?";
+  return '<span class="avatar ' + (size || "md") + '" style="--c:' + esc(c) + '" aria-hidden="true">' + esc(n) + "</span>";
+}
+
+function renderSidebar() {
+  var r = activeRoom();
+  if (!r) return;
+  var html = "";
+  state.rooms.forEach(function (rm) {
+    var meta = (rm.kind === "chat" ? "사랑방" : modeName(rm.mode)) + " · " + rm.members.length + "명 · " + won(rm.session.cost);
+    html += '<button type="button" class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + '" data-room="' + esc(rm.id) + '"' +
+      (rm.id === state.activeRoomId ? ' aria-current="true"' : "") + ">" +
+      '<span class="r-emoji" aria-hidden="true">' + esc(rm.emoji) + "</span>" +
+      '<span class="r-body"><b>' + esc(rm.name) + "</b><small>" + esc(meta) + "</small></span>" +
+      (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
+      "</button>";
+  });
+  $("roomList").innerHTML = html;
+
+  var mhtml = "";
+  allAgents().forEach(function (a) {
+    var on = r.members.indexOf(a.id) > -1;
+    mhtml += '<div class="member-row' + (on ? "" : " off") + '">' + avatarHtml(a.id, "sm") +
+      '<span class="m-txt"><b>' + esc(a.name) + "</b><small>" + esc(a.role) + "</small></span>" +
+      '<button type="button" class="switch" role="switch" aria-checked="' + (on ? "true" : "false") + '" data-member="' + esc(a.id) + '" aria-label="' + esc(a.name) + " " + (on ? "비활성화" : "활성화") + '"></button>' +
+      "</div>";
+  });
+  $("sideMembers").innerHTML = mhtml;
+  $("sideMode").textContent = anyKey()
+    ? "실제 AI 연결 · " + (api.geminiKey && api.openaiKey ? "Gemini+OpenAI" : api.geminiKey ? "Gemini" : "OpenAI")
+    : "데모 모드";
+  $("sideDot").className = "dot" + (anyKey() ? "" : " demo");
+}
+
+function hintFor(r) {
+  if (r.mode === "roundtable") {
+    return "라운드테이블은 <b>최대 " + (r.maxTurns || 10) + "턴</b> 안에서 사회자가 진행하고, 끝나면 <b>합의안 카드</b>가 자동으로 만들어져요. 예산 상한에서 스스로 멈춥니다.";
+  }
+  if (r.mode === "mention") {
+    return "<b>@이름</b>으로 부르면 그 AI만 답해요. 부르지 않으면 아무도 깨우지 않습니다(비용 0).";
+  }
+  return "AI가 먼저 말을 걸어요 · <b>연속 3발화</b> 뒤 조용해지고, 끼리장 님이 말을 걸면 다시 이어집니다.";
+}
+
+function renderRoom() {
+  var r = activeRoom();
+  if (!r) return;
+  $("roomEmoji").textContent = r.emoji || "💬";
+  $("roomName").textContent = r.name;
+  $("roomKind").textContent = r.kind === "project" ? "프로젝트방" : "사랑방";
+  $("roomKind").className = "kind-pill" + (r.kind === "project" ? "" : " chat");
+  $("roomSub").textContent = (r.kind === "project"
+    ? "안건: " + (r.agenda || "아직 없음")
+    : "가벼운 수다 · 자유 발화") + " · AI " + r.members.length + "명";
+  document.title = "끼리 · " + r.name;
+
+  Array.prototype.forEach.call($("modeSeg").querySelectorAll("[data-mode]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-mode") === r.mode ? "true" : "false");
+  });
+  $("pauseBtn").disabled = !run.active;
+  $("pauseBtn").textContent = run.paused ? "▶" : "⏸";
+  $("pauseBtn").setAttribute("aria-label", run.paused ? "재개" : "일시정지");
+  $("stopBtn").disabled = !run.active;
+  $("sendBtn").textContent = r.mode === "roundtable" ? "라운드테이블 시작" : "보내기";
+  $("sendBtn").disabled = run.active;
+  $("input").placeholder = r.mode === "roundtable" ? "안건을 적고 시작하세요" : r.mode === "mention" ? "@이름에게 말 걸기" : "가볍게 한마디";
+  $("compHint").innerHTML = hintFor(r);
+  updateMeters();
+  renderQuick();
+  renderTimeline(false);
+}
+
+function renderAll() { renderSidebar(); renderRoom(); }
+
+function updateMeters() {
+  var r = activeRoom();
+  if (!r) return;
+  var s = r.session || freshSession();
+  var max = r.mode === "roundtable" ? (r.maxTurns || 10) : (r.mode === "free" ? 3 : 0);
+  var cur = r.mode === "free" ? (run.freeConsec || 0) : (s.turn || 0);
+  var pct = max ? clamp(cur / max * 100, 0, 100) : 0;
+  $("turnLabel").textContent = r.mode === "free" ? "연속 AI 발화" : "턴";
+  $("turnVal").textContent = r.mode === "free" ? (cur + " / 3")
+    : r.mode === "roundtable" ? ((s.turn || 0) + " / " + max + "턴")
+    : ((s.turn || 0) + "턴");
+  $("turnBar").style.width = pct + "%";
+
+  var cap = Math.max(1, r.budget || 0);
+  var costPct = clamp((s.cost || 0) / cap * 100, 0, 100);
+  $("costVal").textContent = won(s.cost) + " / " + won(cap);
+  $("costBar").style.width = costPct + "%";
+  $("budgetMeter").classList.toggle("warn", costPct >= 80 && costPct < 100);
+  $("budgetMeter").classList.toggle("over", costPct >= 100);
+
+  var projected = s.cost || 0;
+  if (r.mode === "roundtable" && max > (s.turn || 0)) {
+    var avg = (s.turn || 0) > 0 ? (s.cost || 0) / s.turn : 3.1;
+    projected = (s.cost || 0) + (max - (s.turn || 0)) * avg;
+  }
+  $("tokenVal").textContent = tok((s.tin || 0) + (s.tout || 0)) + (r.mode === "roundtable" ? " · 예상 " + won(projected) : "");
+
+  var warn = $("budgetWarn");
+  if ((s.cost || 0) >= cap) { warn.hidden = false; warn.className = "warn-badge danger"; warn.textContent = "예산 초과 · 자동 정지"; }
+  else if (costPct >= 80) { warn.hidden = false; warn.className = "warn-badge"; warn.textContent = "⚠ 예산 80%"; }
+  else { warn.hidden = true; }
+
+  var st = $("runState");
+  if (run.active && run.paused) st.textContent = "일시정지";
+  else if (run.active) st.textContent = run.cooldownLeft ? "진행 중 · 쿨다운 " + run.cooldownLeft + "초" : "진행 중";
+  else if (r.status === "ended") st.textContent = "종료 · 합의안으로 정리";
+  else st.textContent = "대기 중";
+}
+
+/* =========================================================
+   5. 타임라인 렌더
+   ========================================================= */
+function fmtText(text) {
+  var out = esc(text);
+  allAgents().sort(function (a, b) { return b.name.length - a.name.length; }).forEach(function (a) {
+    if (!a.name) return;
+    var re = new RegExp("@" + escapeRe(esc(a.name)), "g");
+    out = out.replace(re, '<span class="mention">@' + esc(a.name) + "</span>");
+  });
+  out = out.replace(/@(전원|모두)/g, '<span class="mention">@$1</span>');
+  return out.replace(/\n/g, "<br>");
+}
+
+function srcBadge(m) {
+  if (m.src === "gemini") return '<span class="src">Gemini</span>';
+  if (m.src === "openai") return '<span class="src">OpenAI</span>';
+  if (m.src === "ext") return '<span class="src ext">외부</span>';
+  if (m.src === "fallback") return '<span class="src demo">연결 실패 · 데모</span>';
+  if (m.src === "demo") return '<span class="src demo">데모</span>';
+  return "";
+}
+
+function msgHtml(m) {
+  if (m.who === "system") {
+    var cls = m.kind === "warn" ? " warn" : m.kind === "err" ? " err" : "";
+    return '<div class="msg sys' + cls + '"><div class="note">' + fmtText(m.text) + "</div></div>";
+  }
+  if (m.who === "user") {
+    return '<div class="msg me"><div class="body"><div class="bubble">' + fmtText(m.text) + "</div>" +
+      '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
+  }
+  var a = state.agents[m.who];
+  if (!a) return "";
+  var meta = "<time>" + esc(timeLabel(m.at)) + "</time>" +
+    (m.cost ? "<span>· " + won(m.cost) + "</span>" : "") +
+    (m.dup ? '<span class="src demo">중복 방지</span>' : "");
+  return '<div class="msg">' + avatarHtml(m.who) + '<div class="body">' +
+    '<div class="who">' + esc(a.name) + "<em>" + esc(a.role) + "</em>" + srcBadge(m) + "</div>" +
+    '<div class="bubble">' + fmtText(m.text) + "</div>" +
+    '<div class="meta">' + meta + "</div></div></div>";
+}
+
+function cardHtml(m) {
+  var c = m.card;
+  if (!c) return "";
+  var body = "";
+  function sec(title, list, cls, render) {
+    if (!list || !list.length) return;
+    var items = "";
+    list.forEach(function (it) { items += render(it); });
+    body += '<div class="c-sec ' + cls + '"><h4>' + title + "</h4><ul>" + items + "</ul></div>";
+  }
+  sec("결정", c.decisions, "", function (t) { return "<li>" + esc(t) + "</li>"; });
+  sec("핵심 근거", c.evidence, "", function (t) { return "<li>" + esc(t) + "</li>"; });
+  sec("이견 · 리스크", c.risks, "risk", function (t) { return "<li>" + esc(t) + "</li>"; });
+  sec("확인 필요", c.checks, "risk", function (t) { return "<li>" + esc(t) + "</li>"; });
+  sec("다음 할 일", c.todos, "todo", function (t) {
+    return "<li>" + esc(t.t) + '<span class="own"> · ' + esc(t.o || "") + (t.d ? " · " + esc(t.d) : "") + "</span></li>";
+  });
+  var stats = '<div class="c-stats">' +
+    "<span>참여 " + c.stats.members.length + " AI</span>" +
+    "<span>" + c.stats.turns + "턴</span>" +
+    "<span>" + tok(c.stats.tokens) + "</span>" +
+    "<span>" + won(c.stats.cost) + "</span>" +
+    "<span>" + esc(c.stats.duration) + "</span></div>";
+  return '<div class="card" data-card="' + esc(c.id) + '">' +
+    '<div class="card-head"><h3>✅ ' + esc(c.title) + "</h3>" +
+    '<span class="c-badge' + (c.draft ? " draft" : "") + '">' + esc(c.badge) + "</span></div>" +
+    '<div class="card-body">' + body + stats + "</div>" +
+    '<div class="card-actions">' +
+    '<button type="button" data-card-md="' + esc(m.id) + '">마크다운(.md) 저장</button>' +
+    '<button type="button" data-card-copy="' + esc(m.id) + '">복사</button>' +
+    '<button type="button" data-card-redo="' + esc(m.id) + '">다시 정리</button>' +
+    "</div></div>";
+}
+
+function typingHtml(id) {
+  var a = state.agents[id];
+  if (!a) return "";
+  return '<div class="typing">' + avatarHtml(id) +
+    '<div class="bubble">' + esc(a.name) + ' 답장 작성 중<span class="dots"><i></i><i></i><i></i></span></div></div>';
+}
+
+function hasRealMessages(r) {
+  return r.messages.some(function (m) { return m.who !== "system"; });
+}
+
+function emptyHtml(r) {
+  if (r.kind === "project") {
+    var names = memberNames(r).join(" · ");
+    return '<div class="empty"><div class="e-emoji">🚀</div><h3>안건이 준비되어 있어요</h3>' +
+      '<p><b>' + esc(r.agenda || "안건을 정해 주세요") + "</b><br>" + esc(names) + " " + r.members.length + "명이 순서대로 의견을 내고, 쟁점을 좁혀 합의안까지 정리합니다.</p>" +
+      '<div class="e-actions"><button type="button" class="ghost-btn primary" data-act="start">▶ 라운드테이블 시작</button>' +
+      '<button type="button" class="ghost-btn" data-act="agenda">안건·턴 설정</button></div></div>';
+  }
+  return '<div class="empty"><div class="e-emoji">☕</div><h3>아직 조용해요</h3>' +
+    "<p>AI가 먼저 말을 걸어요. 아래 주제를 골라도 됩니다. 연속 3발화가 지나면 스스로 조용해집니다.</p>" +
+    '<div class="e-actions"><button type="button" class="ghost-btn primary" data-act="nudge">AI 불러보기</button></div></div>';
+}
+
+var pendingCardScroll = null;
+
+function renderTimeline(autoScroll) {
+  var r = activeRoom();
+  var box = $("timelineInner");
+  if (!r || !box) return;
+  var h = "", lastKey = "";
+  if (!hasRealMessages(r)) {
+    r.messages.forEach(function (m) { if (m.who === "system") h += msgHtml(m); });
+    h += emptyHtml(r);
+  } else {
+    r.messages.forEach(function (m) {
+      if (m.who === "card") { h += cardHtml(m); return; }
+      var k = dateKey(m.at);
+      if (k !== lastKey) { h += '<div class="day">' + esc(dateLabel(m.at)) + "</div>"; lastKey = k; }
+      h += msgHtml(m);
+    });
+  }
+  if (run.active && run.typingAgent) h += typingHtml(run.typingAgent);
+  box.innerHTML = h;
+  if (pendingCardScroll) {
+    var cid = pendingCardScroll;
+    pendingCardScroll = null;
+    var cel = box.querySelector('[data-card="' + cid + '"]');
+    if (cel && cel.scrollIntoView) { cel.scrollIntoView({ block: "start" }); return; }
+  }
+  if (autoScroll !== false) scrollBottom(true);
+}
+
+function scrollBottom(force) {
+  var el = $("timeline");
+  if (!el) return;
+  if (force || el.scrollHeight - el.scrollTop - el.clientHeight < 200) {
+    el.scrollTop = el.scrollHeight;
+  }
+}
+
+function renderQuick() {
+  var r = activeRoom();
+  var h = "";
+  if (r.mode === "roundtable") {
+    h += '<button type="button" class="q-chip agenda" data-act="agenda" title="안건·턴 설정">🎯 ' + esc(r.agenda || "안건을 정해 주세요") + "</button>";
+    h += '<button type="button" class="q-chip" data-act="card">📋 합의안 요약</button>';
+  } else if (r.mode === "mention") {
+    r.members.forEach(function (id) {
+      var a = state.agents[id];
+      if (a) h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
+    });
+    h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
+  } else {
+    ["오늘 하루", "요즘 고민", "뭐 먹지"].forEach(function (t, i) {
+      h += '<button type="button" class="q-chip" data-topic="' + i + '">' + t + "</button>";
+    });
+    h += '<button type="button" class="q-chip" data-act="card">📋 대화 요약</button>';
+  }
+  $("quickBar").innerHTML = h;
+}
+
+/* =========================================================
+   6. 메시지 추가
+   ========================================================= */
+function addUserMessage(text) {
+  var r = activeRoom();
+  r.messages.push({ id: uid("m"), who: "user", text: text, at: Date.now(), tin: 0, tout: 0, cost: 0 });
+  if (!r.session.startedAt) r.session.startedAt = Date.now();
+  save();
+  renderTimeline(true);
+  renderSidebar();
+}
+
+function addSystem(text, kind) {
+  var r = activeRoom();
+  r.messages.push({ id: uid("m"), who: "system", kind: kind || "info", text: text, at: Date.now() });
+  save();
+  renderTimeline(true);
+}
+
+function addAgentMessage(agent, d, phase) {
+  var r = activeRoom();
+  var tin = Math.round(d.tin || estimateTin(r));
+  var tout = Math.round(d.tout || Math.max(40, d.text.length / 1.5));
+  var provider = d.src === "openai" ? "openai" : d.src === "gemini" ? "gemini" : (agent.model === "openai" ? "openai" : agent.model === "gemini" ? "gemini" : api.provider);
+  var cost = d.cost != null ? d.cost : (d.src === "ext" || (agent.type === "webhook" && d.src !== "gemini" && d.src !== "openai") ? 0 : computeCost(provider, tin, tout));
+  var m = {
+    id: uid("m"), who: agent.id, text: d.text, at: Date.now(), src: d.src || "demo",
+    tin: tin, tout: tout, cost: cost, phase: phase || ""
+  };
+  if (d.dup) m.dup = true;
+  r.messages.push(m);
+  r.session.turn = (r.session.turn || 0) + 1;
+  r.session.tin = (r.session.tin || 0) + tin;
+  r.session.tout = (r.session.tout || 0) + tout;
+  r.session.cost = (r.session.cost || 0) + cost;
+  if (!r.session.startedAt) r.session.startedAt = m.at;
+  run.lastBy[agent.id] = d.text;
+  run.lastAt[agent.id] = Date.now();
+  run.lastGlobalAt = Date.now();
+  run.lastSpeaker = agent.id;
+  run.recent.push(d.text);
+  if (run.recent.length > 5) run.recent.shift();
+  save();
+  renderTimeline(true);
+  updateMeters();
+  renderSidebar();
+  return m;
+}
+
+/* =========================================================
+   7. 데모 대화 문장
+   ========================================================= */
+var DEMO = {
+  open: {
+    pikri: [
+      { t: "안건은 “{agenda}”입니다. 참여는 {members} {n}명, 최대 {turns}턴, 이번 회차 예산 {budget}으로 잡았습니다. 1차 의견을 듣고 쟁점을 두 개로 좁힌 뒤 합의안까지 정리하겠습니다." },
+      { t: "오늘 안건은 “{agenda}”입니다. 목표는 결정 1개와 다음 할 일 3개입니다. {members} 순서로 의견을 듣고, 중간에 제가 쟁점을 정리하겠습니다." },
+      { t: "“{agenda}” 시작하겠습니다. 참여 {n}명, 최대 {turns}턴입니다. 서로 다른 관점을 먼저 듣고, 숫자로 확인할 것은 따로 표시하겠습니다." }
+    ],
+    generic: [
+      { t: "안건은 “{agenda}”입니다. 참여 {n}명, 최대 {turns}턴, 예산 {budget}입니다. 먼저 1차 의견을 듣고 쟁점을 정리하겠습니다." },
+      { t: "“{agenda}” 시작하겠습니다. 목표는 결정 1개와 다음 할 일 3개입니다. 순서대로 말씀해 주세요." }
+    ]
+  },
+  opinion: {
+    pikri: [
+      { promo: true, t: "작년 12월 1주에 매출 38%가 몰렸습니다. 12/1~12/14 15% 할인 + 사은품 2종으로 가는 안을 제안합니다. 재고는 11/28까지 확정해 두면 안전합니다." },
+      { t: "실행 관점에서 보면 11/28까지 확정해야 12/1부터 바로 시작할 수 있습니다. 준비 기간이 3일 남는 셈이라, 오늘 결정 1개와 담당·기한만 정하죠." },
+      { t: "먼저 범위를 좁히죠. 이번 주에 결정할 것 2개와 다음 주로 미룰 것 3개를 나누면, 오늘은 1개만 정하면 됩니다." }
+    ],
+    kirini: [
+      { promo: true, t: "경쟁 3곳 할인율은 12~18%, 평균 14.7%입니다. 마진 18% 기준에서 15%는 하한선이라 12% + 사은품 강화가 안전합니다. 숫자는 11/19 수집 기준입니다." },
+      { t: "비슷한 안건 3건을 비교해 보니 비용은 18% 늘고 기간은 5일 줄었습니다. 숫자로는 중간안이 가장 안정적이고, 상한선을 먼저 정하는 게 좋습니다." },
+      { t: "근거를 정리하면 두 갈래입니다. 지난 3건의 실제 숫자와 이번 조건의 차이입니다. 차이가 큰 항목부터 확인하는 게 순서입니다." }
+    ],
+    muu: [
+      { promo: true, t: "카피는 ‘12월, 우리가 먼저 챙깁니다’로 가고 싶어요. 사은품은 랜덤 2종보다 ‘선택형 2종’이 열어 볼 이유를 만듭니다. 상세페이지 첫 화면에 선택 UI를 넣죠." },
+      { t: "사용자 입장에서는 첫 문장이 전부입니다. 이번 안도 ‘무엇이 달라지는지’를 한 줄로 만들면 반응이 살아납니다. 카피 2안을 준비해 볼게요." },
+      { t: "이번엔 선택지를 주는 쪽이 좋아 보여요. A/B 2안을 만들고 상세페이지에서 바로 비교되게 하면 결정도 빨라집니다." }
+    ],
+    red: [
+      { promo: true, t: "작년 1주 집중은 광고 타이밍 효과일 수 있습니다. 재고 소진과 반품률을 빼고 보면 15%가 답이 아닐 수 있어요. 먼저 11월 말 판매 속도를 봐야 합니다." },
+      { t: "지금 전제 중에 확인되지 않은 게 2개 있습니다. 지난해 데이터가 광고 효과였는지, 재고가 실제로 남는지입니다. 이걸 빼고 보면 결론이 달라집니다." },
+      { t: "반대부터 말하면 지금 정한 숫자는 근거가 약합니다. 비슷한 3건 중 2건은 확인 없이 진행했다가 되돌렸습니다. ‘제안’ 상태로 두고 확인 항목을 먼저 정하는 게 맞습니다." }
+    ],
+    generic: [
+      { t: "{name}입니다. {role} 관점에서 보면, 이번 안은 기준을 하나로 맞추는 게 먼저입니다. 그 기준으로 두 안을 비교해 볼게요." },
+      { t: "저는 {role} 쪽에서 봅니다. 지금 정한 전제 중 하나만 바꿔도 결과가 달라져서, 먼저 그 숫자를 확인하는 걸 제안합니다." }
+    ]
+  },
+  issue: {
+    pikri: [
+      { t: "쟁점은 둘로 좁혀집니다. ① 할인율 12% vs 15% ② 사은품 선택형 vs 고정 2종. 다음 턴에 서로 반박하고, 마지막에 제가 합의안으로 정리하겠습니다.", promo: true },
+      { t: "정리하면 쟁점은 ‘얼마나 세게 갈 것인가’와 ‘무엇으로 체감을 줄 것인가’입니다. 각자 반대 근거를 한 줄씩만 보태 주세요." },
+      { t: "두 갈래로 갈렸습니다. 비용을 아끼는 안과 체감을 키우는 안입니다. 숫자와 카피로 나눠 반박해 보죠." }
+    ],
+    generic: [
+      { t: "쟁점을 두 개로 정리합니다. 첫째는 범위, 둘째는 확인 방법입니다. 각자 반대 근거를 한 줄씩 보태 주세요." },
+      { t: "의견을 모아 보니 결정과 확인이 섞여 있습니다. 결정할 것과 확인할 것을 나눠서 반박해 보겠습니다." }
+    ]
+  },
+  rebuttal: {
+    pikri: [
+      { promo: true, t: "{other} 지적대로 마진 하한을 존중하면 13% + 선택형 사은품이 절충선입니다. {other2}가 말한 재고는 11/28 실사로 확인하고, 그 숫자에 따라 15%로 올리겠습니다." },
+      { t: "{other} 말대로 확인 전엔 확정하지 않겠습니다. 대신 11/28까지 실사, 12/1 확정이라는 마감을 걸어 두면 늦어지지 않습니다." },
+      { t: "{other} 카피안에 동의합니다. 다만 선택형 사은품은 재고가 적은 품목부터 교체 시점을 정해야 현장에서 안 막힙니다." }
+    ],
+    kirini: [
+      { promo: true, t: "13% 절충안에 동의합니다. 다만 광고 예산 상한을 먼저 정해야 15%로 올릴 여지가 생깁니다. 상한 120만 원이면 계산이 맞습니다." },
+      { t: "{other}가 요구한 두 숫자에 동의합니다. 11월 판매 속도와 반품률을 넣으면 할인율 결정이 하루면 끝납니다." },
+      { t: "{other}의 A/B안은 비용이 두 배입니다. 한 안으로 가되, 사은품 선택지만 A/B로 나누는 쪽이 효율적입니다." }
+    ],
+    muu: [
+      { promo: true, t: "선택형으로 가면 카피가 살아납니다. ‘두 가지 중 하나’ 문구를 첫 화면에 넣고, 재고가 적은 사은품은 12/8에 교체하는 걸 제안합니다." },
+      { t: "{other} 숫자를 카피에 그대로 쓰면 신뢰가 생깁니다. ‘경쟁 평균 14.7%’ 같은 문장은 짧게 한 줄 넣죠." },
+      { t: "{other} 말대로 과장은 빼겠습니다. 대신 ‘확인 후 확정’이라는 문구로 기다림을 약속처럼 만들 수 있어요." }
+    ],
+    red: [
+      { t: "절충안은 좋지만 확인 필요 항목이 남습니다. 반품률과 11월 판매 속도, 두 숫자 없이 결정하면 다음 달에 또 회의해야 합니다." },
+      { t: "카피가 좋아도 재고가 없으면 반품만 늘어납니다. 사은품 교체일을 먼저 정하고 카피를 확정하는 순서를 제안합니다." },
+      { t: "광고 예산 상한을 지금 정하는 건 위험합니다. 성과를 보고 늘릴 여지를 남겨 두죠. 대신 상한선만 문서에 적어 둡니다." }
+    ],
+    generic: [
+      { t: "{other} 의견에 한 가지를 보탭니다. 기준을 먼저 고정하면 다음 판단이 빨라집니다. 숫자는 확인 후 확정하는 걸 제안합니다." },
+      { t: "방향은 동의합니다. 다만 실행 순서를 정하지 않으면 또 미뤄집니다. 담당과 기한을 지금 정하죠." }
+    ]
+  },
+  converge: {
+    pikri: [
+      { promo: true, t: "정리합니다. 결정은 12/1~12/14 13% 할인 + 사은품 선택형 2종, 광고 예산 상한 120만 원입니다. 이견은 재고·반품 리스크로 남기고, 11/28 재고 실사 결과에 따라 할인율을 15%까지 올리는 조건을 붙였습니다. 다음 할 일은 카드에 담았습니다." },
+      { promo: true, t: "합의안을 정리합니다. 할인은 13%, 사은품은 선택형 2종, 광고 예산 상한은 120만 원입니다. 확인 필요 항목은 11/28 재고 실사와 반품률이고, 결과에 따라 15%까지 열어 둡니다. 다음 할 일 3건을 카드로 올립니다." },
+      { promo: true, t: "오늘 결정은 12/1~12/14 13% 할인과 선택형 사은품 2종입니다. 광고 예산은 120만 원을 넘지 않습니다. 확인할 것은 11/28 재고 실사와 반품률이며, 결과에 따라 할인율을 15%까지 올립니다." },
+      { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 다음 할 일 3개를 카드에 담았습니다." },
+      { t: "합의안을 정리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
+    ],
+    generic: [
+      { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 다음 할 일 3개를 카드에 담았습니다." },
+      { t: "합의안을 정리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
+    ]
+  },
+  chat: {
+    pikri: [
+      "끼리장 님, 오늘은 어땠어요? 저는 아침에 밀린 정산부터 봤어요.",
+      "여기 조용하네요. 저는 내일 일정 정리하고 있었어요.",
+      "커피 한 잔 하면서 생각하면 답이 나올 때가 많아요.",
+      "오늘은 일찍 들어가세요. 내일 아침에 제가 정리해 둘게요."
+    ],
+    kirini: [
+      "저는 숫자 정리하다가 하루가 다 갔네요. 그래도 기분은 좋습니다.",
+      "요즘 재고 숫자가 자꾸 눈에 밟혀요. 내일 다시 볼게요.",
+      "오늘은 일찍 쉬세요. 내일 숫자가 더 잘 보입니다.",
+      "방금 표 하나 정리했어요. 필요하면 말씀해 주세요."
+    ],
+    muu: [
+      "저는 카피 세 개 쓰고 하나도 안 남겼어요. 내일 다시 볼게요.",
+      "요즘 ‘연말’이라는 단어만 봐도 아이디어가 떠올라요.",
+      "끼리장 님, 오늘 머리 좀 식히셨어요?",
+      "내일 문장 두 개만 다듬으면 될 것 같아요."
+    ],
+    red: [
+      "다들 수고했어요. 오늘 결정한 건 내일 다시 의심해 봅시다.",
+      "저는 오늘 반대할 게 없네요. 드문 날입니다.",
+      "내일 아침에 오늘 숫자 다시 보면 또 달라요.",
+      "일찍 자는 게 제일 생산적일 때도 있습니다."
+    ],
+    generic: [
+      "{name}입니다. 오늘 하루도 고생 많으셨어요.",
+      "여기 있으면 마음이 편해요. 내일 이야기 더 해요.",
+      "저는 {role} 쪽 준비해 두고 있을게요."
+    ]
+  },
+  mention: {
+    pikri: [
+      "부르셨죠? 안건이면 제가 먼저 순서를 정리해 볼게요. 지금 결정할 것과 확인할 것을 나눠서요.",
+      "네, 여기 있어요. 지금 정리해서 바로 알려 드릴게요."
+    ],
+    kirini: [
+      "네, 확인했습니다. 필요한 숫자부터 정리해서 근거와 함께 붙여 둘게요.",
+      "불러 주셔서 감사해요. 비교 기준 두 개로 정리해 볼게요."
+    ],
+    muu: [
+      "네! 카피나 구성 쪽이면 두 안으로 만들어 볼게요. 어느 쪽이 좋으세요?",
+      "불러 주셨네요. 한 줄로 먼저 써 보고 다듬을게요."
+    ],
+    red: [
+      "불렀어요? 반대 의견이 궁금하시면 지금 정한 전제의 약한 고리부터 짚어 볼게요.",
+      "네. 지금 결정에서 제일 위험한 부분부터 말씀드릴게요."
+    ],
+    generic: [
+      "{name}입니다. 부르셔서 왔어요. {role} 관점에서 필요한 부분부터 정리해 볼게요.",
+      "네, 여기 있어요. 제 몫부터 보겠습니다."
+    ]
+  }
+};
+
+var ANGLES = [
+  "한 가지 더 붙이면, 확인 순서를 먼저 정하면 늦어지지 않습니다.",
+  "반대 경우도 같이 보죠. 숫자가 예상과 다르면 다음 턴에 바로 조정합니다.",
+  "제 몫은 여기까지입니다. 다음 발언에서 근거를 더 붙이겠습니다."
+];
+
+function fillTpl(tpl, room, agent) {
+  var others = room.members.filter(function (id) { return id !== agent.id; }).map(agentName);
+  var names = memberNames(room).join(" · ");
+  return String(tpl)
+    .replace(/\{agenda\}/g, room.agenda || room.name)
+    .replace(/\{members\}/g, names)
+    .replace(/\{n\}/g, String(room.members.length))
+    .replace(/\{turns\}/g, String(room.maxTurns || 10))
+    .replace(/\{budget\}/g, won(room.budget))
+    .replace(/\{role\}/g, agent.role || "")
+    .replace(/\{name\}/g, agent.name)
+    .replace(/\{other2\}/g, others[1] || others[0] || "다른 AI")
+    .replace(/\{other\}/g, others[0] || "다른 AI");
+}
+
+function demoTurn(agent, phase) {
+  var r = activeRoom();
+  var promo = PROMO_RE.test(r.agenda || "");
+  var bank = DEMO[phase] || DEMO.opinion;
+  var arr = bank[agent.id] || bank.generic || [];
+  var usable;
+  if (phase === "chat" || phase === "mention") {
+    usable = arr.slice();
+  } else if (promo) {
+    if (phase === "converge") {
+      var pp = arr.filter(function (e) { return e && e.promo; });
+      usable = pp.length ? pp : arr.slice();
+    } else {
+      usable = arr.slice();
+    }
+  } else {
+    usable = arr.filter(function (e) { return !e || !e.promo; });
+    if (!usable.length) usable = arr.slice();
+  }
+  if (!usable.length) usable = arr.slice();
+  if (!usable.length) usable = [{ t: "제 몫에서 한 가지만 보태겠습니다. 지금 정한 기준을 먼저 확인하고 다음 단계로 넘어가죠." }];
+  var seedKey = agent.id + "|" + phase + "|" + (r.session.turn || 0) + "|" + (r.agenda || "") + "|" + r.messages.length;
+  var start = hash(seedKey) % usable.length;
+  var chosen = null, dup = false;
+  for (var i = 0; i < usable.length; i++) {
+    var cand = usable[(start + i) % usable.length];
+    var txt = fillTpl(typeof cand === "string" ? cand : cand.t, r, agent);
+    if (!run.lastBy[agent.id] || similarity(txt, run.lastBy[agent.id]) < 0.72) { chosen = txt; break; }
+  }
+  if (!chosen) {
+    var c2 = usable[start % usable.length];
+    chosen = fillTpl(typeof c2 === "string" ? c2 : c2.t, r, agent) + " " + ANGLES[hash(seedKey + "a") % ANGLES.length];
+    dup = true;
+  }
+  var tin = estimateTin(r);
+  var tout = Math.max(40, Math.round(chosen.length / 1.5));
+  return { text: chosen, dup: dup, tin: tin, tout: tout, src: "demo" };
+}
+
+/* =========================================================
+   8. 실행 엔진 (턴 · 예산 · 루프 · 쿨다운)
+   ========================================================= */
+function waitWhilePaused(ep) {
+  return new Promise(function (resolve) {
+    (function tick() {
+      if (ep !== run.epoch || !run.paused) return resolve();
+      setTimeout(tick, 180);
+    })();
+  });
+}
+
+async function cooldown(id, ep) {
+  while (ep === run.epoch) {
+    var now = Date.now();
+    var w = Math.max(COOLDOWN.global - (now - (run.lastGlobalAt || 0)), COOLDOWN.agent - (now - (run.lastAt[id] || 0)));
+    if (w <= 0) break;
+    run.cooldownLeft = Math.ceil(w / 1000);
+    updateMeters();
+    await sleep(Math.min(200, w));
+  }
+  run.cooldownLeft = 0;
+  updateMeters();
+}
+
+function loopDetected() {
+  if (run.recent.length < 3) return false;
+  var n = run.recent.length;
+  var p1 = similarity(run.recent[n - 2], run.recent[n - 3]);
+  var p2 = similarity(run.recent[n - 1], run.recent[n - 2]);
+  if (p1 >= 0.86 && p2 >= 0.86) return true;
+  if (n >= 4) {
+    var p3 = similarity(run.recent[n - 1], run.recent[n - 4]);
+    if (p1 >= 0.9 && p3 >= 0.9) return true;
+  }
+  return false;
+}
+
+function buildSchedule(room) {
+  var max = clamp(Number(room.maxTurns) || 10, 3, 24);
+  var mod = run.moderator && room.members.indexOf(run.moderator) > -1 ? run.moderator : room.members[0];
+  var others = room.members.filter(function (id) { return id !== mod; });
+  var pool = others.length ? others : [mod];
+  var capacity = Math.max(0, max - 3);
+  var opinions = pool.slice(0, Math.min(pool.length, capacity));
+  var rebut = capacity - opinions.length;
+  var steps = [{ id: mod, phase: "open" }];
+  opinions.forEach(function (id) { steps.push({ id: id, phase: "opinion" }); });
+  steps.push({ id: mod, phase: "issue" });
+  for (var i = 0; i < rebut; i++) steps.push({ id: pool[i % pool.length], phase: "rebuttal" });
+  steps.push({ id: mod, phase: "converge" });
+  return steps;
+}
+
+async function loopRoundtable(room, ep) {
+  try {
+    for (run.idx = 0; run.idx < run.schedule.length; run.idx++) {
+      if (ep !== run.epoch) return;
+      await waitWhilePaused(ep);
+      if (ep !== run.epoch) return;
+      var step = run.schedule[run.idx];
+      if (!step) break;
+      var ag = state.agents[step.id];
+      if (!ag || room.members.indexOf(step.id) < 0) continue;
+      if (budgetExceeded(room)) { endRun("budget", ep); return; }
+      await cooldown(step.id, ep);
+      if (ep !== run.epoch) return;
+      if (run.paused) { run.idx--; continue; }
+      await speak(ag, step.phase, ep);
+      if (ep !== run.epoch) return;
+      if (budgetExceeded(room)) { endRun("budget", ep); return; }
+      if (loopDetected()) { endRun("loop", ep); return; }
+      await sleep(rand(380, 760));
+    }
+    if (ep !== run.epoch) return;
+    finishRoundtable(ep);
+  } catch (err) {
+    if (ep === run.epoch) endRun("error", ep);
+  }
+}
+
+async function speak(agent, phase, ep) {
+  run.typingAgent = agent.id;
+  renderTimeline(true);
+  updateMeters();
+  await sleep(rand(240, 460));
+  if (ep !== run.epoch) { run.typingAgent = null; return; }
+  var out = null, note = "";
+  try {
+    if (agent.type === "webhook" && agent.url) {
+      out = await webhookTurn(agent, phase);
+    } else {
+      var prov = liveProviderFor(agent);
+      if (prov) out = await liveTurn(agent, prov, phase);
+    }
+  } catch (e) {
+    note = e && e.webhook ? e.msg : friendlyError(e);
+    out = null;
+  }
+  if (ep !== run.epoch) { run.typingAgent = null; renderTimeline(true); return; }
+  run.typingAgent = null;
+  if (out && out.text) {
+    if (similarity(out.text, run.lastBy[agent.id] || "") >= 0.9) {
+      var rr = activeRoom();
+      var dtin = out.tin || estimateTin(rr);
+      var dtout = out.tout || Math.max(40, Math.round(out.text.length / 1.5));
+      var dcost = out.cost != null ? out.cost : computeCost(out.src === "openai" ? "openai" : "gemini", dtin, dtout);
+      rr.session.turn = (rr.session.turn || 0) + 1;
+      rr.session.tin = (rr.session.tin || 0) + dtin;
+      rr.session.tout = (rr.session.tout || 0) + dtout;
+      rr.session.cost = (rr.session.cost || 0) + dcost;
+      save();
+      updateMeters();
+      renderSidebar();
+      addSystem(agent.name + " 답변이 앞선 발언과 겹쳐 이번 턴을 건너뛰었어요(중복 방지 · 호출 비용은 반영).", "warn");
+      return;
+    }
+    addAgentMessage(agent, {
+      text: out.text, src: out.src || "demo", tin: out.tin, tout: out.tout, cost: out.cost
+    }, phase);
+    return;
+  }
+  if (note) addSystem(agent.name + " 응답을 받지 못해 데모 답변으로 이어갑니다 · " + note, "warn");
+  var d = demoTurn(agent, phase);
+  if (note) d.src = "fallback";
+  addAgentMessage(agent, d, phase);
+}
+
+function startRoundtable(opts) {
+  var r = activeRoom();
+  if (!r) return;
+  if (run.active) { toast("이미 진행 중이에요 · 먼저 멈춰 주세요"); return; }
+  var agenda = String(opts.agenda || "").trim();
+  if (!agenda) { toast("안건을 적어 주세요"); return; }
+  var parts = (opts.participants || r.members).filter(function (id) { return !!state.agents[id]; });
+  if (parts.length < 2) { toast("AI를 두 명 이상 골라 주세요"); return; }
+  var mod = opts.moderator && parts.indexOf(opts.moderator) > -1 ? opts.moderator : parts[0];
+  r.mode = "roundtable";
+  r.agenda = agenda;
+  r.members = parts;
+  r.maxTurns = clamp(Number(opts.turns) || 10, 3, 24);
+  r.budget = Math.max(10, Number(opts.budget) || r.budget || 60);
+  r.session = freshSession();
+  r.session.startedAt = Date.now();
+  r.session.startIndex = r.messages.length;
+  r.status = "running";
+  run.epoch++;
+  var ep = run.epoch;
+  run.active = true; run.paused = false; run.typingAgent = null; run.cooldownLeft = 0;
+  run.idx = 0; run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
+  run.freeConsec = 0; run.moderator = mod; run.mode = "roundtable";
+  run.schedule = buildSchedule(r);
+  save();
+  renderAll();
+  scrollBottom(true);
+  loopRoundtable(r, ep);
+}
+
+function finishRoundtable(ep) {
+  if (ep !== run.epoch) return;
+  var r = activeRoom();
+  run.active = false; run.paused = false; run.typingAgent = null; run.cooldownLeft = 0;
+  r.status = "ended";
+  r.session.endedAt = Date.now();
+  save();
+  renderAll();
+  generateCard({ auto: true, draft: false });
+  toast("라운드테이블 종료 · 합의안 카드를 만들었어요");
+}
+
+function endRun(reason, ep) {
+  if (ep != null && ep !== run.epoch) return;
+  run.epoch++;
+  run.active = false; run.paused = false; run.typingAgent = null; run.cooldownLeft = 0;
+  var r = activeRoom();
+  if (!r) return;
+  r.status = "ended";
+  r.session.endedAt = Date.now();
+  if (reason === "budget") addSystem("예산 상한 " + won(r.budget) + "에 닿아 자동으로 정지했어요. 대화는 그대로이고, 합의안으로 정리할 수 있습니다.", "warn");
+  else if (reason === "loop") addSystem("같은 말이 반복되어 자동으로 정지했어요(루프 감지). 합의안 요약으로 정리해 보세요.", "warn");
+  else if (reason === "stop") addSystem("멈췄어요. 대화는 남아 있고, 합의안으로 정리할 수 있습니다.", "info");
+  else if (reason === "error") addSystem("오류로 진행이 멈췄어요. 다시 시작해 주세요.", "err");
+  else if (reason === "switch") addSystem("방을 옮겨 진행을 멈췄어요.", "info");
+  save();
+  renderRoom();
+  renderSidebar();
+}
+
+async function runMentions(text) {
+  var r = activeRoom();
+  if (run.active) return;
+  var parsed = parseMentions(text);
+  if (!parsed.ids.length) {
+    addSystem("멘션 없이 보냈어요 · 아무 AI도 깨우지 않았습니다. @이름으로 불러 주세요.", "info");
+    return;
+  }
+  if (budgetExceeded(r)) {
+    addSystem("예산 상한에 닿아 답하지 못했어요. 예산을 올리거나 회차를 초기화해 주세요.", "warn");
+    openBudgetSheet();
+    return;
+  }
+  run.epoch++;
+  var ep = run.epoch;
+  run.active = true; run.paused = false; run.moderator = null; run.mode = "mention";
+  run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
+  r.status = "running";
+  renderRoom();
+  var ids = parsed.ids.slice(0, 3);
+  for (var i = 0; i < ids.length; i++) {
+    if (ep !== run.epoch) return;
+    if (budgetExceeded(r)) { endRun("budget", ep); return; }
+    var ag = state.agents[ids[i]];
+    if (!ag) continue;
+    await cooldown(ag.id, ep);
+    if (ep !== run.epoch) return;
+    await speak(ag, "mention", ep);
+    if (ep !== run.epoch) return;
+    if (loopDetected()) { endRun("loop", ep); return; }
+    await sleep(rand(300, 620));
+  }
+  if (ep !== run.epoch) return;
+  run.active = false; run.typingAgent = null; r.status = "idle";
+  save(); renderRoom(); renderSidebar();
+}
+
+async function runFree(text) {
+  var r = activeRoom();
+  if (run.active) return;
+  if (budgetExceeded(r)) {
+    addSystem("예산 상한에 닿아 답하지 못했어요. 예산을 올리거나 회차를 초기화해 주세요.", "warn");
+    openBudgetSheet();
+    return;
+  }
+  if (!r.members.length) { toast("이 방에 AI가 없어요 · 멤버를 켜 주세요"); return; }
+  run.epoch++;
+  var ep = run.epoch;
+  run.active = true; run.paused = false; run.mode = "free";
+  run.freeConsec = 0; run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
+  r.status = "running";
+  renderRoom();
+  var members = r.members.slice();
+  var opener = "끼리장 님이 ";
+  for (var i = 0; i < 3; i++) {
+    if (ep !== run.epoch) return;
+    await waitWhilePaused(ep);
+    if (ep !== run.epoch) return;
+    if (budgetExceeded(r)) { endRun("budget", ep); return; }
+    var idx = (hash(text) + i * 7 + rand(0, 20)) % members.length;
+    var id = members[idx];
+    if (id === run.lastSpeaker && members.length > 1) id = members[(idx + 1) % members.length];
+    var ag = state.agents[id];
+    if (!ag) continue;
+    run.freeConsec = i;
+    updateMeters();
+    await cooldown(id, ep);
+    if (ep !== run.epoch) return;
+    await speak(ag, "chat", ep);
+    if (ep !== run.epoch) return;
+    run.freeConsec = Math.min(3, i + 1);
+    updateMeters();
+    if (loopDetected()) { endRun("loop", ep); return; }
+    await sleep(rand(500, 950));
+    if (i >= 1 && Math.random() < 0.5) break;
+  }
+  if (ep !== run.epoch) return;
+  run.active = false; run.typingAgent = null; r.status = "idle";
+  if (run.freeConsec >= 3) addSystem("AI가 3번 연속 말했어요 · 끼리장 님이 말을 걸면 다시 이어집니다.", "info");
+  save(); renderRoom(); renderSidebar();
+}
+
+function parseMentions(text) {
+  var r = activeRoom();
+  if (/@(전원|모두|all)/i.test(text)) return { ids: r.members.slice(), all: true };
+  var ids = [];
+  r.members.forEach(function (id) {
+    var a = state.agents[id];
+    if (!a) return;
+    if (new RegExp("@" + escapeRe(a.name), "i").test(text)) ids.push(id);
+  });
+  return { ids: ids, all: false };
+}
+
+/* =========================================================
+   9. 실제 API 호출
+   ========================================================= */
+var API_TIMEOUT = 60000;
+
+function timeoutSignal(ms) {
+  if (typeof AbortController === "undefined") return { signal: undefined, done: function () {} };
+  var ctrl = new AbortController();
+  var t = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, ms);
+  return { signal: ctrl.signal, done: function () { clearTimeout(t); } };
+}
+function errorTextFrom(data) {
+  if (!data || typeof data !== "object") return "";
+  if (data.error) {
+    if (typeof data.error === "string") return data.error;
+    return data.error.message || "";
+  }
+  return "";
+}
+function friendlyError(err) {
+  err = err || {};
+  var st = err.status || 0;
+  var raw = String(err.raw || "").toLowerCase();
+  var code = String(err.code || "").toUpperCase();
+  if (err.timeout) return "응답이 너무 늦어요(60초). 잠시 뒤 다시 시도해 주세요.";
+  if (err.empty) return err.raw || "빈 응답을 받았어요.";
+  if (st === 0) return "AI에 연결하지 못했어요. 인터넷 연결과 브라우저의 외부 호출 차단(광고 차단 확장·회사망)을 확인해 주세요.";
+  if (st === 401 || st === 403) return "API 키가 올바르지 않거나 권한이 없어요. 설정에서 키를 다시 확인해 주세요.";
+  if (st === 429) return "API 사용량 한도를 넘었어요. 잠시 뒤 다시 시도해 주세요.";
+  if (st === 404) return "모델 이름을 찾지 못했어요. 설정에서 모델명을 확인해 주세요.";
+  if (st === 400) {
+    if (raw.indexOf("api key") > -1 || raw.indexOf("api_key") > -1 || code.indexOf("API_KEY") > -1) return "API 키가 올바르지 않아요. 설정에서 다시 확인해 주세요.";
+    if (raw.indexOf("model") > -1) return "이 모델명은 쓸 수 없어요. 설정에서 모델명을 확인해 주세요.";
+    if (code.indexOf("RESOURCE_EXHAUSTED") > -1) return "API 사용량 한도를 넘었어요.";
+    return "요청을 처리하지 못했어요. 입력이 너무 길거나 설정값이 맞지 않을 수 있어요.";
+  }
+  if (st >= 500) return "AI 서버에 일시적인 문제가 있어요. 잠시 뒤 다시 시도해 주세요.";
+  return "AI 호출에 실패했어요. 잠시 뒤 다시 시도해 주세요.";
+}
+
+async function callProvider(provider, key, model, systemText, userText) {
+  var isGem = provider === "gemini";
+  var url, init, sig = timeoutSignal(API_TIMEOUT);
+  if (isGem) {
+    url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent";
+    init = {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemText }] },
+        contents: [{ role: "user", parts: [{ text: userText }] }],
+        generationConfig: { temperature: 0.85, maxOutputTokens: 1024 }
+      }),
+      signal: sig.signal
+    };
+  } else {
+    url = "https://api.openai.com/v1/chat/completions";
+    init = {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: "system", content: systemText }, { role: "user", content: userText }],
+        temperature: 0.85, max_tokens: 1024
+      }),
+      signal: sig.signal
+    };
+  }
+  var res;
+  try { res = await fetch(url, init); }
+  catch (e) {
+    sig.done();
+    if (e && e.name === "AbortError") throw { timeout: true };
+    throw { status: 0 };
+  }
+  sig.done();
+  var data = null;
+  try { data = await res.json(); } catch (e2) { data = null; }
+  if (!res.ok) throw { status: res.status, code: (data && data.error && (data.error.status || data.error.code)) || "", raw: errorTextFrom(data) };
+  var text = "", tin = 0, tout = 0;
+  if (isGem) {
+    var cand = data && data.candidates && data.candidates[0];
+    if (cand && cand.content && Object.prototype.toString.call(cand.content.parts) === "[object Array]") {
+      text = cand.content.parts.filter(function (p) { return p && typeof p.text === "string" && p.thought !== true; }).map(function (p) { return p.text; }).join("");
+    }
+    var u = data && data.usageMetadata;
+    if (u) { tin = u.promptTokenCount || 0; tout = u.candidatesTokenCount || 0; }
+  } else {
+    var ch = data && data.choices && data.choices[0];
+    if (ch && ch.message && typeof ch.message.content === "string") text = ch.message.content;
+    if (data && data.usage) { tin = data.usage.prompt_tokens || 0; tout = data.usage.completion_tokens || 0; }
+  }
+  text = String(text || "").trim();
+  if (!text) throw { empty: true };
+  return { text: text, tin: tin, tout: tout };
+}
+
+function systemFor(agent) {
+  var r = activeRoom();
+  var team = memberNames(r).join(", ");
+  var base = agent.prompt || (agent.type === "webhook" ? "너는 외부 에이전트다." : "너는 이 방의 AI 멤버다.");
+  return base + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
+    "\n함께 있는 AI: " + team +
+    "\n규칙: 한국어로 2~4문장. 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다.";
+}
+
+function phaseInstruction(phase, r) {
+  if (phase === "open") return "사회자로서 안건을 확인하고, 진행 순서와 목표(결정 1개·다음 할 일)를 짧게 알려라.";
+  if (phase === "opinion") return "안건에 대한 1차 의견을 제시하라. 앞선 발언이 있으면 읽고 다른 각도를 보태라.";
+  if (phase === "issue") return "지금까지 발언에서 쟁점을 두 개로 압축하고, 각 쟁점에 대한 입장을 한 줄씩 정리하라.";
+  if (phase === "rebuttal") return "직전 발언 중 하나를 이름으로 지목해 반박하거나 보완하라. 같은 말을 반복하지 마라.";
+  if (phase === "converge") return "결정·근거·이견·다음 할 일을 담아 3~5문장으로 합의안을 정리하라. 숫자는 ‘제안’ 또는 ‘확인 필요’로 표시하라.";
+  if (phase === "chat") return "가벼운 수다다. 1~2문장으로 편하게 답하라.";
+  if (phase === "mention") return "사용자가 이름을 불렀다. 짧게 답하고, 자기 몫에서 도울 일을 한 가지 제안하라.";
+  return "안건에 맞게 짧게 발언하라.";
+}
+
+function turnPrompt(agent, phase) {
+  var r = activeRoom();
+  var msgs = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; }).slice(-14);
+  var lines = msgs.map(function (m) {
+    return agentName(m.who) + ": " + String(m.text || "").replace(/\s+/g, " ").slice(0, 300);
+  });
+  return "[지금까지의 발언]\n" + (lines.length ? lines.join("\n") : "(없음)") +
+    "\n\n[차례] 지금은 " + agent.name + "(" + (agent.role || "멤버") + ") 차례다. " + phaseInstruction(phase, r);
+}
+
+async function liveTurn(agent, provider, phase) {
+  var res = await callProvider(provider, keyFor(provider), modelFor(provider), systemFor(agent), turnPrompt(agent, phase));
+  var tin = res.tin || estimateTin(activeRoom());
+  var tout = res.tout || Math.max(40, Math.round(res.text.length / 1.5));
+  return { text: res.text, src: provider, tin: tin, tout: tout, cost: computeCost(provider, tin, tout) };
+}
+
+/* =========================================================
+   10. 외부 에이전트 (Webhook)
+   ========================================================= */
+function hookError(st) {
+  if (st === 401 || st === 403) return "토큰이 거부되었어요(HTTP " + st + "). 에이전트 쪽 토큰 설정을 확인해 주세요.";
+  if (st === 404) return "Webhook 주소를 찾지 못했어요(404). URL을 확인해 주세요.";
+  if (st >= 500) return "에이전트 서버에 문제가 있어요(HTTP " + st + ").";
+  return "브라우저에서 직접 호출이 막혔어요(CORS 또는 네트워크).";
+}
+async function webhookTurn(agent, phase) {
+  var r = activeRoom();
+  var ctx = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; }).slice(-10).map(function (m) {
+    return { speaker: agentName(m.who), text: String(m.text || "").slice(0, 400) };
+  });
+  var body = {
+    event: "turn.request",
+    room: { id: r.id, name: r.name, agenda: r.agenda || "" },
+    turn: { no: (r.session.turn || 0) + 1, phase: phase, agent: agent.name },
+    context: ctx,
+    deadline_ms: 20000
+  };
+  var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, 20000) : null;
+  var res;
+  try {
+    res = await fetch(agent.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Kkiri-Event": "turn.request", "X-Kkiri-Token": agent.token || "" },
+      body: JSON.stringify(body),
+      signal: ctrl ? ctrl.signal : undefined
+    });
+  } catch (e) {
+    if (timer) clearTimeout(timer);
+    if (e && e.name === "AbortError") throw { webhook: true, msg: "20초 안에 응답이 없어요. 에이전트 서버가 켜져 있는지 확인해 주세요." };
+    throw { webhook: true, msg: "브라우저에서 직접 호출이 막혔어요(CORS 또는 네트워크)." };
+  }
+  if (timer) clearTimeout(timer);
+  if (!res.ok) throw { webhook: true, msg: hookError(res.status) };
+  var data = null;
+  try { data = await res.json(); } catch (e2) { data = null; }
+  var text = data && (data.text || data.reply || data.message || data.output ||
+    (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content));
+  text = String(text || "").trim().slice(0, 4000);
+  if (!text) throw { webhook: true, msg: "응답에 text 필드가 없어요. { text: \"...\" } 형식으로 답해 주세요." };
+  agent.status = "online";
+  return { text: text, src: "ext", tin: 0, tout: 0, cost: 0 };
+}
+
+/* =========================================================
+   11. 합의안 카드
+   ========================================================= */
+function sentences(t) {
+  return String(t || "")
+    .replace(/([.!?])\s+/g, "$1\n")
+    .split("\n")
+    .map(function (s) { return s.replace(/^\s*[·\-•]\s*/, "").trim(); })
+    .filter(function (s) { return s.length > 8; });
+}
+
+function buildCard(r, opts) {
+  opts = opts || {};
+  var start = (r.session && r.session.startIndex) || 0;
+  var all = r.messages.slice(start).filter(function (m) { return m.who !== "system" && m.who !== "card" && m.who !== "user"; });
+  if (!all.length) all = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card" && m.who !== "user"; });
+
+  var used = {};
+  function keyOf(s) { return s.replace(/[^가-힣a-zA-Z0-9]/g, "").slice(0, 34); }
+  function push(out, s, max) {
+    var t = String(s || "").trim();
+    if (!t || t.length < 9) return;
+    var k = keyOf(t);
+    if (!k || used[k]) return;
+    if (out.length >= (max || 3)) return;
+    used[k] = 1;
+    out.push(t);
+  }
+  function isMeta(s) {
+    if (/^(숫자는|기준은|자,)\s/.test(s)) return true;
+    if (/(다음 할 일은 카드|카드에 담았|카드로 올립|카드에 남겼|목표는 결정|한 줄씩|다음 턴|반박해 보죠|순서로 의견|발언을 듣고|마무리합니다|오늘 정리입니다|합의안을 정리합니다|비용과 기간의 절충안|범위를 좁히고)/.test(s)) return true;
+    return false;
+  }
+  function sents(m) { return sentences(m.text); }
+  function isCritic(id) {
+    var a = agentById(id);
+    return !!(a && /비판|레드/.test(a.role || ""));
+  }
+
+  var decisions = [], evidence = [], risks = [], checks = [];
+
+  /* 1) 결정 — 합의(converge) 발언을 우선, 없으면 마지막 사회자 발언 */
+  var conv = all.filter(function (m) { return m.phase === "converge"; });
+  if (!conv.length) {
+    var lastMod = null;
+    all.forEach(function (m) { if (m.who === r.members[0]) lastMod = m; });
+    if (lastMod) conv = [lastMod];
+  }
+  conv.forEach(function (m) {
+    sents(m).forEach(function (s) {
+      if (isMeta(s)) return;
+      if (/이견|리스크|우려|실사|확인 필요/.test(s) && !/결정/.test(s)) return;
+      if (/결정|합의|방향은|중간안|으로 가|로 두|상한|%|원/.test(s)) push(decisions, s, 3);
+    });
+  });
+  if (!decisions.length) {
+    all.slice().reverse().forEach(function (m) {
+      sents(m).forEach(function (s) {
+        if (isMeta(s)) return;
+        if (/결정|합의|제안|상한|%|원/.test(s)) push(decisions, s, 3);
+      });
+    });
+  }
+  if (!decisions.length) {
+    decisions = [(r.agenda || r.name) + " 안건을 두고 " + r.members.length + "개 관점을 비교했고, 확정은 끼리장 님 승인 후로 남겼습니다."];
+  }
+
+  /* 2) 근거 — 의견·반박 단계의 수치·자료 문장 */
+  all.forEach(function (m) {
+    if (m.phase === "converge" || m.phase === "open" || isCritic(m.who)) return;
+    sents(m).forEach(function (s) {
+      if (isMeta(s)) return;
+      if (/[0-9]\s*(?:%|원|만|건|명|개|종|배|주|일)|매출|평균|데이터|비중|상한/.test(s)) push(evidence, s, 3);
+    });
+  });
+  if (!evidence.length) evidence.push("이번 대화에서는 확인된 수치가 따로 제시되지 않았습니다.");
+
+  /* 3) 이견·리스크 — 비판자 발언과 리스크 표현 */
+  all.forEach(function (m) {
+    if (m.phase === "open") return;
+    sents(m).forEach(function (s) {
+      if (isMeta(s)) return;
+      if (/우려|리스크|반대|다만|한계|불확실|위험|아닐 수|약합니다|다시 회의|빼고 보면/.test(s) || (isCritic(m.who) && s.length > 16)) {
+        push(risks, s, 3);
+      }
+    });
+  });
+  if (!risks.length) risks.push("특별한 이견 없이 정리됐습니다. 실행 전 확인 항목만 남겼습니다.");
+
+  /* 4) 확인 필요 — 합의문의 조건·실사 + 확인/추정 표현 */
+  conv.forEach(function (m) {
+    sents(m).forEach(function (s) {
+      if (/이견|실사|조건|확인/.test(s)) push(checks, s, 3);
+    });
+  });
+  all.forEach(function (m) {
+    sents(m).forEach(function (s) {
+      if (isMeta(s)) return;
+      if (/확인 필요|확인해야|실사|검증|추정|근거가 약/.test(s)) push(checks, s, 3);
+    });
+  });
+  var todos = defaultTodos(r);
+  var s = r.session || freshSession();
+  var turns = s.turn || all.length;
+  var tokens = (s.tin || 0) + (s.tout || 0);
+  if (!tokens) tokens = all.reduce(function (a, m) { return a + (m.tin || 0) + (m.tout || 0); }, 0);
+  var cost = s.cost || all.reduce(function (a, m) { return a + (m.cost || 0); }, 0);
+  var st = s.startedAt || (all.length ? all[0].at : Date.now());
+  var en = s.endedAt || Date.now();
+  return {
+    id: uid("card"),
+    title: r.agenda || r.name,
+    room: r.name,
+    kind: r.kind,
+    at: Date.now(),
+    atLabel: dateLabel(Date.now()) + " " + timeLabel(Date.now()),
+    badge: opts.draft ? "진행 중 정리 · 사람 승인 전" : "자동 정리 · 사람 승인 전",
+    draft: !!opts.draft,
+    decisions: decisions,
+    evidence: evidence,
+    risks: risks.length ? risks : ["특별한 이견 없이 정리됐습니다. 실행 전 확인 항목만 남겼습니다."],
+    checks: checks,
+    todos: todos,
+    stats: {
+      members: memberNames(r),
+      turns: turns,
+      tokens: tokens,
+      cost: cost,
+      duration: dur(Math.max(0, en - st))
+    }
+  };
+}
+
+function defaultTodos(r) {
+  var agenda = r.agenda || "";
+  var mem = r.members.map(function (id) { return state.agents[id]; }).filter(Boolean);
+  function owner(re, i) {
+    for (var j = 0; j < mem.length; j++) { if (re.test(mem[j].role || "")) return mem[j].name; }
+    return mem.length ? mem[Math.min(i, mem.length - 1)].name : "피크리";
+  }
+  if (/프로모션|할인|사은품|연말|광고|캠페인/.test(agenda)) {
+    return [
+      { t: "상세페이지 초안 완성", o: owner(/카피|기획/, 1), d: dday(4) },
+      { t: "광고 소재 3종 준비", o: owner(/리서|분석/, 2), d: dday(6) },
+      { t: "재고 실사 결과 공유", o: owner(/사회|실행/, 0), d: dday(3) }
+    ];
+  }
+  if (/채용|면접|인력/.test(agenda)) {
+    return [
+      { t: "후보 리스트 정리", o: owner(/리서|분석/, 1), d: dday(3) },
+      { t: "면접 질문 확정", o: owner(/카피|기획/, 2), d: dday(4) },
+      { t: "일정 공유", o: owner(/사회|실행/, 0), d: dday(2) }
+    ];
+  }
+  if (/재고|발주|입고/.test(agenda)) {
+    return [
+      { t: "재고 실사", o: owner(/리서|분석/, 1), d: dday(3) },
+      { t: "발주 수량 확정", o: owner(/사회|실행/, 0), d: dday(4) },
+      { t: "입고 일정 공유", o: owner(/카피|기획/, 2), d: dday(5) }
+    ];
+  }
+  return [
+    { t: "안건 확정안 문서화", o: owner(/사회|실행/, 0), d: dday(2) },
+    { t: "근거 자료 첨부", o: owner(/리서|분석/, 1), d: dday(3) },
+    { t: "실행 일정 반영", o: owner(/카피|기획/, 2), d: dday(5) }
+  ];
+}
+
+function cardMarkdown(c) {
+  var L = [];
+  L.push("# 합의안 카드 · " + c.title);
+  L.push("");
+  L.push("- 방: " + c.room + " (" + (c.kind === "project" ? "프로젝트방" : "사랑방") + ")");
+  L.push("- 일시: " + c.atLabel);
+  L.push("- 참여: " + c.stats.members.join(", "));
+  L.push("- 통계: " + c.stats.turns + "턴 · " + Math.round(c.stats.tokens).toLocaleString("ko-KR") + " 토큰 · " + won(c.stats.cost) + " · " + c.stats.duration);
+  L.push("");
+  function block(title, arr) {
+    if (!arr || !arr.length) return;
+    L.push("## " + title);
+    arr.forEach(function (x) {
+      if (typeof x === "string") L.push("- " + x);
+      else L.push("- [ ] " + x.t + (x.o ? " (" + x.o + (x.d ? " · " + x.d : "") + ")" : ""));
+    });
+    L.push("");
+  }
+  block("결정", c.decisions);
+  block("핵심 근거", c.evidence);
+  block("이견 · 리스크", c.risks);
+  block("확인 필요", c.checks);
+  block("다음 할 일", c.todos);
+  L.push("---");
+  L.push("자동 정리 · 사람 승인 전. 숫자와 일정은 확인 후 확정하세요.");
+  return L.join("\n");
+}
+
+function slug(s) {
+  return String(s || "room").replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, "-").slice(0, 40);
+}
+
+function download(filename, text, mime) {
+  var blob = new Blob([text], { type: mime || "text/markdown;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function () {
+    if (a.parentNode) a.parentNode.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 600);
+}
+
+function copyText(text) {
+  function fallback() {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      toast(ok ? "합의안을 복사했어요" : "복사가 막혀 있어요 · .md 저장을 이용해 주세요");
+    } catch (e2) {
+      toast("복사가 막혀 있어요 · .md 저장을 이용해 주세요");
+    }
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function () { toast("합의안을 복사했어요"); }, fallback);
+  } else fallback();
+}
+
+function messageById(id) {
+  var r = activeRoom();
+  for (var i = 0; i < r.messages.length; i++) if (r.messages[i].id === id) return r.messages[i];
+  return null;
+}
+
+function exportCardMd(mid) {
+  var m = messageById(mid);
+  if (!m || !m.card) return;
+  var d = new Date();
+  var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes());
+  download("끼리-합의안-" + slug(m.card.title) + "-" + stamp + ".md", cardMarkdown(m.card), "text/markdown;charset=utf-8");
+  toast("합의안을 .md로 저장했어요");
+}
+
+function copyCard(mid) {
+  var m = messageById(mid);
+  if (!m || !m.card) return;
+  copyText(cardMarkdown(m.card));
+}
+
+function redoCard(mid) {
+  var m = messageById(mid);
+  if (!m || !m.card) return;
+  var r = activeRoom();
+  var old = m.card;
+  m.card = buildCard(r, { draft: false });
+  m.card.title = old.title;
+  m.at = Date.now();
+  save();
+  renderTimeline(false);
+  var el = document.querySelector('[data-card="' + m.card.id + '"]');
+  if (el && el.scrollIntoView) el.scrollIntoView({ block: "center", behavior: "smooth" });
+  toast("합의안을 다시 정리했어요");
+}
+
+function generateCard(opts) {
+  opts = opts || {};
+  var r = activeRoom();
+  var all = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; });
+  if (!all.length && !opts.force) { toast("아직 정리할 대화가 없어요"); return null; }
+  var card = buildCard(r, { draft: !!opts.draft });
+  var m = { id: uid("m"), who: "card", at: Date.now(), card: card, cost: 0, tin: 0, tout: 0 };
+  r.messages.push(m);
+  if (r.status === "running") r.status = "paused";
+  if (!r.session.endedAt) r.session.endedAt = Date.now();
+  save();
+  pendingCardScroll = card.id;
+  renderTimeline(true);
+  renderSidebar();
+  updateMeters();
+  return card;
+}
+
+function onCardButton() {
+  var r = activeRoom();
+  var lastCard = null, lastAt = 0;
+  r.messages.forEach(function (m) {
+    if (m.who === "card") lastCard = m;
+    else if (m.who !== "system") lastAt = Math.max(lastAt, m.at);
+  });
+  if (lastCard && lastAt <= lastCard.at) {
+    var el = document.querySelector('[data-card="' + lastCard.card.id + '"]');
+    if (el && el.scrollIntoView) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    toast("최근 합의안 카드로 이동했어요");
+    return;
+  }
+  if (run.active) { run.paused = true; updateMeters(); renderRoom(); }
+  var card = generateCard({ draft: run.active });
+  if (card) toast("합의안 카드를 만들었어요");
+}
+
+/* =========================================================
+   12. 모달 · 토스트 · 사이드바
+   ========================================================= */
+var openStack = [];
+function openModal(id) {
+  var m = $(id);
+  if (!m) return;
+  if (openStack.indexOf(id) < 0) openStack.push(id);
+  m.hidden = false;
+  requestAnimationFrame(function () { m.classList.add("show"); });
+}
+function closeModal(id) {
+  var m = $(id);
+  if (!m) return;
+  m.classList.remove("show");
+  openStack = openStack.filter(function (x) { return x !== id; });
+  setTimeout(function () { if (!m.classList.contains("show")) m.hidden = true; }, 200);
+}
+function closeAllModals() { openStack.slice().forEach(closeModal); }
+function toast(msg) {
+  var el = $("toast");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function () { el.classList.remove("show"); }, 2400);
+}
+function openSidebar() {
+  $("sidebar").classList.add("open");
+  var b = $("backdrop");
+  b.hidden = false;
+  requestAnimationFrame(function () { b.classList.add("show"); });
+}
+function closeSidebar() {
+  $("sidebar").classList.remove("open");
+  var b = $("backdrop");
+  b.classList.remove("show");
+  setTimeout(function () { if (!b.classList.contains("show")) b.hidden = true; }, 200);
+}
+
+/* =========================================================
+   13. 방 전환 · 모드 · 멤버
+   ========================================================= */
+function selectRoom(id) {
+  var target = null;
+  state.rooms.forEach(function (r) { if (r.id === id) target = r; });
+  if (!target) return;
+  if (run.active) {
+    run.epoch++;
+    run.active = false; run.paused = false; run.typingAgent = null; run.cooldownLeft = 0;
+    var prev = activeRoom();
+    if (prev && prev.status === "running") prev.status = "idle";
+    save();
+    toast("진행 중이던 대화를 멈췄어요");
+  }
+  state.activeRoomId = id;
+  run.freeConsec = 0;
+  save();
+  renderAll();
+  scrollBottom(true);
+  closeSidebar();
+}
+
+function setMode(mode) {
+  var r = activeRoom();
+  if (run.active) { toast("진행 중에는 모드를 바꿀 수 없어요 · 먼저 멈춰 주세요"); return; }
+  if (["mention", "roundtable", "free"].indexOf(mode) < 0) return;
+  if (r.mode === mode) return;
+  r.mode = mode;
+  if (mode === "roundtable" && !r.agenda) r.agenda = r.kind === "project" ? "오늘 안건 정리" : "이야기 정리";
+  save();
+  renderRoom();
+  renderSidebar();
+  toast("모드 · " + modeName(mode));
+}
+
+function toggleMember(id) {
+  var r = activeRoom();
+  var i = r.members.indexOf(id);
+  if (i > -1) {
+    if (r.members.length <= 1) { toast("AI가 최소 한 명은 있어야 해요"); return; }
+    r.members.splice(i, 1);
+    if (run.moderator === id) run.moderator = r.members[0];
+    toast(agentName(id) + " 비활성화 · 이 방에서 빠졌어요");
+  } else {
+    r.members.push(id);
+    toast(agentName(id) + " 활성화 · 이 방에 들어왔어요");
+  }
+  save();
+  renderAll();
+}
+
+/* =========================================================
+   14. 라운드테이블 · 예산 시트
+   ========================================================= */
+var rtState = { turns: 10 };
+
+function rtSelectedMembers() {
+  return Array.prototype.slice.call($("rtMembers").querySelectorAll('[aria-pressed="true"]')).map(function (b) { return b.getAttribute("data-id"); });
+}
+function rtRefreshEstimate() {
+  var turns = rtState.turns || 10;
+  var n = rtSelectedMembers().length;
+  var est = turns * (2.6 + n * 0.12);
+  $("rtEstimate").textContent = "예상 " + turns + "턴 · AI " + n + "명 · 약 " + won(est) + " (예상 토큰 " + Math.round(turns * 1500).toLocaleString("ko-KR") + ") · 시간 상한 10분";
+}
+function rtRefreshModerators() {
+  var ids = rtSelectedMembers();
+  var prev = $("rtModerator").value;
+  var h = "";
+  ids.forEach(function (id) { h += '<option value="' + esc(id) + '">' + esc(agentName(id)) + "</option>"; });
+  $("rtModerator").innerHTML = h || '<option value="">(선택)</option>';
+  if (ids.indexOf(prev) > -1) $("rtModerator").value = prev;
+  rtRefreshEstimate();
+}
+function openRoundtable(prefill) {
+  var r = activeRoom();
+  if (run.active) { toast("이미 진행 중이에요"); return; }
+  $("rtAgenda").value = prefill != null ? prefill : (r.agenda || "");
+  var h = "";
+  allAgents().forEach(function (a) {
+    var on = r.members.indexOf(a.id) > -1;
+    h += '<button type="button" class="pick check" data-id="' + esc(a.id) + '" aria-pressed="' + (on ? "true" : "false") + '">' + esc(a.name) + "</button>";
+  });
+  $("rtMembers").innerHTML = h;
+  rtState.turns = [6, 10, 15].indexOf(r.maxTurns) > -1 ? r.maxTurns : 10;
+  Array.prototype.forEach.call($("rtTurns").querySelectorAll("[data-turns]"), function (b) {
+    b.setAttribute("aria-pressed", Number(b.getAttribute("data-turns")) === rtState.turns ? "true" : "false");
+  });
+  $("rtBudget").value = r.budget || 60;
+  rtRefreshModerators();
+  if (run.moderator && $("rtModerator").querySelector('option[value="' + run.moderator + '"]')) $("rtModerator").value = run.moderator;
+  openModal("rtModal");
+  setTimeout(function () { $("rtAgenda").focus(); }, 220);
+}
+function rtStart() {
+  var agenda = $("rtAgenda").value.trim();
+  if (!agenda) { toast("안건을 적어 주세요"); $("rtAgenda").focus(); return; }
+  var parts = rtSelectedMembers();
+  if (parts.length < 2) { toast("AI를 두 명 이상 골라 주세요"); return; }
+  var mod = $("rtModerator").value;
+  if (parts.indexOf(mod) < 0) mod = parts[0];
+  var turns = rtState.turns || 10;
+  var budget = Math.max(10, Number($("rtBudget").value) || 60);
+  closeModal("rtModal");
+  startRoundtable({ agenda: agenda, participants: parts, moderator: mod, turns: turns, budget: budget });
+}
+function openBudgetSheet() {
+  var r = activeRoom();
+  $("budgetInput").value = r.budget || 60;
+  $("budgetSpent").textContent = won(r.session.cost);
+  Array.prototype.forEach.call($("budgetChips").querySelectorAll("[data-budget]"), function (b) {
+    b.setAttribute("aria-pressed", Number(b.getAttribute("data-budget")) === Number(r.budget) ? "true" : "false");
+  });
+  openModal("budgetModal");
+}
+
+/* =========================================================
+   15. 방 만들기 · 설정 시트
+   ========================================================= */
+var roomForm = { id: null, colorEmoji: "🚀", kind: "project" };
+var EMOJIS = ["🚀", "☕", "🎯", "📦", "🎨", "🌙", "💡", "🧩"];
+
+function renderEmojiPick() {
+  var h = "";
+  EMOJIS.forEach(function (e) {
+    h += '<button type="button" class="pick" data-emoji="' + e + '" aria-pressed="' + (e === roomForm.colorEmoji ? "true" : "false") + '">' + e + "</button>";
+  });
+  $("rfEmoji").innerHTML = h;
+}
+function renderRoomMemberPick(selected) {
+  var h = "";
+  allAgents().forEach(function (a) {
+    var on = selected.indexOf(a.id) > -1;
+    h += '<button type="button" class="pick check" data-id="' + esc(a.id) + '" aria-pressed="' + (on ? "true" : "false") + '">' + esc(a.name) + "</button>";
+  });
+  $("rfMembers").innerHTML = h;
+}
+function openRoomForm(roomId) {
+  var r = roomId ? state.rooms.filter(function (x) { return x.id === roomId; })[0] : null;
+  roomForm.id = r ? r.id : null;
+  $("rfTitle").textContent = r ? "방 설정" : "새 방 만들기";
+  $("rfName").value = r ? r.name : "";
+  roomForm.kind = r ? r.kind : "project";
+  roomForm.colorEmoji = r ? r.emoji : "🚀";
+  Array.prototype.forEach.call($("rfKind").querySelectorAll("[data-kind]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-kind") === roomForm.kind ? "true" : "false");
+  });
+  renderEmojiPick();
+  $("rfAgenda").value = r ? (r.agenda || "") : "";
+  $("rfMode").value = r ? r.mode : "roundtable";
+  $("rfTurns").value = r ? String(r.maxTurns || 10) : "10";
+  $("rfBudget").value = r ? r.budget : (roomForm.kind === "chat" ? 20 : 60);
+  var sel = r ? r.members.slice() : allAgents().map(function (a) { return a.id; });
+  renderRoomMemberPick(sel);
+  $("rfSubmit").textContent = r ? "저장" : "만들기";
+  $("rfDeleteWrap").hidden = !r;
+  openModal("roomFormModal");
+}
+function rfSelectedMembers() {
+  return Array.prototype.slice.call($("rfMembers").querySelectorAll('[aria-pressed="true"]')).map(function (b) { return b.getAttribute("data-id"); });
+}
+function submitRoomForm() {
+  var name = $("rfName").value.trim();
+  if (!name) { toast("방 이름을 적어 주세요"); $("rfName").focus(); return; }
+  var members = rfSelectedMembers();
+  if (!members.length) { toast("AI를 한 명 이상 골라 주세요"); return; }
+  var kind = roomForm.kind;
+  var emoji = roomForm.colorEmoji;
+  var agenda = $("rfAgenda").value.trim();
+  var mode = $("rfMode").value;
+  var maxTurns = Number($("rfTurns").value) || 10;
+  var budget = Math.max(10, Number($("rfBudget").value) || 60);
+  if (roomForm.id) {
+    var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
+    if (!r) return;
+    r.name = name; r.emoji = emoji; r.kind = kind; r.agenda = agenda;
+    r.mode = mode; r.maxTurns = maxTurns; r.budget = budget; r.members = members;
+    if (run.moderator && members.indexOf(run.moderator) < 0) run.moderator = members[0];
+    toast("방 설정을 저장했어요");
+  } else {
+    var room = {
+      id: "r_" + uid(""),
+      emoji: emoji, name: name, kind: kind, agenda: agenda, mode: mode,
+      maxTurns: maxTurns, budget: budget, members: members, status: "idle",
+      createdAt: Date.now(), session: freshSession(), messages: []
+    };
+    room.messages.push({
+      id: uid("m"), who: "system", kind: "info", at: Date.now(),
+      text: kind === "project"
+        ? "새 프로젝트방이에요. 안건을 확인하고 라운드테이블을 시작해 보세요."
+        : "새 사랑방이에요. AI가 먼저 말을 걸고, 연속 3발화 뒤 조용해집니다."
+    });
+    state.rooms.push(room);
+    state.activeRoomId = room.id;
+    toast("방을 만들었어요");
+  }
+  save();
+  closeModal("roomFormModal");
+  renderAll();
+  scrollBottom(true);
+}
+function deleteRoom() {
+  if (!roomForm.id) return;
+  if (state.rooms.length <= 1) { toast("방이 하나는 있어야 해요"); return; }
+  var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
+  if (!r) return;
+  if (!window.confirm("‘" + r.name + "’ 방과 대화를 지울까요? 되돌릴 수 없어요.")) return;
+  state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
+  if (state.activeRoomId === r.id) state.activeRoomId = state.rooms[0].id;
+  save();
+  closeModal("roomFormModal");
+  renderAll();
+  toast("방을 지웠어요");
+}
+
+/* =========================================================
+   16. AI 초대
+   ========================================================= */
+var invColor = COLORS[0];
+function renderSwatches() {
+  var h = "";
+  COLORS.forEach(function (c) {
+    h += '<button type="button" class="swatch" data-color="' + c + '" aria-pressed="' + (c === invColor ? "true" : "false") + '" style="background:' + c + '" aria-label="색 ' + c + '"></button>';
+  });
+  $("invColors").innerHTML = h;
+}
+function inviteTab(tab) {
+  Array.prototype.forEach.call($("inviteSeg").querySelectorAll("[data-tab]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-tab") === tab ? "true" : "false");
+  });
+  $("invTabByok").hidden = tab !== "byok";
+  $("invTabHook").hidden = tab !== "hook";
+}
+function addByokAgent() {
+  var name = $("invName").value.trim();
+  if (!name) { toast("이름을 적어 주세요"); $("invName").focus(); return; }
+  if (allAgents().some(function (a) { return a.name === name; })) { toast("같은 이름의 AI가 이미 있어요"); return; }
+  var role = $("invRole").value.trim() || "새 멤버";
+  var prompt = $("invPrompt").value.trim() || ("너는 ‘" + name + "’다. 역할: " + role + ". 한국어로 짧고 분명하게 말하고, 자기 몫에 집중한다.");
+  var model = $("invModel").value;
+  var id = "ag_" + hash(name + Date.now()).toString(36);
+  state.agents[id] = {
+    id: id, name: name, role: role, color: invColor, type: "byok", model: model,
+    prompt: prompt, desc: "직접 만든 AI · " + role
+  };
+  var r = activeRoom();
+  if (r.members.indexOf(id) < 0) r.members.push(id);
+  save();
+  $("invName").value = ""; $("invRole").value = ""; $("invPrompt").value = ""; $("invModel").value = "gemini";
+  closeModal("inviteModal");
+  renderAll();
+  toast(name + " 초대 완료 · 이 방 멤버가 됐어요");
+}
+function setHookStatus(kind, msg) {
+  var el = $("hookStatus");
+  el.hidden = false;
+  el.className = "api-status " + kind;
+  el.textContent = msg;
+}
+function httpMsg(st) {
+  if (st === 401 || st === 403) return "토큰이 거부되었어요(HTTP " + st + "). 에이전트 쪽 설정을 확인해 주세요.";
+  if (st === 404) return "주소를 찾지 못했어요(404). Webhook URL을 확인해 주세요.";
+  if (st >= 500) return "에이전트 서버에 문제가 있어요(HTTP " + st + "). 잠시 뒤 다시 시도해 주세요.";
+  return "연결이 거부되었어요(HTTP " + st + ").";
+}
+async function testHook() {
+  var url = $("hookUrl").value.trim();
+  if (!/^https?:\/\//i.test(url)) { setHookStatus("err", "http(s)로 시작하는 Webhook 주소를 넣어 주세요."); return; }
+  setHookStatus("busy", "연결을 확인하고 있어요… (최대 12초)");
+  var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, 12000) : null;
+  try {
+    var res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Kkiri-Event": "agent.ping", "X-Kkiri-Token": $("hookToken").value.trim() },
+      body: JSON.stringify({ event: "agent.ping", test: true, sentAt: new Date().toISOString(), platform: "kkiri-v2" }),
+      signal: ctrl ? ctrl.signal : undefined
+    });
+    if (timer) clearTimeout(timer);
+    if (!res.ok) { setHookStatus("err", httpMsg(res.status)); return; }
+    var txt = "";
+    try { txt = await res.text(); } catch (e2) { txt = ""; }
+    setHookStatus("ok", "연결 성공 · 응답: " + trunc(txt || "(빈 응답)", 140));
+  } catch (e) {
+    if (timer) clearTimeout(timer);
+    if (e && e.name === "AbortError") { setHookStatus("err", "12초 안에 응답이 없어요. 에이전트 서버가 켜져 있는지 확인해 주세요."); return; }
+    setHookStatus("err", "브라우저에서 직접 호출이 막혔어요(CORS 또는 네트워크). 외부 서버가 CORS를 허용해야 테스트가 통과합니다. 등록은 그대로 할 수 있고, 대화 중 실패한 턴은 데모 답변으로 대체합니다.");
+  }
+}
+function addHookAgent() {
+  var name = $("hookName").value.trim();
+  var url = $("hookUrl").value.trim();
+  if (!name) { toast("에이전트 이름을 적어 주세요"); $("hookName").focus(); return; }
+  if (!/^https?:\/\//i.test(url)) { toast("http(s) Webhook 주소를 넣어 주세요"); $("hookUrl").focus(); return; }
+  if (allAgents().some(function (a) { return a.name === name; })) { toast("같은 이름의 AI가 이미 있어요"); return; }
+  var id = "wh_" + hash(name + url).toString(36);
+  state.agents[id] = {
+    id: id, name: name, role: "외부 에이전트", color: COLORS[3], type: "webhook", model: "demo",
+    url: url, token: $("hookToken").value.trim(), status: "unknown", prompt: "",
+    desc: "웹훅으로 연결된 외부 AI"
+  };
+  var r = activeRoom();
+  if (r.members.indexOf(id) < 0) r.members.push(id);
+  save();
+  $("hookName").value = ""; $("hookUrl").value = ""; $("hookToken").value = "";
+  $("hookStatus").hidden = true;
+  closeModal("inviteModal");
+  renderAll();
+  toast(name + " 등록 완료 · 이 방에 초대했어요");
+}
+
+/* =========================================================
+   17. 설정 · API · 저장소
+   ========================================================= */
+function renderApi() {
+  var on = anyKey();
+  $("apiModePill").textContent = on ? "실제 AI 연결" : "데모 모드";
+  $("apiModePill").className = "pill" + (on ? "" : " gray");
+  $("apiModeSub").textContent = on
+    ? "키 저장됨 · " + providerLabel(api.provider) + " " + modelFor(api.provider)
+    : "키를 넣으면 실제 AI가 답해요";
+  Array.prototype.forEach.call(document.querySelectorAll(".seg-btn"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-provider") === api.provider ? "true" : "false");
+  });
+  $("apiHint").innerHTML = api.provider === "gemini"
+    ? "무료 티어로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급</a>"
+    : "OpenAI 크레딧이 필요해요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급</a> · 모델명은 직접 바꿀 수 있어요";
+  $("apiKey").placeholder = api.provider === "gemini" ? "AIza… 로 시작하는 키" : "sk-… 로 시작하는 키";
+  $("apiModel").placeholder = DEFAULT_MODEL[api.provider];
+  $("roomNote").textContent = on
+    ? "지금은 " + providerLabel(api.provider) + " 실제 AI와 대화합니다. 답장은 선택한 API로만 나가고, 키·대화는 이 브라우저에만 저장됩니다."
+    : "지금은 데모 모드예요. 답장은 이 파일 안의 규칙으로 만들어지고, 실제 날씨·주문·일정을 조회하지 않아요. 설정에서 키를 넣으면 실제 AI가 답합니다.";
+  renderSidebar();
+}
+function syncFields() {
+  $("apiKey").value = keyFor(api.provider);
+  $("apiModel").value = (api.provider === "openai" ? api.openaiModel : api.geminiModel) || "";
+  $("apiKey").type = "password";
+  $("keyEye").setAttribute("aria-pressed", "false");
+  $("keyEye").textContent = "보기";
+}
+function setApiStatus(kind, msg) {
+  var el = $("apiStatus");
+  el.hidden = false;
+  el.className = "api-status " + kind;
+  el.textContent = msg;
+}
+function hideApiStatus() { $("apiStatus").hidden = true; $("apiStatus").textContent = ""; }
+function renderStorage() {
+  var r = activeRoom();
+  var savedOk = false;
+  try { savedOk = !!localStorage.getItem(STORE_KEY); } catch (e) { savedOk = false; }
+  $("storeMeta").textContent = lastSaved ? timeLabel(lastSaved) + " · 저장됨" : (savedOk ? "저장된 대화가 있어요" : "아직 저장된 대화가 없어요");
+  $("storeCount").textContent = r.messages.length + "개";
+  var total = 0;
+  state.rooms.forEach(function (x) { total += x.session.cost || 0; });
+  $("storeCost").textContent = won(total);
+  $("storeState").textContent = savedOk || !r.messages.length ? "켜짐" : "저장 불가";
+}
+async function testConnection() {
+  var key = keyFor(api.provider);
+  if (!key) { setApiStatus("err", "API 키를 먼저 입력해 주세요."); $("apiKey").focus(); return; }
+  $("testBtn").disabled = true;
+  var old = $("testBtn").textContent;
+  $("testBtn").textContent = "확인 중…";
+  setApiStatus("busy", providerLabel(api.provider) + " " + modelFor(api.provider) + " 연결을 확인하고 있어요…");
+  try {
+    await callProvider(api.provider, key, modelFor(api.provider), "너는 연결 확인용 도우미다. 아주 짧게 답한다.", "연결 확인. ‘연결됐어요’라고만 답해 주세요.");
+    setApiStatus("ok", "연결 성공 · " + providerLabel(api.provider) + " " + modelFor(api.provider) + " 응답을 받았어요.");
+  } catch (e) { setApiStatus("err", friendlyError(e)); }
+  $("testBtn").disabled = false;
+  $("testBtn").textContent = old;
+}
+function exportJson() {
+  var payload = {
+    app: "끼리 (Kkiri) v2",
+    exportedAt: new Date().toISOString(),
+    mode: anyKey() ? providerLabel(api.provider) + " 실제 AI" : "데모 모드",
+    activeRoomId: state.activeRoomId,
+    rooms: state.rooms.map(function (r) {
+      return {
+        id: r.id, name: r.name, kind: r.kind, agenda: r.agenda, mode: r.mode,
+        maxTurns: r.maxTurns, budget: r.budget,
+        members: r.members.map(agentName),
+        stats: r.session,
+        messages: r.messages.map(function (m) {
+          return {
+            speaker: m.who === "card" ? "합의안 카드" : agentName(m.who),
+            speakerId: m.who, text: m.text || "", at: new Date(m.at).toISOString(),
+            source: m.src || null, tokens: m.tin || m.tout ? { in: m.tin || 0, out: m.tout || 0 } : null,
+            cost: m.cost || 0, card: m.card || null
+          };
+        })
+      };
+    })
+  };
+  var d = new Date();
+  var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes());
+  download("kkiri-export-" + stamp + ".json", JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
+  toast("대화 내역을 내려받았어요");
+}
+function resetRoom() {
+  var r = activeRoom();
+  if (!r.messages.length) { toast("초기화할 대화가 없어요"); return; }
+  if (!window.confirm("‘" + r.name + "’ 방의 대화와 완료 표시를 모두 지울까요? 되돌릴 수 없어요. (API 키는 그대로 남습니다)")) return;
+  run.epoch++;
+  run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
+  r.messages = [{ id: uid("m"), who: "system", kind: "info", at: Date.now(), text: "대화를 초기화했어요. 안건과 설정은 그대로입니다." }];
+  r.session = freshSession();
+  r.status = "idle";
+  save();
+  renderAll();
+  renderStorage();
+  toast("대화를 초기화했어요");
+}
+
+/* =========================================================
+   18. 입력 · 전송
+   ========================================================= */
+function growInput() {
+  var el = $("input");
+  el.style.height = "auto";
+  el.style.height = Math.min(132, Math.max(44, el.scrollHeight)) + "px";
+}
+function onSend() {
+  var r = activeRoom();
+  if (!r) return;
+  if (run.active) { toast("AI가 말하는 중이에요 · 멈추거나 기다려 주세요"); return; }
+  var t = $("input").value.trim();
+  if (!t) {
+    if (r.mode === "roundtable") { openRoundtable(null); return; }
+    $("input").focus();
+    return;
+  }
+  if (r.mode === "roundtable") { openRoundtable(t); return; }
+  if (budgetExceeded(r)) {
+    addSystem("예산 상한에 닿았어요. 예산을 올리거나 회차를 초기화해 주세요.", "warn");
+    openBudgetSheet();
+    return;
+  }
+  addUserMessage(t);
+  $("input").value = "";
+  growInput();
+  if (r.mode === "mention") runMentions(t);
+  else runFree(t);
+}
+function insertMention(name) {
+  var el = $("input");
+  var v = el.value;
+  var lead = v && !/\s$/.test(v) ? " " : "";
+  el.value = v + lead + "@" + name + " ";
+  el.focus();
+  growInput();
+}
+function sendTopic(i) {
+  var texts = ["오늘 하루 어땠어?", "요즘 고민 있어. 한마디씩 해 줘.", "뭐 먹을까? 추천해 줘."];
+  var r = activeRoom();
+  if (run.active) { toast("AI가 말하는 중이에요"); return; }
+  if (!r.members.length) { toast("이 방에 AI가 없어요"); return; }
+  addUserMessage(texts[i] || texts[0]);
+  runFree(texts[i] || texts[0]);
+}
+function sendNudge() {
+  var r = activeRoom();
+  if (run.active) return;
+  if (!r.members.length) { toast("이 방에 AI가 없어요 · 멤버를 켜 주세요"); return; }
+  runFree("먼저 말 걸어보기");
+}
+function act(name) {
+  if (name === "start" || name === "agenda") { openRoundtable(); return; }
+  if (name === "card") { onCardButton(); return; }
+  if (name === "nudge") { sendNudge(); return; }
+}
+
+/* =========================================================
+   19. 이벤트 배선
+   ========================================================= */
+function wire() {
+  $("roomList").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-room]");
+    if (b) selectRoom(b.getAttribute("data-room"));
+  });
+  $("sideMembers").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-member]");
+    if (b) toggleMember(b.getAttribute("data-member"));
+  });
+  $("modeSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-mode]");
+    if (b) setMode(b.getAttribute("data-mode"));
+  });
+  $("quickBar").addEventListener("click", function (e) {
+    var a = e.target.closest("[data-act]");
+    if (a) { act(a.getAttribute("data-act")); return; }
+    var m = e.target.closest("[data-mention]");
+    if (m) { insertMention(m.getAttribute("data-mention")); return; }
+    var t = e.target.closest("[data-topic]");
+    if (t) sendTopic(Number(t.getAttribute("data-topic")));
+  });
+  $("timelineInner").addEventListener("click", function (e) {
+    var a = e.target.closest("[data-act]");
+    if (a) { act(a.getAttribute("data-act")); return; }
+    var md = e.target.closest("[data-card-md]");
+    if (md) { exportCardMd(md.getAttribute("data-card-md")); return; }
+    var cp = e.target.closest("[data-card-copy]");
+    if (cp) { copyCard(cp.getAttribute("data-card-copy")); return; }
+    var rd = e.target.closest("[data-card-redo]");
+    if (rd) { redoCard(rd.getAttribute("data-card-redo")); return; }
+  });
+
+  $("menuBtn").addEventListener("click", openSidebar);
+  $("sideClose").addEventListener("click", closeSidebar);
+  $("backdrop").addEventListener("click", closeSidebar);
+  $("newRoomBtn").addEventListener("click", function () { closeSidebar(); openRoomForm(null); });
+  $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
+  $("inviteBtn").addEventListener("click", function () { closeSidebar(); inviteTab("byok"); openModal("inviteModal"); });
+  $("settingsBtn").addEventListener("click", function () {
+    closeSidebar(); syncFields(); renderApi(); renderStorage(); hideApiStatus(); openModal("settingsModal");
+  });
+  $("cardBtn").addEventListener("click", onCardButton);
+  $("sendBtn").addEventListener("click", onSend);
+  $("input").addEventListener("input", growInput);
+  $("input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); onSend(); }
+  });
+
+  $("pauseBtn").addEventListener("click", function () {
+    if (!run.active) { toast("진행 중일 때만 일시정지할 수 있어요"); return; }
+    run.paused = !run.paused;
+    updateMeters();
+    renderRoom();
+    toast(run.paused ? "일시정지했어요 · ▶ 로 다시 시작" : "다시 진행합니다");
+  });
+  $("stopBtn").addEventListener("click", function () {
+    if (!run.active) { toast("지금은 진행 중이 아니에요"); return; }
+    endRun("stop");
+    toast("멈췄어요 · 대화는 그대로 남아 있어요");
+  });
+
+  $("turnMeter").addEventListener("click", function () { openRoundtable(); });
+  $("turnMeter").style.cursor = "pointer";
+  $("budgetMeter").addEventListener("click", openBudgetSheet);
+  $("budgetMeter").style.cursor = "pointer";
+
+  document.addEventListener("click", function (e) {
+    var c = e.target.closest("[data-close]");
+    if (c) { var m = c.closest(".modal"); if (m) closeModal(m.id); }
+  });
+  document.querySelectorAll(".modal").forEach(function (m) {
+    m.addEventListener("click", function (e) { if (e.target === m) closeModal(m.id); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      if (openStack.length) closeModal(openStack[openStack.length - 1]);
+      else closeSidebar();
+    }
+  });
+
+  /* 라운드테이블 시트 */
+  $("rtMembers").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-id]");
+    if (!b) return;
+    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    rtRefreshModerators();
+  });
+  $("rtTurns").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-turns]");
+    if (!b) return;
+    rtState.turns = Number(b.getAttribute("data-turns"));
+    Array.prototype.forEach.call($("rtTurns").querySelectorAll("[data-turns]"), function (x) {
+      x.setAttribute("aria-pressed", Number(x.getAttribute("data-turns")) === rtState.turns ? "true" : "false");
+    });
+    rtRefreshEstimate();
+  });
+  $("rtAgenda").addEventListener("input", rtRefreshEstimate);
+  $("rtBudget").addEventListener("input", rtRefreshEstimate);
+  $("rtStart").addEventListener("click", rtStart);
+
+  /* 예산 시트 */
+  $("budgetChips").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-budget]");
+    if (!b) return;
+    $("budgetInput").value = b.getAttribute("data-budget");
+    Array.prototype.forEach.call($("budgetChips").querySelectorAll("[data-budget]"), function (x) {
+      x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    });
+  });
+  $("budgetSave").addEventListener("click", function () {
+    var r = activeRoom();
+    var v = Math.max(10, Number($("budgetInput").value) || 60);
+    r.budget = v;
+    save();
+    closeModal("budgetModal");
+    updateMeters();
+    renderSidebar();
+    toast("예산 상한을 " + won(v) + "로 저장했어요");
+  });
+  $("budgetReset").addEventListener("click", function () {
+    var r = activeRoom();
+    r.session = freshSession();
+    r.status = "idle";
+    save();
+    closeModal("budgetModal");
+    renderRoom();
+    renderSidebar();
+    toast("이번 회차 턴·비용 기록을 초기화했어요");
+  });
+
+  /* 방 폼 */
+  $("rfKind").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-kind]");
+    if (!b) return;
+    roomForm.kind = b.getAttribute("data-kind");
+    Array.prototype.forEach.call($("rfKind").querySelectorAll("[data-kind]"), function (x) {
+      x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    });
+    if (!roomForm.id) {
+      roomForm.colorEmoji = roomForm.kind === "chat" ? "☕" : "🚀";
+      renderEmojiPick();
+      $("rfMode").value = roomForm.kind === "chat" ? "free" : "roundtable";
+      $("rfBudget").value = roomForm.kind === "chat" ? 20 : 60;
+    }
+  });
+  $("rfEmoji").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-emoji]");
+    if (!b) return;
+    roomForm.colorEmoji = b.getAttribute("data-emoji");
+    renderEmojiPick();
+  });
+  $("rfMembers").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-id]");
+    if (!b) return;
+    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+  });
+  $("rfSubmit").addEventListener("click", submitRoomForm);
+  $("rfDelete").addEventListener("click", deleteRoom);
+
+  /* 초대 */
+  $("inviteSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-tab]");
+    if (b) inviteTab(b.getAttribute("data-tab"));
+  });
+  $("invColors").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-color]");
+    if (!b) return;
+    invColor = b.getAttribute("data-color");
+    renderSwatches();
+  });
+  $("invAdd").addEventListener("click", addByokAgent);
+  $("hookTest").addEventListener("click", testHook);
+  $("hookAdd").addEventListener("click", addHookAgent);
+  $("inviteManage").addEventListener("click", function () { closeModal("inviteModal"); openRoomForm(state.activeRoomId); });
+
+  /* 설정 */
+  Array.prototype.forEach.call(document.querySelectorAll(".seg-btn"), function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-provider");
+      if (p !== "gemini" && p !== "openai") return;
+      api.provider = p;
+      saveApi();
+      syncFields();
+      hideApiStatus();
+      renderApi();
+    });
+  });
+  var keyTimer = null;
+  $("apiKey").addEventListener("input", function () {
+    var v = $("apiKey").value.trim();
+    if (api.provider === "gemini") api.geminiKey = v; else api.openaiKey = v;
+    clearTimeout(keyTimer);
+    keyTimer = setTimeout(function () {
+      if (!saveApi()) setApiStatus("err", "브라우저 저장이 막혀 있어요. 이 화면에서만 키를 쓸 수 있어요.");
+      renderApi();
+    }, 300);
+  });
+  var modelTimer = null;
+  $("apiModel").addEventListener("input", function () {
+    var v = $("apiModel").value.trim();
+    if (api.provider === "gemini") api.geminiModel = v || DEFAULT_MODEL.gemini;
+    else api.openaiModel = v || DEFAULT_MODEL.openai;
+    clearTimeout(modelTimer);
+    modelTimer = setTimeout(function () { saveApi(); renderApi(); }, 300);
+  });
+  $("keyEye").addEventListener("click", function () {
+    var show = $("apiKey").type === "password";
+    $("apiKey").type = show ? "text" : "password";
+    $("keyEye").setAttribute("aria-pressed", show ? "true" : "false");
+    $("keyEye").textContent = show ? "숨기기" : "보기";
+  });
+  $("testBtn").addEventListener("click", testConnection);
+  $("delBtn").addEventListener("click", function () {
+    if (!keyFor(api.provider)) { setApiStatus("err", "지울 키가 없어요."); return; }
+    if (!window.confirm(providerLabel(api.provider) + " API 키를 이 브라우저에서 지울까요? 지우면 데모 모드로 돌아갑니다.")) return;
+    if (api.provider === "gemini") api.geminiKey = ""; else api.openaiKey = "";
+    $("apiKey").value = "";
+    saveApi();
+    hideApiStatus();
+    renderApi();
+    toast("키를 지웠어요 · 데모 모드로 돌아갑니다");
+  });
+  $("exportBtn").addEventListener("click", exportJson);
+  $("resetBtn").addEventListener("click", resetRoom);
+}
+
+/* =========================================================
+   20. 시작
+   ========================================================= */
+loadApi();
+if (!load()) {
+  state = seedState();
+  save();
+}
+renderSwatches();
+wire();
+renderAll();
+renderApi();
+syncFields();
+growInput();
+window.addEventListener("beforeunload", function () { try { save(); } catch (e) {} });
+
+})();
+</script>
+</body>
+</html>
