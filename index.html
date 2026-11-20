@@ -1135,7 +1135,7 @@ function seedState() {
         agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", maxTurns: 10, budget: 60,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v2 프로토타입 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. @이름으로 부르거나, 상단에서 라운드테이블로 바꿔 시작해 보세요." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 미리보기 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. @이름으로 부르거나, 상단에서 라운드테이블로 바꿔 시작해 보세요." }]
       },
       {
         id: "r_lounge", emoji: "☕", name: "자유 수다방", kind: "chat",
@@ -2963,7 +2963,7 @@ async function testHook() {
     var res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Kkiri-Event": "agent.ping", "X-Kkiri-Token": $("hookToken").value.trim() },
-      body: JSON.stringify({ event: "agent.ping", test: true, sentAt: new Date().toISOString(), platform: "kkiri-v2" }),
+      body: JSON.stringify({ event: "agent.ping", test: true, sentAt: new Date().toISOString(), platform: "kkiri-v3" }),
       signal: ctrl ? ctrl.signal : undefined
     });
     if (timer) clearTimeout(timer);
@@ -3076,7 +3076,7 @@ async function testConnection() {
 }
 function exportJson() {
   var payload = {
-    app: "끼리 (Kkiri) v2",
+    app: "끼리 (Kkiri) v3",
     exportedAt: new Date().toISOString(),
     mode: anyKey() ? providerLabel(api.provider) + " 실제 AI" : "데모 모드",
     activeRoomId: state.activeRoomId,
