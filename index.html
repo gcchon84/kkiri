@@ -417,6 +417,30 @@
   .backdrop{position:fixed;inset:0;background:rgba(6,12,18,.5);z-index:35;opacity:0;transition:opacity .18s ease}
   .backdrop.show{opacity:1}
 
+  /* ============ 실시간 상태 · 공유 ============ */
+  .live-pill{
+    display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;font-size:9px;font-weight:900;letter-spacing:-.01em;
+    color:#0d7a48;background:var(--green-tint);padding:3px 7px;border-radius:999px;white-space:nowrap;
+  }
+  .live-pill::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:0 0 5px}
+  .live-pill.local{color:#8a5a12;background:var(--amber-tint)}
+  .live-pill.off{color:#8b3a32;background:var(--red-tint)}
+  .live-pill.wait{color:#5c6b78;background:#eef3f1}
+  .nick-line{display:flex;align-items:center;gap:6px;margin:10px 4px 0;font-size:9.5px;font-weight:800;color:#8798a4;letter-spacing:-.01em}
+  .nick-line b{color:#eaf1f4;font-size:11px;font-weight:900;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nick-line .mini-btn{margin-left:auto}
+  .share-box{display:flex;gap:6px;align-items:center;margin-top:6px}
+  .share-box input{
+    flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:10.5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink-2);background:#f7faf9;
+  }
+  .code-chip{
+    display:inline-flex;align-items:center;gap:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:12px;font-weight:900;letter-spacing:.1em;color:#0d7a48;background:var(--green-tint);
+    padding:6px 10px;border-radius:9px;white-space:nowrap;
+  }
+  .room-link-badge{font-size:9px;font-weight:800;color:#8b9ca8;margin-left:auto;white-space:nowrap}
+
   /* ============ responsive ============ */
   @media (max-width:900px){
     .app{display:block;height:100dvh;max-width:none}
@@ -484,6 +508,10 @@
       <button class="icon-btn side-close" id="sideClose" aria-label="방 목록 닫기">✕</button>
     </div>
     <p class="brand-line">AI들끼리, 우리끼리.<br>같이 일하고 같이 논다.</p>
+    <div class="nick-line">
+      <span aria-hidden="true">👤</span><b id="nickLabel">끼리장</b>
+      <button class="mini-btn" id="nickBtn">닉네임 · 초대</button>
+    </div>
 
     <div class="side-sec">
       <div class="sec-head"><span>방</span><button class="mini-btn" id="newRoomBtn">+ 새 방</button></div>
@@ -508,10 +536,11 @@
       <button class="icon-btn only-mobile" id="menuBtn" aria-label="방 목록 열기">☰</button>
       <span class="room-emoji" id="roomEmoji" aria-hidden="true">🚀</span>
       <div class="room-titles">
-        <div class="rt-line"><h1 id="roomName">방</h1><span class="kind-pill" id="roomKind">프로젝트방</span></div>
+        <div class="rt-line"><h1 id="roomName">방</h1><span class="kind-pill" id="roomKind">프로젝트방</span><span class="live-pill wait" id="livePill">연결 중</span></div>
         <p id="roomSub"></p>
       </div>
       <div class="room-actions">
+        <button class="ghost-btn" id="shareBtn"><span aria-hidden="true">🔗</span><span class="lbl">초대</span></button>
         <button class="ghost-btn" id="cardBtn"><span aria-hidden="true">📋</span><span class="lbl">합의안</span></button>
         <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정">⋯</button>
       </div>
@@ -742,8 +771,33 @@ Content-Type: application/json
   </div>
 </div>
 
+<!-- ================= 공유 · 초대 · 닉네임 ================= -->
+<div class="modal" id="shareModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle" style="max-width:470px">
+    <div class="sheet-head"><h2 id="shareTitle">초대 · 내 닉네임</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <label class="field"><span>내 닉네임</span><input id="nickInput" type="text" maxlength="20" placeholder="끼리장" autocomplete="off"></label>
+      <p class="hint">같은 방에 있는 사람에게 이 이름으로 보여요. 이 브라우저에만 저장되고 서버에는 대화와 함께 남습니다.</p>
+      <div class="btn-row"><button class="btn green" id="nickSave">닉네임 저장</button></div>
+
+      <div class="panel-card" style="margin-top:16px">
+        <div class="row"><div class="k">초대 코드<small id="shareRoomName">방</small></div><span class="code-chip" id="shareCode">-</span></div>
+      </div>
+      <label class="field" style="margin-top:10px"><span>초대 링크</span>
+        <div class="share-box">
+          <input id="shareLink" type="text" readonly aria-label="초대 링크" spellcheck="false">
+          <button class="btn dark" id="shareCopy">복사</button>
+        </div>
+      </label>
+      <p class="hint" id="shareHint">링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다.</p>
+      <div class="btn-row"><button class="btn" id="shareNewRoom">+ 새 방 만들기</button></div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 <script>
 (function () {
 "use strict";
@@ -810,6 +864,42 @@ function similarity(a, b) {
 var VERSION = 2;
 var STORE_KEY = "kkiri.state.v2";
 var API_KEY = "kkiri.api.v2";
+var NICK_KEY = "kkiri.nick.v1";
+var HOST_KEY = "kkiri.hosts.v1";
+var DEFAULT_NICK = "끼리장";
+
+function nick() {
+  try {
+    var s = sessionStorage.getItem(NICK_KEY);
+    if (s && String(s).trim()) return String(s).trim().slice(0, 20);
+  } catch (e) {}
+  try {
+    var v = localStorage.getItem(NICK_KEY);
+    if (v && String(v).trim()) return String(v).trim().slice(0, 20);
+  } catch (e2) {}
+  return DEFAULT_NICK;
+}
+function pinNick() {
+  try { if (!sessionStorage.getItem(NICK_KEY)) sessionStorage.setItem(NICK_KEY, nick()); } catch (e) {}
+}
+function saveNick(v) {
+  var n = String(v == null ? "" : v).trim().slice(0, 20) || DEFAULT_NICK;
+  try { sessionStorage.setItem(NICK_KEY, n); } catch (e) {}
+  try { localStorage.setItem(NICK_KEY, n); } catch (e2) {}
+  var el = document.getElementById("nickLabel");
+  if (el) el.textContent = n;
+  renderTimeline(false);
+  renderQuick();
+  return n;
+}
+function hostStore() {
+  try { var d = JSON.parse(localStorage.getItem(HOST_KEY) || "{}"); return d && typeof d === "object" ? d : {}; } catch (e) { return {}; }
+}
+function rememberHost(roomId, code) {
+  var d = hostStore();
+  d[roomId] = code;
+  try { localStorage.setItem(HOST_KEY, JSON.stringify(d)); } catch (e) {}
+}
 var COLORS = ["#12a05e", "#2f6ff0", "#a855f7", "#e2534d", "#e08a1e", "#0e9c9c", "#5b6ee1"];
 var DEFAULT_MODEL = { gemini: "gemini-2.5-flash", openai: "gpt-4o-mini" };
 /* 원/1K 토큰 (가정 단가 · 설정 화면과 카드에 '예상'으로 표시) */
@@ -924,8 +1014,9 @@ function activeRoom() {
 function allAgents() { return Object.keys(state.agents).map(function (id) { return state.agents[id]; }); }
 function agentById(id) { return state.agents[id] || null; }
 function agentName(id) {
-  if (id === "user") return "끼리장";
+  if (id === "user") return nick();
   if (id === "system") return "안내";
+  if (id === "card") return "합의안 카드";
   var a = state.agents[id];
   return a ? a.name : "AI";
 }
@@ -998,7 +1089,7 @@ function modeName(m) { return m === "roundtable" ? "라운드테이블" : m === 
 function avatarHtml(id, size) {
   var a = state.agents[id];
   var c = a ? a.color : "#7c8894";
-  var n = a ? (a.name.charAt(0) || "?") : "?";
+  var n = a ? (a.avatar && a.avatar.length <= 4 ? a.avatar : (a.name.charAt(0) || "?")) : "?";
   return '<span class="avatar ' + (size || "md") + '" style="--c:' + esc(c) + '" aria-hidden="true">' + esc(n) + "</span>";
 }
 
@@ -1140,7 +1231,14 @@ function msgHtml(m) {
     return '<div class="msg sys' + cls + '"><div class="note">' + fmtText(m.text) + "</div></div>";
   }
   if (m.who === "user") {
-    return '<div class="msg me"><div class="body"><div class="bubble">' + fmtText(m.text) + "</div>" +
+    var mine = !m.name || m.name === nick();
+    if (mine) {
+      return '<div class="msg me"><div class="body"><div class="bubble">' + fmtText(m.text) + "</div>" +
+        '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
+    }
+    return '<div class="msg"><span class="avatar md" style="--c:#5b6ee1" aria-hidden="true">' + esc((m.name || "?").charAt(0)) + "</span>" +
+      '<div class="body"><div class="who">' + esc(m.name || "참여자") + "<em>참여자</em></div>" +
+      '<div class="bubble">' + fmtText(m.text) + "</div>" +
       '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
   }
   var a = state.agents[m.who];
@@ -1275,18 +1373,24 @@ function renderQuick() {
    ========================================================= */
 function addUserMessage(text) {
   var r = activeRoom();
-  r.messages.push({ id: uid("m"), who: "user", text: text, at: Date.now(), tin: 0, tout: 0, cost: 0 });
+  var m = { id: uid("h"), who: "user", name: nick(), text: text, at: Date.now(), tin: 0, tout: 0, cost: 0 };
+  r.messages.push(m);
   if (!r.session.startedAt) r.session.startedAt = Date.now();
   save();
   renderTimeline(true);
   renderSidebar();
+  dbSendMessage(m);
+  return m;
 }
 
 function addSystem(text, kind) {
   var r = activeRoom();
-  r.messages.push({ id: uid("m"), who: "system", kind: kind || "info", text: text, at: Date.now() });
+  var m = { id: uid("s"), who: "system", kind: kind || "info", text: text, at: Date.now() };
+  r.messages.push(m);
   save();
   renderTimeline(true);
+  dbSendMessage(m);
+  return m;
 }
 
 function addAgentMessage(agent, d, phase) {
@@ -1296,7 +1400,7 @@ function addAgentMessage(agent, d, phase) {
   var provider = d.src === "openai" ? "openai" : d.src === "gemini" ? "gemini" : (agent.model === "openai" ? "openai" : agent.model === "gemini" ? "gemini" : api.provider);
   var cost = d.cost != null ? d.cost : (d.src === "ext" || (agent.type === "webhook" && d.src !== "gemini" && d.src !== "openai") ? 0 : computeCost(provider, tin, tout));
   var m = {
-    id: uid("m"), who: agent.id, text: d.text, at: Date.now(), src: d.src || "demo",
+    id: uid("a"), who: agent.id, text: d.text, at: Date.now(), src: d.src || "demo",
     tin: tin, tout: tout, cost: cost, phase: phase || ""
   };
   if (d.dup) m.dup = true;
@@ -1316,6 +1420,7 @@ function addAgentMessage(agent, d, phase) {
   renderTimeline(true);
   updateMeters();
   renderSidebar();
+  dbSendMessage(m);
   return m;
 }
 
@@ -1676,6 +1781,7 @@ function startRoundtable(opts) {
   run.active = true; run.paused = false; run.typingAgent = null; run.cooldownLeft = 0;
   run.idx = 0; run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
   run.freeConsec = 0; run.moderator = mod; run.mode = "roundtable";
+  run.roundId = uid("rd");
   run.schedule = buildSchedule(r);
   save();
   renderAll();
@@ -2202,7 +2308,8 @@ function download(filename, text, mime) {
   }, 600);
 }
 
-function copyText(text) {
+function copyText(text, label) {
+  var okMsg = label || "합의안을 복사했어요";
   function fallback() {
     try {
       var ta = document.createElement("textarea");
@@ -2215,13 +2322,13 @@ function copyText(text) {
       var ok = false;
       try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
       document.body.removeChild(ta);
-      toast(ok ? "합의안을 복사했어요" : "복사가 막혀 있어요 · .md 저장을 이용해 주세요");
+      toast(ok ? okMsg : "복사가 막혀 있어요 · 직접 선택해 복사해 주세요");
     } catch (e2) {
-      toast("복사가 막혀 있어요 · .md 저장을 이용해 주세요");
+      toast("복사가 막혀 있어요 · 직접 선택해 복사해 주세요");
     }
   }
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(function () { toast("합의안을 복사했어요"); }, fallback);
+    navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
   } else fallback();
 }
 
@@ -2267,7 +2374,7 @@ function generateCard(opts) {
   var all = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; });
   if (!all.length && !opts.force) { toast("아직 정리할 대화가 없어요"); return null; }
   var card = buildCard(r, { draft: !!opts.draft });
-  var m = { id: uid("m"), who: "card", at: Date.now(), card: card, cost: 0, tin: 0, tout: 0 };
+  var m = { id: uid("c"), who: "card", at: Date.now(), card: card, cost: 0, tin: 0, tout: 0 };
   r.messages.push(m);
   if (r.status === "running") r.status = "paused";
   if (!r.session.endedAt) r.session.endedAt = Date.now();
@@ -2276,6 +2383,7 @@ function generateCard(opts) {
   renderTimeline(true);
   renderSidebar();
   updateMeters();
+  dbSendCard(m);
   return card;
 }
 
@@ -2358,6 +2466,14 @@ function selectRoom(id) {
   renderAll();
   scrollBottom(true);
   closeSidebar();
+  if (db.ready) {
+    dbLoadMessages(id).then(function () {
+      if (state.activeRoomId !== id) return;
+      renderAll();
+      scrollBottom(true);
+    });
+    dbSubscribe(id);
+  }
 }
 
 function setMode(mode) {
@@ -2381,9 +2497,11 @@ function toggleMember(id) {
     r.members.splice(i, 1);
     if (run.moderator === id) run.moderator = r.members[0];
     toast(agentName(id) + " 비활성화 · 이 방에서 빠졌어요");
+    dbSetMember(r.id, id, false);
   } else {
     r.members.push(id);
     toast(agentName(id) + " 활성화 · 이 방에 들어왔어요");
+    dbSetMember(r.id, id, true);
   }
   save();
   renderAll();
@@ -2493,6 +2611,7 @@ function openRoomForm(roomId) {
   var sel = r ? r.members.slice() : allAgents().map(function (a) { return a.id; });
   renderRoomMemberPick(sel);
   $("rfSubmit").textContent = r ? "저장" : "만들기";
+  $("rfDelete").textContent = r && r.remote ? "목록에서 숨기기" : "이 방 삭제";
   $("rfDeleteWrap").hidden = !r;
   openModal("roomFormModal");
 }
@@ -2517,15 +2636,17 @@ function submitRoomForm() {
     r.mode = mode; r.maxTurns = maxTurns; r.budget = budget; r.members = members;
     if (run.moderator && members.indexOf(run.moderator) < 0) run.moderator = members[0];
     toast("방 설정을 저장했어요");
+    dbUpdateRoom(r, members);
   } else {
     var room = {
       id: "r_" + uid(""),
       emoji: emoji, name: name, kind: kind, agenda: agenda, mode: mode,
       maxTurns: maxTurns, budget: budget, members: members, status: "idle",
-      createdAt: Date.now(), session: freshSession(), messages: []
+      createdAt: Date.now(), session: freshSession(), messages: [],
+      inviteCode: newInviteCode(), hostName: nick(), isPublic: true, remote: db.ready
     };
     room.messages.push({
-      id: uid("m"), who: "system", kind: "info", at: Date.now(),
+      id: uid("s"), who: "system", kind: "info", at: Date.now(),
       text: kind === "project"
         ? "새 프로젝트방이에요. 안건을 확인하고 라운드테이블을 시작해 보세요."
         : "새 사랑방이에요. AI가 먼저 말을 걸고, 연속 3발화 뒤 조용해집니다."
@@ -2533,17 +2654,31 @@ function submitRoomForm() {
     state.rooms.push(room);
     state.activeRoomId = room.id;
     toast("방을 만들었어요");
+    dbCreateRoom(room, members);
   }
   save();
   closeModal("roomFormModal");
   renderAll();
   scrollBottom(true);
+  if (db.ready) dbSubscribe(state.activeRoomId);
 }
 function deleteRoom() {
   if (!roomForm.id) return;
   if (state.rooms.length <= 1) { toast("방이 하나는 있어야 해요"); return; }
   var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
   if (!r) return;
+  if (r.remote) {
+    if (!window.confirm("‘" + r.name + "’ 방을 목록에서 숨길까요? 실시간 방의 대화 기록은 서버에 남습니다.")) return;
+    dbHideRoom(r);
+    state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
+    if (state.activeRoomId === r.id) state.activeRoomId = state.rooms[0].id;
+    save();
+    closeModal("roomFormModal");
+    renderAll();
+    if (db.ready) { dbLoadMessages(state.activeRoomId); dbSubscribe(state.activeRoomId); }
+    toast("방을 목록에서 숨겼어요");
+    return;
+  }
   if (!window.confirm("‘" + r.name + "’ 방과 대화를 지울까요? 되돌릴 수 없어요.")) return;
   state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
   if (state.activeRoomId === r.id) state.activeRoomId = state.rooms[0].id;
@@ -2589,6 +2724,7 @@ function addByokAgent() {
   $("invName").value = ""; $("invRole").value = ""; $("invPrompt").value = ""; $("invModel").value = "gemini";
   closeModal("inviteModal");
   renderAll();
+  dbUpsertAgent(r.id, id);
   toast(name + " 초대 완료 · 이 방 멤버가 됐어요");
 }
 function setHookStatus(kind, msg) {
@@ -2646,6 +2782,7 @@ function addHookAgent() {
   $("hookStatus").hidden = true;
   closeModal("inviteModal");
   renderAll();
+  dbUpsertAgent(r.id, id);
   toast(name + " 등록 완료 · 이 방에 초대했어요");
 }
 
@@ -2742,16 +2879,477 @@ function exportJson() {
 function resetRoom() {
   var r = activeRoom();
   if (!r.messages.length) { toast("초기화할 대화가 없어요"); return; }
+  if (r.remote) {
+    if (!window.confirm("‘" + r.name + "’ 방의 회차 기록(턴·비용)만 초기화할까요? 저장된 대화는 서버에 그대로 남습니다.")) return;
+    run.epoch++;
+    run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
+    r.session = freshSession();
+    r.status = "idle";
+    save();
+    renderAll();
+    renderStorage();
+    toast("회차 기록을 초기화했어요 · 대화는 보존됩니다");
+    return;
+  }
   if (!window.confirm("‘" + r.name + "’ 방의 대화와 완료 표시를 모두 지울까요? 되돌릴 수 없어요. (API 키는 그대로 남습니다)")) return;
   run.epoch++;
   run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
-  r.messages = [{ id: uid("m"), who: "system", kind: "info", at: Date.now(), text: "대화를 초기화했어요. 안건과 설정은 그대로입니다." }];
+  r.messages = [{ id: uid("s"), who: "system", kind: "info", at: Date.now(), text: "대화를 초기화했어요. 안건과 설정은 그대로입니다." }];
   r.session = freshSession();
   r.status = "idle";
   save();
   renderAll();
   renderStorage();
   toast("대화를 초기화했어요");
+}
+
+/* =========================================================
+   17.5 실시간 DB (Supabase)
+   ========================================================= */
+var SB_URL = "https://qqydnjshnchgxtghbvnh.supabase.co";
+var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeWRuanNobmNoZ3h0Z2hidm5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxMDg2MjEsImV4cCI6MjExMDY4NDYyMX0.G5iI0f6X7f6S8m4NhY3d-GeALwLfWDM-8SpK2wXP36s";
+var HIDE_KEY = "kkiri.hidden.v1";
+var HOOK_KEY = "kkiri.hooks.v1";
+
+var db = { client: null, ready: false, channel: null, roomId: null, status: "idle" };
+var pendingJoin = null;
+var refreshTimer = null;
+var dbErrShown = {};
+
+(function parseJoin() {
+  var q = String(location.search || "");
+  var mr = /[?&]room=([^&]+)/.exec(q);
+  var mc = /[?&]code=([^&]+)/.exec(q);
+  if (mr) pendingJoin = { room: decodeURIComponent(mr[1]) };
+  else if (mc) pendingJoin = { code: decodeURIComponent(mc[1]).toUpperCase() };
+})();
+
+function dbToast(msg) {
+  if (dbErrShown[msg]) return;
+  dbErrShown[msg] = 1;
+  if (typeof console !== "undefined" && console.warn) console.warn("[kkiri]", msg);
+  toast(msg);
+}
+function setLiveStatus(kind, text) {
+  var el = $("livePill");
+  if (!el) return;
+  el.textContent = text;
+  el.className = "live-pill" + (kind === "live" ? "" : kind === "local" ? " local" : kind === "off" ? " off" : " wait");
+  el.title = text;
+  db.status = kind;
+}
+function hiddenRooms() {
+  try { var d = JSON.parse(localStorage.getItem(HIDE_KEY) || "{}"); return d && typeof d === "object" ? d : {}; } catch (e) { return {}; }
+}
+function hideRoomLocal(id) {
+  var d = hiddenRooms(); d[id] = 1;
+  try { localStorage.setItem(HIDE_KEY, JSON.stringify(d)); } catch (e) {}
+}
+function unhideRoomLocal(id) {
+  var d = hiddenRooms(); delete d[id];
+  try { localStorage.setItem(HIDE_KEY, JSON.stringify(d)); } catch (e) {}
+}
+function hookStore() {
+  try { var d = JSON.parse(localStorage.getItem(HOOK_KEY) || "{}"); return d && typeof d === "object" ? d : {}; } catch (e) { return {}; }
+}
+function saveHookToken(id, token) {
+  var d = hookStore();
+  if (token) d[id] = token; else delete d[id];
+  try { localStorage.setItem(HOOK_KEY, JSON.stringify(d)); } catch (e) {}
+}
+function newInviteCode() {
+  var A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", s = "";
+  for (var i = 0; i < 8; i++) s += A.charAt(Math.floor(Math.random() * A.length));
+  return s;
+}
+function dbProviderOf(a) {
+  if (!a) return "demo";
+  if (a.type === "webhook") return "webhook";
+  if (a.model === "gemini" || a.model === "openai") return a.model;
+  return a.type === "byok" ? "demo" : "builtin";
+}
+function dbAgentRowId(roomId, localId) { return String(roomId) + "__" + String(localId); }
+function dbLocalAgentId(rowId) {
+  var s = String(rowId || ""), i = s.indexOf("__");
+  return i > -1 ? s.slice(i + 2) : s;
+}
+function dbFindAgentByName(name) {
+  var found = null;
+  Object.keys(state.agents).forEach(function (k) {
+    if (!found && state.agents[k] && state.agents[k].name === name) found = k;
+  });
+  return found;
+}
+function dbAgentFromRow(row) {
+  var lid = dbLocalAgentId(row.id);
+  var prov = row.provider || "demo";
+  var isByok = prov === "gemini" || prov === "openai";
+  return {
+    id: lid, name: row.name, role: row.role || "AI 멤버",
+    color: COLORS[hash(lid) % COLORS.length],
+    type: prov === "webhook" ? "webhook" : isByok ? "byok" : "builtin",
+    model: prov === "webhook" ? "demo" : isByok ? prov : "auto",
+    prompt: row.persona || "", desc: row.role || "", avatar: row.avatar || "",
+    url: row.webhook_url || ""
+  };
+}
+function dbMsgFromRow(row) {
+  var mt = row.meta || {};
+  var m = { id: row.id, at: Date.parse(row.created_at) || Date.now(), text: row.content || "", tin: 0, tout: 0, cost: 0 };
+  if (row.sender_type === "system") {
+    m.who = "system"; m.kind = mt.kind || "info";
+  } else if (row.sender_type === "human") {
+    m.who = "user"; m.name = row.sender_name || "참여자";
+  } else {
+    var aid = mt.agent_id && state.agents[mt.agent_id] ? mt.agent_id : dbFindAgentByName(row.sender_name);
+    if (!aid) { m.who = "system"; m.kind = "info"; m.text = (row.sender_name || "AI") + " · " + m.text; }
+    else m.who = aid;
+    m.src = mt.src || "demo";
+    if (mt.phase) m.phase = mt.phase;
+    if (mt.dup) m.dup = true;
+    m.tin = Number(mt.tin) || 0; m.tout = Number(mt.tout) || 0; m.cost = Number(mt.cost) || 0;
+  }
+  return m;
+}
+function dbCardFromRow(row) {
+  var c = row.card && row.card.title ? row.card : {
+    id: row.id, title: row.title, badge: row.badge || "합의안", draft: false,
+    decisions: row.decisions || [],
+    evidence: row.rationale ? String(row.rationale).split("\n").filter(Boolean) : [],
+    risks: row.dissent ? String(row.dissent).split("\n").filter(Boolean) : [],
+    checks: row.open_questions || [], todos: row.next_actions || [],
+    stats: { members: [], turns: 0, tokens: 0, cost: Number(row.cost_krw) || 0, duration: "" }
+  };
+  return { id: row.id, who: "card", at: Date.parse(row.created_at) || Date.now(), card: c };
+}
+function dbApply(roomRows, agentRows) {
+  var prev = {};
+  state.rooms.forEach(function (r) { prev[r.id] = r; });
+  var agents = {}, members = {};
+  agentRows.forEach(function (row) {
+    var lid = dbLocalAgentId(row.id);
+    if (!agents[lid]) agents[lid] = dbAgentFromRow(row);
+    if (row.is_active !== false) (members[row.room_id] = members[row.room_id] || []).push(lid);
+  });
+  var hooks = hookStore();
+  Object.keys(hooks).forEach(function (k) { if (agents[k]) agents[k].token = hooks[k]; });
+  if (!Object.keys(agents).length) return false;
+  state.agents = agents;
+  var hidden = hiddenRooms();
+  var rooms = [];
+  roomRows.forEach(function (row) {
+    var joinHit = pendingJoin && ((pendingJoin.room === row.id) ||
+      (pendingJoin.code && String(row.invite_code || "").toUpperCase() === pendingJoin.code));
+    if (hidden[row.id] && !joinHit) return;
+    if (joinHit && hidden[row.id]) unhideRoomLocal(row.id);
+    var s = row.settings || {};
+    var p = prev[row.id];
+    var mem = (members[row.id] || []).slice();
+    if (!mem.length) {
+      mem = agentRows.filter(function (a) { return a.room_id === row.id; }).map(function (a) { return dbLocalAgentId(a.id); });
+    }
+    mem = mem.filter(function (id) { return !!agents[id]; });
+    rooms.push({
+      id: row.id, name: row.name, kind: row.kind === "lounge" ? "chat" : "project",
+      agenda: row.description || "", emoji: s.emoji || (row.kind === "lounge" ? "☕" : "🚀"),
+      mode: s.mode || (row.kind === "lounge" ? "free" : "roundtable"),
+      maxTurns: typeof s.maxTurns === "number" ? s.maxTurns : (row.kind === "lounge" ? 0 : 10),
+      budget: typeof s.budget === "number" ? s.budget : 60,
+      members: mem, status: p ? p.status : "idle",
+      createdAt: Date.parse(row.created_at) || Date.now(),
+      session: p ? p.session : freshSession(),
+      messages: p ? p.messages : [],
+      inviteCode: row.invite_code, hostName: row.host_name, isPublic: row.is_public, remote: true
+    });
+  });
+  if (!rooms.length) return false;
+  state.rooms = rooms;
+  if (!rooms.some(function (r) { return r.id === state.activeRoomId; })) state.activeRoomId = rooms[0].id;
+  return true;
+}
+function dbMergeInto(room, extra) {
+  var have = {};
+  room.messages.forEach(function (m) { have[m.id] = 1; });
+  extra.forEach(function (m) { if (!have[m.id]) { room.messages.push(m); have[m.id] = 1; } });
+  room.messages.sort(function (a, b) { return (a.at || 0) - (b.at || 0); });
+}
+async function dbLoadMessages(roomId) {
+  if (!db.ready || !roomId) return;
+  var r = null;
+  state.rooms.forEach(function (x) { if (x.id === roomId) r = x; });
+  if (!r) return;
+  try {
+    var mres = await db.client.from("kkiri_messages").select("*")
+      .eq("room_id", roomId).order("created_at", { ascending: true }).limit(400);
+    var sres = await db.client.from("kkiri_summaries").select("*")
+      .eq("room_id", roomId).order("created_at", { ascending: true }).limit(60);
+    if (mres.error) { dbToast("대화를 불러오지 못했어요 · " + mres.error.message); return; }
+    var list = (mres.data || []).map(dbMsgFromRow);
+    if (!sres.error) list = list.concat((sres.data || []).map(dbCardFromRow));
+    dbMergeInto(r, list);
+  } catch (e) { dbToast("대화를 불러오지 못했어요 · 네트워크"); }
+}
+function dbUnsubscribe() {
+  if (db.channel && db.client) {
+    try { db.client.removeChannel(db.channel); } catch (e) {}
+  }
+  db.channel = null;
+  db.roomId = null;
+}
+function dbSubscribe(roomId) {
+  if (!db.client || !db.ready) return;
+  dbUnsubscribe();
+  db.roomId = roomId;
+  var ch = db.client.channel("kkiri-" + roomId)
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "kkiri_messages", filter: "room_id=eq." + roomId }, function (p) { dbOnMessage(p.new); })
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "kkiri_summaries", filter: "room_id=eq." + roomId }, function (p) { dbOnSummary(p.new); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "kkiri_agents", filter: "room_id=eq." + roomId }, function () { dbRefreshSoon(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "kkiri_rooms" }, function () { dbRefreshSoon(); })
+    .subscribe(function (status) {
+      if (status === "SUBSCRIBED") setLiveStatus("live", "실시간 연결됨 (Supabase)");
+      else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") setLiveStatus("off", "실시간 끊김 · 재연결 중");
+      else if (status === "CLOSED") setLiveStatus("local", "로컬 모드");
+      else setLiveStatus("wait", "연결 중…");
+    });
+  db.channel = ch;
+}
+function dbOnMessage(row) {
+  var r = activeRoom();
+  if (!r || r.id !== row.room_id) return;
+  var dup = false;
+  r.messages.forEach(function (m) { if (m.id === row.id) dup = true; });
+  if (dup) return;
+  var m = dbMsgFromRow(row);
+  r.messages.push(m);
+  renderTimeline(true);
+  renderSidebar();
+}
+function dbOnSummary(row) {
+  var r = activeRoom();
+  if (!r || r.id !== row.room_id) return;
+  var dup = false;
+  r.messages.forEach(function (m) { if (m.id === row.id) dup = true; });
+  if (dup) return;
+  r.messages.push(dbCardFromRow(row));
+  renderTimeline(true);
+  renderSidebar();
+}
+function dbRefreshSoon() {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(dbRefresh, 700);
+}
+async function dbRefresh() {
+  if (!db.ready || !db.client) return;
+  try {
+    var res = await Promise.all([
+      db.client.from("kkiri_rooms").select("*").order("created_at", { ascending: true }),
+      db.client.from("kkiri_agents").select("*").order("created_at", { ascending: true })
+    ]);
+    if (res[0].error || res[1].error) return;
+    if (!dbApply(res[0].data || [], res[1].data || [])) return;
+    renderAll();
+  } catch (e) {}
+}
+function dbSendMessage(m) {
+  if (!db.ready || !db.client) return;
+  var r = activeRoom();
+  if (!r || !r.remote) return;
+  if (!m || m.who === "card") return;
+  var a = m.who !== "user" && m.who !== "system" ? state.agents[m.who] : null;
+  var row = {
+    id: m.id, room_id: r.id,
+    sender_type: m.who === "user" ? "human" : m.who === "system" ? "system" : "ai",
+    sender_name: m.who === "user" ? (m.name || nick()) : m.who === "system" ? "안내" : (a ? a.name : "AI"),
+    sender_role: m.who === "user" ? "참여자" : m.who === "system" ? "" : (a ? (a.role || "") : ""),
+    avatar: a ? (a.avatar || "") : "",
+    content: (String(m.text == null ? "" : m.text).slice(0, 8000) || " "),
+    round_id: run.roundId ? String(run.roundId).slice(0, 60) : null,
+    turn_no: m.who === "ai" ? clamp(Number(r.session.turn) || 0, 0, 1000) : null,
+    meta: {
+      kind: m.kind || "", agent_id: m.who === "user" || m.who === "system" ? "" : m.who,
+      src: m.src || "", phase: m.phase || "", dup: !!m.dup,
+      tin: Math.round(m.tin || 0), tout: Math.round(m.tout || 0), cost: Number(m.cost) || 0
+    }
+  };
+  db.client.from("kkiri_messages").insert(row).then(function (res) {
+    if (res && res.error) dbToast("메시지를 서버에 저장하지 못했어요 · " + res.error.message);
+  }, function () { dbToast("메시지를 서버에 저장하지 못했어요 · 네트워크"); });
+}
+function dbSendCard(m) {
+  if (!db.ready || !db.client) return;
+  var r = activeRoom();
+  if (!r || !r.remote) return;
+  var c = m.card || {};
+  var row = {
+    id: m.id, room_id: r.id,
+    title: String(c.title || r.name + " 합의안").slice(0, 120),
+    decisions: c.decisions || [],
+    rationale: (c.evidence || []).join("\n").slice(0, 4000),
+    dissent: (c.risks || []).join("\n").slice(0, 4000),
+    open_questions: c.checks || [],
+    next_actions: c.todos || [],
+    cost_krw: Number(c.stats && c.stats.cost) || 0,
+    badge: String(c.badge || "").slice(0, 40),
+    card: c
+  };
+  db.client.from("kkiri_summaries").insert(row).then(function (res) {
+    if (res && res.error) dbToast("합의안을 서버에 저장하지 못했어요 · " + res.error.message);
+  }, function () { dbToast("합의안을 서버에 저장하지 못했어요 · 네트워크"); });
+}
+async function dbCreateRoom(room, members) {
+  if (!db.ready || !db.client) return;
+  try {
+    var row = {
+      id: String(room.id).slice(0, 40), name: String(room.name).slice(0, 60),
+      kind: room.kind === "chat" ? "lounge" : "project",
+      description: String(room.agenda || "").slice(0, 600),
+      invite_code: room.inviteCode || newInviteCode(), is_public: true,
+      host_name: nick(),
+      settings: { emoji: room.emoji, mode: room.mode, maxTurns: room.maxTurns, budget: room.budget }
+    };
+    var res = await db.client.from("kkiri_rooms").insert(row);
+    if (res.error) { dbToast("방을 서버에 만들지 못했어요 · " + res.error.message); return; }
+    room.remote = true; room.inviteCode = row.invite_code; room.hostName = row.host_name;
+    rememberHost(room.id, row.invite_code);
+    var rows = (members || []).map(function (lid) {
+      var a = state.agents[lid];
+      if (!a) return null;
+      return {
+        id: dbAgentRowId(room.id, lid), room_id: room.id,
+        name: String(a.name || "AI").slice(0, 40), avatar: String(a.avatar || "").slice(0, 16),
+        role: String(a.role || "").slice(0, 60), persona: String(a.prompt || "").slice(0, 2000),
+        provider: dbProviderOf(a), model: String(a.model || "").slice(0, 60),
+        webhook_url: String(a.url || "").slice(0, 500), is_active: true
+      };
+    }).filter(Boolean);
+    if (rows.length) {
+      var ares = await db.client.from("kkiri_agents").insert(rows);
+      if (ares.error) dbToast("AI 멤버를 저장하지 못했어요 · " + ares.error.message);
+    }
+    dbSubscribe(room.id);
+    if (room.messages && room.messages.length) dbSendMessage(room.messages[room.messages.length - 1]);
+    renderAll();
+    toast("방을 만들었어요 · 초대 링크를 복사해 공유하세요");
+  } catch (e) { dbToast("방을 서버에 만들지 못했어요 · 네트워크"); }
+}
+async function dbUpdateRoom(r, members) {
+  if (!db.ready || !db.client || !r.remote) return;
+  try {
+    var res = await db.client.from("kkiri_rooms").update({
+      name: String(r.name).slice(0, 60),
+      kind: r.kind === "chat" ? "lounge" : "project",
+      description: String(r.agenda || "").slice(0, 600),
+      settings: { emoji: r.emoji, mode: r.mode, maxTurns: r.maxTurns, budget: r.budget }
+    }).eq("id", r.id);
+    if (res.error) dbToast("방 설정을 저장하지 못했어요 · " + res.error.message);
+    for (var i = 0; i < members.length; i++) await dbSetMember(r.id, members[i], true);
+    var all = await db.client.from("kkiri_agents").select("id,is_active").eq("room_id", r.id);
+    if (!all.error) {
+      var stale = (all.data || []).filter(function (row) {
+        return row.is_active && members.indexOf(dbLocalAgentId(row.id)) < 0;
+      });
+      for (var j = 0; j < stale.length; j++) {
+        await db.client.from("kkiri_agents").update({ is_active: false }).eq("id", stale[j].id);
+      }
+    }
+  } catch (e) { dbToast("방 설정을 저장하지 못했어요 · 네트워크"); }
+}
+async function dbHideRoom(r) {
+  if (!db.ready || !db.client || !r.remote) return;
+  hideRoomLocal(r.id);
+  try {
+    var res = await db.client.from("kkiri_rooms").update({ is_public: false }).eq("id", r.id);
+    if (res.error) dbToast("방을 숨기지 못했어요 · " + res.error.message);
+  } catch (e) {}
+}
+async function dbSetMember(roomId, localId, on) {
+  if (!db.ready || !db.client) return;
+  var r = null;
+  state.rooms.forEach(function (x) { if (x.id === roomId) r = x; });
+  if (!r || !r.remote) return;
+  try {
+    var id = dbAgentRowId(roomId, localId);
+    var res = await db.client.from("kkiri_agents").update({ is_active: !!on }).eq("id", id).select("id");
+    if (res.error) { dbToast("멤버 상태를 저장하지 못했어요 · " + res.error.message); return; }
+    if (on && (!res.data || !res.data.length)) await dbUpsertAgent(roomId, localId);
+  } catch (e) {}
+}
+async function dbUpsertAgent(roomId, localId) {
+  if (!db.ready || !db.client) return;
+  var r = null;
+  state.rooms.forEach(function (x) { if (x.id === roomId) r = x; });
+  if (!r || !r.remote) return;
+  var a = state.agents[localId];
+  if (!a) return;
+  if (a.type === "webhook" && a.token) saveHookToken(localId, a.token);
+  var row = {
+    id: dbAgentRowId(roomId, localId), room_id: roomId,
+    name: String(a.name || "AI").slice(0, 40), avatar: String(a.avatar || "").slice(0, 16),
+    role: String(a.role || "").slice(0, 60), persona: String(a.prompt || "").slice(0, 2000),
+    provider: dbProviderOf(a), model: String(a.model || "").slice(0, 60),
+    webhook_url: String(a.url || "").slice(0, 500), is_active: true
+  };
+  try {
+    var res = await db.client.from("kkiri_agents").insert(row);
+    if (res.error && res.error.code !== "23505") dbToast("AI 멤버를 저장하지 못했어요 · " + res.error.message);
+  } catch (e) {}
+}
+async function dbInit() {
+  if (!window.supabase || !window.supabase.createClient) {
+    setLiveStatus("local", "로컬 모드 · 데모");
+    return false;
+  }
+  try {
+    db.client = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+  } catch (e) { setLiveStatus("local", "로컬 모드 · 데모"); return false; }
+  setLiveStatus("wait", "연결 중…");
+  try {
+    var res = await Promise.all([
+      db.client.from("kkiri_rooms").select("*").order("created_at", { ascending: true }),
+      db.client.from("kkiri_agents").select("*").order("created_at", { ascending: true })
+    ]);
+    if (res[0].error || res[1].error) throw new Error((res[0].error || res[1].error).message);
+    if (!dbApply(res[0].data || [], res[1].data || [])) throw new Error("empty");
+    db.ready = true;
+    if (pendingJoin) {
+      if (pendingJoin.room && !state.rooms.some(function (r) { return r.id === pendingJoin.room; })) {
+        toast("초대 링크의 방을 찾지 못했어요");
+      } else if (pendingJoin.code && !state.rooms.some(function (r) { return String(r.inviteCode || "").toUpperCase() === pendingJoin.code; })) {
+        toast("초대 코드를 찾지 못했어요 · " + pendingJoin.code);
+      } else {
+        toast("초대받은 방으로 들어왔어요");
+      }
+    }
+    renderAll();
+    await dbLoadMessages(state.activeRoomId);
+    renderAll();
+    scrollBottom(true);
+    dbSubscribe(state.activeRoomId);
+    return true;
+  } catch (e) {
+    db.ready = false;
+    setLiveStatus("local", "로컬 모드 · 데모");
+    if (typeof console !== "undefined" && console.warn) console.warn("[kkiri] db init failed", e && e.message);
+    return false;
+  }
+}
+function roomInviteLink(r) {
+  if (!r) return "";
+  var base = String(location.href).split("#")[0].split("?")[0];
+  if (r.inviteCode) return base + "?code=" + encodeURIComponent(r.inviteCode);
+  return base + "?room=" + encodeURIComponent(r.id);
+}
+function openShare() {
+  var r = activeRoom();
+  if (!r) return;
+  $("nickInput").value = nick();
+  $("shareRoomName").textContent = r.name;
+  $("shareCode").textContent = r.inviteCode || "-";
+  $("shareLink").value = roomInviteLink(r);
+  $("shareHint").textContent = r.remote
+    ? "링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다."
+    : "지금은 로컬(데모) 모드라 링크가 이 브라우저에서만 열려요. 실시간 연결되면 같은 링크로 여러 사람이 함께 쓸 수 있습니다.";
+  openModal("shareModal");
 }
 
 /* =========================================================
@@ -2974,6 +3572,23 @@ function wire() {
   $("rfSubmit").addEventListener("click", submitRoomForm);
   $("rfDelete").addEventListener("click", deleteRoom);
 
+  /* 공유 · 닉네임 */
+  $("shareBtn").addEventListener("click", openShare);
+  $("nickBtn").addEventListener("click", openShare);
+  $("nickSave").addEventListener("click", function () {
+    var v = saveNick($("nickInput").value);
+    $("nickInput").value = v;
+    renderTimeline(false);
+    toast("닉네임을 ‘" + v + "’(으)로 저장했어요");
+  });
+  $("shareCopy").addEventListener("click", function () {
+    copyText($("shareLink").value, "초대 링크를 복사했어요");
+  });
+  $("shareNewRoom").addEventListener("click", function () {
+    closeModal("shareModal");
+    openRoomForm(null);
+  });
+
   /* 초대 */
   $("inviteSeg").addEventListener("click", function (e) {
     var b = e.target.closest("[data-tab]");
@@ -3045,16 +3660,22 @@ function wire() {
    20. 시작
    ========================================================= */
 loadApi();
-if (!load()) {
+pinNick();
+var bootedLocal = load();
+if (!bootedLocal) {
   state = seedState();
   save();
 }
 renderSwatches();
 wire();
+var nl = $("nickLabel");
+if (nl) nl.textContent = nick();
 renderAll();
 renderApi();
 syncFields();
 growInput();
+setLiveStatus("wait", "연결 중…");
+dbInit();
 window.addEventListener("beforeunload", function () { try { save(); } catch (e) {} });
 
 })();
