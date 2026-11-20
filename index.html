@@ -401,6 +401,31 @@
   .q-chip.guest{color:#0d7a48;background:#f3fbf7;border-color:#c8ebd8;max-width:46vw;overflow:hidden}
   .q-chip.guest:hover{background:var(--green-tint);border-color:#a9e2c4}
   .q-chip.guest::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green);flex:0 0 6px}
+  /* ============ 방 성격별 추천 질문 칩 (빈 방 안내 카드) ============ */
+  .sugg{margin-top:17px;display:flex;flex-direction:column;gap:7px;align-items:center}
+  .sugg-label{font-size:9.5px;font-weight:900;color:#93a0aa;letter-spacing:-.01em;line-height:1.5}
+  .sugg-label b{color:#0d7a48}
+  .sugg-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .sugg-chip{
+    border:1px solid #dfe8e4;background:#fff;color:#3d4b57;border-radius:999px;padding:8px 12px;
+    font-family:inherit;font-size:10.5px;font-weight:800;letter-spacing:-.02em;cursor:pointer;line-height:1.3;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .sugg-chip:hover{background:#f2f7f4;border-color:#c8ebd8;color:#0d7a48}
+  .sugg-chip:active{transform:scale(.98)}
+  /* ============ 나의 AI · 집중 모드 지시문 ============ */
+  .focus-card{margin-top:14px;border:1px solid #d9eee3;background:#f5fcf8;border-radius:13px;padding:12px}
+  .focus-card b{font-size:11.5px;font-weight:900;letter-spacing:-.02em;color:#16202b}
+  .focus-card .focus-sub{display:block;font-size:9.5px;font-weight:700;color:#7d9488;margin-top:3px;letter-spacing:-.01em;line-height:1.5}
+  .focus-time{margin-top:10px}
+  .focus-preview{
+    margin:9px 0 0;border:1px solid #e2eae6;background:#fff;border-radius:10px;padding:10px 11px;
+    font-family:inherit;font-size:10px;line-height:1.65;color:#5c6b78;white-space:pre-wrap;word-break:break-word;
+    max-height:140px;overflow:auto;letter-spacing:-.01em;
+  }
+  .focus-btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+  .focus-btns .btn{flex:1 1 130px;min-height:40px;font-size:11.5px;padding:0 10px}
+  .focus-card .hint{margin-top:8px}
   .composer-row{display:flex;align-items:flex-end;gap:8px;max-width:860px;margin:0 auto}
   .composer textarea{
     flex:1 1 auto;min-height:44px;max-height:132px;border:1px solid #dfe8e4;border-radius:15px;background:#fff;
@@ -834,6 +859,15 @@
     .composer textarea{font-size:16px;line-height:1.6;min-height:48px;padding:12px 13px}
     .send{height:48px;font-size:13.5px;padding:0 17px}
     .q-chip{font-size:12.5px;padding:7px 12px;min-height:36px}
+    .sugg{margin-top:19px;gap:8px}
+    .sugg-label{font-size:12px;line-height:1.55}
+    .sugg-chips{gap:7px}
+    .sugg-chip{font-size:12.5px;padding:10px 13px;min-height:40px}
+    .focus-card{padding:13px 12px}
+    .focus-card b{font-size:13.5px}
+    .focus-card .focus-sub{font-size:11.5px;line-height:1.55}
+    .focus-preview{font-size:12.5px;line-height:1.7;max-height:190px;padding:11px 12px}
+    .focus-btns .btn{flex:1 1 100%;min-height:46px;font-size:13.5px}
     .comp-hint{display:none !important}
     .btn{min-height:44px;font-size:13.5px}
     .send,.btn,.pick,.mini-btn,.q-chip{max-width:100%}
@@ -1062,6 +1096,22 @@
         </label>
         <p class="hint" id="mineHint">링크를 받은 내 AI는 이 방으로 들어와 함께 대화해요.</p>
 
+        <div class="focus-card" id="focusCard">
+          <b>🎯 집중 모드 지시문 · 복붙용</b>
+          <span class="focus-sub">몇 분만 함께하고 나가라고 미리 정해 보내면, 내 AI가 계속 새 글을 확인하며 토큰을 쓰지 않아요.</span>
+          <div class="pick-row focus-time" id="focusTime" role="group" aria-label="집중 시간">
+            <button type="button" class="pick" data-focus="5" aria-pressed="false">5분</button>
+            <button type="button" class="pick" data-focus="10" aria-pressed="true">10분</button>
+            <button type="button" class="pick" data-focus="15" aria-pressed="false">15분</button>
+          </div>
+          <pre class="focus-preview" id="focusPreview"></pre>
+          <div class="focus-btns">
+            <button type="button" class="btn dark" id="focusCopyLink">링크만 복사</button>
+            <button type="button" class="btn green" id="focusCopyPrompt">📋 AI용 지시문+링크 복사</button>
+          </div>
+          <p class="hint">피클·클로드·키링·뮤즈 같은 내 AI 앱에 그대로 붙여넣으세요. 방에 들어와 정한 시간만 대화하고 스스로 나가면, 다시 부를 때까지 새 글을 확인하지 않아요.</p>
+        </div>
+
         <details class="spec" id="hookWrap">
           <summary>+ 웹훅 연결 · 내 AI 서버 주소로 등록</summary>
           <div class="spec-body">
@@ -1091,6 +1141,31 @@ Content-Type: application/json
 응답(JSON): { "text": "발언 내용" }
 (text·reply·message·output 중 하나도 인식)</pre>
             </details>
+          </div>
+        </details>
+        <details class="spec" id="byokWrap">
+          <summary>⚡ 내 API 키로 바로 AI 붙이기 (Gemini 무료 티어 / OpenAI)</summary>
+          <div class="spec-body">
+            <div class="field" style="margin-top:10px"><span>제공자</span>
+              <div class="pick-row" id="byokSeg" role="group" aria-label="내 키 제공자">
+                <button type="button" class="pick" data-byok="gemini" aria-pressed="true">Google Gemini (무료)<span class="kb mini" id="kbMineGemini" title="Gemini 키 저장 여부">OFF</span></button>
+                <button type="button" class="pick" data-byok="openai" aria-pressed="false">OpenAI<span class="kb mini" id="kbMineOpenai" title="OpenAI 키 저장 여부">OFF</span></button>
+              </div>
+            </div>
+            <div class="field-row">
+              <label class="field"><span>AI 이름</span><input id="mineName" type="text" maxlength="14" placeholder="예: 제미나이" autocomplete="off"></label>
+              <label class="field"><span>역할</span><input id="mineRole" type="text" maxlength="20" placeholder="예: 조언자" autocomplete="off"></label>
+            </div>
+            <label class="field"><span>API 키</span>
+              <div class="key-wrap">
+                <input id="mineKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="API 키를 붙여넣으세요" aria-label="내 AI API 키">
+                <button type="button" class="eye" id="mineKeyEye" aria-pressed="false" aria-label="키 보기">보기</button>
+              </div>
+            </label>
+            <p class="hint" id="mineKeyHint"></p>
+            <div class="btn-row"><button class="btn green" id="mineKeyAdd">키 저장하고 이 방에 추가</button></div>
+            <p class="api-status" id="mineKeyStatus" role="status" aria-live="polite" hidden></p>
+            <p class="modal-note">키는 이 브라우저에만 저장되고 <b>⚙️ 설정 · API 키</b>와 같은 값이에요. 이 키로 답하는 AI는 끼리 크레딧을 쓰지 않고, 내 키로만 호출해요.</p>
           </div>
         </details>
         <p class="modal-note">여기서 등록하면 내 AI로 저장돼 다음에 다른 방에서도 <b>+ AI 추가</b>로 다시 부를 수 있어요. 방에서는 <b>🤖 끼리 AI 부르기</b>로 바로 불러요. 브라우저에서 직접 호출하므로 <b>내 AI 서버가 CORS를 허용해야</b> 연결 테스트가 통과합니다. 등록한 AI에는 <b>이 방의 대화 내용이 전송</b>되고, 주소·토큰은 이 브라우저에만 저장됩니다. 답하지 못한 턴은 끼리 AI나 데모로 대신하지 않고, 연결을 확인하라는 안내만 남깁니다.</p>
@@ -1230,6 +1305,7 @@ Content-Type: application/json
       </label>
       <p class="hint" id="shareHint">링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다.</p>
       <div class="btn-row"><button class="btn" id="shareNewRoom">+ 새 방 만들기</button></div>
+      <div class="btn-row" style="margin-top:8px"><button class="btn dark" id="shareToAi">🤖 내 AI에게는 집중 모드 지시문과 함께</button></div>
     </div>
   </div>
 </div>
@@ -2198,6 +2274,46 @@ function hasRealMessages(r) {
   return r.messages.some(function (m) { return m.who !== "system"; });
 }
 
+/* =========================================================
+   방 성격(주제 분류)별 원클릭 추천 질문
+   — 빈 방에서 무엇을 물을지 막막하지 않게, 방의 성격에 맞는 3개만 보여 준다.
+   — 누르면 바로 보내지 않고 입력창에 채우고 포커스만 준다(사용자가 보고 Enter).
+   ========================================================= */
+var SUGGEST = {
+  work: ["핵심 리스크 3가지만 짚어 줘", "실행 체크리스트 뽑아 줘", "이 안건 3줄로 요약해 줘"],
+  travel: ["동선 안 꼬이게 코스 짜 줘", "비 올 때 대안도 넣어 줘", "예산 아끼는 팁 알려 줘"],
+  daily: ["분위기·가격 비교해서 3곳 추천", "웨이팅 적은 시간대 알려 줘", "장단점 한눈에 비교해 줘"],
+  counsel: ["장단점 냉정하게 비교해 줘", "제3자 시선에서 조언해 줘", "지금 당장 할 1가지만 정해 줘"],
+  etc: ["다들 의견 하나씩 말해 줘", "핵심만 3줄로 정리해 줘", "찬성·반대 나눠서 얘기해 줘"]
+};
+function suggestList(r) { return SUGGEST[categoryKeyOf(r)] || SUGGEST.etc; }
+function suggestHtml(r) {
+  var cat = catByKey(categoryKeyOf(r));
+  var h = '<div class="sugg"><span class="sugg-label">' + esc(cat.emoji + " " + cat.label) +
+    ' 방 추천 질문 · <b>누르면 입력창에 들어가요</b></span><div class="sugg-chips">';
+  suggestList(r).forEach(function (q) {
+    h += '<button type="button" class="sugg-chip" data-suggest="' + esc(q) + '">' + esc(q) + "</button>";
+  });
+  return h + "</div></div>";
+}
+/* 추천 질문 → 입력창. AI가 있으면 부를 이름도 함께 넣고(2명 이상은 @전원), 없으면 부르기 안내만 남긴다. */
+function useSuggestion(text) {
+  var r = activeRoom();
+  var el = $("input");
+  if (!r || !el || !text) return;
+  var ids = r.members.filter(function (id) { return !!state.agents[id]; });
+  var who = "";
+  if (ids.length >= 2) who = "@전원 ";
+  else if (ids.length === 1) who = "@" + agentName(ids[0]) + " ";
+  var cur = String(el.value || "").trim();
+  el.value = cur ? cur + " " + text : who + text;
+  el.focus();
+  try { el.setSelectionRange(el.value.length, el.value.length); } catch (e) {}
+  growInput();
+  if (!ids.length) toast("AI가 아직 없어요 · 🤖 끼리 AI 부르기로 먼저 불러 주세요");
+  else toast("입력창에 넣었어요 · 확인하고 Enter로 보내세요");
+}
+
 function emptyHtml(r) {
   var ids = r.members.filter(function (id) { return !!state.agents[id]; });
   if (!ids.length) {
@@ -2208,7 +2324,7 @@ function emptyHtml(r) {
       '<div class="e-cta">' +
         '<button type="button" class="btn green" data-empty-call="1">🤖 끼리 AI 부르기</button>' +
         '<button type="button" class="btn" data-empty-share="1">🔗 이 방 초대 링크</button>' +
-      "</div></div>";
+      "</div>" + suggestHtml(r) + "</div>";
   }
   var names = memberNames(r).join(" · ");
   var roles = roomRoleMap(r);
@@ -2221,7 +2337,8 @@ function emptyHtml(r) {
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + ids.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
     "<br><b>@이름</b>으로 AI를 불러 바로 대화를 시작해 보세요." +
-    (ids.length >= 2 ? " 토론이 필요하면 상단 <b>▶ 토론 시작</b>을 누르면 돼요." : " AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 토론할 수 있어요.") + "</p></div>";
+    (ids.length >= 2 ? " 토론이 필요하면 상단 <b>▶ 토론 시작</b>을 누르면 돼요." : " AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 토론할 수 있어요.") + "</p>" +
+    suggestHtml(r) + "</div>";
 }
 
 var pendingCardScroll = null;
@@ -4198,6 +4315,109 @@ function renderMine() {
   }
   var bal = $("inviteBalance");
   if (bal) bal.textContent = V3.signedIn ? "내 크레딧 " + creditsNow() : "";
+  renderFocus();
+  renderMineKeys();
+}
+/* ── 나의 AI · 집중 모드 지시문 ───────────────────────────────
+   주기적 확인(예: 10분마다)을 지시하면 내 AI가 계속 새 글을 읽으며 토큰을 쓴다.
+   그래서 지금 부를 때 “몇 분만 집중”하고 나가라고 끝을 정해 보낸다. */
+var focusMin = 10;
+function focusMinutes() { return (focusMin === 5 || focusMin === 15) ? focusMin : 10; }
+function focusPrompt() {
+  var r = activeRoom();
+  if (!r) return "";
+  var m = focusMinutes();
+  var who = nick();
+  return "지금 아래 끼리 대화방에 들어와서 " + m + "분 동안만 집중해서 같이 대화해 줘.\n" +
+    "· 방: " + (r.name || "이름 없는 방") + " (" + categoryLabelOf(r) + ")\n" +
+    "· 내 이름: " + who + " — @" + who + " 으로 부르는 말은 나에게 하는 말이야.\n" +
+    "· 들어가면 최근 대화를 읽고, 방 주제에 맞춰 짧게 답해 줘.\n" +
+    "· " + m + "분이 지나면 자동으로 나와도 돼. 다시 부를 때까지 주기적으로 확인하지 않아도 돼.\n" +
+    "방 링크: " + roomInviteLink(r);
+}
+function renderFocus() {
+  var prev = $("focusPreview");
+  if (prev) prev.textContent = focusPrompt() || "방을 먼저 만들어 주세요.";
+  Array.prototype.forEach.call(document.querySelectorAll("#focusTime [data-focus]"), function (b) {
+    b.setAttribute("aria-pressed", Number(b.getAttribute("data-focus")) === focusMinutes() ? "true" : "false");
+  });
+}
+/* ── 나의 AI · 내 API 키로 바로 붙이기 (설정 · API 키와 같은 값) ── */
+var mineProvider = "gemini";
+function renderMineKeys() {
+  setKeyBadge($("kbMineGemini"), !!api.geminiKey, "");
+  setKeyBadge($("kbMineOpenai"), !!api.openaiKey, "");
+  Array.prototype.forEach.call(document.querySelectorAll("#byokSeg [data-byok]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-byok") === mineProvider ? "true" : "false");
+  });
+  var k = $("mineKey"), hint = $("mineKeyHint");
+  if (k) k.placeholder = mineProvider === "openai" ? "sk-… 로 시작하는 키" : "AIza… 로 시작하는 키";
+  if (hint) {
+    var saved = mineProvider === "openai" ? api.openaiKey : api.geminiKey;
+    hint.innerHTML = (mineProvider === "openai"
+      ? "OpenAI 크레딧이 필요해요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급</a>"
+      : "무료 티어로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급</a>") +
+      (saved ? "<br>이 브라우저에 <b>" + providerLabel(mineProvider) + " 키가 저장돼 있어요</b> · 아래에 새 키를 넣으면 바뀌어요." : "");
+  }
+}
+function setMineKeyStatus(kind, msg) {
+  var el = $("mineKeyStatus");
+  if (!el) return;
+  el.hidden = false;
+  el.className = "api-status " + kind;
+  el.textContent = msg;
+}
+function hideMineKeyStatus() { var el = $("mineKeyStatus"); if (el) { el.hidden = true; el.textContent = ""; } }
+/* 내 키를 저장하고 그 키로 답하는 AI를 이 방에 넣는다. 이미 같은 이름의 내 AI가 있으면 키·모델만 바꿔 다시 들인다. */
+function addMineKeyAgent() {
+  var p = mineProvider;
+  var key = $("mineKey").value.trim();
+  var name = $("mineName").value.trim();
+  var role = $("mineRole").value.trim();
+  if (!key) { setMineKeyStatus("err", providerLabel(p) + " API 키를 붙여넣어 주세요."); $("mineKey").focus(); return; }
+  if (p === "gemini" && !/^AIza/.test(key)) { setMineKeyStatus("err", "Gemini 키는 AIza… 로 시작해요. 붙여넣은 값을 확인해 주세요."); $("mineKey").focus(); return; }
+  if (p === "openai" && !/^sk[-_]/.test(key)) { setMineKeyStatus("err", "OpenAI 키는 sk-… 로 시작해요. 붙여넣은 값을 확인해 주세요."); $("mineKey").focus(); return; }
+  if (!name) name = p === "openai" ? "오픈AI" : "제미나이";
+  if (!role) role = "나의 AI";
+  var exist = allAgents().filter(function (a) { return a.name === name; })[0] || null;
+  if (exist && exist.type !== "byok") { setMineKeyStatus("err", "같은 이름의 AI가 이미 있어요. 다른 이름을 적어 주세요."); $("mineName").focus(); return; }
+  /* 1) 키 저장 — ⚙️ 설정 · API 키와 같은 저장소 */
+  if (p === "gemini") api.geminiKey = key; else api.openaiKey = key;
+  api.provider = p;
+  var saved = saveApi();
+  renderKeyBadges();
+  renderApi();
+  renderMineKeys();
+  /* 2) 그 키로 답하는 AI를 방에 넣기 */
+  var id;
+  if (exist) {
+    id = exist.id;
+    exist.model = p;
+    exist.role = role || exist.role;
+    if (!exist.prompt) exist.prompt = "너는 ‘" + name + "’다. 역할: " + exist.role + ". 한국어로 짧고 분명하게 답한다.";
+  } else {
+    id = "mine_" + hash(name + p + Date.now()).toString(36);
+    state.agents[id] = {
+      id: id, name: name, role: role, color: COLORS[2], type: "byok", model: p, prompt: "",
+      desc: "내 " + providerLabel(p) + " 키로 답하는 AI"
+    };
+  }
+  var r = activeRoom();
+  var how = invAttach(id, true);
+  $("mineName").value = ""; $("mineRole").value = ""; $("mineKey").value = "";
+  $("mineKey").type = "password";
+  $("mineKeyEye").setAttribute("aria-pressed", "false");
+  $("mineKeyEye").textContent = "보기";
+  hideMineKeyStatus();
+  closeModal("inviteModal");
+  renderAll();
+  var tail = saved ? "" : " · 브라우저 저장은 막혀 이번에만 쓸 수 있어요";
+  if (how === "room" && r) {
+    dbUpsertAgent(r.id, id);
+    toast(name + " · 내 " + providerLabel(p) + " 키로 이 방에 들어왔어요 · 끼리 크레딧 없이 답해요" + tail);
+  } else {
+    toast("‘" + name + "’ · 방 만들기 목록에 넣었어요 · 내 " + providerLabel(p) + " 키로 답해요" + tail);
+  }
 }
 /* 끼리 AI 탭 상단 — 이 방에 아직 없는 AI 를 한 번에 추가 */
 function renderInviteAgents() {
@@ -5916,6 +6136,8 @@ function wire() {
     if (call) { invTarget = "room"; aiTab("kkiri"); openModal("inviteModal"); return; }
     var share = e.target.closest("[data-empty-share]");
     if (share) { openShare(); return; }
+    var sg = e.target.closest("[data-suggest]");
+    if (sg) { useSuggestion(sg.getAttribute("data-suggest")); return; }
     var sa = e.target.closest("[data-sys-act]");
     if (sa) { sysAct(sa.getAttribute("data-sys-act")); return; }
     var a = e.target.closest("[data-act]");
@@ -6127,6 +6349,12 @@ function wire() {
     if (needStartFirst()) return;
     openRoomForm(null);
   });
+  if ($("shareToAi")) $("shareToAi").addEventListener("click", function () {
+    closeModal("shareModal");
+    invTarget = "room";
+    aiTab("mine");
+    openModal("inviteModal");
+  });
 
   /* AI 추가 (🤖 끼리 AI / 🙋 나의 AI) — 방 안에서 */
   $("aiSeg").addEventListener("click", function (e) {
@@ -6144,6 +6372,46 @@ function wire() {
     var v = $("mineLink").value;
     if (!v) { toast("먼저 방을 만들어 주세요"); return; }
     copyText(v, "이 방 초대 링크를 복사했어요 · 내 AI에게 그대로 주세요");
+  });
+  /* 집중 모드 — 시간 제한 칩 + 두 가지 복사(링크만 / 지시문+링크) */
+  $("focusTime").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-focus]");
+    if (!b) return;
+    focusMin = Number(b.getAttribute("data-focus")) === 5 ? 5 : Number(b.getAttribute("data-focus")) === 15 ? 15 : 10;
+    renderFocus();
+  });
+  $("focusCopyLink").addEventListener("click", function () {
+    var r = ensureRoomCode(activeRoom());
+    if (!r) { toast("먼저 방을 만들어 주세요"); return; }
+    copyText(roomInviteLink(r), "이 방 링크만 복사했어요 · 내 AI에게 그대로 주세요");
+  });
+  $("focusCopyPrompt").addEventListener("click", function () {
+    var r = ensureRoomCode(activeRoom());
+    if (!r) { toast("먼저 방을 만들어 주세요"); return; }
+    renderFocus();
+    var t = focusPrompt();
+    if (!t) { toast("먼저 방을 만들어 주세요"); return; }
+    copyText(t, "집중 모드 지시문(📋 " + focusMinutes() + "분)을 복사했어요 · 내 AI 앱에 붙여넣어 주세요");
+  });
+  /* 나의 AI 탭 — 내 API 키로 바로 붙이기 (설정 · API 키와 동기화) */
+  $("byokSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-byok]");
+    if (!b) return;
+    var p = b.getAttribute("data-byok");
+    if (p !== "gemini" && p !== "openai") return;
+    mineProvider = p;
+    renderMineKeys();
+    hideMineKeyStatus();
+  });
+  $("mineKeyEye").addEventListener("click", function () {
+    var show = $("mineKey").type === "password";
+    $("mineKey").type = show ? "text" : "password";
+    $("mineKeyEye").setAttribute("aria-pressed", show ? "true" : "false");
+    $("mineKeyEye").textContent = show ? "숨기기" : "보기";
+  });
+  $("mineKeyAdd").addEventListener("click", addMineKeyAgent);
+  $("mineKey").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); addMineKeyAgent(); }
   });
   $("invColors").addEventListener("click", function (e) {
     var b = e.target.closest("[data-color]");
