@@ -494,7 +494,7 @@
   .credit-guide li.free b{color:#5B38E0}
   .credit-guide .cg-sub{margin:7px 0 2px;font-size:10px;font-weight:900;color:#6A6299;letter-spacing:-.01em}
   .credit-guide .cg-foot{margin-top:6px;font-size:10px;line-height:1.55;color:#6F6889}
-  /* 크레딧 3단 안내: 매일 200 무료 · 더 쓰고 싶을 때(내 키·소액 충전) · 자율 후원 */
+  /* 크레딧 3단 안내: 매일 300 무료 · 더 쓰고 싶을 때(내 키·소액 충전) · 자율 후원 */
   .credit-guide .cg-lead{margin:2px 0 7px;font-size:11px;line-height:1.6;color:#4A4270;letter-spacing:-.01em}
   .credit-guide .cg-lead b{color:#5B38E0}
   .credit-guide.alt{margin-top:10px;background:#FAF8FF;border-color:#E6E1F8}
@@ -1189,8 +1189,8 @@
   .brand-txt small{color:#A79FD0}
   .sidebar .brand-line{color:#BBB0DE;font-weight:700;letter-spacing:-.01em}
   .home-head .h-emoji.h-logo{
-    width:42px;height:42px;flex:0 0 42px;border-radius:14px;padding:8px 9px;background-color:#fff;
-    box-shadow:0 8px 20px rgba(115,82,255,.22),0 0 0 1px #EDE7FF inset;
+    width:46px;height:46px;flex:0 0 46px;border-radius:0;padding:0;background-color:transparent;
+    box-shadow:none;
   }
   .home-head h1{color:#251B4D;letter-spacing:-.045em}
   .auth-hero .ah-logo{
@@ -1278,7 +1278,7 @@
 
   /* 홈 헤더 — 브랜드 워드마크 + 공식 슬로건 */
   .home-head h1{font-size:22px;font-weight:900;letter-spacing:-.05em;line-height:1.15;color:#251B4D}
-  .home-head .home-slogan{font-size:13.5px;font-weight:800;color:#6B6488;letter-spacing:-.01em;margin-top:3px}
+  .home-head .home-slogan{font-size:15px;font-weight:800;color:#5F5780;letter-spacing:-.02em;margin-top:0;line-height:1.35}
   @media (max-width:560px){ .home-head h1{font-size:20px} .home-head .home-slogan{font-size:13px} }
 
   /* 홈 방 카드 부제도 13.5px 이상 */
@@ -1622,7 +1622,7 @@
     </button>
     <div class="account-line" id="accountLine">
       <span class="a-ico" aria-hidden="true"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg></span>
-      <span class="a-txt"><b id="accountName">로그인 전</b><small id="accountSub">매일 200크레딧 무료</small></span>
+      <span class="a-txt"><b id="accountName">로그인 전</b><small id="accountSub">매일 300크레딧 무료</small></span>
       <button type="button" id="accountBtn">로그인</button>
     </div>
 
@@ -1657,7 +1657,7 @@
         <div class="home-head">
           <button class="icon-btn only-mobile" id="homeMenuBtn" aria-label="대화방 목록 열기"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-menu"></use></svg></button>
           <span class="h-emoji h-logo kk-mark" aria-hidden="true"></span>
-          <div><h1>끼리</h1><p class="home-slogan">AI와 함께, 뭐든지 끼리 하자</p></div>
+          <div><p class="home-slogan">AI와 함께, 뭐든지 끼리 하자</p></div>
         </div>
         <div class="home-sum" id="homeSum">
           <button type="button" class="home-chip" id="homeNickBtn" title="내 닉네임 바꾸기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> <b id="homeNick">참여자</b></button>
@@ -1665,7 +1665,7 @@
         </div>
         <button type="button" class="home-start" id="homeStartCard" hidden>
           <span class="hs-ico" aria-hidden="true"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg></span>
-          <span class="hs-txt"><b>끼리 시작하기</b><small>로그인하면 매일 200크레딧 무료 · 게스트는 1회 100크레딧 무료 체험</small></span>
+          <span class="hs-txt"><b>끼리 시작하기</b><small>로그인하면 매일 300크레딧 무료 · 게스트는 1회 100크레딧 무료 체험</small></span>
           <span class="hs-go" aria-hidden="true">→</span>
         </button>
         <section class="home-sec" id="homeRoomsSec" aria-label="내 대화방">
@@ -1725,7 +1725,7 @@
           <div class="bar"><i id="turnBar"></i></div>
         </div>
         <div class="meter budget" id="budgetMeter" title="크레딧 상한 설정">
-          <div class="m-top"><span>소진 크레딧 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">0 / 200 크레딧</span></div>
+          <div class="m-top"><span>소진 크레딧 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">0 / 300 크레딧</span></div>
           <div class="bar"><i id="costBar"></i></div>
         </div>
       </div>
@@ -1893,7 +1893,7 @@ Content-Type: application/json
           <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
         </div>
       </div>
-      <label class="field" id="rfBudgetField"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
+      <label class="field" id="rfBudgetField"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="300" inputmode="numeric"></label>
       <div class="field" id="rfRolesField"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
       <p class="modal-note" id="rfFootNote" hidden></p>
       <div class="btn-row" id="rfActions">
@@ -1929,7 +1929,7 @@ Content-Type: application/json
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="budgetTitle" style="max-width:420px">
     <div class="sheet-head"><h2 id="budgetTitle">크레딧 상한</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>상한 (크레딧)</span><input id="budgetInput" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
+      <label class="field"><span>상한 (크레딧)</span><input id="budgetInput" type="number" min="100" max="5000" step="10" value="300" inputmode="numeric"></label>
       <div class="pick-row" id="budgetChips" style="margin-top:9px">
         <button type="button" class="pick" data-budget="100">100</button>
         <button type="button" class="pick" data-budget="200">200</button>
@@ -2032,7 +2032,7 @@ Content-Type: application/json
       <div class="auth-hero">
         <div class="ah-logo kk-mark" aria-hidden="true"></div>
         <h2>끼리에 오신 걸 환영해요</h2>
-        <p>로그인하면 <b>매일 200크레딧</b>이 무료로 채워져요.</p>
+        <p>로그인하면 <b>매일 300크레딧</b>이 무료로 채워져요.</p>
         <p class="auth-soon">카카오·구글 로그인도 곧 연결돼요</p>
       </div>
       <label class="field"><span>이메일</span><input id="authEmail" type="email" placeholder="me@example.com" autocomplete="email" spellcheck="false" autocapitalize="off"></label>
@@ -2059,14 +2059,14 @@ Content-Type: application/json
         <div class="row"><div class="k">사용한 크레딧<small>이 방에서 끼리 AI가 쓴 크레딧</small></div><span class="pill gray" id="creditRoom">0</span></div>
       </div>
       <div class="credit-guide" id="creditGuide">
-        <h4><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> 매일 200크레딧이 무료예요</h4>
-        <p class="cg-lead">로그인하면 <b>매일 자정에 200크레딧</b>이 다시 채워져요. 10턴 모임 약 2번, <b>@이름</b> 20번 부를 수 있는 양이에요.</p>
+        <h4><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> 매일 300크레딧이 무료예요</h4>
+        <p class="cg-lead">로그인하면 <b>매일 자정에 300크레딧</b>이 다시 채워져요. 10턴 모임 약 3번, <b>@이름</b> 30번 부를 수 있는 양이에요.</p>
         <div class="cg-sub">크레딧 사용 기준</div>
         <ul>
           <li><span>끼리 AI (기본 모델) 1번 대답</span><b>10 크레딧</b></li>
-          <li><span><b>@이름</b>으로 질문</span><b>20번</b></li>
-          <li><span>10턴 풀 토론</span><b>2번</b></li>
-          <li><span>5턴 미니 토론</span><b>4번</b></li>
+          <li><span><b>@이름</b>으로 질문</span><b>30번</b></li>
+          <li><span>10턴 풀 토론</span><b>3번</b></li>
+          <li><span>5턴 미니 토론</span><b>6번</b></li>
           <li class="free"><span>나의 AI (초대 링크·내 키)</span><b>0 크레딧 (끼리 크레딧 미사용)</b></li>
           <li class="free"><span>사람 간 대화</span><b>0 크레딧 (무료)</b></li>
         </ul>
@@ -2379,7 +2379,7 @@ function normalizeRoom(r) {
   r.members = r.members.filter(function (id) { return !!state.agents[id]; });
   if (typeof r.session !== "object" || !r.session) r.session = freshSession();
   r.session.credits = Math.round(Number(r.session.credits) || 0);
-  /* 크레딧 단위 통일: 예전 원 단위 시절의 작은 budget(20·60 등)은 최소 100크레딧으로 올리고, 기본은 200크레딧. */
+  /* 크레딧 단위 통일: 예전 원 단위 시절의 작은 budget(20·60 등)은 최소 100크레딧으로 올리고, 기본은 300크레딧. */
   if (typeof r.budget !== "number" || !isFinite(r.budget)) r.budget = 200;
   r.budget = Math.round(r.budget);
   if (r.budget < 100) r.budget = 100;
@@ -3022,7 +3022,7 @@ function renderHome() {
   var cr = $("homeCredit");
   if (cr) {
     if (V3.mode === "local") cr.textContent = "데모";
-    else if (!V3.signedIn) cr.textContent = "매일 200 무료";
+    else if (!V3.signedIn) cr.textContent = "매일 300 무료";
     else cr.textContent = creditsLabel(creditsNow()) + " 크레딧";
   }
   var rc = $("homeRoomCount");
@@ -4041,8 +4041,8 @@ function routeGuide(a, route) {
     acts: [{ label: "🔗 이 방 초대 링크", act: "invite" }]
   };
   if (route === "need-connect") return {
-    text: "끼리 AI를 쓰려면 로그인(매일 200크레딧 무료)하거나 설정에서 내 API 키를 연결해 주세요. 끼리는 대신 다른 AI를 부르지 않아요.",
-    acts: [{ label: "로그인 · 매일 200크레딧 무료", act: "login" }, { label: "설정 · API 키", act: "settings" }]
+    text: "끼리 AI를 쓰려면 로그인(매일 300크레딧 무료)하거나 설정에서 내 API 키를 연결해 주세요. 끼리는 대신 다른 AI를 부르지 않아요.",
+    acts: [{ label: "로그인 · 매일 300크레딧 무료", act: "login" }, { label: "설정 · API 키", act: "settings" }]
   };
   return null;
 }
@@ -4105,7 +4105,7 @@ async function speak(agent, phase, ep) {
     var sk = String(out.note || "");
     var skActs = null;
     if (out.note) {
-      if (/로그인|세션/.test(sk)) skActs = [{ label: "로그인 · 매일 200크레딧 무료", act: "login" }, { label: "설정 · API 키", act: "settings" }];
+      if (/로그인|세션/.test(sk)) skActs = [{ label: "로그인 · 매일 300크레딧 무료", act: "login" }, { label: "설정 · API 키", act: "settings" }];
       else if (/크레딧/.test(sk)) skActs = [{ label: "💎 내 크레딧", act: "credit" }];
       addSystem(out.note, "warn", skActs);
     }
@@ -4150,7 +4150,7 @@ function startRoundtable(opts) {
   r.agenda = agenda;
   r.members = parts;
   r.maxTurns = clamp(Number(opts.turns) || 10, 3, 24);
-  r.budget = clamp(Math.round(Number(opts.budget) || r.budget || 200), 100, 5000);
+  r.budget = clamp(Math.round(Number(opts.budget) || r.budget || 300), 100, 5000);
   r.session = freshSession();
   r.session.startedAt = Date.now();
   r.session.startIndex = r.messages.length;
@@ -4998,7 +4998,7 @@ function rtRoomPlan(r) {
     participants: parts,
     moderator: rtAutoModerator(r, parts),
     turns: clamp(Number(r.maxTurns) || 10, 3, 24),
-    budget: clamp(Math.round(Number(r.budget) || 200), 100, 5000)
+    budget: clamp(Math.round(Number(r.budget) || 300), 100, 5000)
   };
 }
 function rtSummaryText(plan) {
@@ -5184,12 +5184,12 @@ function openRoomForm(roomId) {
   try { roomForm.roles = r && r.roles ? JSON.parse(JSON.stringify(r.roles)) : {}; } catch (e) { roomForm.roles = {}; }
   renderRfRoleMode();
   $("rfTurns").value = String(turnOptionsFor(r ? r.maxTurns : 10, $("rfTurns")));
-  $("rfBudget").value = r ? r.budget : 200;
+  $("rfBudget").value = r ? r.budget : 300;
   /* 새 방은 방 이름·분류·최대 턴·크레딧 상한만 받고 바로 열린다. AI·역할은 방 설정(⋯)에서.
      아이콘은 주제 분류가 정하므로 고르는 칸은 어느 모드에서도 두지 않는다. */
   var emojiField = $("rfEmojiField");
   if (emojiField) emojiField.hidden = true;
-  /* 최대 턴은 ▶ 토론 시작 시트에서, 크레딧 상한은 방의 턴 미터(기본 200)에서 정한다 — 방 만들기는 분류·이름만. */
+  /* 최대 턴은 ▶ 토론 시작 시트에서, 크레딧 상한은 방의 턴 미터(기본 300)에서 정한다 — 방 만들기는 분류·이름만. */
   ["rfTurnField", "rfBudgetField"].forEach(function (id) {
     var el = $(id); if (el) el.hidden = true;
   });
@@ -5243,7 +5243,7 @@ function submitRoomForm() {
     });
   }
   var maxTurns = Number($("rfTurns").value) || 10;
-  var budget = clamp(Math.round(Number($("rfBudget").value) || 200), 100, 5000);
+  var budget = clamp(Math.round(Number($("rfBudget").value) || 300), 100, 5000);
   if (roomForm.id) {
     var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
     if (!r) return;
@@ -6532,8 +6532,8 @@ function openNickModal() {
    오프라인·mock 테스트 모드(?mock=1)는 기존 로컬 동작 그대로. */
 function needStartFirst() {
   if (!(V3.mode === "cloud" && !V3.signedIn)) return false;
-  setAuthMsg("info", "서버에 방을 만들고 초대하려면 먼저 시작해 주세요 · 로그인하면 매일 200크레딧이 무료로 채워져요.");
-  toast("서버에 방을 만들고 초대하려면 먼저 시작해 주세요(매일 200크레딧 무료)");
+  setAuthMsg("info", "서버에 방을 만들고 초대하려면 먼저 시작해 주세요 · 로그인하면 매일 300크레딧이 무료로 채워져요.");
+  toast("서버에 방을 만들고 초대하려면 먼저 시작해 주세요(매일 300크레딧 무료)");
   openModal("authModal");
   return true;
 }
@@ -6637,7 +6637,7 @@ function renderCredit() {
   if (!el) return;
   var cls = "credit-chip", html = "", title = "";
   if (V3.mode === "local") { cls += " off"; html = icoHtml("gem", "sm") + " <b>로컬</b>"; title = "로컬 데모 · 크레딧을 쓰지 않아요"; }
-  else if (!V3.signedIn) { cls += " off"; html = icoHtml("gem", "sm") + " <b>크레딧</b>"; title = "로그인하면 매일 200크레딧이 무료로 채워져요"; }
+  else if (!V3.signedIn) { cls += " off"; html = icoHtml("gem", "sm") + " <b>크레딧</b>"; title = "로그인하면 매일 300크레딧이 무료로 채워져요"; }
   else {
     var c = creditsNow();
     if (c < 30) cls += " low";
@@ -6662,7 +6662,7 @@ function renderAccount() {
   if (!V3.signedIn) {
     /* 시작 전 — '로그인' 버튼을 따로 두지 않고, 카드 하나를 누르면 시작 모달이 열린다 */
     name.textContent = "끼리 시작하기";
-    sub.textContent = "로그인하면 매일 200크레딧 무료";
+    sub.textContent = "로그인하면 매일 300크레딧 무료";
     btn.hidden = true;
     if (al) { al.classList.add("start"); al.setAttribute("tabindex", "0"); al.setAttribute("role", "button"); }
     renderStartUI();
@@ -6745,7 +6745,7 @@ function renderExpertPicker() {
     note.innerHTML = V3.mode === "local"
       ? "지금은 <b>로컬 데모</b>라 끼리 AI가 규칙 기반으로 답합니다."
       : (V3.signedIn ? "내 API 키를 연결해 두었다면 그 키로 동작해요."
-                     : "게스트로 시작하면 매일 200크레딧으로 바로 추가해 볼 수 있어요.");
+                     : "게스트로 시작하면 매일 300크레딧으로 바로 추가해 볼 수 있어요.");
   }
   renderCustomTarget();
 }
@@ -6798,7 +6798,7 @@ async function afterSignIn(user) {
   V3.user = { id: user.id, email: user.email || "", isAnonymous: !!(user.is_anonymous || !user.email) };
   V3.signedIn = true;
   var got = null;
-  /* 2차 안전장치: 정식 로그인 유저는 접속할 때 매일 200크레딧을 한 번 더 조용히 확인한다.
+  /* 2차 안전장치: 정식 로그인 유저는 접속할 때 매일 300크레딧을 한 번 더 조용히 확인한다.
      (pg_cron 00:00 KST 지급이 멈춰 있을 때를 대비. 익명 게스트는 대상이 아니므로 건너뜀) */
   if (!V3.user.isAnonymous && db.client) {
     try { await db.client.rpc("kkiri_claim_daily_credits"); } catch (e) {}
@@ -6831,7 +6831,7 @@ async function authInit() {
     var u = mockRead(MOCK_USER_KEY, null);
     if (u && u.id) {
       V3.signedIn = true; V3.user = u; V3.ready = true;
-      V3.profile = { nickname: u.nickname || "게스트", plan: "free", credits: Number(mockRead(MOCK_CREDIT_KEY, 200)) || 0 };
+      V3.profile = { nickname: u.nickname || "게스트", plan: "free", credits: Number(mockRead(MOCK_CREDIT_KEY, 300)) || 0 };
     }
     await loadModels();
     renderCredit(); renderAccount(); renderExperts();
@@ -6860,9 +6860,9 @@ async function signInGuest() {
   if (V3.mode === "mock") {
     var u = { id: "mock_" + Date.now().toString(36), nickname: "게스트", isAnonymous: true };
     mockWrite(MOCK_USER_KEY, u);
-    if (mockRead(MOCK_CREDIT_KEY, null) == null) mockWrite(MOCK_CREDIT_KEY, 200);
+    if (mockRead(MOCK_CREDIT_KEY, null) == null) mockWrite(MOCK_CREDIT_KEY, 300);
     V3.signedIn = true; V3.user = u; V3.ready = true;
-    V3.profile = { nickname: "게스트", plan: "free", credits: Number(mockRead(MOCK_CREDIT_KEY, 200)) || 0 };
+    V3.profile = { nickname: "게스트", plan: "free", credits: Number(mockRead(MOCK_CREDIT_KEY, 300)) || 0 };
     closeModal("authModal");
     renderCredit(); renderAccount(); renderExperts(); renderAll();
     toast("게스트로 시작 · 크레딧 " + creditsNow());
@@ -6871,7 +6871,7 @@ async function signInGuest() {
   try {
     var res = await db.client.auth.signInAnonymously();
     if (res.error) { setAuthMsg("err", authFriendly(res.error)); return; }
-    setAuthMsg("ok", "게스트로 시작했어요 · 매일 200크레딧 무료");
+    setAuthMsg("ok", "게스트로 시작했어요 · 매일 300크레딧 무료");
     closeModal("authModal");
     await afterSignIn(res.data.user);
     toast("게스트로 시작 · 크레딧 " + creditsNow());
@@ -7008,8 +7008,8 @@ function renderLedger(rows) {
 async function openCredit() {
   $("creditNow").textContent = V3.signedIn ? creditsNow().toLocaleString("ko-KR") : "—";
   $("creditPlan").textContent = V3.signedIn
-    ? "매일 200크레딧 무료"
-    : "로그인 전 · 매일 200크레딧 무료";
+    ? "매일 300크레딧 무료"
+    : "로그인 전 · 매일 300크레딧 무료";
   var actR = activeRoom();
   $("creditRoom").textContent = ((actR && actR.session && actR.session.credits) || 0).toLocaleString("ko-KR");
   openModal("creditModal");
@@ -7615,7 +7615,7 @@ function wire() {
   });
   $("budgetSave").addEventListener("click", function () {
     var r = activeRoom();
-    var v = clamp(Math.round(Number($("budgetInput").value) || 200), 100, 5000);
+    var v = clamp(Math.round(Number($("budgetInput").value) || 300), 100, 5000);
     r.budget = v;
     save();
     dbSaveSettings(r);
