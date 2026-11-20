@@ -333,6 +333,8 @@
   .msg{display:flex;gap:9px;align-items:flex-start;margin:13px 0;max-width:100%}
   .msg .body{min-width:0;max-width:min(640px,84%)}
   .msg .who{display:flex;align-items:center;gap:6px;margin:1px 0 5px 2px;font-size:11px;font-weight:900;letter-spacing:-.02em}
+  .msg.me .who{justify-content:flex-end;margin:1px 2px 5px 0;color:#5B38E0}
+  .msg.me .who em{color:#9A90B8}
   .msg .who em{font-style:normal;font-size:9px;font-weight:700;color:#93a0aa;letter-spacing:-.01em}
   .msg .who .src{font-size:8px;font-weight:900;color:#5B38E0;background:var(--brand-tint);padding:2px 5px;border-radius:999px;letter-spacing:0}
   .msg .who .src.ext{color:#2b5cc4;background:#EEF0FF}
@@ -496,10 +498,10 @@
   .donate-box>p{margin:4px 0 9px;font-size:10.5px;line-height:1.6;color:#8c7657;letter-spacing:-.01em}
   .donate-box .btn{width:100%;background:#fff8ec;border:1px solid #eccd9f;color:#8a5a1f;font-size:11.5px;padding:11px 12px}
   .donate-box .btn:hover{background:#fdeed6}
-  .side-donate{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;border:1px dashed #2f4352;background:transparent;color:#D2C8EF;font:inherit;font-size:9.5px;font-weight:800;border-radius:10px;padding:7px 8px;cursor:pointer;letter-spacing:-.01em;transition:background .12s ease,color .12s ease}
+  .side-donate{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;border:1px dashed #2f4352;background:transparent;color:#D2C8EF;font:inherit;font-size:11.5px;font-weight:800;border-radius:10px;padding:8px 9px;cursor:pointer;letter-spacing:-.01em;transition:background .12s ease,color .12s ease}
   .side-donate:hover{background:#241D45;color:#fff;border-color:#4A407E}
   .home-foot{margin:20px 0 6px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
-  .home-donate{border:1px dashed var(--line);background:#fff;color:#8A819F;font:inherit;font-size:10.5px;font-weight:800;border-radius:999px;padding:8px 15px;cursor:pointer;letter-spacing:-.01em;transition:border-color .12s ease,color .12s ease,background .12s ease}
+  .home-donate{border:1px dashed var(--line);background:#fff;color:#8A819F;font:inherit;font-size:11.5px;font-weight:800;border-radius:999px;padding:8px 15px;cursor:pointer;letter-spacing:-.01em;transition:border-color .12s ease,color .12s ease,background .12s ease}
   .home-donate:hover{border-color:#eccd9f;color:#8a5a1f;background:#fffaf2}
   .home-feedback:hover{border-color:#E0D6FF;color:#5B38E0;background:#F7F4FF}
   .side-feedback{margin-top:6px}
@@ -508,7 +510,27 @@
   .fb-count.full{color:#c0472c}
   .donate-hero{font-size:34px;text-align:center;line-height:1;margin:2px 0 10px}
   .donate-msg{margin:0 0 8px;font-size:12px;line-height:1.65;color:#4A4270;letter-spacing:-.01em}
-  .donate-msg b{color:#8a5a1f}
+  .donate-msg b{color:var(--brand-deep)}
+  /* --- 카카오페이 송금 QR --- */
+  .donate-note{margin:0 0 12px;padding:9px 11px;font-size:11.5px;line-height:1.62;color:#4A4270;background:var(--brand-soft);border:1px solid #ECE6FF;border-radius:12px;letter-spacing:-.01em}
+  .donate-note b{color:var(--brand-deep)}
+  .donate-qr{display:flex;flex-direction:column;align-items:center;margin:2px 0 11px;padding:14px 14px 11px;background:#fff;border:1px solid #E7E1FA;border-radius:20px;box-shadow:0 8px 22px rgba(115,82,255,.10)}
+  .donate-qr img{display:block;width:231px;max-width:100%;height:auto;border-radius:4px}
+  .donate-qr-cap{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:10.5px;font-weight:900;color:var(--brand-deep);letter-spacing:-.01em}
+  .donate-hint{margin:0 0 12px;font-size:11.5px;line-height:1.62;color:#6E668C;text-align:center;letter-spacing:-.01em}
+  .donate-cta{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:54px;padding:15px 16px;background:linear-gradient(135deg,#FFE95A 0%,#FEE500 62%,#F7DC00 100%);color:#191919;font-size:15px;font-weight:900;letter-spacing:-.02em;border:1px solid #E9D400;border-radius:15px;text-decoration:none;box-shadow:0 6px 16px rgba(231,197,0,.30);-webkit-tap-highlight-color:transparent;transition:filter .15s ease,transform .15s ease}
+  .donate-cta:hover{filter:brightness(1.04);color:#191919;text-decoration:none}
+  .donate-cta:active{transform:translateY(1px)}
+  .donate-cta:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .donate-acts{margin-top:9px}
+  .donate-acts .btn{min-height:48px;font-size:12.5px}
+  .donate-copy{background:var(--brand-tint);border:1px solid #D6C8FF;color:var(--brand-deep);font-weight:900}
+  .donate-copy:hover{background:#E9E1FF}
+  @media (max-width:640px){
+    .donate-hint{font-size:12.5px}
+    .donate-qr{padding:12px 12px 10px}
+    .donate-acts .btn{font-size:13.5px}
+  }
 
   /* ============ 사이드바 AI 없음 ============ */
   .ai-empty{padding:2px 0 4px;text-align:center}
@@ -652,6 +674,10 @@
     border:1px solid var(--line);border-radius:999px;padding:3px 8px;white-space:nowrap;
   }
   .pb-chip.on{color:#5B38E0;background:var(--brand-tint);border-color:#DACDFF}
+  .pb-chip.me{color:#251B4D;background:#fff;border-color:#DCD3F8;font-weight:900}
+  button.pb-chip{font:inherit;cursor:pointer}
+  button.pb-chip:hover{border-color:#C4B2FF;background:var(--brand-soft)}
+  button.pb-chip:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
   .pb-chip.ai{color:#474068;background:#F6F4FD}
   .pb-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex:0 0 6px}
   .live-pill.local{color:#8a5a12;background:var(--amber-tint)}
@@ -1247,9 +1273,197 @@
 
   /* ============ 공식 로고 이미지 (원본 그대로 · 2026-11-21) ============ */
   .kk-mark{background-image:url("data:image/png;base64,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");background-repeat:no-repeat;background-position:center;background-size:contain}
+  /* ============ 상단 바·제어 바 크기 (2026-11-21 · 글씨 작다는 피드백) ============ */
+  /* display:inline-flex 규칙이 [hidden] 을 덮어써서 숨겨야 할 버튼이 보이던 문제 */
+  .h-btn[hidden],.mini-btn[hidden],.icon-btn[hidden],.ghost-btn[hidden],.btn[hidden],.credit-chip[hidden]{display:none !important}
+  .room-head{gap:10px;padding:10px 18px}
+  .room-head .icon-btn{width:38px;height:38px;flex:0 0 38px}
+  .room-actions{flex-wrap:wrap;gap:7px}
+  .ghost-btn{font-size:13px;padding:9px 13px;min-height:38px;gap:7px;border-radius:12px}
+  .credit-chip{padding:8px 12px;min-height:38px;font-size:13px;gap:5px}
+  .credit-chip b{font-size:13.5px}
+  .rt-btn{font-size:13.5px;padding:10px 15px;min-height:38px;gap:7px;border-radius:13px}
+  .ctrl-actions .icon-btn{width:38px;height:38px;flex:0 0 38px;font-size:15px;border-radius:11px}
+  @media (max-width:900px){
+    /* 제목은 1줄, 버튼 줄은 아래 한 줄을 다 써서 글씨를 줄이지 않는다 */
+    .room-head{padding:8px 10px 9px;gap:8px 10px}
+    .room-head .room-titles{order:2;flex:1 1 auto;margin-top:0;min-width:0}
+    .room-head .room-actions{order:3;flex:1 1 100%;margin-left:0;justify-content:flex-start;gap:7px;flex-wrap:wrap}
+    .room-actions .ghost-btn{font-size:13px;padding:9px 12px;min-height:38px}
+    .room-actions .ghost-btn .lbl{display:inline;font-size:13px}
+    .room-actions #shareBtn,.room-actions #cardBtn{padding:9px 12px;gap:6px}
+    .room-actions #shareBtn .lbl,.room-actions #cardBtn .lbl{font-size:13px}
+    .room-head .credit-chip{font-size:13px;padding:8px 11px}
+    .room-head .credit-chip b{font-size:13.5px}
+    .rt-btn{font-size:13.5px;padding:10px 14px;min-height:38px}
+    .ctrl-actions .icon-btn{width:38px;height:38px;flex:0 0 38px}
+  }
+  /* ============ ㄲㄹ 톤 듀오톤 픽토그램 ============ */
+  .ico{width:1em;height:1em;flex:0 0 auto;display:inline-block;vertical-align:-.14em;
+    fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+    overflow:visible;pointer-events:none}
+  .ico.xs{width:13px;height:13px}
+  .ico.sm{width:16px;height:16px}
+  .ico.md{width:19px;height:19px}
+  .ico.lg{width:24px;height:24px}
+  .ico.xl{width:44px;height:44px}
+  .room-head .room-emoji{display:inline-flex;align-items:center;justify-content:center;color:var(--brand)}
+  .room-head .room-emoji .ico{width:26px;height:26px;vertical-align:0}
+  .room-item .r-emoji{display:inline-flex;align-items:center;color:#C3B6FF}
+  .room-item .r-emoji .ico{width:19px;height:19px;vertical-align:0}
+  .home-room .hr-emoji{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:10px;background:var(--brand-soft);color:var(--brand)}
+  .home-room .hr-emoji .ico{width:18px;height:18px;vertical-align:0}
+  .empty .e-emoji{display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+  .empty .e-emoji .ico{width:46px;height:46px;color:var(--brand);vertical-align:0}
+  .empty .e-emoji .emo-ico{font-size:40px;line-height:1}
+  .empty .e-cta .btn .ico{width:18px;height:18px;vertical-align:-.16em;margin-right:4px}
+  .nick-line .ico,.account-line .ico{color:#B9ACEC}
+  .sidebar .ico{--ico-fill:rgba(206,195,255,.20)}
+  .side-donate .ico{width:16px;height:16px}
+  .side-donate{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .home-chip .ico,.home-donate .ico{width:16px;height:16px}
+  .btn.green .ico,.rt-btn .ico,.btn.dark .ico,.q-chip.start .ico{--ico-fill:rgba(255,255,255,.30)}
+  .ctrl-actions .icon-btn .ico{width:19px;height:19px}
+  .home-donate{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .sec-head .ico{width:14px;height:14px;vertical-align:-.16em;margin-right:2px}
+  .home-sec-head h2 .ico{width:16px;height:16px;vertical-align:-.18em;margin-right:2px;color:var(--brand)}
+  .room-actions .ico{width:16px;height:16px}
+  .icon-btn .ico{width:17px;height:17px;vertical-align:0}
+  .credit-chip .ico{width:15px;height:15px;vertical-align:-.16em}
+  .rt-btn .ico{width:16px;height:16px;vertical-align:-.16em}
+  .boost .ico{width:18px;height:18px}
+  .btn .ico,.mini-btn .ico{vertical-align:-.16em}
 </style>
 </head>
 <body>
+<!-- ================= ㄲㄹ 톤 듀오톤 픽토그램 (인라인 SVG 스프라이트) ================= -->
+<svg id="kkiriIcons" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M5 7.6h14"/><path d="M5 12h14"/><path d="M5 16.4h9.6"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M4.2 10.7 12 4.2l7.8 6.5v7.6a1.9 1.9 0 0 1-1.9 1.9H6.1a1.9 1.9 0 0 1-1.9-1.9z"/>
+      <path d="M4.2 10.7 12 4.2l7.8 6.5v7.6a1.9 1.9 0 0 1-1.9 1.9H6.1a1.9 1.9 0 0 1-1.9-1.9z"/>
+      <path d="M9.7 20.2v-5h4.6v5"/>
+    </symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M12 3.8 19.2 9 12 20.2 4.8 9z"/>
+      <path d="M12 3.8 19.2 9 12 20.2 4.8 9z"/><path d="M4.8 9h14.4"/><path d="M9.3 9 12 20.2 14.7 9"/>
+    </symbol>
+    <symbol id="i-link" viewBox="0 0 24 24">
+      <path d="M10.4 13.6a3.7 3.7 0 0 0 5.2 0l2.3-2.3a3.7 3.7 0 0 0-5.2-5.2L11.5 7.3"/>
+      <path d="M13.6 10.4a3.7 3.7 0 0 0-5.2 0l-2.3 2.3a3.7 3.7 0 0 0 5.2 5.2l1.2-1.2"/>
+    </symbol>
+    <symbol id="i-card" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M6.6 3.8h7.2l4.2 4.2v12.2H6.6z"/>
+      <path d="M6.6 3.8h7.2l4.2 4.2v12.2H6.6z"/><path d="M13.8 3.8v4.2h4.2"/>
+      <path d="M9.6 12.4h5.2"/><path d="M9.6 15.8h5.2"/>
+    </symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M8.4 8.4h9.2a1.6 1.6 0 0 1 1.6 1.6v9.2a1.6 1.6 0 0 1-1.6 1.6H8.4a1.6 1.6 0 0 1-1.6-1.6v-9.2a1.6 1.6 0 0 1 1.6-1.6z"/>
+      <path d="M8.4 8.4h9.2a1.6 1.6 0 0 1 1.6 1.6v9.2a1.6 1.6 0 0 1-1.6 1.6H8.4a1.6 1.6 0 0 1-1.6-1.6v-9.2a1.6 1.6 0 0 1 1.6-1.6z"/>
+      <path d="M15.6 5.4H7.2a1.8 1.8 0 0 0-1.8 1.8v8"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path style="fill:currentColor;stroke:currentColor;stroke-width:1.4" d="M9.8 7.4 17.6 12l-7.8 4.6z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24">
+      <rect style="fill:currentColor;stroke:none" x="8.4" y="6.6" width="2.8" height="10.8" rx="1.4"/>
+      <rect style="fill:currentColor;stroke:none" x="12.8" y="6.6" width="2.8" height="10.8" rx="1.4"/>
+    </symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect style="fill:currentColor;stroke:none" x="7.2" y="7.2" width="9.6" height="9.6" rx="2.8"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M4.4 9.4A3.6 3.6 0 0 1 8 5.8h8a3.6 3.6 0 0 1 3.6 3.6v4.8A3.6 3.6 0 0 1 16 17.8h-4.4L7 20.8v-3.1a3.6 3.6 0 0 1-2.6-3.5z"/>
+      <path d="M4.4 9.4A3.6 3.6 0 0 1 8 5.8h8a3.6 3.6 0 0 1 3.6 3.6v4.8A3.6 3.6 0 0 1 16 17.8h-4.4L7 20.8v-3.1a3.6 3.6 0 0 1-2.6-3.5z"/>
+      <path d="M8.8 10.6h6.4"/>
+    </symbol>
+    <symbol id="i-coffee" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M5.6 9.8h9.4v4.6a4.7 4.7 0 0 1-9.4 0z"/>
+      <path d="M5.6 9.8h9.4v4.6a4.7 4.7 0 0 1-9.4 0z"/>
+      <path d="M15 10.8h1.7a2.3 2.3 0 0 1 0 4.6H15"/>
+      <path d="M4.4 20h11.6"/>
+      <path d="M8 6.9c0-.8.8-1 .8-1.9"/><path d="M11 6.9c0-.8.8-1 .8-1.9"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24">
+      <circle style="fill:var(--ico-fill,#EDE8FF)" cx="12" cy="8.3" r="3.6"/>
+      <circle cx="12" cy="8.3" r="3.6"/>
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M4.6 20c0-3.3 3.3-5.6 7.4-5.6s7.4 2.3 7.4 5.6z"/>
+      <path d="M4.6 20c0-3.3 3.3-5.6 7.4-5.6s7.4 2.3 7.4 5.6"/>
+    </symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M6.7 7.9h10.6l-.8 10.6a1.7 1.7 0 0 1-1.7 1.6H9.2a1.7 1.7 0 0 1-1.7-1.6z"/>
+      <path d="M6.7 7.9h10.6l-.8 10.6a1.7 1.7 0 0 1-1.7 1.6H9.2a1.7 1.7 0 0 1-1.7-1.6z"/>
+      <path d="M4.7 7.9h14.6"/>
+      <path d="M9.8 7.9V6a1.4 1.4 0 0 1 1.4-1.4h1.6A1.4 1.4 0 0 1 14.2 6v1.9"/>
+      <path d="M10.5 11.4v5.2"/><path d="M13.5 11.4v5.2"/>
+    </symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M12 3.2c3.3 2.1 5.2 5.4 5.2 9.1 0 1.5-.3 3-.8 4.3H7.6a12.5 12.5 0 0 1-.8-4.3c0-3.7 1.9-7 5.2-9.1z"/>
+      <path d="M12 3.2c3.3 2.1 5.2 5.4 5.2 9.1 0 1.5-.3 3-.8 4.3H7.6a12.5 12.5 0 0 1-.8-4.3c0-3.7 1.9-7 5.2-9.1z"/>
+      <circle style="fill:#fff" cx="12" cy="10.2" r="2"/>
+      <path d="M7.6 16.6 5.4 20l3.3-1.1"/><path d="M16.4 16.6 18.6 20l-3.3-1.1"/>
+      <path d="M10.5 19.4c.4 1 .9 1.5 1.5 1.5s1.1-.5 1.5-1.5"/>
+    </symbol>
+    <symbol id="i-bot" viewBox="0 0 24 24">
+      <rect style="fill:var(--ico-fill,#EDE8FF);stroke:none" x="4.6" y="7.8" width="14.8" height="11" rx="3.8"/>
+      <rect x="4.6" y="7.8" width="14.8" height="11" rx="3.8"/>
+      <path d="M12 7.8V5.2"/><circle cx="12" cy="4" r="1.2"/>
+      <circle style="fill:currentColor;stroke:none" cx="9.5" cy="12.7" r="1.2"/>
+      <circle style="fill:currentColor;stroke:none" cx="14.5" cy="12.7" r="1.2"/>
+      <path d="M9.9 15.7c1.2.9 3 .9 4.2 0"/>
+      <path d="M2.9 12.4h1.7"/><path d="M19.4 12.4h1.7"/>
+    </symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M6.8 13h10.4v3.7a5.2 5.2 0 0 1-10.4 0z"/>
+      <path d="M8.8 12.8V7.7a1.3 1.3 0 0 1 2.6 0v4.1"/>
+      <path d="M11.4 11.8V6.7a1.3 1.3 0 0 1 2.6 0v4.7"/>
+      <path d="M14 11.8V7.5a1.3 1.3 0 0 1 2.6 0v5.1"/>
+      <path d="M6.8 13H5.1a1.3 1.3 0 0 1-1-2.1l2.5-2.8"/>
+      <path d="M6.8 13h10.4v3.7a5.2 5.2 0 0 1-10.4 0z"/>
+    </symbol>
+    <symbol id="i-key" viewBox="0 0 24 24">
+      <circle style="fill:var(--ico-fill,#EDE8FF)" cx="8.4" cy="8.4" r="3.9"/>
+      <circle cx="8.4" cy="8.4" r="3.9"/>
+      <path d="M11.2 11.2 19.6 19.6"/><path d="M17.4 17.4l-1.9 1.9"/><path d="M14.9 14.9l-1.8 1.8"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.6v12.8"/><path d="M5.6 12h12.8"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M10.6 3.6l1.9 4.7 4.7 2-4.7 1.9-1.9 4.7-1.9-4.7-4.7-1.9 4.7-2z"/>
+      <path d="M10.6 3.6l1.9 4.7 4.7 2-4.7 1.9-1.9 4.7-1.9-4.7-4.7-1.9 4.7-2z"/>
+      <path d="M18 14.6l.9 2.2 2.2.9-2.2.9-.9 2.2-.9-2.2-2.2-.9 2.2-.9z"/>
+    </symbol>
+    <symbol id="i-think" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M9 15.6h6.4a4.3 4.3 0 0 0 .6-8.6 4.9 4.9 0 0 0-9.2 1.9A3.4 3.4 0 0 0 9 15.6z"/>
+      <path d="M9 15.6h6.4a4.3 4.3 0 0 0 .6-8.6 4.9 4.9 0 0 0-9.2 1.9A3.4 3.4 0 0 0 9 15.6z"/>
+      <circle style="fill:currentColor;stroke:none" cx="9.2" cy="19.2" r="1.2"/>
+      <circle style="fill:currentColor;stroke:none" cx="6" cy="21.4" r=".9"/>
+    </symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M20.4 4.2 3.9 10.9l6 2.3 2.3 6z"/>
+      <path d="M20.4 4.2 3.9 10.9l6 2.3 2.3 6z"/><path d="M20.4 4.2 9.9 13.2"/>
+    </symbol>
+    <symbol id="i-bowl" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M4.2 11.6h15.6a7.8 7.8 0 0 1-15.6 0z"/>
+      <path d="M4.2 11.6h15.6a7.8 7.8 0 0 1-15.6 0z"/>
+      <path d="M9 8.6c0-1.2 1-1.4 1-2.6"/><path d="M12.6 8.6c0-1.4 1-1.6 1-3"/>
+    </symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M12 3.4a6 6 0 0 1 3.6 10.8v2H8.4v-2A6 6 0 0 1 12 3.4z"/>
+      <path d="M12 3.4a6 6 0 0 1 3.6 10.8v2H8.4v-2A6 6 0 0 1 12 3.4z"/>
+      <path d="M9.6 19h4.8"/><path d="M10.6 21.4h2.8"/>
+    </symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#FFE6F2);stroke:none" d="M12 20.2s-7.6-4.6-7.6-9.5A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.6 3.3c0 4.9-7.6 9.5-7.6 9.5z"/>
+      <path d="M12 20.2s-7.6-4.6-7.6-9.5A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.6 3.3c0 4.9-7.6 9.5-7.6 9.5z"/>
+    </symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24">
+      <circle style="fill:currentColor;stroke:none" cx="6.6" cy="12" r="1.5"/>
+      <circle style="fill:currentColor;stroke:none" cx="12" cy="12" r="1.5"/>
+      <circle style="fill:currentColor;stroke:none" cx="17.4" cy="12" r="1.5"/>
+    </symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24">
+      <path d="M4.6 19.4l1-3.8L15.9 5.3a1.8 1.8 0 0 1 2.6 0l.2.2a1.8 1.8 0 0 1 0 2.6L8.4 18.4z"/>
+      <path d="M14.4 6.8l2.8 2.8"/>
+    </symbol>
+  </defs>
+</svg>
 <div class="app" id="app">
 
   <!-- ================= sidebar ================= -->
@@ -1261,19 +1475,19 @@
     </div>
     <p class="brand-line">AI와 함께,<br>뭐든지 끼리 하자</p>
     <button type="button" class="nick-line" id="nickLine" title="내 닉네임 바꾸기" aria-label="내 닉네임 바꾸기">
-      <span aria-hidden="true">👤</span><b id="nickLabel">끼리장</b>
+      <svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg><b id="nickLabel">참여자</b>
       <span class="nick-edit" aria-hidden="true">✎</span>
     </button>
     <div class="account-line" id="accountLine">
-      <span class="a-ico" aria-hidden="true">🔑</span>
+      <span class="a-ico" aria-hidden="true"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg></span>
       <span class="a-txt"><b id="accountName">로그인 전</b><small id="accountSub">매일 200크레딧 무료</small></span>
       <button type="button" id="accountBtn">로그인</button>
     </div>
 
     <div class="side-sec">
-      <div class="sec-head"><span>💬 내 대화방 <em id="roomCount">0</em></span>
+      <div class="sec-head"><span><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>내 대화방 <em id="roomCount">0</em></span>
         <span class="sec-actions">
-          <button class="mini-btn" id="sideRoomEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden>🗑️</button>
+          <button class="mini-btn" id="sideRoomEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>
           <button class="mini-btn" id="sideRoomEditCancel" hidden>취소</button>
           <button class="mini-btn danger" id="sideRoomBulkDelete" hidden>선택 삭제 (0개)</button>
           <button class="mini-btn" id="newRoomBtn">+ 새 방</button>
@@ -1282,24 +1496,12 @@
       <div class="room-list" id="roomList"></div>
     </div>
 
-    <div class="side-sec" id="presSec">
-      <div class="sec-head"><span>지금 접속 중 <em id="presenceCount">0명</em></span></div>
-      <div class="pres-list" id="sidePresence"></div>
-      <p class="sec-hint">지금 이 방에 접속해 있는 참여자만 보여요. 창을 닫으면 바로 사라져요.</p>
-    </div>
-
-    <div class="side-sec" id="aiSec">
-      <div class="sec-head"><span>이 방의 끼리 AI <em id="aiCount">0명</em></span>
-        <span class="sec-actions"><button class="mini-btn rmode-btn" id="roleModeBtn" aria-pressed="true" title="역할 배정 방식 바꾸기 (자동/수동)">역할 자동</button><button class="mini-btn" id="addAiBtn">+ AI 추가</button></span>
-      </div>
-      <div class="member-list" id="sideMembers"></div>
-      <p class="sec-hint" id="aiHint">이 방에서 부를 수 있는 AI예요.</p>
-    </div>
-    <div class="member-list" id="sideExperts" hidden></div>
+    <!-- 접속 현황·이 방의 AI 는 방 화면 상단(접속 N명 · 이 방 참여 줄 · 🔗 이 방 초대)과
+         방 설정(⋯) 시트가 맡는다 — 사이드바는 대화방 목록과 아래 두 버튼만 남긴다. -->
 
     <div class="side-foot">
-      <button type="button" class="side-donate" id="sideDonateBtn" title="끼리 응원하기">☕ 끼리 응원하기</button>
-      <button type="button" class="side-donate side-feedback" id="sideFeedbackBtn" title="불편한 점·아이디어 보내기">💬 의견 보내기</button>
+      <button type="button" class="side-donate" id="sideDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
+      <button type="button" class="side-donate side-feedback" id="sideFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
     </div>
   </aside>
   <div class="backdrop" id="backdrop" hidden></div>
@@ -1311,19 +1513,19 @@
     <section class="home" id="homeView" aria-label="끼리 홈">
       <div class="home-inner">
         <div class="home-head">
-          <button class="icon-btn only-mobile" id="homeMenuBtn" aria-label="대화방 목록 열기">☰</button>
+          <button class="icon-btn only-mobile" id="homeMenuBtn" aria-label="대화방 목록 열기"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-menu"></use></svg></button>
           <span class="h-emoji h-logo kk-mark" aria-hidden="true"></span>
           <div><h1>끼리</h1><p class="home-slogan">AI와 함께, 뭐든지 끼리 하자</p></div>
         </div>
         <div class="home-sum">
-          <button type="button" class="home-chip" id="homeNickBtn" title="내 닉네임 바꾸기">👤 <b id="homeNick">끼리장</b></button>
-          <button type="button" class="home-chip" id="homeCreditBtn" title="내 크레딧">💎 <b id="homeCredit">—</b></button>
+          <button type="button" class="home-chip" id="homeNickBtn" title="내 닉네임 바꾸기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> <b id="homeNick">참여자</b></button>
+          <button type="button" class="home-chip" id="homeCreditBtn" title="내 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> <b id="homeCredit">—</b></button>
         </div>
         <section class="home-sec" aria-label="내 대화방">
           <div class="home-sec-head">
-            <div><h2>💬 내 대화방 <em id="homeRoomCount">0</em></h2><p>주제 하나를 두고 AI와 사람이 모이는 공간이에요.</p></div>
+            <div><h2><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>내 대화방 <em id="homeRoomCount">0</em></h2><p>주제 하나를 두고 AI와 사람이 모이는 공간이에요.</p></div>
             <div class="home-sec-actions">
-              <button type="button" class="h-btn" id="homeEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden>🗑️</button>
+              <button type="button" class="h-btn" id="homeEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>
               <button type="button" class="h-btn green" id="homeNewRoomBtn">+ 새 방</button>
               <button type="button" class="h-btn" id="homeEditCancel" hidden>취소</button>
               <button type="button" class="h-btn danger" id="homeBulkDelete" hidden>선택 삭제 (0개)</button>
@@ -1332,26 +1534,26 @@
           <div class="room-grid" id="homeRoomGrid"></div>
         </section>
         <div class="home-foot">
-          <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 응원하기">☕ 끼리 응원하기</button>
-          <button type="button" class="home-donate home-feedback" id="homeFeedbackBtn" title="불편한 점·아이디어 보내기">💬 의견 보내기</button>
+          <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
+          <button type="button" class="home-donate home-feedback" id="homeFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
         </div>
       </div>
     </section>
 
     <header class="room-head" id="roomHead" hidden>
-      <button class="icon-btn only-mobile" id="menuBtn" aria-label="방 목록 열기">☰</button>
-      <span class="room-emoji" id="roomEmoji" aria-hidden="true">🚀</span>
+      <button class="icon-btn only-mobile" id="menuBtn" aria-label="방 목록 열기"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-menu"></use></svg></button>
+      <span class="room-emoji" id="roomEmoji" aria-hidden="true"></span>
       <div class="room-titles">
         <div class="rt-line"><h1 id="roomName">방</h1><span class="live-pill wait" id="livePill">연결 중</span></div>
         <p id="roomSub"></p>
       </div>
       <div class="room-actions">
-        <button class="icon-btn" id="roomHomeBtn" type="button" title="끼리 홈" aria-label="끼리 홈">🏠</button>
-        <button class="credit-chip off" id="creditBadge" type="button" title="내 크레딧">💎 <b>—</b></button>
+        <button class="icon-btn" id="roomHomeBtn" type="button" title="끼리 홈" aria-label="끼리 홈"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-home"></use></svg></button>
+        <button class="credit-chip off" id="creditBadge" type="button" title="내 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> <b>—</b></button>
         <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참여자">접속 0명</span>
-        <button class="ghost-btn" id="shareBtn" type="button" title="이 방 초대 링크 복사" aria-label="이 방 초대"><span aria-hidden="true">🔗</span><span class="lbl">이 방 초대</span></button>
-        <button class="ghost-btn" id="cardBtn" type="button" title="합의안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="합의안 카드"><span aria-hidden="true">📋</span><span class="lbl">합의안</span></button>
-        <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정">⋯</button>
+        <button class="ghost-btn" id="shareBtn" type="button" title="이 방 초대 링크 복사" aria-label="이 방 초대"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg><span class="lbl">이 방 초대</span></button>
+        <button class="ghost-btn" id="cardBtn" type="button" title="합의안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="합의안 카드"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-card"></use></svg><span class="lbl">합의안</span></button>
+        <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-dots"></use></svg></button>
       </div>
     </header>
 
@@ -1363,11 +1565,11 @@
 
     <section class="ctrl" id="ctrl" aria-label="대화 제어" hidden>
       <div class="ctrl-top">
-        <button type="button" class="rt-btn" id="discussBtn" title="이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><span aria-hidden="true">▶</span> 토론 시작</button>
+        <button type="button" class="rt-btn" id="discussBtn" title="이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg><span>토론 시작</span></button>
         <p class="ctrl-lead" id="ctrlLead">평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요</p>
         <div class="ctrl-actions">
-          <button class="icon-btn" id="pauseBtn" title="일시정지" aria-label="일시정지">⏸</button>
-          <button class="icon-btn stop" id="stopBtn" title="즉시 정지" aria-label="즉시 정지">⏹</button>
+          <button class="icon-btn" id="pauseBtn" title="일시정지" aria-label="일시정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-pause"></use></svg></button>
+          <button class="icon-btn stop" id="stopBtn" title="즉시 정지" aria-label="즉시 정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-stop"></use></svg></button>
         </div>
       </div>
       <div class="meters">
@@ -1411,8 +1613,8 @@
     <div class="sheet-head"><h2 id="inviteTitle">AI 추가</h2><span class="sub" id="inviteBalance"></span><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <div class="seg wide ai-seg" id="aiSeg" role="tablist" aria-label="AI 종류">
-        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b>🙋 나의 AI</b><small>초대 링크 · 내 키 · 크레딧 0</small></button>
-        <button type="button" role="tab" data-tab="kkiri" aria-pressed="false" aria-selected="false"><b>🤖 끼리 AI</b><small>끼리 엔진 · 크레딧 또는 내 API 키</small></button>
+        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> 나의 AI</b><small>초대 링크 · 내 키 · 크레딧 0</small></button>
+        <button type="button" role="tab" data-tab="kkiri" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> 끼리 AI</b><small>끼리 엔진 · 크레딧 또는 내 API 키</small></button>
       </div>
 
       <!-- ---------- 탭 1 · 끼리 AI ---------- -->
@@ -1453,7 +1655,7 @@
           <span class="focus-sub">10분만 같이하고 나가라고 정해 보내면, 내 AI가 계속 새 글을 확인하며 토큰을 쓰지 않아요.</span>
           <pre class="focus-preview" id="focusPreview"></pre>
           <div class="focus-btns">
-            <button type="button" class="btn green" id="focusCopyPrompt">📋 초대 지시문+링크 복사</button>
+            <button type="button" class="btn green" id="focusCopyPrompt"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 초대 지시문+링크 복사</button>
           </div>
           <p class="hint">피클·키링·뮤즈처럼 웹에 직접 들어올 수 있는 내 AI 앱에 그대로 붙여넣으세요. (일반 챗GPT·제미나이는 아래 내 API 키 연결을 이용해 주세요 · 클로드는 지원 예정) 링크로 들어온 AI는 이 방에만 들어오고, 끼리 크레딧은 쓰지 않아요 (각 AI 자체 사용량 사용).</p>
         </div>
@@ -1626,7 +1828,8 @@ Content-Type: application/json
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="nickTitle" style="max-width:420px">
     <div class="sheet-head"><h2 id="nickTitle">내 닉네임</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>닉네임</span><input id="nickInput" type="text" maxlength="20" placeholder="끼리장" autocomplete="off"></label>
+      <label class="field"><span>닉네임</span><input id="nickInput" type="text" maxlength="20" placeholder="예: 유미, 민수" autocomplete="off"></label>
+      <p class="hint" id="nickLead" hidden></p>
       <p class="hint">같은 방에 있는 사람에게 이 이름으로 보여요. 이 브라우저에만 저장되고 서버에는 대화와 함께 남습니다.</p>
       <div class="btn-row"><button class="btn green" id="nickSave">닉네임 저장</button></div>
     </div>
@@ -1640,8 +1843,8 @@ Content-Type: application/json
     <div class="sheet-body">
       <p class="hint" style="margin-top:0">누구를 부를까요? AI는 역할을 골라 바로 들이고, 사람은 초대 링크를 보내요.</p>
       <div class="invite-choice">
-        <button type="button" class="btn green" id="choiceAiBtn">🤖 AI 부르기</button>
-        <button type="button" class="btn" id="choicePersonBtn">👋 사람 부르기</button>
+        <button type="button" class="btn green" id="choiceAiBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> AI 부르기</button>
+        <button type="button" class="btn" id="choicePersonBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-hand"></use></svg> 사람 부르기</button>
       </div>
     </div>
   </div>
@@ -1658,8 +1861,8 @@ Content-Type: application/json
         </div>
       </label>
       <p class="hint" id="shareHint">링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다.</p>
-      <div class="btn-row" style="margin-top:14px"><button class="btn dark" id="shareCopy">📋 초대 링크 복사</button></div>
-      <div class="btn-row" style="margin-top:8px"><button class="btn" id="shareKakao">💬 카카오톡으로 공유하기</button></div>
+      <div class="btn-row" style="margin-top:14px"><button class="btn dark" id="shareCopy"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 초대 링크 복사</button></div>
+      <div class="btn-row" style="margin-top:8px"><button class="btn" id="shareKakao"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg> 카카오톡으로 공유하기</button></div>
     </div>
   </div>
 </div>
@@ -1702,7 +1905,7 @@ Content-Type: application/json
         <div class="row"><div class="k">사용한 크레딧<small>이 방에서 끼리 AI가 쓴 크레딧</small></div><span class="pill gray" id="creditRoom">0</span></div>
       </div>
       <div class="credit-guide" id="creditGuide">
-        <h4><span aria-hidden="true">💎</span> 매일 200크레딧이 무료예요</h4>
+        <h4><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> 매일 200크레딧이 무료예요</h4>
         <p class="cg-lead">로그인하면 <b>매일 자정에 200크레딧</b>이 다시 채워져요. 10턴 모임 약 2번, <b>@이름</b> 20번 부를 수 있는 양이에요.</p>
         <div class="cg-sub">크레딧 사용 기준</div>
         <ul>
@@ -1716,7 +1919,7 @@ Content-Type: application/json
         <p class="cg-foot">@이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).</p>
       </div>
       <div class="credit-guide alt">
-        <h4><span aria-hidden="true">⚡</span> 더 쓰고 싶을 때 · 두 가지 방법</h4>
+        <h4><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-spark"></use></svg> 더 쓰고 싶을 때 · 두 가지 방법</h4>
         <div class="cg-opt">
           <b>내 API 키 연결 <em>무제한</em></b>
           <p>나의 AI → 내 API 키에 구글 제미나이(무료 키)나 OpenAI(챗GPT) 키를 넣으면 끼리 크레딧을 쓰지 않고 내 키로 대화해요.</p>
@@ -1728,9 +1931,9 @@ Content-Type: application/json
         </div>
       </div>
       <div class="donate-box">
-        <b>☕ 끼리 응원하기</b>
+        <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 응원하기</b>
         <p>무료로 잘 쓰고 계신다면 커피 한 잔 후원해 주세요.</p>
-        <button type="button" class="btn" id="donateBtn">☕ 커피 한 잔 후원하기</button>
+        <button type="button" class="btn" id="donateBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 커피 한 잔 후원하기</button>
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
@@ -1740,16 +1943,20 @@ Content-Type: application/json
   </div>
 </div>
 
-<!-- ================= v3 · 자율 후원 ================= -->
+<!-- ================= v3 · 자율 후원 (카카오페이 송금 QR 연동) ================= -->
 <div class="modal" id="donateModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="donateTitle" style="max-width:420px">
-    <div class="sheet-head"><h2 id="donateTitle">☕ 커피 한 잔 후원</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><h2 id="donateTitle"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 커피 한 잔 후원</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <div class="donate-hero" aria-hidden="true">☕</div>
       <p class="donate-msg">끼리를 무료로 잘 쓰고 계신다면, 커피 한 잔으로 <b>개발과 서버비</b>를 응원해 주세요.</p>
-      <p class="donate-msg">후원은 마음으로 하는 것이고, <b>크레딧과는 따로</b> 동작해요. 후원하지 않아도 지금처럼 그대로 무료로 쓰셔도 됩니다.</p>
-      <p class="modal-note">후원 링크를 연결하고 있어요. 열리면 바로 여기서 후원할 수 있게 할게요.</p>
-      <div class="btn-row"><button class="btn dark" id="donateOk" type="button">확인</button></div>
+      <p class="donate-note">후원은 마음으로 하는 것이고, <b>크레딧과는 따로</b> 동작해요. 후원하지 않아도 지금처럼 그대로 무료로 쓰셔도 됩니다.</p>
+      <div class="donate-qr">
+        <img src="data:image/png;base64,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" width="231" height="231" alt="카카오페이 송금 QR 코드 · qr.kakaopay.com/FWJqb23fu" decoding="async">
+        <span class="donate-qr-cap"><svg class="ico xs" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 카카오페이 송금 QR</span>
+      </div>
+      <p class="donate-hint">휴대폰 카메라로 스캔하거나 아래 버튼을 누르면 카카오페이로 연결돼요.</p>
+      <a class="donate-cta" id="donateCta" href="https://qr.kakaopay.com/FWJqb23fu" target="_blank" rel="noopener noreferrer"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-heart"></use></svg> 카카오페이로 응원하기</a>
+      <div class="btn-row donate-acts"><button class="btn donate-copy" id="donateCopy" type="button"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 송금 링크 복사</button><button class="btn dark" id="donateOk" type="button">닫기</button></div>
     </div>
   </div>
 </div>
@@ -1806,6 +2013,22 @@ function esc(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
   });
+}
+/* ㄲㄹ 톤 듀오톤 픽토그램 — 정적 마크업은 <use href="#i-이름">, 동적 렌더는 아래 헬퍼를 쓴다. */
+function icoHtml(name, cls) {
+  return '<svg class="ico' + (cls ? " " + cls : "") + '" aria-hidden="true" focusable="false"><use href="#i-' + name + '"></use></svg>';
+}
+var ROOM_ICONS = {
+  "🚀": "rocket", "✈️": "plane", "🍽️": "bowl", "💭": "think", "💡": "bulb",
+  "☕": "coffee", "💬": "chat", "🤖": "bot", "👋": "hand", "🏠": "home",
+  "💎": "gem", "🔗": "link", "📋": "card"
+};
+/* 방 아이콘 — 아는 이모지는 SVG로, 모르는 값은 이모지 그대로 */
+function roomIcoHtml(emoji, cls) {
+  var key = String(emoji == null ? "" : emoji).trim();
+  var name = ROOM_ICONS[key];
+  if (name) return icoHtml(name, cls);
+  return '<span class="emo-ico' + (cls ? " " + cls : "") + '" aria-hidden="true">' + esc(key || "💬") + "</span>";
 }
 function pad(n) { return n < 10 ? "0" + n : "" + n; }
 function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
@@ -1868,8 +2091,23 @@ var STORE_KEY = "kkiri.state.v2";
 var API_KEY = "kkiri.api.v2";
 var NICK_KEY = "kkiri.nick.v1";
 var HOST_KEY = "kkiri.hosts.v1";
-var DEFAULT_NICK = "끼리장";
+var NICK_AUTO_KEY = "kkiri.nick.auto.v1";      /* 이 브라우저에 자동으로 붙은 고유 닉네임 */
+var NICK_ASKED_KEY = "kkiri.nick.asked.v1";    /* 초대 링크 첫 입장에서 한 번만 묻는다 */
+var DEFAULT_NICK = "끼리장";                    /* 예전 저장값 호환용 */
 
+/* 닉네임을 정하지 않은 브라우저는 ‘참여자 #A7K2’ 처럼 서로 겹치지 않는 이름으로 시작한다.
+   같은 이름이 방마다 겹치면 누가 한 말인지 알 수 없기 때문(예전엔 모두 ‘끼리장’이었다). */
+function autoNick() {
+  var n = "";
+  try { n = localStorage.getItem(NICK_AUTO_KEY) || ""; } catch (e) {}
+  if (!n) {
+    var rand = Math.random().toString(36).slice(2, 6).toUpperCase().replace(/[^A-Z0-9]/g, "");
+    while (rand.length < 4) rand += Math.floor(Math.random() * 36).toString(36).toUpperCase();
+    n = "참여자 #" + rand;
+    try { localStorage.setItem(NICK_AUTO_KEY, n); } catch (e2) {}
+  }
+  return n;
+}
 function nick() {
   try {
     var s = sessionStorage.getItem(NICK_KEY);
@@ -1879,13 +2117,13 @@ function nick() {
     var v = localStorage.getItem(NICK_KEY);
     if (v && String(v).trim()) return displayName(String(v).trim().slice(0, 20));
   } catch (e2) {}
-  return DEFAULT_NICK;
+  return displayName(autoNick());
 }
 function pinNick() {
   try { if (!sessionStorage.getItem(NICK_KEY)) sessionStorage.setItem(NICK_KEY, nick()); } catch (e) {}
 }
 function saveNick(v) {
-  var n = String(v == null ? "" : v).trim().slice(0, 20) || DEFAULT_NICK;
+  var n = String(v == null ? "" : v).trim().slice(0, 20) || autoNick();
   try { sessionStorage.setItem(NICK_KEY, n); } catch (e) {}
   try { localStorage.setItem(NICK_KEY, n); } catch (e2) {}
   var el = document.getElementById("nickLabel");
@@ -1918,8 +2156,8 @@ function seedAgents() {
   var a = {};
   a.pikri = {
     id: "pikri", name: "피크리", role: "사회자 · 실행", color: "#7352FF", type: "builtin", model: "auto",
-    prompt: "너는 '피크리'다. 끼리장 님의 개인 AI 비서이자 이 방의 사회자다. 맡은 일: 안건을 확인하고 발언 순서를 진행하며, 실행할 일과 담당·기한을 정한다. 말투: 결론부터, 다정하지만 단호한 '제가 ~할게요' 체.",
-    desc: "끼리장 님의 일을 챙기는 비서 · 사회자"
+    prompt: "너는 '피크리'다. " + nick() + " 님의 개인 AI 비서이자 이 방의 사회자다. 맡은 일: 안건을 확인하고 발언 순서를 진행하며, 실행할 일과 담당·기한을 정한다. 말투: 결론부터, 다정하지만 단호한 '제가 ~할게요' 체.",
+    desc: nick() + " 님의 일을 챙기는 비서 · 사회자"
   };
   a.kirini = {
     id: "kirini", name: "키리니", role: "리서처 · 데이터", color: "#2f6ff0", type: "builtin", model: "auto",
@@ -2292,7 +2530,7 @@ function roomRowHtml(rm) {
   return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + (sideEdit.on ? " editing" + (picked ? " sel" : "") : "") + '" data-room="' + esc(rm.id) + '">' +
     (sideEdit.on ? '<span class="r-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
     '<button type="button" class="r-enter" data-room-enter="' + esc(rm.id) + '"' + (rm.id === state.activeRoomId ? ' aria-current="true"' : "") + ">" +
-      '<span class="r-emoji" aria-hidden="true">' + esc(rm.emoji) + "</span>" +
+      '<span class="r-emoji" aria-hidden="true">' + roomIcoHtml(rm.emoji) + "</span>" +
       '<span class="r-body"><b>' + esc(rm.name) + "</b><small>" + esc(meta) + "</small></span>" +
       (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
     "</button>" +
@@ -2408,7 +2646,8 @@ function renderSidebar() {
     });
     if (!shown) mhtml = aiEmptyHtml();
   }
-  $("sideMembers").innerHTML = mhtml;
+  var smHost = $("sideMembers");
+  if (smHost) smHost.innerHTML = mhtml;
   var cnt = $("aiCount");
   if (cnt) cnt.textContent = shown + "명";
   var rb = $("roleModeBtn");
@@ -2433,9 +2672,9 @@ function renderSidebar() {
 /* 입력창 안내 — 좁은 화면(≤560px)에서는 한 줄에 들어가는 짧은 문구를 쓴다(2줄째가 잘리지 않게).
    @이름 호출 안내는 두 경우 모두 남긴다. */
 function inputPlaceholder(r) {
-  if (!r || !r.members.length) return "🤖 AI 부르기로 AI를 불러 보세요";
-  var narrow = (typeof window !== "undefined" && window.innerWidth && window.innerWidth <= 560);
-  return narrow ? "메시지 · @이름 부르기" : "메시지를 입력하세요 · @이름으로 AI 부르기";
+  /* 입력창은 ‘무엇을 하면 되는지’만 알려 준다 — AI 부르기 안내는 방 안내·상단 버튼이 맡는다. */
+  if (!r || !r.members.length) return "메시지를 입력해 주세요";
+  return "메시지를 입력해 주세요 · @이름으로 부르기";
 }
 function hintFor(r) {
   if (!r) return "";
@@ -2443,7 +2682,7 @@ function hintFor(r) {
   if (!n) {
     var pp = onlinePeople();
     if (pp.length) return "지금 접속 중인 <b>" + pp.length + "명</b>과 바로 대화할 수 있어요. <b>@이름</b>을 붙여 보내면 그분께 전해져요(무료).";
-    return "이 방에는 아직 AI가 없어요. <b>🤖 AI 부르기</b>로 AI를 부르면 대화를 시작할 수 있어요.";
+    return "이 방에는 아직 AI가 없어요. <b>" + icoHtml("bot", "xs") + " AI 부르기</b>로 AI를 부르면 대화를 시작할 수 있어요.";
   }
   var base = "<b>@이름</b>을 붙이면 그 AI가 답해요" + (n >= 2 ? "(@AI전원 = AI 모두)" : "") +
     ". <b>@이름 없이</b> 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).";
@@ -2456,7 +2695,7 @@ function renderRoom() {
   var r = activeRoom();
   if (!r) {
     /* 방이 하나도 없을 때(마지막 방을 삭제한 직후) — 빈 상태 안내 */
-    $("roomEmoji").textContent = "🗂";
+    $("roomEmoji").innerHTML = icoHtml("chat");
     $("roomName").textContent = "방이 없어요";
     $("roomSub").textContent = "왼쪽 목록의 + 새 방으로 만들어 보세요";
     document.title = "끼리";
@@ -2474,7 +2713,7 @@ function renderRoom() {
     renderPresence();
     return;
   }
-  $("roomEmoji").textContent = r.emoji || "💬";
+  $("roomEmoji").innerHTML = roomIcoHtml(r.emoji || "💬");
   $("roomName").textContent = r.name;
   /* 방 이름이 곧 주제 — 이름과 같은 주제를 한 번 더 쓰지 않는다. 토론에서 주제를 따로 좁혔을 때만 보여 준다. */
   var subBits = [];
@@ -2566,7 +2805,7 @@ function renderHome() {
     rh += '<button type="button" class="home-room' + (homeEdit.on ? " editing" + (picked ? " sel" : "") : "") + '" data-home-room="' + esc(rm.id) + '"' +
       (homeEdit.on ? ' aria-pressed="' + picked + '"' : "") + '>' +
       (homeEdit.on ? '<span class="hr-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
-      '<span class="hr-emoji" aria-hidden="true">' + esc(rm.emoji || "💬") + "</span>" +
+      '<span class="hr-emoji" aria-hidden="true">' + roomIcoHtml(rm.emoji || "💬") + "</span>" +
       '<span class="hr-body"><b>' + esc(rm.name) + "</b><small>" + esc(categoryLabelOf(rm) + " · AI " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧") + "</small></span>" +
       (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
       "</button>";
@@ -2639,6 +2878,27 @@ function sideBulkRemove() {
   return removeRoomsBulk(state.rooms.filter(function (r) { return sideEdit.sel[r.id]; }));
 }
 function currentView() { return state.view === "room" ? "room" : "home"; }
+var nickAskDone = false;
+/* 초대 링크로 처음 들어온 사람에게 한 번만 — 이 방에서 부를 이름을 묻는다(닫아도 고유 이름 유지). */
+function maybeAskNick() {
+  if (nickAskDone) return;
+  nickAskDone = true;
+  if (!pendingJoin) return;
+  try {
+    if (localStorage.getItem(NICK_KEY)) return;
+    if (localStorage.getItem(NICK_ASKED_KEY)) return;
+    localStorage.setItem(NICK_ASKED_KEY, "1");
+  } catch (e) { return; }
+  var lead = $("nickLead");
+  if (lead) {
+    lead.hidden = false;
+    lead.innerHTML = "이 방에서 부를 <b>내 이름</b>을 정해 주세요. 지금은 <b>" + esc(nick()) +
+      "</b>로 들어와 있어요. 그냥 닫아도 이 이름으로 대화할 수 있어요.";
+  }
+  var inp = $("nickInput");
+  if (inp) inp.value = "";
+  setTimeout(function () { openModal("nickModal"); }, 500);
+}
 function applyView() {
   var home = currentView() === "home";
   var map = { homeView: !home, roomHead: home, peopleBar: home, ctrl: home, timeline: home, composer: home };
@@ -2646,12 +2906,10 @@ function applyView() {
     var el = $(id);
     if (el) el.hidden = map[id];
   });
-  var ps = $("presSec"), as = $("aiSec");
-  if (ps) ps.hidden = home;
-  if (as) as.hidden = home;
   var r = activeRoom();
   document.title = home ? "끼리 · 내 홈" : (r ? "끼리 · " + r.name : "끼리");
   renderPeople();
+  if (!home) maybeAskNick();
 }
 function goHome() {
   state.view = "home";
@@ -2741,9 +2999,12 @@ function msgHtml(m) {
     return '<div class="msg sys' + cls + '"><div class="note">' + fmtText(m.text) + "</div>" + acts + "</div>";
   }
   if (m.who === "user") {
-    var mine = !m.name || m.name === nick();
+    var myName = nick();
+    var mine = !m.name || m.name === myName;   /* 예전 메시지처럼 이름이 없으면 내 말로 본다 */
     if (mine) {
-      return '<div class="msg me"><div class="body"><div class="bubble">' + fmtText(m.text) + "</div>" +
+      return '<div class="msg me"><div class="body">' +
+        '<div class="who me">' + esc(m.name || myName) + "<em>나</em></div>" +
+        '<div class="bubble">' + fmtText(m.text) + "</div>" +
         '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
     }
     return '<div class="msg"><span class="avatar md" style="--c:#5b6ee1" aria-hidden="true">' + esc((m.name || "?").charAt(0)) + "</span>" +
@@ -2849,7 +3110,7 @@ function useSuggestion(text) {
     var pp = onlinePeople();
     toast(pp.length
       ? "지금 접속 중인 " + pp.length + "명에게 @이름으로 바로 말을 걸 수 있어요"
-      : "AI가 아직 없어요 · 🤖 AI 부르기로 먼저 불러 주세요");
+      : "AI가 아직 없어요 · AI 부르기로 먼저 불러 주세요");
   } else toast("입력창에 넣었어요 · 확인하고 Enter로 보내세요");
 }
 
@@ -2858,20 +3119,22 @@ function emptyHtml(r) {
   if (!ids.length) {
     var people = onlinePeople();
     var cta = '<div class="e-cta">' +
-        '<button type="button" class="btn green" data-empty-call="1">🤖 AI 부르기</button>' +
-        '<button type="button" class="btn" data-empty-share="1">👋 사람 부르기</button>' +
+        '<button type="button" class="btn green" data-empty-call="1">' + icoHtml("bot", "sm") + ' AI 부르기</button>' +
+        '<button type="button" class="btn" data-empty-share="1">' + icoHtml("hand", "sm") + ' 사람 부르기</button>' +
       "</div>";
-    /* 내장 AI가 없어도 링크로 들어와 있는 사람이 있으면 그 사람과 바로 말을 겁는 게 먼저다 */
+    /* 내장 AI가 없을 때 — 링크로 들어와 있는 사람이 있으면 그 사람과 말을 거는 게 먼저다.
+       onlinePeople() 은 나를 빼고 세므로, 함께 있는 사람 수는 나를 더해 센다. */
+    var here = people.length + 1;
     if (people.length) {
-      return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div>' +
-        "<h3>지금 접속 중인 분들과 바로 대화를 시작해 보세요</h3>" +
-        "<p><b>" + esc(people.join(" · ")) + "</b> 님이 접속 중이에요.<br>" +
-        "<b>@이름</b>을 붙여 보내면 그분께 전해져요. 끼리 AI는 필요할 때만 불러도 돼요.</p>" +
+      return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + roomIcoHtml(r.emoji || "💬") + '</div>' +
+        "<h3>아직 대화가 없어요 · 지금 " + here + "명이 함께 있어요!</h3>" +
+        "<p><b>" + esc(people.join(" · ")) + "</b> 님이 함께 있어요.<br>" +
+        "먼저 인사를 건네거나 <b>@이름</b>을 붙여 보내면 그분께 전해져요. AI도 필요하면 불러 보세요.</p>" +
         cta + "</div>";
     }
-    /* 방을 만든 직후 — AI를 부르고 사람을 부르는 두 길만 보여 준다. */
-    return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div>' +
-      "<h3>아직 이 방에 아무도 없어요</h3>" +
+    /* 혼자 있는 방 — AI를 부르고 사람을 부르는 두 길만 보여 준다. */
+    return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + roomIcoHtml(r.emoji || "💬") + '</div>' +
+      "<h3>아직 이 방엔 나 혼자예요</h3>" +
       "<p>AI를 부르거나, 사람을 불러 함께 시작해 보세요!<br>나의 AI는 크레딧을 쓰지 않고(각 AI 자체 사용량 사용), 끼리 AI는 답할 때마다 크레딧을 써요. 사람 대화는 무료예요.</p>" +
       cta + "</div>";
   }
@@ -2881,7 +3144,7 @@ function emptyHtml(r) {
     var ro = roles[id];
     return ro ? esc(agentName(id)) + " " + esc(ro.label) : "";
   }).filter(Boolean).join(" · ");
-  return '<div class="empty"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div><h3>' +
+  return '<div class="empty"><div class="e-emoji">' + roomIcoHtml(r.emoji || "💬") + '</div><h3>' +
     "아직 대화가 없어요</h3>" +
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + ids.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
@@ -3039,15 +3302,29 @@ function renderPeople() {
   var r = activeRoom();
   if (!r || currentView() === "home") { host.innerHTML = ""; bar.hidden = true; return; }
   var h = "";
+  /* 나부터 — 방에 들어와 있으면 늘 보인다(사이드바 접속 현황을 없앤 뒤 유일한 실시간 표시) */
+  h += '<span class="pb-chip me" title="나">' + '<i class="pb-dot" aria-hidden="true"></i>' + esc(nick()) + "</span>";
   onlinePeople().forEach(function (n) {
     h += '<span class="pb-chip on" title="지금 접속 중인 참여자"><i class="pb-dot" aria-hidden="true"></i>' + esc(n) + "</span>";
   });
   r.members.forEach(function (id) {
     var a = state.agents[id];
-    if (a) h += '<span class="pb-chip ai" title="이 방의 끼리 AI 멤버">🤖 ' + esc(a.name) + "</span>";
+    if (a) h += '<button type="button" class="pb-chip ai" data-ai-id="' + esc(a.id) + '" title="' + esc(a.name) + ' · 눌러서 이 방에서 빼기" aria-label="' + esc(a.name) + ' 이 방에서 빼기">' + icoHtml("bot", "xs") + ' ' + esc(a.name) + "</button>";
   });
   host.innerHTML = h;
   bar.hidden = !h;
+}
+/* 참여 줄의 AI 칩을 누르면 이 방에서 뺄지 묻는다(사이드바 AI 목록을 없앤 대신) */
+async function askRemoveAi(id) {
+  var r = activeRoom();
+  if (!r) return;
+  var name = agentName(id);
+  var ok = await askConfirm({
+    title: "‘" + name + "’을(를) 이 방에서 뺄까요?",
+    body: "이 방의 대화·역할에서 빠집니다. 다음에 상단 ‘이 방 초대’로 다시 부를 수 있어요.",
+    okText: "이 방에서 빼기", okClass: "danger", cancelText: "그대로 두기"
+  });
+  if (ok) toggleMember(id);
 }
 
 /* =========================================================
@@ -3207,7 +3484,7 @@ var DEMO = {
   },
   chat: {
     pikri: [
-      "끼리장 님, 오늘은 어땠어요? 저는 아침에 밀린 정산부터 봤어요.",
+      nick() + " 님, 오늘은 어땠어요? 저는 아침에 밀린 정산부터 봤어요.",
       "여기 조용하네요. 저는 내일 일정 정리하고 있었어요.",
       "커피 한 잔 하면서 생각하면 답이 나올 때가 많아요.",
       "오늘은 일찍 들어가세요. 내일 아침에 제가 정리해 둘게요."
@@ -3221,7 +3498,7 @@ var DEMO = {
     muu: [
       "저는 카피 세 개 쓰고 하나도 안 남겼어요. 내일 다시 볼게요.",
       "요즘 ‘연말’이라는 단어만 봐도 아이디어가 떠올라요.",
-      "끼리장 님, 오늘 머리 좀 식히셨어요?",
+      nick() + " 님, 오늘 머리 좀 식히셨어요?",
       "내일 문장 두 개만 다듬으면 될 것 같아요."
     ],
     red: [
@@ -4000,7 +4277,7 @@ function buildCard(r, opts) {
     });
   }
   if (!decisions.length) {
-    decisions = [(r.agenda || r.name) + " 안건을 두고 " + r.members.length + "개 관점을 비교했고, 확정은 끼리장 님 승인 후로 남겼습니다."];
+    decisions = [(r.agenda || r.name) + " 안건을 두고 " + r.members.length + "개 관점을 비교했고, 확정은 " + nick() + " 님 승인 후로 남겼습니다."];
   }
 
   /* 2) 근거 — 의견·반박 단계의 수치·자료 문장 */
@@ -4685,6 +4962,8 @@ function openRoomForm(roomId) {
   $("rfDeleteWrap").hidden = !r;
   openModal("roomFormModal");
 }
+/* (예전 결정 유지) 방 설정 시트에는 멤버 넣고 빼기 칸을 두지 않는다.
+   AI 빼기는 방 화면 참여 줄의 AI 칩을 눌러서 한다. */
 function rfSelectedMembers() {
   return Array.isArray(roomForm.members) ? roomForm.members.slice() : [];
 }
@@ -5557,7 +5836,7 @@ function presenceGreet() {
   if (currentView() !== "room") return;      /* 홈을 보는 중에는 이 방 입장 알림을 띄우지 않는다 */
   var added = [];
   Object.keys(cur).forEach(function (k) { if (!prev[k]) added.push(cur[k]); });
-  if (added.length) toast("👋 " + added.join(", ") + " 님이 들어왔어요");
+  if (added.length) toast(added.join(", ") + " 님이 들어왔어요");
 }
 function renderPresence() {
   var rows = presenceRows();
@@ -6037,12 +6316,12 @@ function renderCredit() {
   var el = $("creditBadge");
   if (!el) return;
   var cls = "credit-chip", html = "", title = "";
-  if (V3.mode === "local") { cls += " off"; html = "💎 <b>로컬</b>"; title = "로컬 데모 · 크레딧을 쓰지 않아요"; }
-  else if (!V3.signedIn) { cls += " off"; html = "💎 <b>크레딧</b>"; title = "로그인하면 매일 200크레딧이 무료로 채워져요"; }
+  if (V3.mode === "local") { cls += " off"; html = icoHtml("gem", "sm") + " <b>로컬</b>"; title = "로컬 데모 · 크레딧을 쓰지 않아요"; }
+  else if (!V3.signedIn) { cls += " off"; html = icoHtml("gem", "sm") + " <b>크레딧</b>"; title = "로그인하면 매일 200크레딧이 무료로 채워져요"; }
   else {
     var c = creditsNow();
     if (c < 30) cls += " low";
-    html = "💎 <b>" + c.toLocaleString("ko-KR") + "</b>";
+    html = icoHtml("gem", "sm") + " <b>" + c.toLocaleString("ko-KR") + "</b>";
     title = "내 크레딧 " + c + " · 눌러서 사용 내역";
   }
   el.className = cls;
@@ -6413,7 +6692,8 @@ async function openCredit() {
     if (res && !res.error) renderLedger(res.data || []);
   } catch (e) {}
 }
-/* ---------- 자율 후원 (☕ 개발·서버비 응원) ---------- */
+/* ---------- 자율 후원 (☕ 개발·서버비 응원 · 카카오페이 송금) ---------- */
+var DONATE_URL = "https://qr.kakaopay.com/FWJqb23fu";
 function openDonate() {
   openModal("donateModal");
 }
@@ -6719,6 +6999,11 @@ function wireV3() {
   });
   var dok = $("donateOk");
   if (dok) dok.addEventListener("click", function () { closeModal("donateModal"); });
+  /* 카카오페이 송금 링크 복사 (모바일 웹뷰에서 클립보드가 막히면 안내) */
+  var dcp = $("donateCopy");
+  if (dcp) dcp.addEventListener("click", function () {
+    copyText(DONATE_URL, "송금 링크를 복사했어요");
+  });
   /* 💬 의견 보내기 — 홈 하단·사이드바 하단 어디서 눌러도 같은 창 */
   ["homeFeedbackBtn", "sideFeedbackBtn"].forEach(function (id) {
     var b = $(id);
@@ -6848,7 +7133,8 @@ function wire() {
     }
     if (b) selectRoom(b.getAttribute("data-room"));
   });
-  $("sideMembers").addEventListener("click", function (e) {
+  var smBind = $("sideMembers");
+  if (smBind) smBind.addEventListener("click", function (e) {
     var t = e.target.closest("[data-member-team]");
     if (t) { addToPool(t.getAttribute("data-member-team")); return; }
     var aa = e.target.closest("[data-add-ai]");
@@ -6856,8 +7142,14 @@ function wire() {
     var b = e.target.closest("[data-member-remove]");
     if (b) toggleMember(b.getAttribute("data-member-remove"));
   });
-  $("roleModeBtn").addEventListener("click", function () { toggleRoleMode(); });
+  var rmb = $("roleModeBtn");
+  if (rmb) rmb.addEventListener("click", function () { toggleRoleMode(); });
   $("discussBtn").addEventListener("click", function () { openRoundtable(); });
+  var pc = $("peopleChips");
+  if (pc) pc.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ai-id]");
+    if (b) askRemoveAi(b.getAttribute("data-ai-id"));
+  });
   $("quickBar").addEventListener("click", function (e) {
     var a = e.target.closest("[data-act]");
     if (a) { act(a.getAttribute("data-act")); return; }
@@ -6901,7 +7193,8 @@ function wire() {
     closeSidebar(); openRoomForm(null);
   });
   $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
-  $("addAiBtn").addEventListener("click", function () {
+  var aab = $("addAiBtn");
+  if (aab) aab.addEventListener("click", function () {
     invTarget = "room";
     closeSidebar(); aiTab("mine"); openModal("inviteModal");
   });
