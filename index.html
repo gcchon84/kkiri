@@ -1026,7 +1026,7 @@ Content-Type: application/json
       </div>
       <label class="field"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
       <div class="field"><span>참여 AI · 내 AI 팀에서 체크</span><div class="pick-row" id="rfMembers"></div>
-        <div class="rf-add-row"><button type="button" class="mini-btn green" id="rfAddAiBtn">+ AI 추가하기</button><span id="rfAddAiHint"></span></div>
+        <div class="rf-add-row"><button type="button" class="mini-btn green" id="rfAddAiBtn">+ AI 추가하기</button><span id="rfAddAiHint">홈에 다녀오지 않아도 여기서 바로 넣을 수 있어요</span></div>
         <p class="modal-note" id="rfMembersNote" style="margin-top:6px"></p></div>
       <div class="field"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
       <p class="modal-note">평상시엔 @이름으로 부르고, @이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0). 필요할 때 ‘토론 시작’을 누르면 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요. 끼리 AI는 턴마다 10~30크레딧을 써요.</p>
@@ -3813,9 +3813,9 @@ function renderRoomMemberPick(selected) {
   });
   $("rfMembers").innerHTML = h;
   var note = $("rfMembersNote");
-  if (note) note.textContent = poolAgents().length
+  if (note) note.innerHTML = poolAgents().length
     ? "내 AI 팀에 담아 둔 AI예요. 고른 AI만 이 방에 입장하고, 나중에 방 설정에서 바꿀 수 있어요."
-    : "내 AI 팀이 비어 있어요. 홈의 ‘+ 팀에 AI 추가’로 먼저 담아 주세요.";
+    : "내 AI 팀이 비어 있어요. <b>+ AI 추가하기</b>를 누르면 이 창을 닫지 않고 바로 넣을 수 있어요.";
 }
 function renderRfRoleMode() {
   Array.prototype.forEach.call($("rfRoleMode").querySelectorAll("[data-rolemode]"), function (b) {
