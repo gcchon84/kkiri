@@ -92,6 +92,15 @@
   .member-row small{display:block;font-size:9px;color:#8798a4;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .member-row.off b{color:#7f929e}
   .member-row.off .avatar{opacity:.45;filter:grayscale(.4)}
+  .sec-head em{font-style:normal;color:var(--green);font-weight:900}
+  .sec-hint{font-size:9px;line-height:1.6;color:#6f8391;padding:2px 4px 0;letter-spacing:-.01em}
+  .pres-list{display:flex;flex-direction:column;gap:1px}
+  .pres-row{display:flex;align-items:center;gap:8px;padding:5px 5px;border-radius:10px}
+  .pres-row:hover{background:#16222d}
+  .pres-row .p-ico{flex:0 0 auto;font-size:11px;line-height:1}
+  .pres-row b{flex:1 1 auto;min-width:0;font-size:11.5px;font-weight:800;letter-spacing:-.01em;color:#ecf2f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pres-row.off b{color:#7f929e;font-weight:700}
+  .pres-row .kb{flex:0 0 auto}
   .switch{
     width:34px;height:20px;flex:0 0 34px;border:0;border-radius:999px;background:#2a3a47;
     position:relative;cursor:pointer;padding:0;transition:background .15s ease;
@@ -111,6 +120,18 @@
   .side-status{display:flex;align-items:center;gap:6px;padding:0 4px;font-size:9.5px;font-weight:800;color:#8798a4}
   .dot{width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block}
   .dot.demo{background:#e0a33a}
+  .key-badges{display:flex;gap:6px;padding:0 2px}
+  .kb{
+    display:inline-flex;align-items:center;gap:5px;border:1px solid #2b3d4b;background:#16222d;color:#93a4b1;
+    border-radius:999px;padding:3px 9px;font-size:9px;font-weight:900;letter-spacing:-.01em;white-space:nowrap;
+  }
+  .kb::before{content:"";width:5px;height:5px;border-radius:50%;background:#63798a;display:inline-block}
+  .kb.on{background:rgba(18,160,94,.18);border-color:rgba(18,160,94,.55);color:#7be0ad}
+  .kb.on::before{background:#2ad48a;box-shadow:0 0 6px rgba(42,212,138,.8)}
+  .kb.mini{margin-left:6px;padding:2px 7px;font-size:8.5px;background:#eef3f1;border-color:#dfe8e4;color:#5c6b78}
+  .kb.mini::before{background:#b3c0c9;box-shadow:none}
+  .kb.mini.on{background:var(--green-tint);border-color:#bfe7d2;color:var(--green-deep)}
+  .kb.mini.on::before{background:var(--green)}
   .sidebar .side-close{display:none;width:30px;height:30px;flex:0 0 30px;font-size:12px;background:#1b2935;border-color:#2e4050;color:#dbe6eb;margin-left:auto}
 
   /* ============ avatars ============ */
@@ -423,6 +444,11 @@
     color:#0d7a48;background:var(--green-tint);padding:3px 7px;border-radius:999px;white-space:nowrap;
   }
   .live-pill::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:0 0 5px}
+  .pres-pill{
+    display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:-.01em;
+    color:#5c6b78;background:#eef3f1;border-radius:999px;padding:5px 9px;white-space:nowrap;
+  }
+  .pres-pill.live{color:var(--green-deep);background:var(--green-tint)}
   .live-pill.local{color:#8a5a12;background:var(--amber-tint)}
   .live-pill.off{color:#8b3a32;background:var(--red-tint)}
   .live-pill.wait{color:#5c6b78;background:#eef3f1}
@@ -519,12 +545,23 @@
     </div>
 
     <div class="side-sec">
-      <div class="sec-head"><span>AI 멤버</span><button class="mini-btn" id="inviteBtn">+ AI 초대</button></div>
+      <div class="sec-head"><span>지금 접속 중 <em id="presenceCount">0명</em></span></div>
+      <div class="pres-list" id="sidePresence"></div>
+      <p class="sec-hint">같은 초대 링크로 지금 들어와 있는 사람·AI가 실시간 <b>ON</b>, 나간 참여자는 <b>OFF</b>로 보여요.</p>
+    </div>
+
+    <div class="side-sec">
+      <div class="sec-head"><span>AI 멤버 · 호출 스위치</span><button class="mini-btn" id="inviteBtn">+ AI 초대</button></div>
       <div class="member-list" id="sideMembers"></div>
+      <p class="sec-hint">스위치는 이 방에서 그 AI를 부를 수 있게 하는 설정이에요. 실제 접속 여부는 위 ‘지금 접속 중’에서 보세요.</p>
     </div>
 
     <div class="side-foot">
       <button class="side-btn" id="settingsBtn"><span aria-hidden="true">⚙</span> 설정 · API 키</button>
+      <div class="key-badges" id="keyBadges" aria-label="API 키 연결 상태">
+        <span class="kb" id="kbGemini" title="Gemini API 키">Gemini OFF</span>
+        <span class="kb" id="kbOpenai" title="OpenAI API 키">OpenAI OFF</span>
+      </div>
       <div class="side-status"><span class="dot demo" id="sideDot"></span><span id="sideMode">데모 모드</span></div>
     </div>
   </aside>
@@ -540,6 +577,7 @@
         <p id="roomSub"></p>
       </div>
       <div class="room-actions">
+        <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참여자">접속 0명</span>
         <button class="ghost-btn" id="shareBtn"><span aria-hidden="true">🔗</span><span class="lbl">초대</span></button>
         <button class="ghost-btn" id="cardBtn"><span aria-hidden="true">📋</span><span class="lbl">합의안</span></button>
         <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정">⋯</button>
@@ -549,8 +587,8 @@
     <section class="ctrl" id="ctrl" aria-label="대화 제어">
       <div class="ctrl-top">
         <div class="seg" id="modeSeg" role="group" aria-label="대화 모드">
-          <button type="button" data-mode="mention" aria-pressed="false">@멘션</button>
-          <button type="button" data-mode="roundtable" aria-pressed="true">라운드테이블</button>
+          <button type="button" data-mode="mention" aria-pressed="true">@멘션</button>
+          <button type="button" data-mode="roundtable" aria-pressed="false">라운드테이블</button>
           <button type="button" data-mode="free" aria-pressed="false">자유 잡담</button>
         </div>
         <div class="ctrl-actions">
@@ -675,8 +713,8 @@ Content-Type: application/json
       <div class="field-row">
         <label class="field"><span>기본 대화 모드</span>
           <select id="rfMode">
+            <option value="mention" selected>@멘션 호출</option>
             <option value="roundtable">라운드테이블</option>
-            <option value="mention">@멘션 호출</option>
             <option value="free">자유 잡담</option>
           </select>
         </label>
@@ -686,7 +724,7 @@ Content-Type: application/json
       </div>
       <label class="field"><span>회차 예산 상한 (원)</span><input id="rfBudget" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
       <div class="field"><span>참여 AI</span><div class="pick-row" id="rfMembers"></div></div>
-      <p class="modal-note">프로젝트방은 라운드테이블과 합의안 카드에, 사랑방은 가벼운 자유 잡담에 맞춰져 있어요.</p>
+      <p class="modal-note">기본은 @멘션 모드예요. 부른 AI만 답하고, 부르지 않은 채팅은 비용 없이 그냥 올라갑니다. 라운드테이블·자유 잡담은 필요할 때 바꿔 쓰세요.</p>
       <div class="btn-row" id="rfActions">
         <button class="btn green" id="rfSubmit">만들기</button>
       </div>
@@ -745,8 +783,8 @@ Content-Type: application/json
         </div>
       </div>
       <div class="seg wide" role="group" aria-label="AI 제공자 선택" style="margin-top:0">
-        <button type="button" class="seg-btn" data-provider="gemini" aria-pressed="true">Google Gemini</button>
-        <button type="button" class="seg-btn" data-provider="openai" aria-pressed="false">OpenAI</button>
+        <button type="button" class="seg-btn" data-provider="gemini" aria-pressed="true">Google Gemini<span class="kb mini" id="kbTabGemini" title="Gemini 키 저장 여부">OFF</span></button>
+        <button type="button" class="seg-btn" data-provider="openai" aria-pressed="false">OpenAI<span class="kb mini" id="kbTabOpenai" title="OpenAI 키 저장 여부">OFF</span></button>
       </div>
       <p class="hint" id="apiHint"></p>
       <label class="field"><span>API 키</span>
@@ -945,17 +983,17 @@ function seedState() {
     rooms: [
       {
         id: "r_promo", emoji: "🚀", name: "신규 프로젝트 기획", kind: "project",
-        agenda: "연말 캠페인 아이디어 3개 제안", mode: "roundtable", maxTurns: 10, budget: 60,
+        agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", maxTurns: 10, budget: 60,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v2 프로토타입 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. '라운드테이블 시작'을 눌러 보세요." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v2 프로토타입 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. @이름으로 부르거나, 상단에서 라운드테이블로 바꿔 시작해 보세요." }]
       },
       {
         id: "r_lounge", emoji: "☕", name: "자유 수다방", kind: "chat",
-        agenda: "", mode: "free", maxTurns: 0, budget: 20,
+        agenda: "", mode: "mention", maxTurns: 0, budget: 20,
         members: ["pikri", "kirini", "muu"], status: "idle", createdAt: now - 5000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "사랑방이에요. AI가 먼저 말을 걸고, 연속 3발화가 지나면 조용해집니다." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "사랑방이에요. 편하게 이야기하면 그대로 올라가고, @이름으로 부르면 그 AI가 답해요." }]
       }
     ]
   };
@@ -972,7 +1010,7 @@ function normalizeRoom(r) {
   if (typeof r.budget !== "number" || !isFinite(r.budget)) r.budget = 60;
   if (typeof r.maxTurns !== "number") r.maxTurns = 10;
   if (!Array.isArray(r.messages)) r.messages = [];
-  if (!r.mode) r.mode = r.kind === "chat" ? "free" : "roundtable";
+  if (!r.mode) r.mode = "mention";
   if (!r.emoji) r.emoji = r.kind === "chat" ? "☕" : "🚀";
   if (r.status === "running") r.status = "idle";
   return r;
@@ -1121,6 +1159,7 @@ function renderSidebar() {
     ? "실제 AI 연결 · " + (api.geminiKey && api.openaiKey ? "Gemini+OpenAI" : api.geminiKey ? "Gemini" : "OpenAI")
     : "데모 모드";
   $("sideDot").className = "dot" + (anyKey() ? "" : " demo");
+  renderPresence();
 }
 
 function hintFor(r) {
@@ -1128,7 +1167,7 @@ function hintFor(r) {
     return "라운드테이블은 <b>최대 " + (r.maxTurns || 10) + "턴</b> 안에서 사회자가 진행하고, 끝나면 <b>합의안 카드</b>가 자동으로 만들어져요. 예산 상한에서 스스로 멈춥니다.";
   }
   if (r.mode === "mention") {
-    return "<b>@이름</b>으로 부르면 그 AI만 답해요. 부르지 않으면 아무도 깨우지 않습니다(비용 0).";
+    return "<b>@이름</b>으로 부르면 그 AI가 답해요. 부르지 않은 메시지는 일반 채팅처럼 그냥 올라가고 비용도 들지 않아요.";
   }
   return "AI가 먼저 말을 걸어요 · <b>연속 3발화</b> 뒤 조용해지고, 끼리장 님이 말을 걸면 다시 이어집니다.";
 }
@@ -1153,8 +1192,8 @@ function renderRoom() {
   $("pauseBtn").setAttribute("aria-label", run.paused ? "재개" : "일시정지");
   $("stopBtn").disabled = !run.active;
   $("sendBtn").textContent = r.mode === "roundtable" ? "라운드테이블 시작" : "보내기";
-  $("sendBtn").disabled = run.active;
-  $("input").placeholder = r.mode === "roundtable" ? "안건을 적고 시작하세요" : r.mode === "mention" ? "@이름에게 말 걸기" : "가볍게 한마디";
+  $("sendBtn").disabled = run.active && r.mode === "roundtable";
+  $("input").placeholder = r.mode === "roundtable" ? "안건을 적고 시작하세요" : r.mode === "mention" ? "메시지를 입력하세요 · @이름으로 AI 호출" : "가볍게 한마디";
   $("compHint").innerHTML = hintFor(r);
   updateMeters();
   renderQuick();
@@ -1824,13 +1863,9 @@ async function runMentions(text) {
   var r = activeRoom();
   if (run.active) return;
   var parsed = parseMentions(text);
-  if (!parsed.ids.length) {
-    addSystem("멘션 없이 보냈어요 · 아무 AI도 깨우지 않았습니다. @이름으로 불러 주세요.", "info");
-    return;
-  }
+  if (!parsed.ids.length) return;
   if (budgetExceeded(r)) {
-    addSystem("예산 상한에 닿아 답하지 못했어요. 예산을 올리거나 회차를 초기화해 주세요.", "warn");
-    openBudgetSheet();
+    addSystem("예산 상한에 닿아 AI가 답하지 못했어요 · 위 예상 비용을 눌러 예산을 올리거나 회차를 초기화해 주세요.", "warn");
     return;
   }
   run.epoch++;
@@ -1861,8 +1896,7 @@ async function runFree(text) {
   var r = activeRoom();
   if (run.active) return;
   if (budgetExceeded(r)) {
-    addSystem("예산 상한에 닿아 답하지 못했어요. 예산을 올리거나 회차를 초기화해 주세요.", "warn");
-    openBudgetSheet();
+    addSystem("예산 상한에 닿아 AI가 답하지 못했어요 · 위 예상 비용을 눌러 예산을 올리거나 회차를 초기화해 주세요.", "warn");
     return;
   }
   if (!r.members.length) { toast("이 방에 AI가 없어요 · 멤버를 켜 주세요"); return; }
@@ -2474,6 +2508,7 @@ function selectRoom(id) {
       scrollBottom(true);
     });
     dbSubscribe(id);
+    presenceJoin(id);
   }
 }
 
@@ -2607,7 +2642,7 @@ function openRoomForm(roomId) {
   });
   renderEmojiPick();
   $("rfAgenda").value = r ? (r.agenda || "") : "";
-  $("rfMode").value = r ? r.mode : "roundtable";
+  $("rfMode").value = r ? r.mode : "mention";
   $("rfTurns").value = r ? String(r.maxTurns || 10) : "10";
   $("rfBudget").value = r ? r.budget : (roomForm.kind === "chat" ? 20 : 60);
   var sel = r ? r.members.slice() : allAgents().map(function (a) { return a.id; });
@@ -2649,9 +2684,7 @@ function submitRoomForm() {
     };
     room.messages.push({
       id: uid("s"), who: "system", kind: "info", at: Date.now(),
-      text: kind === "project"
-        ? "새 프로젝트방이에요. 안건을 확인하고 라운드테이블을 시작해 보세요."
-        : "새 사랑방이에요. AI가 먼저 말을 걸고, 연속 3발화 뒤 조용해집니다."
+      text: "새 방이에요. @이름으로 부르면 그 AI가 답하고, 부르지 않은 채팅은 그냥 올라갑니다."
     });
     state.rooms.push(room);
     state.activeRoomId = room.id;
@@ -2791,7 +2824,19 @@ function addHookAgent() {
 /* =========================================================
    17. 설정 · API · 저장소
    ========================================================= */
+function setKeyBadge(el, on, label) {
+  if (!el) return;
+  el.textContent = label ? label + (on ? " ON" : " OFF") : (on ? "ON" : "OFF");
+  el.classList.toggle("on", !!on);
+}
+function renderKeyBadges() {
+  setKeyBadge($("kbGemini"), !!api.geminiKey, "Gemini");
+  setKeyBadge($("kbOpenai"), !!api.openaiKey, "OpenAI");
+  setKeyBadge($("kbTabGemini"), !!api.geminiKey, "");
+  setKeyBadge($("kbTabOpenai"), !!api.openaiKey, "");
+}
 function renderApi() {
+  renderKeyBadges();
   var on = anyKey();
   $("apiModePill").textContent = on ? "실제 AI 연결" : "데모 모드";
   $("apiModePill").className = "pill" + (on ? "" : " gray");
@@ -2914,6 +2959,7 @@ var HIDE_KEY = "kkiri.hidden.v1";
 var HOOK_KEY = "kkiri.hooks.v1";
 
 var db = { client: null, ready: false, channel: null, roomId: null, status: "idle" };
+var presence = { channel: null, roomId: null, seen: {} };
 var pendingJoin = null;
 var refreshTimer = null;
 var dbErrShown = {};
@@ -3054,7 +3100,7 @@ function dbApply(roomRows, agentRows, fresh) {
     rooms.push({
       id: row.id, name: row.name, kind: row.kind === "lounge" ? "chat" : "project",
       agenda: row.description || "", emoji: s.emoji || (row.kind === "lounge" ? "☕" : "🚀"),
-      mode: s.mode || (row.kind === "lounge" ? "free" : "roundtable"),
+      mode: s.mode || "mention",
       maxTurns: typeof s.maxTurns === "number" ? s.maxTurns : (row.kind === "lounge" ? 0 : 10),
       budget: typeof s.budget === "number" ? s.budget : 60,
       members: mem, status: p ? p.status : "idle",
@@ -3114,6 +3160,87 @@ function dbSubscribe(roomId) {
       else setLiveStatus("wait", "연결 중…");
     });
   db.channel = ch;
+}
+
+/* =========================================================
+   17.6 실시간 접속자 · Presence (ON / OFF)
+   ========================================================= */
+function presenceLeave() {
+  var ch = presence.channel;
+  presence.channel = null;
+  presence.roomId = null;
+  if (!ch) return;
+  try { ch.untrack(); } catch (e) {}
+  if (db.client) { try { db.client.removeChannel(ch); } catch (e) {} }
+  renderPresence();
+}
+function presenceJoin(roomId, force) {
+  if (!db.ready || !db.client || !roomId) return;
+  if (!force && presence.roomId === roomId && presence.channel) return;
+  presenceLeave();
+  presence.roomId = roomId;
+  var ch = db.client.channel("kkiri-presence-" + roomId, {
+    config: { presence: { key: "p" + Math.random().toString(36).slice(2, 10) } }
+  });
+  presence.channel = ch;
+  var sync = function () { renderPresence(); };
+  ch.on("presence", { event: "sync" }, sync)
+    .on("presence", { event: "join" }, sync)
+    .on("presence", { event: "leave" }, sync)
+    .subscribe(function (status) {
+      if (status === "SUBSCRIBED") {
+        try { ch.track({ nick: nick(), since: new Date().toISOString() }); } catch (e) {}
+      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+        renderPresence();
+      }
+    });
+}
+/* 현재 방에 실제로 들어와 있는 참여자(닉네임 기준) — 내장 AI 멤버와는 무관 */
+function presenceState() {
+  var out = [];
+  var ch = presence.channel;
+  if (!ch || !ch.presenceState) return out;
+  var st = {};
+  try { st = ch.presenceState() || {}; } catch (e) { return out; }
+  Object.keys(st).forEach(function (k) {
+    (st[k] || []).forEach(function (p) {
+      var n = String((p && p.nick) || "참여자").slice(0, 20);
+      if (n) out.push(n);
+    });
+  });
+  return out;
+}
+function presenceRows() {
+  var r = activeRoom();
+  if (!r) return { on: [], off: [] };
+  var on = [], onMap = {};
+  presenceState().forEach(function (n) { if (!onMap[n]) { onMap[n] = 1; on.push(n); } });
+  var seen = presence.seen[r.id] || (presence.seen[r.id] = {});
+  on.forEach(function (n) { seen[n] = 1; });
+  r.messages.forEach(function (m) { if (m.who === "user" && m.name) seen[m.name] = 1; });
+  var off = Object.keys(seen).filter(function (n) { return !onMap[n]; });
+  return { on: on, off: off };
+}
+function renderPresence() {
+  var rows = presenceRows();
+  var h = "";
+  rows.on.forEach(function (n) {
+    h += '<div class="pres-row"><span class="p-ico" aria-hidden="true">🟢</span><b>' + esc(n) + '</b><span class="kb on">ON</span></div>';
+  });
+  rows.off.forEach(function (n) {
+    h += '<div class="pres-row off"><span class="p-ico" aria-hidden="true">⚪</span><b>' + esc(n) + '</b><span class="kb">OFF</span></div>';
+  });
+  if (!h) h = '<p class="sec-hint">접속 정보를 기다리는 중이에요.</p>';
+  var el = $("sidePresence");
+  if (el) el.innerHTML = h;
+  var cnt = $("presenceCount");
+  if (cnt) cnt.textContent = rows.on.length + "명";
+  var pill = $("roomPresence");
+  if (pill) {
+    pill.textContent = "접속 " + rows.on.length + "명";
+    pill.className = "pres-pill" + (rows.on.length ? " live" : "");
+    pill.title = rows.on.length ? "지금 접속: " + rows.on.join(", ") : "아직 아무도 접속하지 않았어요";
+  }
 }
 function dbOnMessage(row) {
   var r = activeRoom();
@@ -3335,6 +3462,7 @@ async function dbInit() {
     renderAll();
     scrollBottom(true);
     dbSubscribe(state.activeRoomId);
+    presenceJoin(state.activeRoomId);
     return true;
   } catch (e) {
     db.ready = false;
@@ -3384,22 +3512,22 @@ function growInput() {
 function onSend() {
   var r = activeRoom();
   if (!r) return;
-  if (run.active) { toast("AI가 말하는 중이에요 · 멈추거나 기다려 주세요"); return; }
   var t = $("input").value.trim();
   if (!t) {
     if (r.mode === "roundtable") { openRoundtable(null); return; }
     $("input").focus();
     return;
   }
-  if (r.mode === "roundtable") { openRoundtable(t); return; }
-  if (budgetExceeded(r)) {
-    addSystem("예산 상한에 닿았어요. 예산을 올리거나 회차를 초기화해 주세요.", "warn");
-    openBudgetSheet();
+  if (r.mode === "roundtable") {
+    if (run.active) { toast("AI가 말하는 중이에요 · 멈추거나 기다려 주세요"); return; }
+    openRoundtable(t);
     return;
   }
+  /* 일반 채팅은 예산 상한과 무관하게 언제든 전송됩니다. 예산은 AI 호출에서만 봅니다. */
   addUserMessage(t);
   $("input").value = "";
   growInput();
+  if (run.active) { toast("메시지는 올라갔어요 · AI가 말하는 중이라 답장은 이번에 건너봅니다"); return; }
   if (r.mode === "mention") runMentions(t);
   else runFree(t);
 }
@@ -3601,6 +3729,7 @@ function wire() {
     var v = saveNick($("nickInput").value);
     $("nickInput").value = v;
     renderTimeline(false);
+    if (db.ready) presenceJoin(state.activeRoomId, true);
     toast("닉네임을 ‘" + v + "’(으)로 저장했어요");
   });
   $("shareCopy").addEventListener("click", function () {
