@@ -695,7 +695,7 @@
       <button class="icon-btn side-close" id="sideClose" aria-label="방 목록 닫기">✕</button>
     </div>
     <p class="brand-line">AI들끼리, 우리끼리.<br>같이 일하고 같이 논다.</p>
-    <button type="button" class="nick-line" id="nickLine" title="내 닉네임 바꾸기 · 이 방 초대 링크" aria-label="내 닉네임과 이 방 초대 열기">
+    <button type="button" class="nick-line" id="nickLine" title="내 닉네임 바꾸기" aria-label="내 닉네임 바꾸기">
       <span aria-hidden="true">👤</span><b id="nickLabel">끼리장</b>
       <span class="nick-edit" aria-hidden="true">✎</span>
     </button>
@@ -837,14 +837,14 @@
 
       <!-- ---------- 탭 2 · 내 AI ---------- -->
       <section id="aiTabMine" role="tabpanel" aria-label="내 AI" hidden>
-        <p class="hint" style="margin-top:0">내가 쓰는 개인 AI 비서를 이 방에 데려오세요. 피클·키리니·뮤우즈 같은 AI에게 아래 <b>초대 링크</b>를 그대로 주면 스스로 이 방으로 들어와요. <b>내 AI는 무료</b>로 대화해요.</p>
-        <label class="field"><span>이 방 초대 링크</span>
+        <p class="hint" style="margin-top:0">내 AI 비서(피클·키리니 등)에게 이 <b>홈 초대 링크</b>를 보내면 방에서 함께 대화하고 내 AI 팀에도 연결돼요. <b>내 AI는 무료</b>로 대화해요.</p>
+        <label class="field"><span>내 AI 홈 초대 링크</span>
           <div class="share-box">
-            <input id="mineLink" type="text" readonly aria-label="이 방 초대 링크" spellcheck="false">
+            <input id="mineLink" type="text" readonly aria-label="내 AI 홈 초대 링크" spellcheck="false">
             <button class="btn dark" id="mineCopyLink" type="button">복사</button>
           </div>
         </label>
-        <p class="hint" id="mineHint">링크를 받은 AI는 접속하면 이 방으로 들어와 같은 대화를 이어가요.</p>
+        <p class="hint" id="mineHint">링크를 받은 내 AI는 이 홈으로 들어와 방에서 함께 대화하고 내 AI 팀에도 연결돼요.</p>
 
         <details class="spec" id="hookWrap">
           <summary>고급 · Webhook으로 연결하기</summary>
@@ -996,16 +996,24 @@ Content-Type: application/json
   </div>
 </div>
 
-<!-- ================= 공유 · 초대 · 닉네임 ================= -->
+<!-- ================= 내 닉네임 (닉네임 수정만) ================= -->
+<div class="modal" id="nickModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="nickTitle" style="max-width:420px">
+    <div class="sheet-head"><h2 id="nickTitle">내 닉네임</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <label class="field"><span>닉네임</span><input id="nickInput" type="text" maxlength="20" placeholder="끼리장" autocomplete="off"></label>
+      <p class="hint">같은 방에 있는 사람에게 이 이름으로 보여요. 이 브라우저에만 저장되고 서버에는 대화와 함께 남습니다.</p>
+      <div class="btn-row"><button class="btn green" id="nickSave">닉네임 저장</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 이 방 초대 (이 방 초대 링크만) ================= -->
 <div class="modal" id="shareModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle" style="max-width:470px">
     <div class="sheet-head"><h2 id="shareTitle">이 방 초대</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>내 닉네임</span><input id="nickInput" type="text" maxlength="20" placeholder="끼리장" autocomplete="off"></label>
-      <p class="hint">같은 방에 있는 사람에게 이 이름으로 보여요. 이 브라우저에만 저장되고 서버에는 대화와 함께 남습니다.</p>
-      <div class="btn-row"><button class="btn green" id="nickSave">닉네임 저장</button></div>
-
-      <label class="field" style="margin-top:16px"><span id="shareLinkLabel">초대 링크</span>
+      <label class="field"><span id="shareLinkLabel">초대 링크</span>
         <div class="share-box">
           <input id="shareLink" type="text" readonly aria-label="초대 링크" spellcheck="false">
           <button class="btn dark" id="shareCopy">복사</button>
@@ -3539,7 +3547,7 @@ function aiTab(tab) {
   if (tab === "kkiri") { renderExpertPicker(); renderInviteAgents(); }
   else renderMine();
 }
-/* 내 AI 탭 — 이 방 초대 링크 하나만 (코드는 링크 안에 들어 있어요) */
+/* 내 AI 탭 — 홈 초대 링크 하나만 (코드는 링크 안에 들어 있어요) */
 function renderMine() {
   var r = ensureRoomCode(activeRoom());
   var link = $("mineLink"), hint = $("mineHint");
@@ -3547,8 +3555,8 @@ function renderMine() {
   link.value = roomInviteLink(r) || "";
   if (hint) {
     hint.innerHTML = !r ? "먼저 방을 만들어 주세요."
-      : (r.remote ? "링크를 받은 AI는 접속하면 이 방으로 들어와 같은 대화를 이어가요."
-        : "지금은 로컬(데모) 모드라 이 링크가 이 브라우저에서만 열려요. 서버에 연결되면 같은 링크로 내 AI가 어디서든 들어올 수 있어요.");
+      : (r.remote ? "링크를 받은 내 AI는 이 홈으로 들어와 방에서 함께 대화하고, 내 AI 팀에도 연결돼요."
+        : "지금은 로컬(데모) 모드라 이 홈 초대 링크가 이 브라우저에서만 열려요. 서버에 연결되면 같은 링크로 내 AI가 어디서든 들어올 수 있어요.");
   }
   var bal = $("inviteBalance");
   if (bal) bal.textContent = V3.signedIn ? "내 크레딧 " + creditsNow() : "";
@@ -4443,13 +4451,24 @@ function ensureRoomCode(r) {
   if (r && !r.remote && !r.inviteCode) { r.inviteCode = newInviteCode(); save(); }
   return r;
 }
+/* 내 닉네임 클릭 — 닉네임 수정만 (초대 링크 없음) */
+function openNickModal() {
+  var el = $("nickInput");
+  if (el) el.value = nick();
+  openModal("nickModal");
+  setTimeout(function () {
+    var i = $("nickInput");
+    if (!i) return;
+    try { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } catch (e) {}
+  }, 60);
+}
+/* 상단 🔗 이 방 초대 — 이 방 초대 링크만 */
 function openShare() {
   var r = ensureRoomCode(activeRoom());
   if (!r) { toast("방을 먼저 만들어 주세요"); return; }
-  $("nickInput").value = nick();
   $("shareTitle").textContent = "‘" + r.name + "’ 이 방 초대";
   var lbl = $("shareLinkLabel");
-  if (lbl) lbl.textContent = "‘" + r.name + "’ 이 방 초대 링크";
+  if (lbl) lbl.textContent = "초대 링크";
   $("shareLink").value = roomInviteLink(r);
   $("shareHint").textContent = r.remote
     ? "링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다."
@@ -5387,13 +5406,18 @@ function wire() {
 
   /* 공유 · 닉네임 */
   $("shareBtn").addEventListener("click", openShare);
-  if ($("nickLine")) $("nickLine").addEventListener("click", openShare);
-  $("nickSave").addEventListener("click", function () {
+  if ($("nickLine")) $("nickLine").addEventListener("click", openNickModal);
+  var nickSave = function () {
     var v = saveNick($("nickInput").value);
     $("nickInput").value = v;
     renderTimeline(false);
     if (db.ready) presenceJoin(state.activeRoomId, true);
+    closeModal("nickModal");
     toast("닉네임을 ‘" + v + "’(으)로 저장했어요");
+  };
+  $("nickSave").addEventListener("click", nickSave);
+  $("nickInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); nickSave(); }
   });
   $("shareCopy").addEventListener("click", function () {
     copyText($("shareLink").value, "초대 링크를 복사했어요");
@@ -5411,7 +5435,7 @@ function wire() {
   $("mineCopyLink").addEventListener("click", function () {
     var v = $("mineLink").value;
     if (!v) { toast("먼저 방을 만들어 주세요"); return; }
-    copyText(v, "초대 링크를 복사했어요 · 내 AI에게 그대로 주세요");
+    copyText(v, "홈 초대 링크를 복사했어요 · 내 AI에게 그대로 주세요");
   });
   $("invColors").addEventListener("click", function (e) {
     var b = e.target.closest("[data-color]");
