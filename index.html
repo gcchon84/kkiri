@@ -309,6 +309,9 @@
   .empty .e-actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
   .empty .e-cta{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
   .empty .e-cta .btn{min-height:46px;padding:0 16px;font-size:12.5px}
+  /* 이 방 초대 → AI 부르기 / 사람 부르기 (빈 방 카드와 같은 모양) */
+  .invite-choice{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .invite-choice .btn{min-height:46px;padding:0 16px;font-size:12.5px}
   .empty .empty-roles{font-size:10px;font-weight:800;color:#0d7a48}
   .empty .e-agenda{
     display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:#0d7a48;background:var(--green-tint);
@@ -587,8 +590,8 @@
   .connect-line.demo{color:#8a5a12;background:var(--amber-tint)}
   .auto-hint{font-style:normal;font-size:8.5px;font-weight:900;color:#0d7a48;background:var(--green-tint);border-radius:999px;padding:2px 6px;margin-left:4px;vertical-align:middle}
   .ai-seg button{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.25;padding:9px 4px}
-  .ai-seg button b{font-size:12.5px;font-weight:900;letter-spacing:-.02em}
-  .ai-seg button small{font-size:8.5px;font-weight:800;color:#8b98a2;letter-spacing:-.01em}
+  .ai-seg button b{font-size:13px;font-weight:900;letter-spacing:-.02em}
+  .ai-seg button small{font-size:10.5px;font-weight:800;color:#8b98a2;letter-spacing:-.01em}
   .ai-seg button[aria-pressed="true"] small{color:#0d7a48}
   .ai-sec-title{display:flex;align-items:center;gap:6px;margin:16px 0 8px;font-size:10.5px;font-weight:900;color:#4c5b67;letter-spacing:-.01em}
   .ai-sec-title::after{content:"";flex:1;height:1px;background:#eef3f1}
@@ -781,6 +784,13 @@
   .home-room b{display:block;font-size:12px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .home-room small{display:block;font-size:9px;font-weight:700;color:#8798a4;margin-top:3px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .home-room .r-live{margin-top:0}
+  /* 홈 — 선택 삭제 모드 */
+  .home-sec-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .h-btn.danger{background:#e2534d;border-color:#e2534d;color:#fff}
+  .h-btn.danger:hover{background:#c9433d}
+  .home-room .hr-check{flex:0 0 auto;width:20px;height:20px;border-radius:7px;border:1px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:900;color:#a9b6c0;background:#fff}
+  .home-room.editing.sel{border-color:#e2534d;background:#fff6f5}
+  .home-room.editing.sel .hr-check{border-color:#e2534d;color:#fff;background:#e2534d}
   .pick .p-tag{font-size:8px;font-weight:900;color:#93a0aa;margin-left:3px;letter-spacing:-.01em}
   .member-row .team-chip{flex:0 0 auto;padding:3px 6px;font-size:9px;color:#7dd3a8}
 
@@ -879,6 +889,8 @@
     .empty .empty-roles{font-size:12px}
     .empty .e-cta{flex-direction:column;gap:9px}
     .empty .e-cta .btn{width:100%;min-height:48px;font-size:14px}
+    .invite-choice{flex-direction:column;gap:9px}
+    .invite-choice .btn{width:100%;min-height:48px;font-size:14px}
     .composer{padding:9px 12px calc(9px + env(safe-area-inset-bottom))}
     .composer textarea{font-size:16px;line-height:1.6;min-height:48px;padding:12px 13px}
     .send{height:48px;font-size:13.5px;padding:0 17px}
@@ -922,6 +934,102 @@
     .ctrl-actions .icon-btn{width:30px;flex:0 0 30px}
     .msg .bubble{font-size:14px;padding:10px 12px}
     .composer textarea{font-size:16px}
+  }
+  /* ============ 가독성 상향 (작은 글씨 키우기) ============ */
+  .hint{font-size:13.5px;line-height:1.6}
+  .modal-note{font-size:13.5px;line-height:1.6}
+  .sec-hint{font-size:12.5px;line-height:1.55}
+  .sheet-body p{font-size:13.5px;line-height:1.6}
+  .focus-card b{font-size:13px}
+  .focus-card .focus-sub{font-size:12px;line-height:1.55}
+  .focus-preview{font-size:12px;line-height:1.7}
+  .empty h3{font-size:16px}
+  .empty p{font-size:13px;line-height:1.7}
+  .empty .empty-roles{font-size:11.5px}
+  .home-sec-head h2{font-size:14px}
+  .home-sec-head p{font-size:11.5px;line-height:1.5}
+  .home-room b{font-size:13px}
+  .home-room small{font-size:11px}
+  .home-empty{font-size:12px;line-height:1.7}
+  .sugg-label{font-size:11.5px}
+  .msg .who{font-size:12.5px}
+  .msg .meta{font-size:11px}
+  .typing{font-size:12px}
+  .typing .bubble{font-size:12px}
+  .day{font-size:11.5px}
+  .credit-guide h4{font-size:12.5px}
+  .credit-guide li{font-size:12.5px;line-height:1.6}
+  .credit-guide .cg-sub{font-size:11.5px}
+  .credit-guide .cg-foot{font-size:11.5px;line-height:1.6}
+  .credit-guide .cg-lead{font-size:12px}
+  .cg-opt>b{font-size:12.5px}
+  .cg-opt>p{font-size:12px;line-height:1.65}
+  .donate-box>b{font-size:12.5px}
+  .donate-box>p{font-size:12px;line-height:1.65}
+  .donate-msg{font-size:13px}
+  .field > span{font-size:12.5px}
+  .rf-add-row span{font-size:11.5px}
+  .member-row b{font-size:12.5px}
+  .member-row small{font-size:11px}
+  .room-item b{font-size:13px}
+  .room-item small{font-size:11px}
+  .room-empty{font-size:11.5px}
+  .pres-row b{font-size:12.5px}
+  .role-row b,.role-edit .re-head b{font-size:12.5px}
+  .role-row .r-label{font-size:12px}
+  .role-row small,.role-edit .re-head small{font-size:10.5px}
+  .sec-head > span{font-size:11px}
+  .ctrl-lead{font-size:11.5px;line-height:1.5}
+  .ctrl-foot span{font-size:11px}
+  .m-top span{font-size:11px}
+  .m-top .m-val{font-size:12px}
+  .side-status{font-size:11px}
+  .brand-line{font-size:12px;line-height:1.65}
+  .expert-card .e-name b{font-size:13px}
+  .expert-card .e-name small{font-size:11px}
+  .expert-card .e-cost{font-size:10.5px}
+  .expert-card .e-add{font-size:11px}
+  .comp-hint{font-size:11px}
+  .c-sec h4{font-size:11px}
+  .c-sec li{font-size:12.5px}
+  @media (max-width:768px){
+    .hint,.modal-note,.sheet-body p,.sec-hint{font-size:14px;line-height:1.55}
+    .empty h3{font-size:17px;line-height:1.35}
+    .empty p{font-size:14px;line-height:1.65}
+    .focus-card .focus-sub{font-size:13px;line-height:1.55}
+    .focus-preview{font-size:13.5px}
+    .field > span{font-size:13.5px}
+    .credit-guide h4{font-size:14px}
+    .credit-guide li{font-size:14px;line-height:1.55}
+    .credit-guide .cg-sub{font-size:13px}
+    .credit-guide .cg-foot{font-size:13.5px;line-height:1.55}
+    .credit-guide .cg-lead{font-size:13.5px}
+    .cg-opt>b{font-size:13.5px}
+    .cg-opt>b em{font-size:11.5px}
+    .cg-opt>p{font-size:13.5px;line-height:1.6}
+    .donate-box>b,.donate-box>p{font-size:13.5px}
+    .sugg-label{font-size:13px}
+    .msg .who{font-size:13px}
+    .msg .meta{font-size:11.5px}
+    .typing{font-size:13px}
+    .empty .empty-roles{font-size:13px}
+    .member-row b{font-size:13px}
+    .member-row small{font-size:11.5px}
+    .room-item b{font-size:13.5px}
+    .room-item small{font-size:11.5px}
+    .pres-row b{font-size:13px}
+    .sec-head > span{font-size:12px}
+    .side-status{font-size:12px}
+    .brand-line{font-size:12.5px}
+    .expert-card .e-name b{font-size:13.5px}
+    .expert-card .e-name small{font-size:11.5px}
+    .expert-card .e-cost{font-size:11px}
+    .expert-card .e-add{font-size:11.5px}
+    .home-sec-head h2{font-size:15px}
+    .home-sec-head p{font-size:13px;line-height:1.5}
+    .home-room b{font-size:13.5px}
+    .home-room small{font-size:11.5px}
+    .home-empty{font-size:13px}
   }
   @media (min-width:901px){
     .modal{padding:32px}
@@ -1006,7 +1114,12 @@
         <section class="home-sec" aria-label="내 대화방">
           <div class="home-sec-head">
             <div><h2>💬 내 대화방 <em id="homeRoomCount">0</em></h2><p>주제 하나를 두고 AI와 사람이 모이는 공간이에요.</p></div>
-            <button type="button" class="h-btn green" id="homeNewRoomBtn">+ 새 방 만들기</button>
+            <div class="home-sec-actions">
+              <button type="button" class="h-btn" id="homeEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden>🗑️</button>
+              <button type="button" class="h-btn green" id="homeNewRoomBtn">+ 새 방 만들기</button>
+              <button type="button" class="h-btn" id="homeEditCancel" hidden>취소</button>
+              <button type="button" class="h-btn danger" id="homeBulkDelete" hidden>선택 삭제 (0개)</button>
+            </div>
           </div>
           <div class="room-grid" id="homeRoomGrid"></div>
         </section>
@@ -1089,13 +1202,13 @@
     <div class="sheet-head"><h2 id="inviteTitle">AI 추가</h2><span class="sub" id="inviteBalance"></span><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <div class="seg wide ai-seg" id="aiSeg" role="tablist" aria-label="AI 종류">
-        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b>🙋 나의 AI</b><small>초대 링크 · 웹훅 · 무료</small></button>
+        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b>🙋 나의 AI</b><small>초대 링크 · 내 키 · 크레딧 0</small></button>
         <button type="button" role="tab" data-tab="kkiri" aria-pressed="false" aria-selected="false"><b>🤖 끼리 AI</b><small>끼리 엔진 · 크레딧 또는 내 API 키</small></button>
       </div>
 
       <!-- ---------- 탭 1 · 끼리 AI ---------- -->
       <section id="aiTabKkiri" role="tabpanel" aria-label="끼리 AI">
-        <p class="hint" id="expertHint" style="margin-top:0">역할이 다른 끼리 AI를 누르면 바로 이 방에 들어와요. 끼리 AI는 <b>턴마다 크레딧</b>을 쓰고, 나의 AI·사람과의 대화는 무료예요. 크레딧이 떨어져도 방은 멈추지 않고 끼리 AI만 잠깁니다.</p>
+        <p class="hint" id="expertHint" style="margin-top:0">필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요. (답할 때마다 크레딧을 사용해요)</p>
         <div class="expert-grid" id="expertGrid"></div>
         <p class="modal-note" id="expertNote"></p>
 
@@ -1133,47 +1246,16 @@
           <div class="focus-btns">
             <button type="button" class="btn green" id="focusCopyPrompt">📋 초대 지시문+링크 복사</button>
           </div>
-          <p class="hint">피클·클로드·키링·뮤즈 같은 내 AI 앱에 그대로 붙여넣으세요. 링크로 들어온 AI는 이 방에만 들어오고, 대화는 무료예요.</p>
+          <p class="hint">피클·키링·뮤즈처럼 웹에 직접 들어올 수 있는 내 AI 앱에 그대로 붙여넣으세요. (일반 챗GPT·제미나이·클로드는 아래 내 API 키 연결을 이용해 주세요) 링크로 들어온 AI는 이 방에만 들어오고, 끼리 크레딧은 쓰지 않아요 (각 AI 자체 사용량 사용).</p>
         </div>
 
-        <details class="spec" id="hookWrap">
-          <summary>+ 웹훅 연결 · 내 AI 서버 주소로 등록</summary>
-          <div class="spec-body">
-            <label class="field"><span>AI 이름</span><input id="hookName" type="text" maxlength="14" placeholder="예: 피크리" autocomplete="off"></label>
-            <label class="field"><span>Webhook URL</span><input id="hookUrl" type="text" placeholder="https://my-agent.example/hook" autocomplete="off" spellcheck="false"></label>
-            <label class="field"><span>토큰 (선택)</span><input id="hookToken" type="text" placeholder="AI가 확인할 비밀 토큰" autocomplete="off" spellcheck="false"></label>
-            <div class="btn-row">
-              <button class="btn" id="hookTest">연결 테스트</button>
-              <button class="btn green" id="hookAdd">등록하고 추가</button>
-            </div>
-            <p class="api-status" id="hookStatus" role="status" aria-live="polite" hidden></p>
-            <details class="spec">
-              <summary>요청·응답 규격 보기</summary>
-              <pre>POST {Webhook URL}
-X-Kkiri-Event: turn.request
-X-Kkiri-Token: {토큰}
-Content-Type: application/json
-
-{
-  "event": "turn.request",
-  "room": { "id": "r_promo", "name": "프로젝트방", "agenda": "연말 캠페인 아이디어 3개 제안" },
-  "turn": { "no": 3, "phase": "rebuttal", "agent": "피크리" },
-  "context": [ { "speaker": "키리니", "text": "…" } ],
-  "deadline_ms": 20000
-}
-
-응답(JSON): { "text": "발언 내용" }
-(text·reply·message·output 중 하나도 인식)</pre>
-            </details>
-          </div>
-        </details>
         <details class="spec" id="byokWrap">
-          <summary>⚡ 내 API 키로 바로 AI 붙이기 (Gemini 무료 티어 / OpenAI)</summary>
+          <summary>🔑 내 제미나이(무료)·GPT 키로 무제한 쓰기</summary>
           <div class="spec-body">
-            <div class="field" style="margin-top:10px"><span>제공자</span>
+            <div class="field" style="margin-top:10px"><span>어떤 AI 키인가요</span>
               <div class="pick-row" id="byokSeg" role="group" aria-label="내 키 제공자">
-                <button type="button" class="pick" data-byok="gemini" aria-pressed="true">Google Gemini (무료)<span class="kb mini" id="kbMineGemini" title="Gemini 키 저장 여부">OFF</span></button>
-                <button type="button" class="pick" data-byok="openai" aria-pressed="false">OpenAI<span class="kb mini" id="kbMineOpenai" title="OpenAI 키 저장 여부">OFF</span></button>
+                <button type="button" class="pick" data-byok="gemini" aria-pressed="true">구글 제미나이 (무료 키)<span class="kb mini" id="kbMineGemini" title="Gemini 키 저장 여부">OFF</span></button>
+                <button type="button" class="pick" data-byok="openai" aria-pressed="false">OpenAI (챗GPT)<span class="kb mini" id="kbMineOpenai" title="OpenAI 키 저장 여부">OFF</span></button>
               </div>
             </div>
             <div class="field-row">
@@ -1189,15 +1271,45 @@ Content-Type: application/json
             <p class="hint" id="mineKeyHint"></p>
             <div class="btn-row"><button class="btn green" id="mineKeyAdd">키 저장하고 이 방에 추가</button></div>
             <p class="api-status" id="mineKeyStatus" role="status" aria-live="polite" hidden></p>
-            <p class="modal-note">키는 이 브라우저에만 저장되고 <b>⚙️ 설정 · API 키</b>와 같은 값이에요. 이 키로 답하는 AI는 끼리 크레딧을 쓰지 않고, 내 키로만 호출해요.</p>
+            <p class="modal-note">키는 이 기기에만 저장되고 <b>⚙️ 설정 · API 키</b>와 같은 값이에요. 이 키로 답하는 AI는 끼리 크레딧을 쓰지 않아요.</p>
           </div>
         </details>
-        <p class="modal-note">여기서 등록하면 내 AI로 저장돼 다음에 다른 방에서도 <b>+ AI 추가</b>로 다시 부를 수 있어요. 방에서는 <b>🤖 AI 부르기</b>로 바로 불러요. 브라우저에서 직접 호출하므로 <b>내 AI 서버가 CORS를 허용해야</b> 연결 테스트가 통과합니다. 등록한 AI에는 <b>이 방의 대화 내용이 전송</b>되고, 주소·토큰은 이 브라우저에만 저장됩니다. 답하지 못한 턴은 끼리 AI나 데모로 대신하지 않고, 연결을 확인하라는 안내만 남깁니다.</p>
-      </section>
 
-      <div class="sheet-foot" style="padding-left:0;padding-right:0;margin-top:16px">
-        <button class="btn" id="inviteManage">방 멤버 관리</button>
-      </div>
+        <details class="spec" id="hookWrap">
+          <summary>⚙️ 직접 만든 AI 연결 (개발자용)</summary>
+          <div class="spec-body">
+            <p class="hint" style="margin-top:10px">직접 개발한 AI 서버가 있다면 주소를 넣어 연결하세요. 챗GPT·제미나이처럼 이미 쓰는 AI 앱은 위의 <b>🔑 내 제미나이·GPT 키</b>로 연결하면 돼요.</p>
+            <label class="field"><span>AI 이름</span><input id="hookName" type="text" maxlength="14" placeholder="예: 피크리" autocomplete="off"></label>
+            <label class="field"><span>AI 서버 주소 (URL)</span><input id="hookUrl" type="text" placeholder="https://my-ai.example/hook" autocomplete="off" spellcheck="false"></label>
+            <label class="field"><span>비밀 토큰 (선택)</span><input id="hookToken" type="text" placeholder="내 AI가 확인할 비밀 값" autocomplete="off" spellcheck="false"></label>
+            <div class="btn-row">
+              <button class="btn" id="hookTest">연결 확인</button>
+              <button class="btn green" id="hookAdd">등록하고 추가</button>
+            </div>
+            <p class="api-status" id="hookStatus" role="status" aria-live="polite" hidden></p>
+            <details class="spec">
+              <summary>요청·응답 규격 보기</summary>
+              <pre>POST {AI 서버 주소}
+X-Kkiri-Event: turn.request
+X-Kkiri-Token: {비밀 토큰}
+Content-Type: application/json
+
+{
+  "event": "turn.request",
+  "room": { "id": "r_promo", "name": "프로젝트방", "agenda": "연말 캠페인 아이디어 3개 제안" },
+  "turn": { "no": 3, "phase": "rebuttal", "agent": "피크리" },
+  "context": [ { "speaker": "키리니", "text": "…" } ],
+  "deadline_ms": 20000
+}
+
+응답(JSON): { "text": "발언 내용" }
+(text·reply·message·output 중 하나도 인식)</pre>
+            </details>
+          </div>
+        </details>
+
+        <p class="modal-note">여기서 등록한 AI는 내 AI로 저장돼 다른 방에서도 <b>+ AI 추가</b>로 다시 부를 수 있어요. 대화 내용은 그 AI로 전송되고, 키와 주소는 이 기기에만 저장돼요. 답하지 못할 때는 다른 AI로 대신 답하지 않고 연결을 확인하라는 안내만 남겨요.</p>
+      </section>
     </div>
   </div>
 </div>
@@ -1209,7 +1321,6 @@ Content-Type: application/json
     <div class="sheet-body">
       <div class="field" style="margin-top:0"><span>주제 분류</span><div class="pick-row" id="rfCat"></div></div>
       <label class="field"><span>방 이름 (주제)</span><input id="rfName" type="text" maxlength="40" placeholder="예: 연말 프로모션 기획, 신제품 론칭" autocomplete="off"></label>
-      <p class="modal-note" style="margin-top:6px">방 이름이 곧 토론 주제가 돼요. 이름만 적으면 1초 만에 빈 방이 열려요. AI는 방 안에서 바로 부를 수 있어요.</p>
       <div class="field-row">
         <div class="field" id="rfEmojiField"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
         <label class="field"><span>최대 턴</span>
@@ -1273,7 +1384,7 @@ Content-Type: application/json
     <div class="sheet-body">
       <div class="panel-card">
         <div class="row">
-          <div class="k">내 API 키 연결 (BYOK)<small id="apiModeSub">내 키를 넣으면 그 키로 실제 AI가 답해요</small></div>
+          <div class="k">내 API 키 연결<small id="apiModeSub">내 키를 넣으면 그 키로 실제 AI가 답해요</small></div>
           <span class="pill gray" id="apiModePill">데모 모드</span>
         </div>
       </div>
@@ -1316,6 +1427,20 @@ Content-Type: application/json
   </div>
 </div>
 
+<!-- ================= 이 방에 초대하기 (AI 부르기 / 사람 부르기 선택) ================= -->
+<div class="modal" id="inviteChoiceModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="inviteChoiceTitle" style="max-width:430px">
+    <div class="sheet-head"><h2 id="inviteChoiceTitle">이 방에 초대하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <p class="hint" style="margin-top:0">누구를 부를까요? AI는 역할을 골라 바로 들이고, 사람은 초대 링크를 보내요.</p>
+      <div class="invite-choice">
+        <button type="button" class="btn green" id="choiceAiBtn">🤖 AI 부르기</button>
+        <button type="button" class="btn" id="choicePersonBtn">👋 사람 부르기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ================= 이 방 초대 (이 방 초대 링크만) ================= -->
 <div class="modal" id="shareModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle" style="max-width:470px">
@@ -1341,7 +1466,7 @@ Content-Type: application/json
       <div class="auth-hero">
         <div class="ah-emoji" aria-hidden="true">🐥</div>
         <h2>로그인 없이 바로 시작해 보세요</h2>
-        <p>로그인하면 <b>매일 200크레딧</b>이 무료로 채워져요. 사람·내 AI와 대화하는 건 무료이고, 끼리 AI만 턴마다 크레딧을 써요.</p>
+        <p>로그인하면 <b>매일 200크레딧</b>이 무료로 채워져요. 사람과의 대화는 무료이고, 내 AI는 끼리 크레딧을 쓰지 않아요 (각 AI 자체 사용량 사용). 끼리 AI만 턴마다 크레딧을 써요.</p>
       </div>
       <button class="auth-guest" id="guestBtn" type="button">
         <span class="ag-ico" aria-hidden="true">⚡</span>
@@ -1379,7 +1504,8 @@ Content-Type: application/json
           <li><span><b>@이름</b>으로 질문</span><b>20번</b></li>
           <li><span>10턴 풀 토론</span><b>2번</b></li>
           <li><span>5턴 미니 토론</span><b>4번</b></li>
-          <li class="free"><span>나의 AI (초대 링크·웹훅) · 사람 간 대화</span><b>0 크레딧 (무료)</b></li>
+          <li class="free"><span>나의 AI (초대 링크·내 키)</span><b>0 크레딧 (끼리 크레딧 미사용)</b></li>
+          <li class="free"><span>사람 간 대화</span><b>0 크레딧 (무료)</b></li>
         </ul>
         <p class="cg-foot">@이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).</p>
       </div>
@@ -1387,7 +1513,7 @@ Content-Type: application/json
         <h4><span aria-hidden="true">⚡</span> 더 쓰고 싶을 때 · 두 가지 방법</h4>
         <div class="cg-opt">
           <b>내 API 키 연결 <em>무제한</em></b>
-          <p>나의 AI → 내 API 키에 Google Gemini(무료 티어)나 OpenAI 키를 넣으면 크레딧을 쓰지 않고 바로 무제한으로 써요.</p>
+          <p>나의 AI → 내 API 키에 구글 제미나이(무료 키)나 OpenAI(챗GPT) 키를 넣으면 끼리 크레딧을 쓰지 않고 내 키로 대화해요.</p>
           <button type="button" class="mini-btn" id="creditByokBtn">내 API 키 연결하기</button>
         </div>
         <div class="cg-opt">
@@ -1578,9 +1704,9 @@ function seedAgents() {
     desc: "카피와 캠페인을 만드는 기획자"
   };
   a.red = {
-    id: "red", name: "레드", role: "비판자 · 레드팀", color: "#e2534d", type: "builtin", model: "auto",
+    id: "red", name: "레드", role: "비판자 · 검증가", color: "#e2534d", type: "builtin", model: "auto",
     prompt: "너는 '레드'다. 이 방의 비판자다. 맡은 일: 전제의 약한 고리와 리스크를 찾아 반대 논리를 만든다. 확인되지 않은 것을 확인된 것처럼 두지 않는다. 말투: 직설적, 짧고 또렷하게.",
-    desc: "전제를 의심하는 레드팀"
+    desc: "전제를 의심하는 검증가"
   };
   return a;
 }
@@ -1761,8 +1887,8 @@ var ROLE_DEFS = {
   copy:     { label: "아이디어·카피",  focus: "아이디어를 쓸 수 있는 문장으로 바꾸기", keys: ["카피", "기획", "아이디어", "창의"] },
   creative: { label: "창의 제안",      focus: "새로운 각도의 아이디어와 문장 제안하기", keys: ["카피", "기획", "아이디어", "창의"] },
   data:     { label: "데이터·근거",    focus: "숫자와 자료로 근거를 만들고 확인한 값과 추정을 나누기", keys: ["리서처", "데이터", "분석", "숫자", "근거"] },
-  risk:     { label: "반대·리스크",    focus: "전제의 약한 고리와 되돌리기 어려운 결정을 짚기", keys: ["비판", "레드팀", "리스크", "반대"] },
-  risk2:    { label: "리스크 검증",    focus: "결정 전에 확인할 것과 위험을 먼저 짚기", keys: ["비판", "레드팀", "리스크", "반대"] },
+  risk:     { label: "반대·리스크",    focus: "전제의 약한 고리와 되돌리기 어려운 결정을 짚기", keys: ["비판", "검증가", "레드팀", "리스크", "반대"] },
+  risk2:    { label: "리스크 검증",    focus: "결정 전에 확인할 것과 위험을 먼저 짚기", keys: ["비판", "검증가", "레드팀", "리스크", "반대"] },
   ops:      { label: "실무·전략",      focus: "실행 순서와 비용·일정을 현실적으로 맞추기", keys: ["마케팅", "전략", "실무", "운영", "기획", "실행", "비서", "진행"] },
   check:    { label: "실행 체크",      focus: "누가 언제 무엇을 할지 실행 항목과 기한으로 바꾸기", keys: ["실행", "운영", "일정", "비서"] },
   user:     { label: "사용자 관점",    focus: "고객이 실제로 느끼는 불편과 말을 대신 말하기", keys: ["카피", "사용자", "고객"] },
@@ -1781,7 +1907,7 @@ var ROLE_DEFS = {
   calm:       { label: "차분한 정리",  focus: "감정과 사실을 나눠 결정할 것만 남기기", keys: ["사회", "진행", "총괄", "비서"] },
   step:       { label: "작은 실천",    focus: "이번 주에 해 볼 한 가지를 정해 주기", keys: ["실행", "일정", "비서", "진행"] }
 };
-/* 주제 분류별 역할 구성 — 업무·기획은 전략/데이터/레드팀, 여행·일상·고민은 생활 언어로. */
+/* 주제 분류별 역할 구성 — 업무·기획은 전략/데이터/검증가, 여행·일상·고민은 생활 언어로. */
 var CAT_ROLE_SETS = {
   travel:  ["plan_trip", "budget_trip", "local", "realist", "trip_check"],
   daily:   ["food_find", "budget_trip", "food_mood", "realist", "food_check"],
@@ -2114,10 +2240,12 @@ function findExpertAgent(exId) {
 function agentKindLabel(a) {
   if (!a) return "";
   if (a.type === "expert") return "끼리 AI";
-  if (a.type === "webhook") return "나의 AI · 웹훅";
+  if (a.type === "webhook") return "나의 AI · 직접 만든 AI";
   if (a.type === "byok") return (a.expert === "custom" || !a.expert) ? "나의 AI" : "나의 AI";
   return "기본 AI";
 }
+/* 홈 — 방 선택 삭제 (내 방은 삭제, 초대받은 방은 나가기) */
+var homeEdit = { on: false, sel: {} };
 function renderHome() {
   var host = $("homeView");
   if (!host) return;
@@ -2133,7 +2261,10 @@ function renderHome() {
   if (rc) rc.textContent = state.rooms.length;
   var rh = "";
   state.rooms.forEach(function (rm) {
-    rh += '<button type="button" class="home-room" data-home-room="' + esc(rm.id) + '">' +
+    var picked = !!homeEdit.sel[rm.id];
+    rh += '<button type="button" class="home-room' + (homeEdit.on ? " editing" + (picked ? " sel" : "") : "") + '" data-home-room="' + esc(rm.id) + '"' +
+      (homeEdit.on ? ' aria-pressed="' + picked + '"' : "") + '>' +
+      (homeEdit.on ? '<span class="hr-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
       '<span class="hr-emoji" aria-hidden="true">' + esc(rm.emoji || "💬") + "</span>" +
       '<span class="hr-body"><b>' + esc(rm.name) + "</b><small>" + esc(categoryLabelOf(rm) + " · AI " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧") + "</small></span>" +
       (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
@@ -2141,6 +2272,61 @@ function renderHome() {
   });
   if (!rh) rh = '<div class="home-empty">아직 대화방이 없어요.<br><b>+ 새 방 만들기</b>로 첫 방을 열어 보세요.</div>';
   $("homeRoomGrid").innerHTML = rh;
+  /* 선택 삭제 모드 — 방이 없으면 편집 버튼도 두지 않는다 */
+  if (!state.rooms.length) { homeEdit.on = false; homeEdit.sel = {}; }
+  var eb = $("homeEditBtn"), cb = $("homeEditCancel"), bd = $("homeBulkDelete"), nb = $("homeNewRoomBtn");
+  var n = Object.keys(homeEdit.sel).length;
+  if (eb) eb.hidden = homeEdit.on || !state.rooms.length;
+  if (nb) nb.hidden = !!homeEdit.on;
+  if (cb) cb.hidden = !homeEdit.on;
+  if (bd) {
+    bd.hidden = !homeEdit.on;
+    bd.textContent = "선택 삭제 (" + n + "개)";
+    bd.disabled = n === 0;
+    bd.style.opacity = n === 0 ? ".55" : "1";
+  }
+}
+function homeEditStart() { homeEdit.on = true; homeEdit.sel = {}; renderHome(); }
+function homeEditStop() { homeEdit.on = false; homeEdit.sel = {}; renderHome(); }
+function homeTogglePick(id) {
+  if (homeEdit.sel[id]) delete homeEdit.sel[id];
+  else homeEdit.sel[id] = true;
+  renderHome();
+}
+async function homeBulkRemove() {
+  var rooms = state.rooms.filter(function (r) { return homeEdit.sel[r.id]; });
+  if (!rooms.length) return;
+  var owners = rooms.filter(isRoomOwner).length;
+  var ok = await askConfirm({
+    title: "선택한 방을 정리할까요?",
+    body: "선택한 " + rooms.length + "개 방을 삭제/나가기 할까요?",
+    note: "내가 만든 방 " + owners + "개는 대화·멤버까지 완전히 삭제되고, 초대받은 방 " + (rooms.length - owners) + "개는 내 목록에서 나가요. 되돌릴 수 없어요.",
+    okText: rooms.length + "개 정리", okClass: "solid-danger"
+  });
+  if (!ok) return;
+  var gone = [];
+  for (var i = 0; i < rooms.length; i++) {
+    var r = rooms[i];
+    var wasOwner = isRoomOwner(r);
+    var res = true;
+    if (r.remote) {
+      try { res = wasOwner ? await dbDeleteRoom(r) : await dbLeaveRoom(r); } catch (e) { res = false; }
+    }
+    if (res) gone.push(r.id);
+  }
+  if (!gone.length) { toast("정리하지 못했어요 · 잠시 뒤 다시 시도해 주세요"); return; }
+  if (state.activeRoomId && gone.indexOf(state.activeRoomId) >= 0) {
+    state.activeRoomId = null;
+    var left = state.rooms.filter(function (x) { return gone.indexOf(x.id) < 0; });
+    if (left.length) state.activeRoomId = left[0].id;
+  }
+  state.rooms = state.rooms.filter(function (x) { return gone.indexOf(x.id) < 0; });
+  homeEdit.on = false; homeEdit.sel = {};
+  save();
+  renderAll();
+  renderHome();
+  toast("방 " + gone.length + "개를 정리했어요");
+  if (!state.rooms.length) setTimeout(function () { if (!state.rooms.length) openRoomForm(null); }, 320);
 }
 function currentView() { return state.view === "room" ? "room" : "home"; }
 function applyView() {
@@ -2378,7 +2564,7 @@ function emptyHtml(r) {
     /* 방을 만든 직후 — AI를 부르고 사람을 부르는 두 길만 보여 준다. */
     return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div>' +
       "<h3>아직 이 방에 아무도 없어요</h3>" +
-      "<p>AI를 부르거나, 사람을 불러 함께 시작해 보세요!<br>끼리 AI는 답할 때마다 10크레딧, 나의 AI·사람끼리 대화는 무료예요.</p>" +
+      "<p>AI를 부르거나, 사람을 불러 함께 시작해 보세요!<br>끼리 AI는 답할 때마다 10크레딧, 나의 AI는 끼리 크레딧을 쓰지 않고 (각 AI 자체 사용량 사용), 사람끼리 대화는 무료예요.</p>" +
       cta + "</div>";
   }
   var names = memberNames(r).join(" · ");
@@ -3070,7 +3256,7 @@ async function speak(agent, phase, ep) {
   } catch (e) {
     if (route === "webhook") {          /* 웹훅 실패 → 다른 AI·데모로 대신 답하지 않는다 */
       guide = {
-        text: "연결된 웹훅 응답을 받지 못했어요. 주소와 서버 상태를 확인해 주세요." + (e && e.msg ? " · " + e.msg : ""),
+        text: "연결한 AI가 응답하지 않았어요. 주소와 서버 상태를 확인해 주세요." + (e && e.msg ? " · " + e.msg : ""),
         acts: [{ label: "🔗 연결 확인 안내", act: "invite" }]
       };
     } else {
@@ -3378,9 +3564,9 @@ async function liveTurn(agent, provider, phase) {
    ========================================================= */
 function hookError(st) {
   if (st === 401 || st === 403) return "토큰이 거부되었어요(HTTP " + st + "). 에이전트 쪽 토큰 설정을 확인해 주세요.";
-  if (st === 404) return "Webhook 주소를 찾지 못했어요(404). URL을 확인해 주세요.";
+  if (st === 404) return "AI 서버 주소를 찾지 못했어요(404). 주소를 확인해 주세요.";
   if (st >= 500) return "에이전트 서버에 문제가 있어요(HTTP " + st + ").";
-  return "브라우저에서 직접 호출이 막혔어요(CORS 또는 네트워크).";
+  return "이 브라우저에서 서버로 바로 접속하지 못했어요. 서버가 접속을 허용하는지 확인해 주세요.";
 }
 async function webhookTurn(agent, phase) {
   var r = activeRoom();
@@ -3407,7 +3593,7 @@ async function webhookTurn(agent, phase) {
   } catch (e) {
     if (timer) clearTimeout(timer);
     if (e && e.name === "AbortError") throw { webhook: true, msg: "20초 안에 응답이 없어요. 에이전트 서버가 켜져 있는지 확인해 주세요." };
-    throw { webhook: true, msg: "브라우저에서 직접 호출이 막혔어요(CORS 또는 네트워크)." };
+    throw { webhook: true, msg: "이 브라우저에서 서버로 바로 접속하지 못했어요. 서버가 접속을 허용하는지 확인해 주세요." };
   }
   if (timer) clearTimeout(timer);
   if (!res.ok) throw { webhook: true, msg: hookError(res.status) };
@@ -4078,6 +4264,16 @@ function renderRoomMemberPick(selected) {
   if (note) note.innerHTML = poolAgents().length
     ? "지금까지 저장해 둔 AI예요. 고른 AI만 이 방에 입장하고, 나중에 방 설정에서 바꿀 수 있어요."
     : "저장해 둔 AI가 아직 없어요. <b>+ AI 추가하기</b>를 누르면 이 창을 닫지 않고 바로 저장할 수 있어요.";
+  syncRfRoleVisibility();
+}
+/* 방 설정에서 AI가 한 명도 없으면 나눌 역할이 없다 — 역할 칸은 숨긴다. */
+function syncRfRoleVisibility() {
+  var n = 0;
+  try { n = rfSelectedMembers().length; } catch (e) { n = 0; }
+  var show = !!roomForm.id && n > 0;
+  ["rfRoleModeField", "rfRolesField"].forEach(function (id) {
+    var el = $(id); if (el) el.hidden = !show;
+  });
 }
 function renderRfRoleMode() {
   Array.prototype.forEach.call($("rfRoleMode").querySelectorAll("[data-rolemode]"), function (b) {
@@ -4137,6 +4333,7 @@ function renderRfRoles() {
     : (draft.agenda
       ? categoryLabelOf(draft) + " 방이라 참여 AI " + draft.members.length + "명에게 맞는 역할을 나눠요. AI를 넣고 빼면 바로 다시 배정돼요. 직접 고치려면 ‘수동’을 누르세요."
       : "방 이름(주제)을 적으면 역할이 더 정확해져요. 지금은 " + categoryLabelOf(draft) + " 기준으로 각 AI의 기본 성격에 맞춰 배정했어요.");
+  syncRfRoleVisibility();
 }
 function openRoomForm(roomId) {
   var r = roomId ? state.rooms.filter(function (x) { return x.id === roomId; })[0] : null;
@@ -4153,18 +4350,16 @@ function openRoomForm(roomId) {
   renderRfRoleMode();
   $("rfTurns").value = String(turnOptionsFor(r ? r.maxTurns : 10, $("rfTurns")));
   $("rfBudget").value = r ? r.budget : 200;
-  /* 새 방은 방 이름·분류·최대 턴·크레딧 상한만 받고 바로 열린다. AI·역할은 방 설정(⋯)에서. */
-  ["rfEmojiField", "rfRoleModeField", "rfMembersField", "rfRolesField"].forEach(function (id) {
+  /* 새 방은 방 이름·분류·최대 턴·크레딧 상한만 받고 바로 열린다. AI·역할은 방 설정(⋯)에서.
+     아이콘은 주제 분류가 정하므로 고르는 칸은 어느 모드에서도 두지 않는다. */
+  var emojiField = $("rfEmojiField");
+  if (emojiField) emojiField.hidden = true;
+  ["rfRoleModeField", "rfMembersField", "rfRolesField"].forEach(function (id) {
     var el = $(id); if (el) el.hidden = !r;
   });
-  /* 새 방 창은 간결하게 — 설명 문구는 방 설정(⋯)에서만 보여 준다 */
+  /* 아래 설명 줄은 쓰지 않는다 (중복 설명 제거) */
   var foot = $("rfFootNote");
-  if (foot) {
-    foot.hidden = !r;
-    foot.innerHTML = r
-      ? "이 방에 들어온 AI를 체크로 넣고 뺄 수 있어요. AI를 넣고 빼면 <b>역할 자동</b> 배정이 참여 AI 수와 주제에 맞춰 바로 다시 계산돼요. 필요하면 <b>수동</b>으로 직접 고칠 수 있어요."
-      : "";
-  }
+  if (foot) { foot.hidden = true; foot.innerHTML = ""; }
   var sel;
   if (r) sel = r.members.slice();
   else sel = [];
@@ -4235,10 +4430,6 @@ function submitRoomForm() {
       createdAt: Date.now(), session: freshSession(), messages: [],
       inviteCode: newInviteCode(), hostName: nick(), isPublic: true, remote: db.ready
     };
-    room.messages.push({
-      id: uid("s"), who: "system", kind: "info", at: Date.now(),
-      text: "새 방이에요. 🤖 AI 부르기로 AI를 부르고, 👋 사람 부르기로 링크를 보낼 수 있어요. 링크로 들어온 참여자와는 @이름으로 바로 대화해요. AI가 2명 이상 모이면 ▶ 토론 시작으로 역할을 나눠 토론할 수 있어요."
-    });
     state.rooms.push(room);
     state.activeRoomId = room.id;
     state.view = "room";
@@ -4424,9 +4615,9 @@ function renderMineKeys() {
   if (hint) {
     var saved = mineProvider === "openai" ? api.openaiKey : api.geminiKey;
     hint.innerHTML = (mineProvider === "openai"
-      ? "OpenAI 크레딧이 필요해요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급</a>"
-      : "무료 티어로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급</a>") +
-      (saved ? "<br>이 브라우저에 <b>" + providerLabel(mineProvider) + " 키가 저장돼 있어요</b> · 아래에 새 키를 넣으면 바뀌어요." : "");
+      ? "ChatGPT를 만든 OpenAI 키 — 쓴 만큼 요금이 따로 나가요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급 안내 열기</a>"
+      : "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>") +
+      (saved ? "<br>이 기기에 <b>" + providerLabel(mineProvider) + " 키가 저장돼 있어요</b> · 아래에 새 키를 넣으면 바뀌어요." : "");
   }
 }
 function setMineKeyStatus(kind, msg) {
@@ -4525,8 +4716,8 @@ function customTarget() {
     return { type: "expert", model: "kkiri-lite", demo: false,
       label: "끼리 서버 AI로 답해요 · 턴당 " + configCost("kkiri-lite") + "크레딧" };
   }
-  if (api.geminiKey) return { type: "byok", model: "gemini", demo: false, label: "내 Gemini 키로 답해요 · 크레딧 없이 무료" };
-  if (api.openaiKey) return { type: "byok", model: "openai", demo: false, label: "내 OpenAI 키로 답해요 · 크레딧 없이 무료" };
+  if (api.geminiKey) return { type: "byok", model: "gemini", demo: false, label: "내 Gemini 키로 답해요 · 끼리 크레딧 없이" };
+  if (api.openaiKey) return { type: "byok", model: "openai", demo: false, label: "내 OpenAI 키로 답해요 · 끼리 크레딧 없이" };
   return { type: "byok", model: "demo", demo: true,
     label: "아직 키가 없어 데모로 답해요 · 설정에서 키를 넣으면 실제 AI로 바뀌어요" };
 }
@@ -4566,13 +4757,13 @@ function setHookStatus(kind, msg) {
 }
 function httpMsg(st) {
   if (st === 401 || st === 403) return "토큰이 거부되었어요(HTTP " + st + "). 에이전트 쪽 설정을 확인해 주세요.";
-  if (st === 404) return "주소를 찾지 못했어요(404). Webhook URL을 확인해 주세요.";
+  if (st === 404) return "주소를 찾지 못했어요(404). AI 서버 주소를 확인해 주세요.";
   if (st >= 500) return "에이전트 서버에 문제가 있어요(HTTP " + st + "). 잠시 뒤 다시 시도해 주세요.";
   return "연결이 거부되었어요(HTTP " + st + ").";
 }
 async function testHook() {
   var url = $("hookUrl").value.trim();
-  if (!/^https?:\/\//i.test(url)) { setHookStatus("err", "http(s)로 시작하는 Webhook 주소를 넣어 주세요."); return; }
+  if (!/^https?:\/\//i.test(url)) { setHookStatus("err", "http(s)로 시작하는 AI 서버 주소를 넣어 주세요."); return; }
   setHookStatus("busy", "연결을 확인하고 있어요… (최대 12초)");
   var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
   var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, 12000) : null;
@@ -4591,20 +4782,20 @@ async function testHook() {
   } catch (e) {
     if (timer) clearTimeout(timer);
     if (e && e.name === "AbortError") { setHookStatus("err", "12초 안에 응답이 없어요. 에이전트 서버가 켜져 있는지 확인해 주세요."); return; }
-    setHookStatus("err", "브라우저에서 직접 호출이 막혔어요(CORS 또는 네트워크). 외부 서버가 CORS를 허용해야 테스트가 통과합니다. 등록은 그대로 할 수 있고, 대화 중 실패한 턴은 데모 답변으로 대체합니다.");
+    setHookStatus("err", "연결을 바로 확인하지 못했어요. 내 AI 서버가 이 브라우저의 접속을 허용해야 확인이 됩니다. 등록은 그대로 할 수 있고, 답하지 못한 턴은 다른 AI로 대신하지 않아요.");
   }
 }
 function addHookAgent() {
   var name = $("hookName").value.trim();
   var url = $("hookUrl").value.trim();
   if (!name) { toast("AI 이름을 적어 주세요"); $("hookName").focus(); return; }
-  if (!/^https?:\/\//i.test(url)) { toast("http(s) Webhook 주소를 넣어 주세요"); $("hookUrl").focus(); return; }
+  if (!/^https?:\/\//i.test(url)) { toast("http(s) AI 서버 주소를 넣어 주세요"); $("hookUrl").focus(); return; }
   if (allAgents().some(function (a) { return a.name === name; })) { toast("같은 이름의 AI가 이미 있어요"); return; }
   var id = "wh_" + hash(name + url).toString(36);
   state.agents[id] = {
     id: id, name: name, role: "나의 AI", color: COLORS[3], type: "webhook", model: "demo",
     url: url, token: $("hookToken").value.trim(), status: "unknown", prompt: "",
-    desc: "Webhook으로 연결한 나의 AI"
+    desc: "직접 만든 AI 서버로 연결한 나의 AI"
   };
   var r = activeRoom();
   var how = invAttach(id, true);
@@ -4642,8 +4833,8 @@ function renderApi() {
     b.setAttribute("aria-pressed", b.getAttribute("data-provider") === api.provider ? "true" : "false");
   });
   $("apiHint").innerHTML = api.provider === "gemini"
-    ? "무료 티어로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급</a>"
-    : "OpenAI 크레딧이 필요해요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급</a> · 모델명은 직접 바꿀 수 있어요";
+    ? "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>"
+    : "ChatGPT를 만든 OpenAI 키 — 쓴 만큼 요금이 따로 나가요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급 안내 열기</a> · 모델명은 직접 바꿀 수 있어요";
   $("apiKey").placeholder = api.provider === "gemini" ? "AIza… 로 시작하는 키" : "sk-… 로 시작하는 키";
   $("apiModel").placeholder = DEFAULT_MODEL[api.provider];
   $("roomNote").textContent = on
@@ -5428,6 +5619,12 @@ function openShare() {
     : "지금은 로컬(데모) 모드라 링크가 이 브라우저에서만 열려요. 실시간 연결되면 같은 링크로 여러 사람이 함께 쓸 수 있습니다.";
   openModal("shareModal");
 }
+/* 상단 🔗 이 방 초대 — 빈 방 카드와 같은 두 갈래(AI 부르기 / 사람 부르기)를 먼저 고른다. */
+function openInviteChoice() {
+  if (needStartFirst()) return;
+  if (!activeRoom()) { toast("방을 먼저 만들어 주세요"); return; }
+  openModal("inviteChoiceModal");
+}
 
 
 /* =========================================================
@@ -5464,9 +5661,9 @@ var EXPERT_CATALOG = [
   { id: "marketer", name: "마케터", avatar: "📣", role: "캠페인 · 채널", config: "kkiri-standard",
     desc: "예산과 기간을 먼저 고정하고 채널·타이밍을 짠다.",
     persona: "너는 퍼포먼스 마케터다. 예산·기간·목표를 먼저 확인하고, 채널별로 나눠 실행안을 만든다. 예상 수치는 추정임을 표시한다." },
-  { id: "redteam", name: "레드팀", avatar: "🔻", role: "비판 · 리스크", config: "kkiri-standard",
+  { id: "redteam", name: "검증가", avatar: "🔻", role: "허점 · 리스크", config: "kkiri-standard",
     desc: "전제의 약한 고리와 되돌릴 수 없는 결정을 먼저 지적.",
-    persona: "너는 레드팀이다. 전제의 약한 고리와 리스크를 찾아 반대 논리를 만든다. 확인되지 않은 것을 확인된 것처럼 두지 않는다. 직설적으로 짧게." },
+    persona: "너는 검증가다. 전제의 약한 고리와 리스크를 찾아 반대 논리를 만든다. 확인되지 않은 것을 확인된 것처럼 두지 않는다. 직설적으로 짧게." },
   { id: "planner", name: "기획자", avatar: "🧩", role: "구조 · 우선순위", config: "kkiri-lite",
     desc: "안건을 결정·확인·다음 할 일로 쪼개 순서를 정한다.",
     persona: "너는 기획자다. 안건을 결정할 것·확인할 것·다음 할 일로 나누고 우선순위를 정한다. 회의가 결론으로 끝나게 만든다." },
@@ -5569,8 +5766,8 @@ function renderExpertPicker() {
   var hint = $("expertHint");
   if (hint) {
     hint.innerHTML = draft
-      ? "역할이 다른 끼리 AI를 누르면 <b>방 만들기 목록</b>에 들어가요. 끼리 AI는 <b>턴마다 크레딧</b>을 쓰고, 나의 AI·사람과의 대화는 무료예요."
-      : "역할이 다른 끼리 AI를 누르면 바로 이 방에 들어와요. 끼리 AI는 <b>턴마다 크레딧</b>을 쓰고, 나의 AI·사람과의 대화는 무료예요. 크레딧이 떨어져도 방은 멈추지 않고 끼리 AI만 잠깁니다.";
+      ? "필요한 역할의 끼리 AI를 누르면 <b>방 만들기 목록</b>에 들어가요. (답할 때마다 크레딧을 사용해요)"
+      : "필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요. (답할 때마다 크레딧을 사용해요)";
   }
   var inRoom = {};
   (r ? r.members : []).forEach(function (id) {
@@ -5583,7 +5780,6 @@ function renderExpertPicker() {
     h += '<button type="button" class="expert-card' + (added ? " added" : "") + '" data-expert="' + esc(ex.id) + '"' + (added ? ' aria-disabled="true"' : "") + '>' +
       '<span class="e-top"><span class="e-ava" aria-hidden="true">' + esc(ex.avatar) + '</span>' +
       '<span class="e-name"><b>' + esc(ex.name) + '</b><small>' + esc(ex.role) + '</small></span></span>' +
-      '<p>' + esc(ex.desc) + '</p>' +
       '<span class="e-foot"><span class="e-cost">' + configCost(ex.config) + ' 크레딧 / 턴</span>' +
       '<span class="e-add">' + (added ? (draft ? "목록에 있음" : "이 방에 있음") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가")) + '</span></span></button>';
   });
@@ -6377,6 +6573,7 @@ function wire() {
     captureRfRoles();
     b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
     renderRfRoles();
+    syncRfRoleVisibility();
   });
   $("rfRoleMode").addEventListener("click", function (e) {
     var b = e.target.closest("[data-rolemode]");
@@ -6424,7 +6621,15 @@ function wire() {
   $("rfDelete").addEventListener("click", deleteRoom);
 
   /* 공유 · 닉네임 */
-  $("shareBtn").addEventListener("click", openShare);
+  $("shareBtn").addEventListener("click", openInviteChoice);
+  $("choiceAiBtn").addEventListener("click", function () {
+    closeModal("inviteChoiceModal");
+    invTarget = "room"; aiTab("mine"); openModal("inviteModal");
+  });
+  $("choicePersonBtn").addEventListener("click", function () {
+    closeModal("inviteChoiceModal");
+    openShare();
+  });
   if ($("nickLine")) $("nickLine").addEventListener("click", openNickModal);
 
   /* 끼리 홈 — 사이드바 홈 버튼 · 내 대화방 */
@@ -6436,8 +6641,14 @@ function wire() {
   if ($("homeNewRoomBtn")) $("homeNewRoomBtn").addEventListener("click", function () { if (needStartFirst()) return; openRoomForm(null); });
   if ($("homeRoomGrid")) $("homeRoomGrid").addEventListener("click", function (e) {
     var b = e.target.closest("[data-home-room]");
-    if (b) selectRoom(b.getAttribute("data-home-room"));
+    if (!b) return;
+    var id = b.getAttribute("data-home-room");
+    if (homeEdit.on) { homeTogglePick(id); return; }
+    selectRoom(id);
   });
+  if ($("homeEditBtn")) $("homeEditBtn").addEventListener("click", homeEditStart);
+  if ($("homeEditCancel")) $("homeEditCancel").addEventListener("click", homeEditStop);
+  if ($("homeBulkDelete")) $("homeBulkDelete").addEventListener("click", homeBulkRemove);
   var nickSave = function () {
     var v = saveNick($("nickInput").value);
     $("nickInput").value = v;
@@ -6523,7 +6734,6 @@ function wire() {
   $("invAdd").addEventListener("click", addByokAgent);
   $("hookTest").addEventListener("click", testHook);
   $("hookAdd").addEventListener("click", addHookAgent);
-  $("inviteManage").addEventListener("click", function () { closeModal("inviteModal"); openRoomForm(state.activeRoomId); });
 
   /* 설정 */
   Array.prototype.forEach.call(document.querySelectorAll(".seg-btn"), function (b) {
