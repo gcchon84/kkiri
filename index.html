@@ -935,7 +935,7 @@
     </div>
 
     <div class="side-sec" id="aiSec">
-      <div class="sec-head"><span>이 방의 AI <em id="aiCount">0명</em></span>
+      <div class="sec-head"><span>이 방의 끼리 AI <em id="aiCount">0명</em></span>
         <span class="sec-actions"><button class="mini-btn rmode-btn" id="roleModeBtn" aria-pressed="true" title="역할 배정 방식 바꾸기 (자동/수동)">역할 자동</button><button class="mini-btn" id="addAiBtn">+ AI 추가</button></span>
       </div>
       <div class="member-list" id="sideMembers"></div>
@@ -1087,18 +1087,12 @@
 
       <!-- ---------- 탭 2 · 나의 AI ---------- -->
       <section id="aiTabMine" role="tabpanel" aria-label="나의 AI" hidden>
-        <p class="hint" style="margin-top:0">내가 데리고 있는 개인 AI 비서(피클 등)를 <b>이 방 초대 링크</b>로 들여보내면 이 대화방에서 함께 대화해요. 링크로 들어온 AI는 이 방에만 들어오고, 대화는 <b>무료</b>예요.</p>
-        <label class="field"><span>이 방 초대 링크 · 내 AI에게</span>
-          <div class="share-box">
-            <input id="mineLink" type="text" readonly aria-label="이 방 초대 링크" spellcheck="false">
-            <button class="btn dark" id="mineCopyLink" type="button">복사</button>
-          </div>
-        </label>
-        <p class="hint" id="mineHint">링크를 받은 내 AI는 이 방으로 들어와 함께 대화해요.</p>
+        <p class="hint" style="margin-top:0">내 개인 AI 비서(피클 등)를 이 방에 들여보내면 함께 대화해요. 아래 버튼 하나로 <b>초대 링크와 지시문</b>이 함께 복사돼요.</p>
+        <p class="hint" id="mineHint" hidden></p>
 
         <div class="focus-card" id="focusCard">
-          <b>🎯 집중 모드 지시문 · 복붙용</b>
-          <span class="focus-sub">몇 분만 함께하고 나가라고 미리 정해 보내면, 내 AI가 계속 새 글을 확인하며 토큰을 쓰지 않아요.</span>
+          <b>🎯 집중 모드 · 기본 10분</b>
+          <span class="focus-sub">몇 분만 같이하고 나가라고 정해 보내면, 내 AI가 계속 새 글을 확인하며 토큰을 쓰지 않아요.</span>
           <div class="pick-row focus-time" id="focusTime" role="group" aria-label="집중 시간">
             <button type="button" class="pick" data-focus="5" aria-pressed="false">5분</button>
             <button type="button" class="pick" data-focus="10" aria-pressed="true">10분</button>
@@ -1106,10 +1100,9 @@
           </div>
           <pre class="focus-preview" id="focusPreview"></pre>
           <div class="focus-btns">
-            <button type="button" class="btn dark" id="focusCopyLink">링크만 복사</button>
-            <button type="button" class="btn green" id="focusCopyPrompt">📋 AI용 지시문+링크 복사</button>
+            <button type="button" class="btn green" id="focusCopyPrompt">📋 초대 지시문+링크 복사</button>
           </div>
-          <p class="hint">피클·클로드·키링·뮤즈 같은 내 AI 앱에 그대로 붙여넣으세요. 방에 들어와 정한 시간만 대화하고 스스로 나가면, 다시 부를 때까지 새 글을 확인하지 않아요.</p>
+          <p class="hint">피클·클로드·키링·뮤즈 같은 내 AI 앱에 그대로 붙여넣으세요. 링크로 들어온 AI는 이 방에만 들어오고, 대화는 무료예요.</p>
         </div>
 
         <details class="spec" id="hookWrap">
@@ -1305,7 +1298,7 @@ Content-Type: application/json
       </label>
       <p class="hint" id="shareHint">링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다.</p>
       <div class="btn-row"><button class="btn" id="shareNewRoom">+ 새 방 만들기</button></div>
-      <div class="btn-row" style="margin-top:8px"><button class="btn dark" id="shareToAi">🤖 내 AI에게는 집중 모드 지시문과 함께</button></div>
+      <div class="btn-row" style="margin-top:8px"><button class="btn dark" id="shareToAi">🤖 내 AI에게는 지시문+링크로</button></div>
     </div>
   </div>
 </div>
@@ -1927,6 +1920,14 @@ function memberRowHtml(a, r) {
     '<button type="button" class="mini-btn x-btn" data-member-remove="' + esc(a.id) + '" title="이 방에서 빼기" aria-label="' + esc(a.name) + ' 이 방에서 빼기">✕</button>' +
     "</div>";
 }
+/* 이 방에 내장 AI가 0명일 때 — 위쪽 ‘지금 접속 중’에 다른 참여자가 있으면 안심시키는 문구 */
+function aiEmptyHtml() {
+  var msg = onlinePeople().length
+    ? "지금 접속 중인 참여자와 바로 대화할 수 있어요. 추가로 끼리 AI가 필요할 때만 불러 보세요"
+    : "아직 이 방에 AI가 없어요";
+  return '<div class="ai-empty"><p class="sec-hint">' + msg + '</p>' +
+    '<button type="button" class="mini-btn" data-add-ai="1">+ AI 추가</button></div>';
+}
 function renderSidebar() {
   var r = activeRoom();
   renderRoomList();
@@ -1939,10 +1940,7 @@ function renderSidebar() {
       shown++;
       mhtml += memberRowHtml(a, r);
     });
-    if (!shown) {
-      mhtml = '<div class="ai-empty"><p class="sec-hint">아직 이 방에 AI가 없어요</p>' +
-        '<button type="button" class="mini-btn" data-add-ai="1">+ AI 추가</button></div>';
-    }
+    if (!shown) mhtml = aiEmptyHtml();
   }
   $("sideMembers").innerHTML = mhtml;
   var cnt = $("aiCount");
@@ -1969,7 +1967,11 @@ function renderSidebar() {
 function hintFor(r) {
   if (!r) return "";
   var n = r.members.filter(function (id) { return !!state.agents[id]; }).length;
-  if (!n) return "이 방에는 아직 AI가 없어요. <b>🤖 끼리 AI 부르기</b>로 AI를 부르면 대화를 시작할 수 있어요.";
+  if (!n) {
+    var pp = onlinePeople();
+    if (pp.length) return "지금 접속 중인 <b>" + pp.length + "명</b>과 바로 대화할 수 있어요. <b>@이름</b>을 붙여 보내면 그분께 전해져요(무료).";
+    return "이 방에는 아직 AI가 없어요. <b>🤖 끼리 AI 부르기</b>로 AI를 부르면 대화를 시작할 수 있어요.";
+  }
   var base = "<b>@이름</b>을 붙이면 그 AI가 답해요" + (n >= 2 ? "(@전원 = 모두)" : "") +
     ". <b>@이름 없이</b> 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).";
   return n >= 2
@@ -2310,21 +2312,35 @@ function useSuggestion(text) {
   el.focus();
   try { el.setSelectionRange(el.value.length, el.value.length); } catch (e) {}
   growInput();
-  if (!ids.length) toast("AI가 아직 없어요 · 🤖 끼리 AI 부르기로 먼저 불러 주세요");
-  else toast("입력창에 넣었어요 · 확인하고 Enter로 보내세요");
+  if (!ids.length) {
+    var pp = onlinePeople();
+    toast(pp.length
+      ? "지금 접속 중인 " + pp.length + "명에게 @이름으로 바로 말을 걸 수 있어요"
+      : "AI가 아직 없어요 · 🤖 끼리 AI 부르기로 먼저 불러 주세요");
+  } else toast("입력창에 넣었어요 · 확인하고 Enter로 보내세요");
 }
 
 function emptyHtml(r) {
   var ids = r.members.filter(function (id) { return !!state.agents[id]; });
   if (!ids.length) {
+    var people = onlinePeople();
+    var cta = '<div class="e-cta">' +
+        '<button type="button" class="btn green" data-empty-call="1">🤖 끼리 AI 부르기</button>' +
+        '<button type="button" class="btn" data-empty-share="1">🔗 이 방 초대 링크</button>' +
+      "</div>";
+    /* 내장 AI가 없어도 링크로 들어와 있는 사람이 있으면 그 사람과 바로 말을 겁는 게 먼저다 */
+    if (people.length) {
+      return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div>' +
+        "<h3>지금 접속 중인 분들과 바로 대화를 시작해 보세요</h3>" +
+        "<p><b>" + esc(people.join(" · ")) + "</b> 님이 접속 중이에요.<br>" +
+        "<b>@이름</b>을 붙여 보내면 그분께 전해져요. 끼리 AI는 필요할 때만 불러도 돼요.</p>" +
+        cta + suggestHtml(r) + "</div>";
+    }
     /* 방을 만든 직후 — AI를 부르고 사람을 부르는 두 길만 보여 준다. */
     return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div>' +
       "<h3>아직 이 방에 AI가 없어요</h3>" +
       "<p>지금 바로 AI를 불러 보세요!<br>끼리 AI는 답할 때마다 10크레딧, 나의 AI·사람끼리 대화는 무료예요.</p>" +
-      '<div class="e-cta">' +
-        '<button type="button" class="btn green" data-empty-call="1">🤖 끼리 AI 부르기</button>' +
-        '<button type="button" class="btn" data-empty-share="1">🔗 이 방 초대 링크</button>' +
-      "</div>" + suggestHtml(r) + "</div>";
+      cta + suggestHtml(r) + "</div>";
   }
   var names = memberNames(r).join(" · ");
   var roles = roomRoleMap(r);
@@ -2478,7 +2494,7 @@ function renderPeople() {
   });
   r.members.forEach(function (id) {
     var a = state.agents[id];
-    if (a) h += '<span class="pb-chip ai" title="이 방의 AI 멤버">🤖 ' + esc(a.name) + "</span>";
+    if (a) h += '<span class="pb-chip ai" title="이 방의 끼리 AI 멤버">🤖 ' + esc(a.name) + "</span>";
   });
   host.innerHTML = h;
   bar.hidden = !h;
@@ -4165,7 +4181,7 @@ function submitRoomForm() {
     };
     room.messages.push({
       id: uid("s"), who: "system", kind: "info", at: Date.now(),
-      text: "새 방이에요. 아직 이 방에는 AI가 없어요. 🤖 끼리 AI 부르기로 AI를 부르고, @이름을 붙이면 그 AI가 답해요. AI가 2명 이상 모이면 ▶ 토론 시작으로 역할을 나눠 토론할 수 있어요."
+      text: "새 방이에요. 🤖 끼리 AI 부르기로 AI를 부를 수 있고, 링크로 들어온 참여자와는 @이름으로 바로 대화해요. AI가 2명 이상 모이면 ▶ 토론 시작으로 역할을 나눠 토론할 수 있어요."
     });
     state.rooms.push(room);
     state.activeRoomId = room.id;
@@ -4302,16 +4318,14 @@ function invAttach(id, toPool) {
   renderAll();
   return "room";
 }
-/* 내 AI 탭 — 이 방 초대 링크(방 전용 ?code=). */
+/* 내 AI 탭 — 복사는 집중 모드 지시문+링크 한 번으로 통일(링크만 주는 건 이 방 초대 창에서). */
 function renderMine() {
   var r = ensureRoomCode(activeRoom());
-  var link = $("mineLink"), hint = $("mineHint");
-  if (!link) return;
-  link.value = roomInviteLink(r) || "";
+  var hint = $("mineHint");
   if (hint) {
-    hint.innerHTML = !r ? "먼저 방을 만들어 주세요."
-      : (r.remote ? "링크를 받은 내 AI는 이 방으로 들어와 함께 대화해요. 이 링크는 이 방에만 열리고, 대화는 무료예요."
-        : "지금은 로컬(데모) 모드라 이 링크가 이 브라우저에서만 열려요.");
+    var msg = (r && !r.remote) ? "지금은 로컬(데모) 모드라 이 초대 링크가 이 브라우저에서만 열려요." : "";
+    hint.innerHTML = msg;
+    hint.hidden = !msg;
   }
   var bal = $("inviteBalance");
   if (bal) bal.textContent = V3.signedIn ? "내 크레딧 " + creditsNow() : "";
@@ -4988,6 +5002,16 @@ function renderPresence() {
   /* 입장·퇴장 즉시 @멘션 칩과 머리 아래 참여 줄에 반영한다 */
   renderQuick();
   renderPeople();
+  /* 접속자가 생기고 사라지면 사이드바 ‘AI 없음’ 안내와 빈 방 카드 문구도 같이 바뀐다 */
+  var ar = activeRoom();
+  if (ar) {
+    var sm = $("sideMembers");
+    var builtIn = ar.members.filter(function (id) { return !!state.agents[id]; }).length;
+    if (sm && !builtIn) sm.innerHTML = aiEmptyHtml();
+    var ch = $("compHint");
+    if (ch && !run.active) ch.innerHTML = hintFor(ar);
+    if (!run.active && document.getElementById("emptyRoom")) renderTimeline(false);
+  }
 }
 function dbOnMessage(row) {
   var r = activeRoom();
@@ -6368,22 +6392,12 @@ function wire() {
     openModal("inviteModal");
     $("roomFormModal").classList.add("under");
   });
-  $("mineCopyLink").addEventListener("click", function () {
-    var v = $("mineLink").value;
-    if (!v) { toast("먼저 방을 만들어 주세요"); return; }
-    copyText(v, "이 방 초대 링크를 복사했어요 · 내 AI에게 그대로 주세요");
-  });
-  /* 집중 모드 — 시간 제한 칩 + 두 가지 복사(링크만 / 지시문+링크) */
+  /* 집중 모드 — 시간 제한 칩 + 단일 복사(지시문+링크) */
   $("focusTime").addEventListener("click", function (e) {
     var b = e.target.closest("[data-focus]");
     if (!b) return;
     focusMin = Number(b.getAttribute("data-focus")) === 5 ? 5 : Number(b.getAttribute("data-focus")) === 15 ? 15 : 10;
     renderFocus();
-  });
-  $("focusCopyLink").addEventListener("click", function () {
-    var r = ensureRoomCode(activeRoom());
-    if (!r) { toast("먼저 방을 만들어 주세요"); return; }
-    copyText(roomInviteLink(r), "이 방 링크만 복사했어요 · 내 AI에게 그대로 주세요");
   });
   $("focusCopyPrompt").addEventListener("click", function () {
     var r = ensureRoomCode(activeRoom());
@@ -6391,7 +6405,7 @@ function wire() {
     renderFocus();
     var t = focusPrompt();
     if (!t) { toast("먼저 방을 만들어 주세요"); return; }
-    copyText(t, "집중 모드 지시문(📋 " + focusMinutes() + "분)을 복사했어요 · 내 AI 앱에 붙여넣어 주세요");
+    copyText(t, "초대 지시문(" + focusMinutes() + "분)과 방 링크를 복사했어요 · 내 AI 앱에 붙여넣어 주세요");
   });
   /* 나의 AI 탭 — 내 API 키로 바로 붙이기 (설정 · API 키와 동기화) */
   $("byokSeg").addEventListener("click", function (e) {
