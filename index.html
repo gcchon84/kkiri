@@ -1036,6 +1036,82 @@
     .home-room small{font-size:11.5px}
     .home-empty{font-size:13px}
   }
+  /* ============ 가독성 2차 상향 (2026-11-21) — 전체를 한 단계 더 시원하게 ============ */
+  .hint,.modal-note,.focus-card .focus-sub,.empty p{font-size:15px;line-height:1.55}
+  .sec-hint{font-size:14px;line-height:1.55}
+  .sheet-body p{font-size:15px;line-height:1.55}
+  .msg .bubble{font-size:16px;line-height:1.62}
+  .composer textarea,#input{font-size:16px}
+  .btn{font-size:14.5px}
+  .field > span{font-size:14.5px}
+  .pick{font-size:14.5px}
+  .q-chip{font-size:14px}
+  .room-item b{font-size:15px}
+  .room-item small{font-size:13px}
+  .member-row b{font-size:14px}
+  .member-row small{font-size:12.5px}
+  .pres-row b{font-size:14px}
+  .rg-name{font-size:13.5px}
+  .rg-count{font-size:11.5px}
+  .sec-head > span{font-size:12.5px}
+  .side-status{font-size:12.5px}
+  .live-pill,.pres-pill{font-size:12px}
+  .credit-chip{font-size:12.5px}
+  .credit-chip b{font-size:13px}
+  .pb-label{font-size:12px}
+  .pb-chip{font-size:13px}
+  .home-chip{font-size:13px}
+  .kind-pill{font-size:11.5px}
+  .m-top span{font-size:12px}
+  .m-top .m-val{font-size:13px}
+  .ctrl-foot span{font-size:12.5px}
+  .credit-guide li{font-size:14px;line-height:1.6}
+  .credit-guide .cg-sub{font-size:13px}
+  .credit-guide .cg-foot,.credit-guide .cg-lead{font-size:13.5px;line-height:1.6}
+  .c-sec h4{font-size:12.5px}
+  .c-sec li{font-size:14px;line-height:1.62}
+  .focus-card b{font-size:14.5px}
+  .focus-preview{font-size:13.5px}
+  .empty h3{font-size:18px}
+  .empty .empty-roles{font-size:13px}
+  .home-sec-head h2{font-size:15px}
+  .home-sec-head p{font-size:13px}
+  .home-room b{font-size:14px}
+  .home-room small{font-size:12px}
+  .sugg-label{font-size:13px}
+  .sugg-chip{font-size:13.5px}
+  .msg .who{font-size:13.5px}
+  .msg .meta{font-size:12px}
+  .day{font-size:12.5px}
+  .typing{font-size:13px}
+  @media (max-width:900px){
+    .hint,.modal-note,.focus-card .focus-sub,.empty p,.sheet-body p{font-size:15px;line-height:1.55}
+    .sec-hint{font-size:14px;line-height:1.55}
+    .msg .bubble{font-size:16px;line-height:1.62}
+    .composer textarea,#input{font-size:16px}
+    .composer textarea{min-height:52px}
+    .btn{font-size:15px}
+    .field > span{font-size:15px}
+    .pick{font-size:15px;min-height:46px}
+    .q-chip{font-size:14px;min-height:38px}
+    .room-item b{font-size:15px}
+    .room-item small{font-size:13px}
+    .member-row b{font-size:14px}
+    .member-row small{font-size:12.5px}
+    .pres-row b{font-size:14px}
+    .sec-head > span{font-size:12.5px}
+    .side-status{font-size:12.5px}
+    .pb-chip{font-size:13px}
+    .home-chip{font-size:13px}
+    .kind-pill{font-size:11.5px}
+    .m-top span{font-size:12px}
+    .m-top .m-val{font-size:13px}
+    .empty h3{font-size:18px}
+    .sugg-chip{font-size:14px}
+    .msg .who{font-size:14px}
+    .msg .meta{font-size:12px}
+    .rt-line h1{font-size:16px}
+  }
   @media (min-width:901px){
     .modal{padding:32px}
     .sheet{max-height:min(86dvh,780px)}
@@ -2190,6 +2266,13 @@ function renderSidebar() {
   renderPresence();
 }
 
+/* 입력창 안내 — 좁은 화면(≤560px)에서는 한 줄에 들어가는 짧은 문구를 쓴다(2줄째가 잘리지 않게).
+   @이름 호출 안내는 두 경우 모두 남긴다. */
+function inputPlaceholder(r) {
+  if (!r || !r.members.length) return "🤖 AI 부르기로 AI를 불러 보세요";
+  var narrow = (typeof window !== "undefined" && window.innerWidth && window.innerWidth <= 560);
+  return narrow ? "메시지 · @이름 부르기" : "메시지를 입력하세요 · @이름으로 AI 부르기";
+}
 function hintFor(r) {
   if (!r) return "";
   var n = r.members.filter(function (id) { return !!state.agents[id]; }).length;
@@ -2244,7 +2327,7 @@ function renderRoom() {
   $("discussBtn").disabled = run.active;
   $("sendBtn").textContent = "보내기";
   $("sendBtn").disabled = run.active && run.mode === "roundtable";
-  $("input").placeholder = r.members.length ? "메시지를 입력하세요 · @이름으로 AI 부르기" : "🤖 AI 부르기로 AI를 불러 보세요";
+  $("input").placeholder = inputPlaceholder(r);
   $("compHint").innerHTML = hintFor(r);
   updateMeters();
   renderQuick();
@@ -2731,8 +2814,9 @@ function renderQuick() {
   });
   if (!ids.length && !people.length) { qb.innerHTML = ""; qb.hidden = true; return; }
   var h = "";
-  /* @AI전원은 방의 AI 멤버가 2명 이상일 때만 — 불필요한 크레딧 호출 방지 */
-  if (ids.length >= 2) h += '<button type="button" class="q-chip" data-mention="AI전원">@AI전원</button>';
+  /* @AI전원 = 이 방의 내장 AI 전원(끼리 AI · 내 키 AI). 접속자·외부 AI는 타임라인의 @AI전원 글을 보고 스스로 답한다.
+     부를 수 있는 합(내장 AI + 나 외 접속자)이 2명 이상이면 칩을 띄운다 — 1명뿐일 때는 불필요한 크레딧 호출 방지 */
+  if (ids.length + people.length >= 2) h += '<button type="button" class="q-chip" data-mention="AI전원">@AI전원</button>';
   ids.forEach(function (id) {
     var a = state.agents[id];
     h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
@@ -2767,6 +2851,22 @@ function onlineNameMap() {
   var map = {};
   onlinePeople().forEach(function (n) { map[String(n).toLowerCase()] = 1; });
   return map;
+}
+/* @AI전원을 쓸 수 있는 대상 수 = 내장 AI(끼리 AI · 내 키 AI) + 나 외 접속자 수(외부 AI 포함 가능).
+   같은 이름의 접속자가 있으면 그 이름의 AI는 그 사람에게 가는 말이라 세지 않는다.
+   이 수가 2 이상이면 @AI전원 칩을 띄우고 경고도 띄우지 않는다. */
+function allMentionCount() {
+  var r = activeRoom();
+  if (!r) return 0;
+  var people = onlinePeople();
+  var online = {};
+  people.forEach(function (n) { online[String(n).toLowerCase()] = 1; });
+  var aiN = 0;
+  r.members.forEach(function (id) {
+    var a = state.agents[id];
+    if (a && !online[String(a.name).toLowerCase()]) aiN++;
+  });
+  return aiN + people.length;
 }
 /* 방 머리 아래 참여 줄 — 🟢 접속 중인 참여자 · 🤖 이 방의 AI. 없으면 줄 자체를 숨긴다. */
 function renderPeople() {
@@ -3472,8 +3572,11 @@ function parseMentions(text) {
     return !!a && !online[String(a.name).toLowerCase()];
   });
   if (/@(AI전원|전원|모두|all)/i.test(text)) {
-    /* @AI전원은 방의 AI 멤버가 2명 이상일 때만 — 1명·0명이면 크레딧을 쓰지 않는다 */
-    return { ids: aiIds.length >= 2 ? aiIds.slice() : [], all: aiIds.length >= 2 };
+    /* @AI전원은 내장 AI들만 호출한다(내 키 AI 포함). 접속자·외부 AI는 타임라인에 올라간 @AI전원 글을 보고
+       스스로 답하므로 여기서 그들에게 크레딧을 쓰거나 따로 호출하지 않는다.
+       응답은 부를 수 있는 합(내장 AI + 나 외 접속자)이 2 이상일 때만 — 1명뿐이면 크레딧을 쓰지 않는다 */
+    var ok = aiIds.length + onlinePeople().length >= 2;
+    return { ids: ok ? aiIds.slice() : [], all: ok };
   }
   var ids = [];
   aiIds.forEach(function (id) {
@@ -4628,6 +4731,7 @@ function focusPrompt() {
   return "지금 아래 끼리 대화방에 들어와서 " + m + "분 동안만 집중해서 같이 대화해 줘.\n" +
     "· 방: " + (r.name || "이름 없는 방") + " (" + categoryLabelOf(r) + ")\n" +
     "· 내 이름: " + who + " — @" + who + " 으로 부르는 말은 나에게 하는 말이야.\n" +
+    "· @AI전원 으로 부를 때도 같이 답해 줘.\n" +
     "· 들어가면 최근 대화를 읽고, 방 주제에 맞춰 짧게 답해 줘.\n" +
     "· " + m + "분이 지나면 자동으로 나와도 돼. 다시 부를 때까지 주기적으로 확인하지 않아도 돼.\n" +
     "방 링크: " + roomInviteLink(r);
@@ -4994,7 +5098,7 @@ var HIDE_KEY = "kkiri.hidden.v1";
 var HOOK_KEY = "kkiri.hooks.v1";
 
 var db = { client: null, ready: false, channel: null, roomId: null, status: "idle" };
-var presence = { channel: null, roomId: null };
+var presence = { channel: null, roomId: null, known: null, ready: false, initTimer: null };
 var pendingJoin = null;
 var refreshTimer = null;
 var dbErrShown = {};
@@ -5211,6 +5315,9 @@ function presenceLeave() {
   var ch = presence.channel;
   presence.channel = null;
   presence.roomId = null;
+  presence.known = null;
+  presence.ready = false;
+  if (presence.initTimer) { clearTimeout(presence.initTimer); presence.initTimer = null; }
   if (!ch) return;
   try { ch.untrack(); } catch (e) {}
   if (db.client) { try { db.client.removeChannel(ch); } catch (e) {} }
@@ -5225,7 +5332,12 @@ function presenceJoin(roomId, force) {
     config: { presence: { key: "p" + Math.random().toString(36).slice(2, 10) } }
   });
   presence.channel = ch;
-  var sync = function () { renderPresence(); };
+  /* 방을 새로 열면 이전 방의 명단은 버리고, 처음 2.5초 동안의 동기화는 ‘이미 있던 사람’으로 본다. */
+  presence.known = null;
+  presence.ready = false;
+  if (presence.initTimer) clearTimeout(presence.initTimer);
+  presence.initTimer = setTimeout(function () { presence.ready = true; presence.initTimer = null; }, 2500);
+  var sync = function () { presenceGreet(); renderPresence(); };
   ch.on("presence", { event: "sync" }, sync)
     .on("presence", { event: "join" }, sync)
     .on("presence", { event: "leave" }, sync)
@@ -5259,6 +5371,27 @@ function presenceRows() {
   var on = [], onMap = {};
   presenceState().forEach(function (n) { if (!onMap[n]) { onMap[n] = 1; on.push(n); } });
   return { on: on };
+}
+/* 입장 알림 — 이 방에 머무는 동안 새로 들어온 참여자만 토스트로 알린다(DB에 메시지를 쌓지 않는다).
+   · 방에 막 들어온 직후 처음 2.5초의 동기화는 이미 있던 사람들이므로 조용히 명단만 채운다.
+   · 명단에 없던 닉네임이 새로 보이면 "👋 이름 님이 들어왔어요" — 상단 참여 줄·사이드바는 renderPresence가 갱신한다. */
+function presenceGreet() {
+  var r = activeRoom();
+  if (!r || !presence.channel || presence.roomId !== r.id) return;
+  var me = String(nick() || "").toLowerCase();
+  var cur = {};
+  presenceState().forEach(function (n) {
+    var k = String(n).toLowerCase();
+    if (!k || k === me || cur[k]) return;
+    cur[k] = n;
+  });
+  var prev = presence.known;
+  presence.known = cur;
+  if (!prev || !presence.ready) return;      /* 첫 동기화 · 입장 직후 유예 시간 — 알리지 않는다 */
+  if (currentView() !== "room") return;      /* 홈을 보는 중에는 이 방 입장 알림을 띄우지 않는다 */
+  var added = [];
+  Object.keys(cur).forEach(function (k) { if (!prev[k]) added.push(cur[k]); });
+  if (added.length) toast("👋 " + added.join(", ") + " 님이 들어왔어요");
 }
 function renderPresence() {
   var rows = presenceRows();
@@ -6510,7 +6643,7 @@ function mentionNudge(r, text) {
   r.members.forEach(function (id) { if (state.agents[id]) aiN++; });
   if (!aiN) return "";
   if (/@\s*(AI전원|전원|모두|all)/i.test(text)) {
-    return aiN >= 2 ? "" : "이 방에 AI가 2명 이상일 때 @AI전원으로 한 번에 부를 수 있어요";
+    return allMentionCount() >= 2 ? "" : "이 방에 AI·접속자를 합쳐 2명 이상일 때 @AI전원으로 한 번에 부를 수 있어요";
   }
   if (/(^|\s)@/.test(text)) return "";      /* 이미 누군가를 @로 불렀다 */
   return "AI와 대화하고 싶다면 @ 지정을 해 주세요";
