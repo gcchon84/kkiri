@@ -202,15 +202,21 @@
   .sidebar .side-close{display:none;width:30px;height:30px;flex:0 0 30px;font-size:12px;background:#292252;border-color:#3E3570;color:#E2DCF4;margin-left:auto}
 
   /* ============ avatars ============ */
+  /* 참여자마다 색 + 픽토그램이 다르다 — 첫 글자 하나만 넣던 옛 아바타를 대신한다 */
   .avatar{
     display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
-    border-radius:12px;color:#fff;font-weight:900;letter-spacing:-.02em;
-    background:var(--c,#7352FF);box-shadow:inset 0 -8px 14px rgba(0,0,0,.14);
+    border-radius:12px;font-weight:900;letter-spacing:-.02em;
+    background:var(--ct,#F1EDFF);color:var(--c,#7352FF);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.75),0 1px 2px rgba(37,27,77,.06);
     user-select:none;
   }
+  .avatar .ico{--ico-fill:var(--cf,rgba(115,82,255,.20));stroke-width:1.9}
   .avatar.sm{width:26px;height:26px;font-size:10.5px;border-radius:9px}
   .avatar.md{width:34px;height:34px;font-size:12.5px;border-radius:11px}
   .avatar.lg{width:44px;height:44px;font-size:16px;border-radius:13px}
+  .avatar.sm .ico{width:16px;height:16px}
+  .avatar.md .ico{width:20px;height:20px}
+  .avatar.lg .ico{width:26px;height:26px}
 
   /* ============ main ============ */
   .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100dvh;background:#FBFAFF;position:relative}
@@ -432,8 +438,14 @@
   .sugg-chip:hover{background:#F5F2FE;border-color:#DACDFF;color:#5B38E0}
   .sugg-chip:active{transform:scale(.98)}
   /* ============ 나의 AI · 집중 모드 지시문 ============ */
-  .focus-card{margin-top:14px;border:1px solid #E6DFFB;background:#F9F7FF;border-radius:13px;padding:12px}
+  .focus-card{margin-top:2px;border:1px solid #E6DFFB;background:#F9F7FF;border-radius:13px;padding:12px}
   .focus-card b{font-size:11.5px;font-weight:900;letter-spacing:-.02em;color:#251B4D}
+  .focus-card b em{font-style:normal;font-size:.92em;font-weight:800;color:#5B38E0}
+  .focus-details{margin-top:9px}
+  .focus-details>summary{cursor:pointer;list-style:none;font-size:10px;font-weight:900;color:#6F6889;letter-spacing:-.01em;padding:2px 0}
+  .focus-details>summary::-webkit-details-marker{display:none}
+  .focus-details>summary::before{content:"▸";display:inline-block;margin-right:4px;color:#A79FD0;transition:transform .15s ease}
+  .focus-details[open]>summary::before{content:"▾"}
   .focus-card .focus-sub{display:block;font-size:9.5px;font-weight:700;color:#8A819F;margin-top:3px;letter-spacing:-.01em;line-height:1.5}
   .focus-time{margin-top:10px}
   .focus-preview{
@@ -556,7 +568,7 @@
   .sheet-head h2{font-size:15px;font-weight:900;letter-spacing:-.03em;flex:1}
   .sheet-head .sub{font-size:10px;color:#948BAF;font-weight:700;margin-left:2px}
   .sheet-body{padding:14px 16px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
-  .sheet-foot{display:flex;gap:8px;padding:0 16px calc(16px + env(safe-area-inset-bottom));flex:0 0 auto}
+  .sheet-foot{display:flex;gap:8px;padding:10px 16px calc(14px + env(safe-area-inset-bottom));flex:0 0 auto;background:#fff;border-top:1px solid var(--line-2)}
   .sheet-foot button{flex:1}
   .btn{
     border:0;border-radius:12px;padding:13px 14px;font-size:12.5px;font-weight:900;letter-spacing:-.02em;cursor:pointer;
@@ -622,15 +634,18 @@
   .pill{background:var(--brand-tint);color:var(--brand-deep);font-size:9px;font-weight:900;padding:4px 8px;border-radius:999px;white-space:nowrap}
   .pill.gray{background:#F1EEFC;color:#5F5780}
   .spec{margin-top:12px;border:1px solid var(--line-2);border-radius:11px;background:#FAF9FF;overflow:hidden}
-  .spec summary{cursor:pointer;padding:9px 11px;font-size:10.5px;font-weight:900;color:#4c5b67;letter-spacing:-.01em}
-  .spec summary::marker{color:#7352FF}
+  .spec summary{display:flex;align-items:center;gap:6px;cursor:pointer;padding:9px 11px;font-size:10.5px;font-weight:900;color:#4c5b67;letter-spacing:-.01em;list-style:none}
+  .spec summary::-webkit-details-marker{display:none}
+  .spec summary::before{content:"▸";color:#A79FD0;font-size:9px;line-height:1}
+  .spec[open]>summary::before{content:"▾"}
+  .spec summary .ico{width:15px;height:15px;color:#7352FF;vertical-align:0}
   .spec-body{padding:2px 11px 13px}
   .spec-body .btn-row{margin-top:12px}
   .connect-line{margin:0;font-size:10.5px;line-height:1.6;font-weight:800;color:#5B38E0;background:var(--brand-tint);border-radius:10px;padding:9px 11px;letter-spacing:-.01em}
   .connect-line.demo{color:#8a5a12;background:var(--amber-tint)}
   .auto-hint{font-style:normal;font-size:8.5px;font-weight:900;color:#5B38E0;background:var(--brand-tint);border-radius:999px;padding:2px 6px;margin-left:4px;vertical-align:middle}
-  .ai-seg button{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.25;padding:9px 4px}
-  .ai-seg button b{font-size:13px;font-weight:900;letter-spacing:-.02em}
+  .ai-seg button{display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.25;padding:12px 4px}
+  .ai-seg button b{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:900;letter-spacing:-.02em}
   .ai-seg button small{font-size:10.5px;font-weight:800;color:#948BAF;letter-spacing:-.01em}
   .ai-seg button[aria-pressed="true"] small{color:#5B38E0}
   .ai-sec-title{display:flex;align-items:center;gap:6px;margin:16px 0 8px;font-size:10.5px;font-weight:900;color:#4c5b67;letter-spacing:-.01em}
@@ -679,7 +694,7 @@
   button.pb-chip:hover{border-color:#C4B2FF;background:var(--brand-soft)}
   button.pb-chip:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
   .pb-chip.ai{color:#474068;background:#F6F4FD}
-  .pb-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex:0 0 6px}
+  .pb-dot{width:6px;height:6px;border-radius:50%;background:var(--c,var(--brand));flex:0 0 6px}
   .live-pill.local{color:#8a5a12;background:var(--amber-tint)}
   .live-pill.off{color:#8b3a32;background:var(--red-tint)}
   .live-pill.wait{color:#5F5780;background:#F1EEFC}
@@ -732,8 +747,9 @@
   .expert-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
   .expert-card{
     border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fff;
-    display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;transition:border-color .14s ease,background .14s ease;
+    display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;transition:border-color .14s ease,background .14s ease;
   }
+  .expert-card .e-top{flex:1 1 auto;min-width:0}
   .expert-card:hover{border-color:#D6C8FF;background:#FAF8FF}
   .expert-card.added{opacity:.55;cursor:default}
   .expert-card .e-top{display:flex;align-items:center;gap:8px}
@@ -742,7 +758,7 @@
   .expert-card .e-name b{display:block;font-size:12px;font-weight:900;letter-spacing:-.02em}
   .expert-card .e-name small{display:block;font-size:9px;font-weight:800;color:#5B38E0;margin-top:1px}
   .expert-card p{font-size:10px;line-height:1.62;color:#6F6889;letter-spacing:-.01em;word-break:keep-all}
-  .expert-card .e-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto}
+  .expert-card .e-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;gap:6px}
   .expert-card .e-cost{font-size:9px;font-weight:900;color:#5F5780;background:#F1EEFC;border-radius:999px;padding:3px 7px;white-space:nowrap}
   .expert-card .e-add{font-size:9.5px;font-weight:900;color:#5B38E0;white-space:nowrap}
   .auth-hero{text-align:center;padding:2px 2px 12px}
@@ -1315,6 +1331,7 @@
   .home-room .hr-emoji .ico{width:18px;height:18px;vertical-align:0}
   .empty .e-emoji{display:flex;align-items:center;justify-content:center;margin-bottom:10px}
   .empty .e-emoji .ico{width:46px;height:46px;color:var(--brand);vertical-align:0}
+  .empty .e-emoji.e-alone .ico{width:56px;height:56px}
   .empty .e-emoji .emo-ico{font-size:40px;line-height:1}
   .empty .e-cta .btn .ico{width:18px;height:18px;vertical-align:-.16em;margin-right:4px}
   .nick-line .ico,.account-line .ico{color:#B9ACEC}
@@ -1333,6 +1350,91 @@
   .rt-btn .ico{width:16px;height:16px;vertical-align:-.16em}
   .boost .ico{width:18px;height:18px}
   .btn .ico,.mini-btn .ico{vertical-align:-.16em}
+
+  /* ============ 시작 전(로그인·게스트 입장 전) 화면 (2026-11-21) ============ */
+  /* 사이드바 — 중복 버튼 없이 누를 수 있는 카드 하나 */
+  .sidebar .account-line.start{
+    cursor:pointer;border-color:#4C3E8F;background:linear-gradient(135deg,#2A2158 0%,#332A6B 100%);
+    transition:border-color .14s ease,background .14s ease;
+  }
+  .sidebar .account-line.start:hover{border-color:#7059D0;background:linear-gradient(135deg,#312868 0%,#3C3180 100%)}
+  .sidebar .account-line.start b{font-size:13px;letter-spacing:-.02em}
+  .sidebar .account-line.start small{color:#BEB3E2;font-size:11px}
+  .sidebar .account-line.start .a-ico{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;flex:0 0 28px;border-radius:9px;background:rgba(255,255,255,.10)}
+  .sidebar .account-line.start .a-ico .ico{width:16px;height:16px;color:#D9CCFF}
+  /* 홈 — 브랜드 로고·슬로건 아래 하나뿐인 시작 카드 */
+  .home-start{
+    display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;
+    border:1px solid #DED3FF;background:linear-gradient(180deg,#FBF9FF 0%,#F3EEFF 100%);border-radius:22px;
+    padding:18px 18px;box-shadow:var(--shadow);transition:border-color .14s ease,box-shadow .14s ease;
+  }
+  .home-start:hover{border-color:#B39CFF;box-shadow:0 12px 28px rgba(115,82,255,.16)}
+  .home-start .hs-ico{
+    width:48px;height:48px;flex:0 0 48px;border-radius:16px;display:grid;place-items:center;
+    background:#fff;color:var(--brand);box-shadow:0 6px 16px rgba(115,82,255,.20),0 0 0 1px #EDE7FF inset;
+  }
+  .home-start .hs-ico .ico{width:23px;height:23px}
+  .home-start .hs-txt{min-width:0;flex:1}
+  .home-start b{display:block;font-size:17px;font-weight:900;letter-spacing:-.03em;color:#251B4D}
+  .home-start small{display:block;font-size:12px;font-weight:800;color:#5B38E0;margin-top:5px;letter-spacing:-.01em;line-height:1.55;word-break:keep-all}
+  .home-start .hs-go{flex:0 0 auto;font-size:19px;font-weight:900;color:#7352FF}
+  @media (max-width:560px){
+    .home-start{padding:16px 15px;gap:12px;border-radius:20px}
+    .home-start .hs-ico{width:44px;height:44px;flex:0 0 44px;border-radius:15px}
+    .home-start b{font-size:16.5px}
+    .home-start small{font-size:12.5px}
+  }
+  @media (min-width:900px){
+    .home-start{padding:22px 22px}
+    .home-start b{font-size:18px}
+    .home-start small{font-size:13px}
+  }
+  /* 시작 전 홈 — 로고·슬로건·시작 카드만 화면 가운데에 */
+  .home.prestart .home-inner{min-height:100%;justify-content:center;gap:16px}
+  .home.prestart .home-head{padding-bottom:4px}
+  /* 시작 모달 — 이메일 로그인이 먼저, 게스트는 보조 */
+  .auth-hero .auth-soon{font-size:10px;font-weight:800;color:#948BAF;margin-top:4px;letter-spacing:-.01em}
+  .auth-guest.ghost{background:#fff;border-color:var(--line)}
+  .auth-guest.ghost:hover{border-color:#B39CFF;background:#FAF8FF}
+  .auth-guest.ghost small{color:#6F6889}
+  @media (max-width:560px){ .auth-hero .auth-soon{font-size:11.5px} }
+  @media (min-width:900px){ .auth-hero .auth-soon{font-size:12px} }
+
+  /* ============ 제어 바 — 토론 시작·일시중지·정지 가독성 (2026-11-21 피드백) ============ */
+  .rt-btn{
+    min-height:44px;padding:0 20px;font-size:15px;gap:8px;border-radius:14px;
+    background:var(--grad-cta);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(115,82,255,.26);
+  }
+  .rt-btn>span{font-size:15px;font-weight:900;letter-spacing:-.02em}
+  .rt-btn .ico{width:18px;height:18px;vertical-align:0;--ico-fill:rgba(255,255,255,.30)}
+  .rt-btn:not(:disabled):hover{background:linear-gradient(118deg,#5230D8 0%,#6240F0 58%,#A94A8D 100%);border-color:transparent;box-shadow:0 8px 20px rgba(115,82,255,.32)}
+  /* AI 2명 미만·토론 중 — 누를 수 없는 상태를 색으로 분명히 */
+  .rt-btn:disabled{background:#EFEBF8;border-color:#E3DDF2;color:#9A93B5;box-shadow:none;opacity:1;cursor:default}
+  .rt-btn:disabled .ico{color:#9A93B5;--ico-fill:rgba(154,147,181,.18)}
+  .ctrl-actions{gap:8px}
+  .ctrl-act{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 14px;
+    border:1px solid #E2DCF3;background:#F8F6FE;color:#7C749B;border-radius:13px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;
+    transition:background .14s ease,border-color .14s ease,color .14s ease,box-shadow .14s ease;
+  }
+  .ctrl-act .ico{width:19px;height:19px;vertical-align:0}
+  .ctrl-act .ca-lbl{line-height:1}
+  .ctrl-act:disabled{opacity:.38;background:#fff;border-color:#E6E2F0;color:#9A93B5;box-shadow:none;cursor:default}
+  .ctrl-act.pause:not(:disabled){border-color:#F59E0B;background:#FEF3C7;color:#B45309;box-shadow:0 4px 12px rgba(245,158,11,.20)}
+  .ctrl-act.pause:not(:disabled) .ico{color:#D97706;--ico-fill:rgba(217,119,6,.18)}
+  .ctrl-act.stop:not(:disabled){border-color:#EF4444;background:#FEE2E2;color:#B91C1C;box-shadow:0 4px 12px rgba(239,68,68,.20)}
+  .ctrl-act.stop:not(:disabled) .ico{color:#DC2626;--ico-fill:rgba(220,38,38,.18)}
+  .ctrl-act.pause.paused:not(:disabled){border-color:#10B981;background:#D1FAE5;color:#047857;box-shadow:0 4px 12px rgba(16,185,129,.20)}
+  .ctrl-act.pause.paused:not(:disabled) .ico{color:#059669;--ico-fill:rgba(5,150,105,.18)}
+  @media (max-width:900px){
+    .rt-btn{min-height:44px;padding:0 17px;font-size:15px}
+    .ctrl-act{min-height:42px;padding:0 12px;font-size:13.5px;gap:5px}
+    .ctrl-act .ico{width:18px;height:18px}
+  }
+  @media (max-width:380px){
+    .ctrl-act{padding:0 10px;font-size:13px}
+  }
 </style>
 </head>
 <body>
@@ -1400,6 +1502,46 @@
       <circle style="fill:#fff" cx="12" cy="10.2" r="2"/>
       <path d="M7.6 16.6 5.4 20l3.3-1.1"/><path d="M16.4 16.6 18.6 20l-3.3-1.1"/>
       <path d="M10.5 19.4c.4 1 .9 1.5 1.5 1.5s1.1-.5 1.5-1.5"/>
+    </symbol>
+    <symbol id="i-alone" viewBox="0 0 24 24">
+      <circle style="fill:var(--ico-fill,#EDE8FF);stroke:none" cx="7.4" cy="7.2" r="3.2"/>
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M2.2 19.4c0-3.1 2.4-5.4 5.2-5.4s5.2 2.3 5.2 5.4z"/>
+      <circle cx="7.4" cy="7.2" r="3.2"/>
+      <path d="M2.2 19.4c0-3.1 2.4-5.4 5.2-5.4s5.2 2.3 5.2 5.4"/>
+      <circle cx="17.4" cy="11.6" r="4.3" stroke-dasharray="2.1 2.2"/>
+      <path d="M17.4 9.4v4.4"/><path d="M15.2 11.6h4.4"/>
+    </symbol>
+    <symbol id="i-face" viewBox="0 0 24 24">
+      <circle style="fill:var(--ico-fill,#EDE8FF);stroke:none" cx="12" cy="12" r="8.3"/>
+      <circle cx="12" cy="12" r="8.3"/>
+      <circle style="fill:currentColor;stroke:none" cx="9.4" cy="10.6" r="1.15"/>
+      <circle style="fill:currentColor;stroke:none" cx="14.6" cy="10.6" r="1.15"/>
+      <path d="M9.3 14c1.4 1.5 4 1.5 5.4 0"/>
+    </symbol>
+    <symbol id="i-cat" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M6.3 7.1 6 3.4l3.7 2.2zM17.7 7.1 18 3.4l-3.7 2.2z"/>
+      <circle style="fill:var(--ico-fill,#EDE8FF);stroke:none" cx="12" cy="12.5" r="7.5"/>
+      <path d="M6.3 7.1 6 3.4l3.7 2.2"/>
+      <path d="M17.7 7.1 18 3.4l-3.7 2.2"/>
+      <circle cx="12" cy="12.5" r="7.5"/>
+      <circle style="fill:currentColor;stroke:none" cx="9.5" cy="11.6" r="1.05"/>
+      <circle style="fill:currentColor;stroke:none" cx="14.5" cy="11.6" r="1.05"/>
+      <path d="M10.4 14.2c.6.7 1 .8 1.6.8s1-.1 1.6-.8"/>
+    </symbol>
+    <symbol id="i-bear" viewBox="0 0 24 24">
+      <circle style="fill:var(--ico-fill,#EDE8FF);stroke:none" cx="6.7" cy="6.8" r="2.6"/>
+      <circle style="fill:var(--ico-fill,#EDE8FF);stroke:none" cx="17.3" cy="6.8" r="2.6"/>
+      <circle style="fill:var(--ico-fill,#EDE8FF);stroke:none" cx="12" cy="12.7" r="7.2"/>
+      <circle cx="6.7" cy="6.8" r="2.6"/>
+      <circle cx="17.3" cy="6.8" r="2.6"/>
+      <circle cx="12" cy="12.7" r="7.2"/>
+      <circle style="fill:currentColor;stroke:none" cx="9.6" cy="11.6" r="1.05"/>
+      <circle style="fill:currentColor;stroke:none" cx="14.4" cy="11.6" r="1.05"/>
+      <ellipse cx="12" cy="15.5" rx="2.3" ry="1.8"/>
+    </symbol>
+    <symbol id="i-star" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M12 3.4l2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.8l-5.3 2.7 1.1-5.8-4.3-4.1 5.9-.8z"/>
+      <path d="M12 3.4l2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.8l-5.3 2.7 1.1-5.8-4.3-4.1 5.9-.8z"/>
     </symbol>
     <symbol id="i-bot" viewBox="0 0 24 24">
       <rect style="fill:var(--ico-fill,#EDE8FF);stroke:none" x="4.6" y="7.8" width="14.8" height="11" rx="3.8"/>
@@ -1484,7 +1626,7 @@
       <button type="button" id="accountBtn">로그인</button>
     </div>
 
-    <div class="side-sec">
+    <div class="side-sec" id="sideRoomsSec">
       <div class="sec-head"><span><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>내 대화방 <em id="roomCount">0</em></span>
         <span class="sec-actions">
           <button class="mini-btn" id="sideRoomEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>
@@ -1517,11 +1659,16 @@
           <span class="h-emoji h-logo kk-mark" aria-hidden="true"></span>
           <div><h1>끼리</h1><p class="home-slogan">AI와 함께, 뭐든지 끼리 하자</p></div>
         </div>
-        <div class="home-sum">
+        <div class="home-sum" id="homeSum">
           <button type="button" class="home-chip" id="homeNickBtn" title="내 닉네임 바꾸기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> <b id="homeNick">참여자</b></button>
           <button type="button" class="home-chip" id="homeCreditBtn" title="내 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> <b id="homeCredit">—</b></button>
         </div>
-        <section class="home-sec" aria-label="내 대화방">
+        <button type="button" class="home-start" id="homeStartCard" hidden>
+          <span class="hs-ico" aria-hidden="true"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg></span>
+          <span class="hs-txt"><b>끼리 시작하기</b><small>로그인하면 매일 200크레딧 무료 · 게스트는 1회 100크레딧 무료 체험</small></span>
+          <span class="hs-go" aria-hidden="true">→</span>
+        </button>
+        <section class="home-sec" id="homeRoomsSec" aria-label="내 대화방">
           <div class="home-sec-head">
             <div><h2><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>내 대화방 <em id="homeRoomCount">0</em></h2><p>주제 하나를 두고 AI와 사람이 모이는 공간이에요.</p></div>
             <div class="home-sec-actions">
@@ -1533,7 +1680,7 @@
           </div>
           <div class="room-grid" id="homeRoomGrid"></div>
         </section>
-        <div class="home-foot">
+        <div class="home-foot" id="homeFoot">
           <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
           <button type="button" class="home-donate home-feedback" id="homeFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
         </div>
@@ -1568,8 +1715,8 @@
         <button type="button" class="rt-btn" id="discussBtn" title="이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg><span>토론 시작</span></button>
         <p class="ctrl-lead" id="ctrlLead">평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요</p>
         <div class="ctrl-actions">
-          <button class="icon-btn" id="pauseBtn" title="일시정지" aria-label="일시정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-pause"></use></svg></button>
-          <button class="icon-btn stop" id="stopBtn" title="즉시 정지" aria-label="즉시 정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-stop"></use></svg></button>
+          <button class="ctrl-act pause" id="pauseBtn" type="button" title="일시정지" aria-label="일시정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-pause"></use></svg><span class="ca-lbl">일시중지</span></button>
+          <button class="ctrl-act stop" id="stopBtn" type="button" title="즉시 정지" aria-label="즉시 정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-stop"></use></svg><span class="ca-lbl">정지</span></button>
         </div>
       </div>
       <div class="meters">
@@ -1613,13 +1760,13 @@
     <div class="sheet-head"><h2 id="inviteTitle">AI 추가</h2><span class="sub" id="inviteBalance"></span><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <div class="seg wide ai-seg" id="aiSeg" role="tablist" aria-label="AI 종류">
-        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> 나의 AI</b><small>초대 링크 · 내 키 · 크레딧 0</small></button>
-        <button type="button" role="tab" data-tab="kkiri" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> 끼리 AI</b><small>끼리 엔진 · 크레딧 또는 내 API 키</small></button>
+        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> 나의 AI</b></button>
+        <button type="button" role="tab" data-tab="kkiri" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> 끼리 AI</b></button>
       </div>
 
       <!-- ---------- 탭 1 · 끼리 AI ---------- -->
       <section id="aiTabKkiri" role="tabpanel" aria-label="끼리 AI">
-        <p class="hint" id="expertHint" style="margin-top:0">필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요. (답할 때마다 크레딧을 사용해요)</p>
+        <p class="hint" id="expertHint" style="margin-top:0">필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요. (답변 1회당 10크레딧)</p>
         <div class="expert-grid" id="expertGrid"></div>
         <p class="modal-note" id="expertNote"></p>
 
@@ -1647,21 +1794,22 @@
 
       <!-- ---------- 탭 2 · 나의 AI ---------- -->
       <section id="aiTabMine" role="tabpanel" aria-label="나의 AI" hidden>
-        <p class="hint" style="margin-top:0">내 개인 AI 비서(피클 등)를 이 방에 들여보내면 함께 대화해요. 아래 버튼 하나로 <b>초대 링크와 지시문</b>이 함께 복사돼요.</p>
         <p class="hint" id="mineHint" hidden></p>
 
         <div class="focus-card" id="focusCard">
-          <b>🎯 집중 모드 · 10분</b>
-          <span class="focus-sub">10분만 같이하고 나가라고 정해 보내면, 내 AI가 계속 새 글을 확인하며 토큰을 쓰지 않아요.</span>
-          <pre class="focus-preview" id="focusPreview"></pre>
+          <b>내 AI 비서 초대 <em>(10분 집중)</em></b>
+          <span class="focus-sub">피클·키링·뮤즈 같은 내 AI 앱에 붙여넣으면 10분간 함께 대화해요. (끼리 크레딧 0)</span>
+          <details class="focus-details">
+            <summary>지시문 미리보기</summary>
+            <pre class="focus-preview" id="focusPreview"></pre>
+          </details>
           <div class="focus-btns">
             <button type="button" class="btn green" id="focusCopyPrompt"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 초대 지시문+링크 복사</button>
           </div>
-          <p class="hint">피클·키링·뮤즈처럼 웹에 직접 들어올 수 있는 내 AI 앱에 그대로 붙여넣으세요. (일반 챗GPT·제미나이는 아래 내 API 키 연결을 이용해 주세요 · 클로드는 지원 예정) 링크로 들어온 AI는 이 방에만 들어오고, 끼리 크레딧은 쓰지 않아요 (각 AI 자체 사용량 사용).</p>
         </div>
 
         <details class="spec" id="byokWrap">
-          <summary>🔑 내 제미나이(무료)·GPT 키로 무제한 쓰기</summary>
+          <summary><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg> 내 제미나이(무료)·GPT 키로 무제한 쓰기</summary>
           <div class="spec-body">
             <div class="field" style="margin-top:10px"><span>어떤 AI 키인가요</span>
               <div class="pick-row" id="byokSeg" role="group" aria-label="내 키 제공자">
@@ -1687,9 +1835,9 @@
         </details>
 
         <details class="spec" id="hookWrap">
-          <summary>⚙️ 직접 만든 AI 연결 (개발자용)</summary>
+          <summary><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg> 직접 만든 AI 연결 (개발자용)</summary>
           <div class="spec-body">
-            <p class="hint" style="margin-top:10px">직접 개발한 AI 서버가 있다면 주소를 넣어 연결하세요. 챗GPT·제미나이처럼 이미 쓰는 AI 앱은 위의 <b>🔑 내 제미나이·GPT 키</b>로 연결하면 돼요.</p>
+            <p class="hint" style="margin-top:10px">직접 개발한 AI 서버 주소를 넣어 연결하세요. 챗GPT·제미나이는 위의 <b>내 제미나이·GPT 키</b>로 연결하면 돼요.</p>
             <label class="field"><span>AI 이름</span><input id="hookName" type="text" maxlength="14" placeholder="예: 피크리" autocomplete="off"></label>
             <label class="field"><span>AI 서버 주소 (URL)</span><input id="hookUrl" type="text" placeholder="https://my-ai.example/hook" autocomplete="off" spellcheck="false"></label>
             <label class="field"><span>비밀 토큰 (선택)</span><input id="hookToken" type="text" placeholder="내 AI가 확인할 비밀 값" autocomplete="off" spellcheck="false"></label>
@@ -1697,6 +1845,7 @@
               <button class="btn" id="hookTest">연결 확인</button>
               <button class="btn green" id="hookAdd">등록하고 추가</button>
             </div>
+            <p class="modal-note">이름·주소·비밀 토큰은 이 기기에만 저장돼요. 답하지 못하면 다른 AI로 대신 답하지 않아요.</p>
             <p class="api-status" id="hookStatus" role="status" aria-live="polite" hidden></p>
             <details class="spec">
               <summary>요청·응답 규격 보기</summary>
@@ -1719,9 +1868,9 @@ Content-Type: application/json
           </div>
         </details>
 
-        <p class="modal-note">여기서 등록한 AI는 내 AI로 저장돼 다른 방에서도 <b>+ AI 추가</b>로 다시 부를 수 있어요. 대화 내용은 그 AI로 전송되고, 키와 주소는 이 기기에만 저장돼요. 답하지 못할 때는 다른 AI로 대신 답하지 않고 연결을 확인하라는 안내만 남겨요.</p>
       </section>
     </div>
+    <div class="sheet-foot"><button class="btn dark" id="inviteDone" type="button">완료</button></div>
   </div>
 </div>
 
@@ -1734,7 +1883,7 @@ Content-Type: application/json
       <label class="field"><span>방 이름 (주제)</span><input id="rfName" type="text" maxlength="40" placeholder="예: 연말 프로모션 기획, 신제품 론칭" autocomplete="off"></label>
       <div class="field-row">
         <div class="field" id="rfEmojiField"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
-        <label class="field"><span>최대 턴</span>
+        <label class="field" id="rfTurnField"><span>최대 턴</span>
           <select id="rfTurns"><option value="5">5턴</option><option value="10" selected>10턴</option><option value="15">15턴</option><option value="20">20턴</option></select>
         </label>
       </div>
@@ -1744,7 +1893,7 @@ Content-Type: application/json
           <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
         </div>
       </div>
-      <label class="field"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
+      <label class="field" id="rfBudgetField"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
       <div class="field" id="rfRolesField"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
       <p class="modal-note" id="rfFootNote" hidden></p>
       <div class="btn-row" id="rfActions">
@@ -1761,6 +1910,14 @@ Content-Type: application/json
     <div class="sheet-head"><h2 id="rtTitle">토론 시작</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <label class="field"><span>토론 주제(안건)</span><textarea id="rtAgenda" placeholder="방 이름(주제)이 그대로 들어가요 · 필요하면 더 좁혀 적어도 돼요" maxlength="300"></textarea></label>
+      <div class="field"><span>최대 턴</span>
+        <div class="pick-row" id="rtTurns">
+          <button type="button" class="pick" data-turns="5" aria-pressed="false">5턴</button>
+          <button type="button" class="pick" data-turns="10" aria-pressed="true">10턴</button>
+          <button type="button" class="pick" data-turns="15" aria-pressed="false">15턴</button>
+          <button type="button" class="pick" data-turns="20" aria-pressed="false">20턴</button>
+        </div>
+      </div>
       <p class="modal-note" id="rtSummary"></p>
       <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">토론 시작</button></div>
     </div>
@@ -1874,23 +2031,20 @@ Content-Type: application/json
     <div class="sheet-body">
       <div class="auth-hero">
         <div class="ah-logo kk-mark" aria-hidden="true"></div>
-        <h2>로그인 없이 바로 시작해 보세요</h2>
-        <p>로그인하면 <b>매일 200크레딧</b>이 무료로 채워져요. 사람과의 대화는 무료이고, 내 AI는 끼리 크레딧을 쓰지 않아요 (각 AI 자체 사용량 사용). 끼리 AI만 턴마다 크레딧을 써요.</p>
+        <h2>끼리에 오신 걸 환영해요</h2>
+        <p>로그인하면 <b>매일 200크레딧</b>이 무료로 채워져요.</p>
+        <p class="auth-soon">카카오·구글 로그인도 곧 연결돼요</p>
       </div>
-      <button class="auth-guest" id="guestBtn" type="button">
-        <span class="ag-ico" aria-hidden="true">⚡</span>
-        <span><b>게스트로 바로 시작</b><small>이메일 없이 바로 · 로그인하면 매일 200크레딧 무료</small></span>
-      </button>
-      <div class="auth-or">또는 이메일</div>
       <label class="field"><span>이메일</span><input id="authEmail" type="email" placeholder="me@example.com" autocomplete="email" spellcheck="false" autocapitalize="off"></label>
-      <div class="btn-row"><button class="btn" id="magicBtn" type="button">매직링크 받기</button><button class="btn dark" id="pwToggle" type="button">비밀번호로 로그인</button></div>
-      <div id="pwWrap" hidden>
-        <label class="field"><span>비밀번호</span><input id="authPw" type="password" autocomplete="current-password" placeholder="8자 이상"></label>
-        <div class="btn-row"><button class="btn green" id="pwLogin" type="button">로그인</button><button class="btn" id="pwSignup" type="button">계정 만들기</button></div>
-      </div>
+      <label class="field"><span>비밀번호</span><input id="authPw" type="password" autocomplete="current-password" placeholder="8자 이상"></label>
+      <div class="btn-row"><button class="btn green" id="pwLogin" type="button">로그인</button><button class="btn" id="pwSignup" type="button">계정 만들기</button></div>
       <p class="auth-msg" id="authMsg" role="status" aria-live="polite" hidden></p>
-      <p class="modal-note">초대 링크로 들어왔다면 로그인 후 그 방의 멤버가 되어 대화가 이어져요. 계정 정보는 끼리 서버(Supabase)에만 저장되고, AI 제공사 키는 서버에만 있습니다.</p>
-      <div class="btn-row"><button class="btn" id="guestSkip" type="button">로그인 없이 둘러보기</button></div>
+      <div class="auth-or">또는</div>
+      <button class="auth-guest ghost" id="guestBtn" type="button">
+        <span class="ag-ico" aria-hidden="true">⚡</span>
+        <span><b>게스트로 먼저 체험하기</b><small>1회 100크레딧 무료 체험 · 이메일 없이 바로</small></span>
+      </button>
+      <p class="modal-note">초대 링크로 들어왔다면 로그인 후 그 방의 멤버가 되어 대화가 이어져요.</p>
     </div>
   </div>
 </div>
@@ -2095,15 +2249,29 @@ var NICK_AUTO_KEY = "kkiri.nick.auto.v1";      /* 이 브라우저에 자동으�
 var NICK_ASKED_KEY = "kkiri.nick.asked.v1";    /* 초대 링크 첫 입장에서 한 번만 묻는다 */
 var DEFAULT_NICK = "끼리장";                    /* 예전 저장값 호환용 */
 
-/* 닉네임을 정하지 않은 브라우저는 ‘참여자 #A7K2’ 처럼 서로 겹치지 않는 이름으로 시작한다.
-   같은 이름이 방마다 겹치면 누가 한 말인지 알 수 없기 때문(예전엔 모두 ‘끼리장’이었다). */
+/* 닉네임을 정하지 않은 브라우저는 ‘참여자1’로 시작한다(예전 ‘참여자 #A7K2’ 같은 4자리 코드는 쓰지 않는다).
+   같은 방에 이미 ‘참여자1’이 있으면 ‘참여자2’, ‘참여자3’ … 으로 겹치지 않는 가장 작은 번호를 쓴다. */
+var NICK_BASE = "참여자";
+var CLIENT_KEY = "kkiri.client.v1";      /* 이 브라우저를 구분하는 고유 키(동시 입장 때 양보 순서) */
+function clientId() {
+  var v = "";
+  try { v = localStorage.getItem(CLIENT_KEY) || ""; } catch (e) {}
+  if (!v) {
+    v = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+    try { localStorage.setItem(CLIENT_KEY, v); } catch (e2) {}
+  }
+  return v;
+}
+function nickNum(n) {
+  var m = /^참여자\s*(\d+)$/.exec(String(n == null ? "" : n).trim());
+  return m ? Number(m[1]) : 0;
+}
+function isLegacyAutoNick(n) { return /^참여자\s*#[A-Z0-9]{2,6}$/i.test(String(n == null ? "" : n).trim()); }
 function autoNick() {
   var n = "";
   try { n = localStorage.getItem(NICK_AUTO_KEY) || ""; } catch (e) {}
-  if (!n) {
-    var rand = Math.random().toString(36).slice(2, 6).toUpperCase().replace(/[^A-Z0-9]/g, "");
-    while (rand.length < 4) rand += Math.floor(Math.random() * 36).toString(36).toUpperCase();
-    n = "참여자 #" + rand;
+  if (nickNum(n) < 1) {
+    n = NICK_BASE + "1";
     try { localStorage.setItem(NICK_AUTO_KEY, n); } catch (e2) {}
   }
   return n;
@@ -2111,11 +2279,17 @@ function autoNick() {
 function nick() {
   try {
     var s = sessionStorage.getItem(NICK_KEY);
-    if (s && String(s).trim()) return displayName(String(s).trim().slice(0, 20));
+    if (s && String(s).trim()) {
+      if (isLegacyAutoNick(s)) sessionStorage.removeItem(NICK_KEY);
+      else return displayName(String(s).trim().slice(0, 20));
+    }
   } catch (e) {}
   try {
     var v = localStorage.getItem(NICK_KEY);
-    if (v && String(v).trim()) return displayName(String(v).trim().slice(0, 20));
+    if (v && String(v).trim()) {
+      if (isLegacyAutoNick(v)) localStorage.removeItem(NICK_KEY);
+      else return displayName(String(v).trim().slice(0, 20));
+    }
   } catch (e2) {}
   return displayName(autoNick());
 }
@@ -2128,6 +2302,7 @@ function saveNick(v) {
   try { localStorage.setItem(NICK_KEY, n); } catch (e2) {}
   var el = document.getElementById("nickLabel");
   if (el) el.textContent = n;
+  try { if (typeof presenceTrack === "function") presenceTrack(); } catch (e) {}
   renderTimeline(false);
   renderQuick();
   if (typeof renderHome === "function") renderHome();
@@ -2510,11 +2685,44 @@ function roleDirective(r, agent) {
 /* =========================================================
    4. 렌더 · 사이드바 / 헤더 / 게이지
    ========================================================= */
+/* 색 → 파스텔 배경(rgba) */
+function hexRgba(hex, a) {
+  var h = String(hex || "").replace("#", "");
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (!/^[0-9a-f]{6}$/i.test(h)) return "rgba(115,82,255," + a + ")";
+  var n = parseInt(h, 16);
+  return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
+}
+/* 사람 참여자 — 이름 해시로 늘 같은 색·픽토그램(6종) */
+var PEOPLE_LOOKS = [
+  { c: "#7352FF", i: "face" },
+  { c: "#EC569D", i: "cat" },
+  { c: "#10B981", i: "bear" },
+  { c: "#3B82F6", i: "star" },
+  { c: "#F59E0B", i: "heart" },
+  { c: "#6366F1", i: "spark" }
+];
+function peopleLook(name) {
+  var s = String(name || "참여자");
+  var num = nickNum(s);                   /* 참여자1·참여자2… 는 번호 순서대로 색·아이콘이 바뀐다 */
+  var k = num ? (num - 1) % PEOPLE_LOOKS.length : Math.abs(hash(s)) % PEOPLE_LOOKS.length;
+  return PEOPLE_LOOKS[k];
+}
+function avatarStyle(c) {
+  return 'style="--c:' + esc(c) + ";--ct:" + hexRgba(c, .13) + ";--cf:" + hexRgba(c, .24) + '"';
+}
+/* 사람 아바타 — 첫 글자 대신 얼굴/동물/별 픽토그램 */
+function personAvatarHtml(name, size) {
+  var lk = peopleLook(name);
+  return '<span class="avatar ' + (size || "md") + '" ' + avatarStyle(lk.c) + ' title="' + esc(name || "참여자") + '" aria-hidden="true">' + icoHtml(lk.i) + "</span>";
+}
+/* AI 아바타 — 끼리 AI·내 AI는 로봇/스파크, 전문가 AI는 자기 이모지를 그대로 */
 function avatarHtml(id, size) {
   var a = state.agents[id];
   var c = a ? a.color : "#6F6889";
-  var n = a ? (a.avatar && a.avatar.length <= 4 ? a.avatar : (a.name.charAt(0) || "?")) : "?";
-  return '<span class="avatar ' + (size || "md") + '" style="--c:' + esc(c) + '" aria-hidden="true">' + esc(n) + "</span>";
+  var emo = a && a.avatar && a.avatar.length <= 4 ? String(a.avatar) : "";
+  var inner = emo ? esc(emo) : icoHtml(a && a.type === "expert" ? "spark" : "bot");
+  return '<span class="avatar ' + (size || "md") + '" ' + avatarStyle(c) + ' aria-hidden="true">' + inner + "</span>";
 }
 
 /* 방 목록은 하나 — 종류를 나누지 않고 아이콘·이름만으로 구분한다. */
@@ -2723,11 +2931,31 @@ function renderRoom() {
   $("roomSub").textContent = subBits.join(" · ");
   document.title = "끼리 · " + r.name;
 
-  $("pauseBtn").disabled = !run.active;
-  $("pauseBtn").textContent = run.paused ? "▶" : "⏸";
-  $("pauseBtn").setAttribute("aria-label", run.paused ? "재개" : "일시정지");
-  $("stopBtn").disabled = !run.active;
-  $("discussBtn").disabled = run.active;
+  /* 토론 시작 — AI 2명 이상이고 진행 중이 아닐 때만 누를 수 있다(비활성도 색으로 분명하게) */
+  var aiN = rtRoomParts(r).length;
+  var canDiscuss = aiN >= 2 && !run.active;
+  var dbt = $("discussBtn");
+  if (dbt) {
+    dbt.disabled = !canDiscuss;
+    dbt.title = aiN < 2 ? "AI 2명 이상일 때 토론을 시작할 수 있어요"
+      : (run.active ? "토론이 진행 중이에요" : "이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요");
+  }
+  var clead = $("ctrlLead");
+  if (clead) clead.innerHTML = aiN >= 2
+    ? "평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요"
+    : "AI를 <b>2명 이상</b> 부르면 <b>토론</b>을 시작할 수 있어요";
+  var pbt = $("pauseBtn"), sbt = $("stopBtn");
+  if (pbt) {
+    pbt.disabled = !run.active;
+    pbt.classList.toggle("paused", !!run.paused);
+    var puse = pbt.querySelector("use");
+    if (puse) puse.setAttribute("href", run.paused ? "#i-play" : "#i-pause");
+    var plbl = pbt.querySelector(".ca-lbl");
+    if (plbl) plbl.textContent = run.paused ? "재개" : "일시중지";
+    pbt.setAttribute("aria-label", run.paused ? "재개" : "일시정지");
+    pbt.title = run.paused ? "재개" : "일시정지";
+  }
+  if (sbt) sbt.disabled = !run.active;
   $("sendBtn").textContent = "보내기";
   $("sendBtn").disabled = run.active && run.mode === "roundtable";
   $("input").placeholder = inputPlaceholder(r);
@@ -2738,7 +2966,7 @@ function renderRoom() {
   renderTimeline(false);
 }
 
-function renderAll() { renderSidebar(); renderRoom(); renderHome(); applyView(); }
+function renderAll() { renderSidebar(); renderRoom(); renderHome(); applyView(); renderStartUI(); }
 
 /* =========================================================
    13.5 끼리 홈 — 밖(서비스 입구 · 내 계정 워크스페이스)
@@ -2882,6 +3110,8 @@ var nickAskDone = false;
 /* 초대 링크로 처음 들어온 사람에게 한 번만 — 이 방에서 부를 이름을 묻는다(닫아도 고유 이름 유지). */
 function maybeAskNick() {
   if (nickAskDone) return;
+  /* 시작(로그인·게스트) 전에는 시작 모달이 먼저다 — 이름은 시작을 마친 뒤에 묻는다. */
+  if (!V3.signedIn) return;
   nickAskDone = true;
   if (!pendingJoin) return;
   try {
@@ -3007,7 +3237,7 @@ function msgHtml(m) {
         '<div class="bubble">' + fmtText(m.text) + "</div>" +
         '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
     }
-    return '<div class="msg"><span class="avatar md" style="--c:#5b6ee1" aria-hidden="true">' + esc((m.name || "?").charAt(0)) + "</span>" +
+    return '<div class="msg">' + personAvatarHtml(m.name) +
       '<div class="body"><div class="who">' + esc(m.name || "참여자") + "<em>참여자</em></div>" +
       '<div class="bubble">' + fmtText(m.text) + "</div>" +
       '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
@@ -3126,14 +3356,14 @@ function emptyHtml(r) {
        onlinePeople() 은 나를 빼고 세므로, 함께 있는 사람 수는 나를 더해 센다. */
     var here = people.length + 1;
     if (people.length) {
-      return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + roomIcoHtml(r.emoji || "💬") + '</div>' +
+      return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + icoHtml("chat") + '</div>' +
         "<h3>아직 대화가 없어요 · 지금 " + here + "명이 함께 있어요!</h3>" +
         "<p><b>" + esc(people.join(" · ")) + "</b> 님이 함께 있어요.<br>" +
         "먼저 인사를 건네거나 <b>@이름</b>을 붙여 보내면 그분께 전해져요. AI도 필요하면 불러 보세요.</p>" +
         cta + "</div>";
     }
-    /* 혼자 있는 방 — AI를 부르고 사람을 부르는 두 길만 보여 준다. */
-    return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + roomIcoHtml(r.emoji || "💬") + '</div>' +
+    /* 혼자 있는 방 — 로켓 대신 ‘나 혼자 + 빈 자리’ 픽토그램으로 기다리는 느낌을 준다. */
+    return '<div class="empty" id="emptyRoom"><div class="e-emoji e-alone">' + icoHtml("alone") + '</div>' +
       "<h3>아직 이 방엔 나 혼자예요</h3>" +
       "<p>AI를 부르거나, 사람을 불러 함께 시작해 보세요!<br>나의 AI는 크레딧을 쓰지 않고(각 AI 자체 사용량 사용), 끼리 AI는 답할 때마다 크레딧을 써요. 사람 대화는 무료예요.</p>" +
       cta + "</div>";
@@ -3144,7 +3374,7 @@ function emptyHtml(r) {
     var ro = roles[id];
     return ro ? esc(agentName(id)) + " " + esc(ro.label) : "";
   }).filter(Boolean).join(" · ");
-  return '<div class="empty"><div class="e-emoji">' + roomIcoHtml(r.emoji || "💬") + '</div><h3>' +
+  return '<div class="empty"><div class="e-emoji">' + icoHtml("chat") + '</div><h3>' +
     "아직 대화가 없어요</h3>" +
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + ids.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
@@ -3303,9 +3533,9 @@ function renderPeople() {
   if (!r || currentView() === "home") { host.innerHTML = ""; bar.hidden = true; return; }
   var h = "";
   /* 나부터 — 방에 들어와 있으면 늘 보인다(사이드바 접속 현황을 없앤 뒤 유일한 실시간 표시) */
-  h += '<span class="pb-chip me" title="나">' + '<i class="pb-dot" aria-hidden="true"></i>' + esc(nick()) + "</span>";
+  h += '<span class="pb-chip me" title="나">' + '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>' + esc(nick()) + "</span>";
   onlinePeople().forEach(function (n) {
-    h += '<span class="pb-chip on" title="지금 접속 중인 참여자"><i class="pb-dot" aria-hidden="true"></i>' + esc(n) + "</span>";
+    h += '<span class="pb-chip on" title="지금 접속 중인 참여자"><i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(n).c + '"></i>' + esc(n) + "</span>";
   });
   r.members.forEach(function (id) {
     var a = state.agents[id];
@@ -4774,9 +5004,28 @@ function rtRoomPlan(r) {
 function rtSummaryText(plan) {
   var txt = "참여 AI " + plan.participants.length + "명" +
     (plan.moderator ? " · 사회자 " + agentName(plan.moderator) : "") +
-    " · 최대 " + plan.turns + "턴 · 상한 " + creditsLabel(plan.budget) + " 크레딧은 방 설정(⋯)을 따라갑니다.";
-  if (plan.participants.length < 2) txt += " AI 두 명 이상이어야 토론할 수 있어요.";
+    " · 최대 " + plan.turns + "턴 · 상한 " + creditsLabel(plan.budget) + " 크레딧";
+  if (plan.participants.length < 2) txt += " · AI 두 명 이상이어야 토론할 수 있어요.";
   return txt;
+}
+/* 토론 시작 시트의 턴 칩 — 실제로 시작할 때 턴 수를 고른다(방 만들기에서는 묻지 않는다) */
+function rtPickTurns() {
+  var on = document.querySelector("#rtTurns [data-turns][aria-pressed=\"true\"]");
+  return clamp(Number(on && on.getAttribute("data-turns")) || 10, 3, 24);
+}
+function rtSetTurns(n) {
+  var want = String(clamp(Number(n) || 10, 3, 24));
+  Array.prototype.forEach.call(document.querySelectorAll("#rtTurns [data-turns]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-turns") === want ? "true" : "false");
+  });
+}
+function rtRefreshSummary() {
+  var r = activeRoom();
+  if (!r) return;
+  var plan = rtRoomPlan(r);
+  plan.turns = rtPickTurns();
+  var el = $("rtSummary");
+  if (el) el.textContent = rtSummaryText(plan);
 }
 function openRoundtable(prefill) {
   var r = activeRoom();
@@ -4785,7 +5034,8 @@ function openRoundtable(prefill) {
   /* 토론은 선택 사항 — AI가 2명 이상 모인 뒤에 시작한다. */
   if (rtRoomParts(r).length < 2) { toast("AI가 2명 이상 모이면 토론을 시작할 수 있어요"); return; }
   $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
-  $("rtSummary").textContent = rtSummaryText(rtRoomPlan(r));
+  rtSetTurns(r.maxTurns || 10);
+  rtRefreshSummary();
   openModal("rtModal");
   setTimeout(function () { $("rtAgenda").focus(); }, 220);
 }
@@ -4795,6 +5045,7 @@ function rtStart() {
   var agenda = $("rtAgenda").value.trim();
   if (!agenda) { toast("토론 주제를 적어 주세요"); $("rtAgenda").focus(); return; }
   var plan = rtRoomPlan(r);
+  plan.turns = rtPickTurns();
   if (plan.participants.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   closeModal("rtModal");
   startRoundtable({ agenda: agenda, participants: plan.participants, moderator: plan.moderator, turns: plan.turns, budget: plan.budget });
@@ -4838,7 +5089,7 @@ function renderRfNamePh() {
 function renderRfCat() {
   var h = "";
   ROOM_CATS.forEach(function (c) {
-    h += '<button type="button" class="pick" data-cat="' + c.key + '" aria-pressed="' + (c.key === roomForm.category ? "true" : "false") + '">' + c.emoji + " " + c.label + "</button>";
+    h += '<button type="button" class="pick" data-cat="' + c.key + '" aria-pressed="' + (c.key === roomForm.category ? "true" : "false") + '">' + roomIcoHtml(c.emoji, "sm") + " " + c.label + "</button>";
   });
   $("rfCat").innerHTML = h;
   renderRfNamePh();
@@ -4938,6 +5189,10 @@ function openRoomForm(roomId) {
      아이콘은 주제 분류가 정하므로 고르는 칸은 어느 모드에서도 두지 않는다. */
   var emojiField = $("rfEmojiField");
   if (emojiField) emojiField.hidden = true;
+  /* 최대 턴은 ▶ 토론 시작 시트에서, 크레딧 상한은 방의 턴 미터(기본 200)에서 정한다 — 방 만들기는 분류·이름만. */
+  ["rfTurnField", "rfBudgetField"].forEach(function (id) {
+    var el = $(id); if (el) el.hidden = true;
+  });
   ["rfRoleModeField", "rfRolesField"].forEach(function (id) {
     var el = $(id); if (el) el.hidden = !r;
   });
@@ -5762,6 +6017,7 @@ function presenceLeave() {
   presence.roomId = null;
   presence.known = null;
   presence.ready = false;
+  presence.since = null;
   if (presence.initTimer) { clearTimeout(presence.initTimer); presence.initTimer = null; }
   if (!ch) return;
   try { ch.untrack(); } catch (e) {}
@@ -5782,32 +6038,93 @@ function presenceJoin(roomId, force) {
   presence.ready = false;
   if (presence.initTimer) clearTimeout(presence.initTimer);
   presence.initTimer = setTimeout(function () { presence.ready = true; presence.initTimer = null; }, 2500);
-  var sync = function () { presenceGreet(); renderPresence(); };
+  var sync = function () { ensureAutoNick(); presenceGreet(); renderPresence(); };
   ch.on("presence", { event: "sync" }, sync)
     .on("presence", { event: "join" }, sync)
     .on("presence", { event: "leave" }, sync)
     .subscribe(function (status) {
       if (status === "SUBSCRIBED") {
-        try { ch.track({ nick: nick(), since: new Date().toISOString() }); } catch (e) {}
+        presenceTrack();
       } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
         renderPresence();
       }
     });
 }
 /* 현재 방에 실제로 들어와 있는 참여자(닉네임 기준) — 내장 AI 멤버와는 무관 */
-function presenceState() {
+function presencePayloads() {
   var out = [];
   var ch = presence.channel;
   if (!ch || !ch.presenceState) return out;
   var st = {};
   try { st = ch.presenceState() || {}; } catch (e) { return out; }
   Object.keys(st).forEach(function (k) {
-    (st[k] || []).forEach(function (p) {
-      var n = displayName(String((p && p.nick) || "참여자").slice(0, 20));
-      if (n) out.push(n);
-    });
+    (st[k] || []).forEach(function (p) { if (p) out.push(p); });
   });
   return out;
+}
+function presenceState() {
+  var out = [];
+  presencePayloads().forEach(function (p) {
+    var n = displayName(String((p && p.nick) || "참여자").slice(0, 20));
+    if (n) out.push(n);
+  });
+  return out;
+}
+/* 내 접속 정보를 다시 알린다(닉네임이 바뀌었을 때 포함) */
+function presenceTrack() {
+  var ch = presence.channel;
+  if (!ch) return;
+  if (!presence.since) presence.since = new Date().toISOString();
+  try { ch.track({ nick: nick(), cid: clientId(), since: presence.since }); } catch (e) {}
+}
+/* 이 방에 있는 ‘나 말고’ 다른 접속자 — 닉네임이 겹치는지, 어떤 번호가 쓰이는지 본다 */
+function otherPeople() {
+  var me = clientId(), out = [];
+  presencePayloads().forEach(function (p) {
+    var cid = String((p && p.cid) || "");
+    if (cid && cid === me) return;
+    var n = displayName(String((p && p.nick) || "").trim().slice(0, 20));
+    if (n) out.push({ nick: n, cid: cid, since: String((p && p.since) || "") });
+  });
+  return out;
+}
+/* 자동 배정 닉네임(참여자N)을 바꿔 단다 — 직접 정한 이름은 건드리지 않는다 */
+function applyAutoNick(n) {
+  try { sessionStorage.setItem(NICK_KEY, n); } catch (e) {}
+  var el = document.getElementById("nickLabel");
+  if (el) el.textContent = n;
+  var lead = document.getElementById("nickLead");
+  if (lead && !lead.hidden) {
+    lead.innerHTML = "이 방에서 부를 <b>내 이름</b>을 정해 주세요. 지금은 <b>" + esc(n) +
+      "</b>로 들어와 있어요. 그냥 닫아도 이 이름으로 대화할 수 있어요.";
+  }
+  presenceTrack();
+  renderPresence();
+  renderQuick();
+  renderTimeline(false);
+  if (typeof renderHome === "function") renderHome();
+  return n;
+}
+/* 자동 닉네임이 이 방에서 겹치면 겹치지 않는 가장 작은 ‘참여자N’으로 바꾼다.
+   두 사람이 동시에 ‘참여자1’이면 브라우저 키가 작은 쪽만 양보한다(둘 다 2로 가는 진동 방지). */
+function ensureAutoNick() {
+  var mine = nick();
+  var myNum = nickNum(mine);
+  if (!myNum) return mine;
+  var others = otherPeople(), clash = false, used = {};
+  var mySince = presence.since || "";
+  others.forEach(function (o) {
+    var k = nickNum(o.nick);
+    if (k) used[k] = 1;
+    if (o.nick !== mine) return;
+    /* 같은 이름이면 먼저 들어온 사람이 그대로 쓰고, 나중에 들어온 쪽이 ‘참여자N’을 비켜 준다 */
+    if (o.since && mySince && o.since < mySince) clash = true;
+    else if ((!o.since || !mySince || o.since === mySince) && (!o.cid || o.cid > clientId())) clash = true;
+  });
+  if (!clash) return mine;
+  var n = 1;
+  while (used[n]) n++;
+  return applyAutoNick(NICK_BASE + n);
 }
 /* 지금 이 방에 실제로 접속해 있는 참여자(닉네임)만 — 나간 사람은 남기지 않는다 */
 function presenceRows() {
@@ -6270,16 +6587,16 @@ var EXPERT_CATALOG = [
   { id: "copywriter", name: "카피라이터", avatar: "✍️", role: "카피 · 문장", config: "kkiri-lite",
     desc: "짧고 리듬 있는 문장, 늘 선택지 두 개. 상세페이지·광고 문구.",
     persona: "너는 브랜드 카피라이터다. 짧고 리듬 있는 한국어 문장을 쓰고, 늘 선택지 2개를 붙인다. 과장·미사여구는 쓰지 않는다." },
-  { id: "marketer", name: "마케터", avatar: "📣", role: "캠페인 · 채널", config: "kkiri-standard",
+  { id: "marketer", name: "마케터", avatar: "📣", role: "캠페인 · 채널", config: "kkiri-lite",
     desc: "예산과 기간을 먼저 고정하고 채널·타이밍을 짠다.",
     persona: "너는 퍼포먼스 마케터다. 예산·기간·목표를 먼저 확인하고, 채널별로 나눠 실행안을 만든다. 예상 수치는 추정임을 표시한다." },
-  { id: "redteam", name: "검증가", avatar: "🔻", role: "허점 · 리스크", config: "kkiri-standard",
+  { id: "redteam", name: "검증가", avatar: "🔻", role: "허점 · 리스크", config: "kkiri-lite",
     desc: "전제의 약한 고리와 되돌릴 수 없는 결정을 먼저 지적.",
     persona: "너는 검증가다. 전제의 약한 고리와 리스크를 찾아 반대 논리를 만든다. 확인되지 않은 것을 확인된 것처럼 두지 않는다. 직설적으로 짧게." },
   { id: "planner", name: "기획자", avatar: "🧩", role: "구조 · 우선순위", config: "kkiri-lite",
     desc: "안건을 결정·확인·다음 할 일로 쪼개 순서를 정한다.",
     persona: "너는 기획자다. 안건을 결정할 것·확인할 것·다음 할 일로 나누고 우선순위를 정한다. 회의가 결론으로 끝나게 만든다." },
-  { id: "analyst", name: "분석가", avatar: "📊", role: "숫자 · 근거", config: "kkiri-standard",
+  { id: "analyst", name: "분석가", avatar: "📊", role: "숫자 · 근거", config: "kkiri-lite",
     desc: "마진·원가·전환을 숫자로 비교하고 가정을 표시.",
     persona: "너는 데이터 분석가다. 마진·원가·전환·재고를 숫자로 비교한다. 주어진 숫자와 가정을 구분해 표시한다." },
   { id: "researcher", name: "리서처", avatar: "🔎", role: "조사 · 비교", config: "kkiri-lite",
@@ -6329,27 +6646,49 @@ function renderCredit() {
   el.title = title;
 }
 function renderAccount() {
-  var name = $("accountName"), sub = $("accountSub"), btn = $("accountBtn");
+  var name = $("accountName"), sub = $("accountSub"), btn = $("accountBtn"), al = $("accountLine");
   if (!name || !sub || !btn) return;
   if (V3.mode === "local") {
     name.textContent = "로컬 데모";
     sub.textContent = "서버 연결 없이 이 브라우저에서만";
     btn.hidden = true;
+    if (al) al.classList.remove("start");
+    renderStartUI();
+    return;
+  }
+  if (!V3.signedIn) {
+    /* 시작 전 — '로그인' 버튼을 따로 두지 않고, 카드 하나를 누르면 시작 모달이 열린다 */
+    name.textContent = "끼리 시작하기";
+    sub.textContent = "로그인하면 매일 200크레딧 무료";
+    btn.hidden = true;
+    if (al) { al.classList.add("start"); al.setAttribute("tabindex", "0"); al.setAttribute("role", "button"); }
+    renderStartUI();
     return;
   }
   btn.hidden = false;
-  if (!V3.signedIn) {
-    name.textContent = V3.mode === "mock" ? "데모 모드" : "로그인 전";
-    sub.textContent = "로그인하면 매일 200크레딧 무료";
-    btn.textContent = "로그인";
-    return;
-  }
+  if (al) { al.classList.remove("start"); al.removeAttribute("tabindex"); al.removeAttribute("role"); }
   var u = V3.user || {};
   var nickName = displayName(V3.profile.nickname) || (u.email ? String(u.email).split("@")[0] : "게스트");
   name.textContent = nickName;
   /* 계정 카드 둘째 줄 — 플랜 이름 없이 남은 크레딧만 */
   sub.textContent = V3.ready ? creditsLabel(creditsNow()) + " 크레딧" : "크레딧 " + creditsLabel(creditsNow());
   btn.textContent = "로그아웃";
+  renderStartUI();
+}
+/* 시작 전(로그인·게스트 입장 전)에는 방 목록·닉네임·크레딧을 숨기고 ‘끼리 시작하기’ 하나만 남긴다.
+   로그인·게스트 시작이 끝나면(signedIn) 원래 화면으로 바로 돌아온다. */
+function startDone() { return !!V3.signedIn || V3.mode === "local"; }
+function renderStartUI() {
+  var done = startDone();
+  var set = function (id, hide) { var el = $(id); if (el) el.hidden = !!hide; };
+  set("nickLine", !done);
+  set("sideRoomsSec", !done);
+  set("homeSum", !done);
+  set("homeRoomsSec", !done);
+  set("homeFoot", !done);
+  set("homeStartCard", done);
+  var hv = $("homeView");
+  if (hv) hv.classList.toggle("prestart", !done);
 }
 function renderExperts() {
   var host = $("sideExperts");
@@ -6379,8 +6718,8 @@ function renderExpertPicker() {
   var hint = $("expertHint");
   if (hint) {
     hint.innerHTML = draft
-      ? "필요한 역할의 끼리 AI를 누르면 <b>방 만들기 목록</b>에 들어가요. (답할 때마다 크레딧을 사용해요)"
-      : "필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요. (답할 때마다 크레딧을 사용해요)";
+      ? "필요한 역할의 끼리 AI를 누르면 <b>방 만들기 목록</b>에 들어가요. (답변 1회당 10크레딧)"
+      : "필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요. (답변 1회당 10크레딧)";
   }
   var inRoom = {};
   (r ? r.members : []).forEach(function (id) {
@@ -6393,8 +6732,7 @@ function renderExpertPicker() {
     h += '<button type="button" class="expert-card' + (added ? " added" : "") + '" data-expert="' + esc(ex.id) + '"' + (added ? ' aria-disabled="true"' : "") + '>' +
       '<span class="e-top"><span class="e-ava" aria-hidden="true">' + esc(ex.avatar) + '</span>' +
       '<span class="e-name"><b>' + esc(ex.name) + '</b><small>' + esc(ex.role) + '</small></span></span>' +
-      '<span class="e-foot"><span class="e-cost">' + configCost(ex.config) + ' 크레딧 / 턴</span>' +
-      '<span class="e-add">' + (added ? (draft ? "목록에 있음" : "이 방에 있음") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가")) + '</span></span></button>';
+      '<span class="e-foot"><span class="e-add">' + (added ? (draft ? "목록에 있음" : "이 방에 있음") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가")) + '</span></span></button>';
   });
   grid.innerHTML = h;
   var bal = $("inviteBalance");
@@ -6402,8 +6740,8 @@ function renderExpertPicker() {
   var note = $("expertNote");
   if (note) {
     note.innerHTML = V3.mode === "local"
-      ? "지금은 <b>로컬 데모</b>라 끼리 AI가 규칙 기반으로 답합니다. 서버에 연결하면 같은 자리에서 실제 모델이 답해요."
-      : (V3.signedIn ? "끼리 AI는 끼리 서버가 대신 호출합니다. 내 API 키를 넣지 않아도 되고, 내 키는 <b>설정</b>에서 그대로 쓸 수 있어요."
+      ? "지금은 <b>로컬 데모</b>라 끼리 AI가 규칙 기반으로 답합니다."
+      : (V3.signedIn ? "내 API 키를 연결해 두었다면 그 키로 동작해요."
                      : "게스트로 시작하면 매일 200크레딧으로 바로 추가해 볼 수 있어요.");
   }
   renderCustomTarget();
@@ -6536,18 +6874,6 @@ async function signInGuest() {
     toast("게스트로 시작 · 크레딧 " + creditsNow());
   } catch (e) { setAuthMsg("err", "네트워크 오류로 로그인하지 못했어요."); }
 }
-async function signInMagic() {
-  var email = String($("authEmail").value || "").trim();
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setAuthMsg("err", "이메일 주소를 확인해 주세요."); return; }
-  if (V3.mode === "mock") { setAuthMsg("ok", "데모 모드예요 · 매직링크 없이 게스트로 시작할 수 있어요."); return; }
-  if (V3.mode === "local") { setAuthMsg("err", "서버 연결이 없어 메일을 보낼 수 없어요."); return; }
-  setAuthMsg("info", "메일을 보내는 중…");
-  try {
-    var res = await db.client.auth.signInWithOtp({ email: email, options: { emailRedirectTo: String(location.href).split("#")[0] } });
-    if (res.error) { setAuthMsg("err", authFriendly(res.error)); return; }
-    setAuthMsg("ok", email + " 로 로그인 링크를 보냈어요. 메일함에서 링크를 눌러 주세요.");
-  } catch (e) { setAuthMsg("err", "네트워크 오류로 메일을 보내지 못했어요."); }
-}
 async function signInPassword() {
   var email = String($("authEmail").value || "").trim();
   var pw = String($("authPw").value || "");
@@ -6598,6 +6924,8 @@ async function signOutAll() {
 }
 function maybeAskAuth() {
   if (V3.mode === "local" || V3.signedIn) return;
+  /* 초대 링크(?code=·?room=)로 들어왔으면 시작 전에는 늘 먼저 시작을 안내한다(세션 1회 제한 없음). */
+  if (pendingJoin) { setAuthMsg("", ""); openModal("authModal"); return; }
   var shown = false;
   try { shown = sessionStorage.getItem(AUTH_SHOWN_KEY) === "1"; } catch (e) {}
   if (shown) return;
@@ -6958,24 +7286,36 @@ function wireV3() {
         okText: "로그아웃", okClass: "dark"
       }).then(function (ok) { if (ok) signOutAll(); });
     }
-    else { setAuthMsg("", ""); openModal("authModal"); }
   });
+  /* 시작 전(비로그인)에는 사이드바 계정 카드와 홈 시작 카드 둘 다 같은 시작 모달을 연다 */
+  var openStart = function () {
+    if (V3.signedIn) return;
+    if (V3.mode === "local") { toast("로컬 데모예요 · 서버에 연결되면 로그인할 수 있어요"); return; }
+    setAuthMsg("", "");
+    openModal("authModal");
+  };
+  var al = $("accountLine");
+  if (al) {
+    al.addEventListener("click", function (e) {
+      if (e.target.closest("#accountBtn")) return;
+      openStart();
+    });
+    al.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      openStart();
+    });
+  }
+  var hsc = $("homeStartCard");
+  if (hsc) hsc.addEventListener("click", openStart);
+  var invDone = $("inviteDone");
+  if (invDone) invDone.addEventListener("click", function () { closeModal("inviteModal"); });
   var gb = $("guestBtn");
   if (gb) gb.addEventListener("click", signInGuest);
-  var mb = $("magicBtn");
-  if (mb) mb.addEventListener("click", signInMagic);
-  var pt = $("pwToggle");
-  if (pt) pt.addEventListener("click", function () {
-    var w = $("pwWrap");
-    w.hidden = !w.hidden;
-    pt.textContent = w.hidden ? "비밀번호로 로그인" : "매직링크로 로그인";
-  });
   var pl = $("pwLogin");
   if (pl) pl.addEventListener("click", signInPassword);
   var ps = $("pwSignup");
   if (ps) ps.addEventListener("click", signUpPassword);
-  var gs = $("guestSkip");
-  if (gs) gs.addEventListener("click", function () { closeModal("authModal"); toast("로그인 전에는 공개 방을 읽을 수 있어요"); });
   var grid = $("expertGrid");
   if (grid) grid.addEventListener("click", function (e) {
     var c = e.target.closest("[data-expert]");
@@ -7253,6 +7593,13 @@ function wire() {
 
   /* 라운드테이블 시작 시트 — 입력은 안건 한 칸, 나머지는 방 설정을 따른다 */
   $("rtStart").addEventListener("click", rtStart);
+  var rtc = $("rtTurns");
+  if (rtc) rtc.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-turns]");
+    if (!b) return;
+    rtSetTurns(b.getAttribute("data-turns"));
+    rtRefreshSummary();
+  });
 
   /* 크레딧 상한 시트 */
   $("budgetChips").addEventListener("click", function (e) {
@@ -7540,6 +7887,7 @@ wire();
 wireV3();
 var nl = $("nickLabel");
 if (nl) nl.textContent = nick();
+V3.mode = v3ModeNow();   /* 시작 전 화면(사이드바·홈)이 첫 그리기부터 맞게 */
 renderAll();
 renderApi();
 syncFields();
