@@ -617,12 +617,15 @@
     .sidebar .side-close{display:inline-grid}
     .main{height:100dvh}
     .only-mobile{display:inline-grid}
-    .room-head{padding:9px 10px;gap:7px}
+    .room-head{padding:8px 10px 9px;gap:6px 7px;flex-wrap:wrap}
     .room-head .room-emoji{display:none}
     .room-head .live-pill{display:none}
     .room-head .pres-pill{display:none}
-    .room-actions{gap:5px}
-    .rt-line h1{font-size:14.5px}
+    .room-actions{gap:5px;margin-left:auto}
+    /* 방 이름이 곧 주제 — 모바일에서는 이름이 한 줄을 다 쓴다(잘리지 않게) */
+    .room-titles{flex:1 1 100%;order:5;margin-top:1px}
+    .rt-line{flex-wrap:wrap;row-gap:3px}
+    .rt-line h1{font-size:14.5px;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .kind-pill{font-size:8px}
     .room-titles p{font-size:9.5px}
     .ghost-btn{padding:8px 10px;font-size:10.5px}
@@ -687,7 +690,7 @@
     </div>
 
     <div class="side-sec">
-      <div class="sec-head"><span>방</span><button class="mini-btn" id="newRoomBtn">+ 새 방</button></div>
+      <div class="sec-head"><span>💬 내 대화방 <em id="roomCount">0</em></span><button class="mini-btn" id="newRoomBtn">+ 새 방</button></div>
       <div class="room-list" id="roomList"></div>
     </div>
 
@@ -723,7 +726,7 @@
       <button class="icon-btn only-mobile" id="menuBtn" aria-label="방 목록 열기">☰</button>
       <span class="room-emoji" id="roomEmoji" aria-hidden="true">🚀</span>
       <div class="room-titles">
-        <div class="rt-line"><h1 id="roomName">방</h1><span class="kind-pill" id="roomKind">프로젝트방</span><span class="live-pill wait" id="livePill">연결 중</span></div>
+        <div class="rt-line"><h1 id="roomName">방</h1><span class="live-pill wait" id="livePill">연결 중</span></div>
         <p id="roomSub"></p>
       </div>
       <div class="room-actions">
@@ -737,7 +740,7 @@
 
     <section class="ctrl" id="ctrl" aria-label="대화 제어">
       <div class="ctrl-top">
-        <button type="button" class="rt-btn" id="discussBtn" title="이 방 안건으로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><span aria-hidden="true">▶</span> 토론 시작</button>
+        <button type="button" class="rt-btn" id="discussBtn" title="이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><span aria-hidden="true">▶</span> 토론 시작</button>
         <p class="ctrl-lead" id="ctrlLead">평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요</p>
         <div class="ctrl-actions">
           <button class="icon-btn" id="pauseBtn" title="일시정지" aria-label="일시정지">⏸</button>
@@ -745,7 +748,7 @@
         </div>
       </div>
       <div class="meters">
-        <div class="meter" id="turnMeter" title="턴·안건 설정">
+        <div class="meter" id="turnMeter" title="턴·주제 설정">
           <div class="m-top"><span id="turnLabel">턴</span><span class="m-val" id="turnVal">0 / 10턴</span></div>
           <div class="bar"><i id="turnBar"></i></div>
         </div>
@@ -873,14 +876,15 @@ Content-Type: application/json
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rfTitle">
     <div class="sheet-head"><h2 id="rfTitle">새 방 만들기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>방 이름</span><input id="rfName" type="text" maxlength="30" placeholder="예: 프로젝트방" autocomplete="off"></label>
+      <label class="field"><span>방 이름 (주제)</span><input id="rfName" type="text" maxlength="40" placeholder="예: 12월 프로모션 기획" autocomplete="off"></label>
+      <p class="modal-note" style="margin-top:6px">방 이름이 곧 토론 주제가 돼요. 토론을 시작할 때 더 좁혀 적을 수 있어요.</p>
+      <div class="field"><span>주제 분류</span><div class="pick-row" id="rfCat"></div></div>
       <div class="field-row">
         <div class="field"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
         <label class="field"><span>최대 턴</span>
           <select id="rfTurns"><option value="5">5턴</option><option value="10" selected>10턴</option><option value="15">15턴</option><option value="20">20턴</option></select>
         </label>
       </div>
-      <label class="field"><span>안건 (프로젝트방)</span><input id="rfAgenda" type="text" maxlength="90" placeholder="예: 연말 캠페인 아이디어 3개 제안" autocomplete="off"></label>
       <div class="field"><span>역할 배정</span>
         <div class="pick-row" id="rfRoleMode">
           <button type="button" class="pick" data-rolemode="auto" aria-pressed="true">자동 (기본)</button>
@@ -904,7 +908,7 @@ Content-Type: application/json
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtTitle">
     <div class="sheet-head"><h2 id="rtTitle">토론 설정</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>안건</span><textarea id="rtAgenda" placeholder="예: 연말 캠페인 아이디어 3개 제안" maxlength="300"></textarea></label>
+      <label class="field"><span>토론 주제</span><textarea id="rtAgenda" placeholder="방 이름(주제)이 그대로 들어가요 · 필요하면 더 좁혀 적어도 돼요" maxlength="300"></textarea></label>
       <div class="field"><span>참여 AI</span><div class="pick-row" id="rtMembers"></div></div>
       <label class="field"><span>사회자</span><select id="rtModerator"></select></label>
       <div class="field"><span>최대 턴</span><div class="pick-row" id="rtTurns">
@@ -1192,18 +1196,18 @@ function seedState() {
     agents: seedAgents(),
     rooms: [
       {
-        id: "r_promo", emoji: "🚀", name: "프로젝트방", kind: "project",
-        agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 10, budget: 200,
+        id: "r_promo", emoji: "🚀", name: "연말 캠페인 기획", kind: "project",
+        agenda: "연말 캠페인 기획", mode: "mention", settings: { category: "work" }, roleMode: "auto", roles: {}, maxTurns: 10, budget: 200,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 미리보기 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 미리보기 · 데모 모드로 시작합니다. 주제가 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요." }]
       },
       {
-        id: "r_lounge", emoji: "☕", name: "자유 수다방", kind: "chat",
-        agenda: "", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 0, budget: 100,
+        id: "r_lounge", emoji: "✈️", name: "주말 여행 코스 짜기", kind: "chat",
+        agenda: "주말 여행 코스 짜기", mode: "mention", settings: { category: "travel" }, roleMode: "auto", roles: {}, maxTurns: 0, budget: 100,
         members: ["pikri", "kirini", "muu"], status: "idle", createdAt: now - 5000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "사랑방이에요. 편하게 이야기하면 그대로 올라가고, @이름으로 부르면 그 AI가 답해요." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "편하게 이야기하면 그대로 올라가고, @이름으로 부르면 그 AI가 답해요." }]
       }
     ]
   };
@@ -1371,10 +1375,35 @@ var ROLE_DEFS = {
   ops:      { label: "실무·전략",      focus: "실행 순서와 비용·일정을 현실적으로 맞추기", keys: ["마케팅", "전략", "실무", "운영", "기획", "실행", "비서", "진행"] },
   check:    { label: "실행 체크",      focus: "누가 언제 무엇을 할지 실행 항목과 기한으로 바꾸기", keys: ["실행", "운영", "일정", "비서"] },
   user:     { label: "사용자 관점",    focus: "고객이 실제로 느끼는 불편과 말을 대신 말하기", keys: ["카피", "사용자", "고객"] },
-  legal:    { label: "법무·약관",      focus: "약관·표시·광고 규정에서 걸릴 부분 확인하기", keys: ["법무", "약관", "검토"] }
+  legal:    { label: "법무·약관",      focus: "약관·표시·광고 규정에서 걸릴 부분 확인하기", keys: ["법무", "약관", "검토"] },
+  /* 여행·일상·고민 방 — 기업 용어 대신 생활 언어의 역할 */
+  plan_trip:  { label: "여행 플래너",  focus: "동선과 일정을 하루 단위로 짜서 한 코스로 정리하기", keys: ["여행", "일정", "계획", "기획"] },
+  budget_trip:{ label: "가성비 체크",  focus: "값과 조건을 비교해 실제로 이득인 선택 골라내기", keys: ["데이터", "분석", "가격", "비용", "숫자"] },
+  local:      { label: "현지 감각",    focus: "그 동네 분위기와 이동 시간, 계절을 짚어 주기", keys: ["여행", "리서처", "분석", "사용자"] },
+  trip_check: { label: "예약·준비물",  focus: "예약 마감과 준비물, 놓치기 쉬운 것 챙기기", keys: ["실행", "운영", "일정", "비서"] },
+  food_find:  { label: "맛집·메뉴",    focus: "먹어 볼 곳과 메뉴를 취향에 맞춰 추리기", keys: ["맛집", "메뉴", "사용자", "카피"] },
+  food_mood:  { label: "분위기·취향",  focus: "분위기와 취향이 맞는지 살펴보기", keys: ["카피", "사용자", "창의", "아이디어"] },
+  food_check: { label: "영업·동선",    focus: "웨이팅·영업시간·이동을 미리 확인하기", keys: ["실행", "운영", "일정", "비서"] },
+  empathy:    { label: "공감 조언",    focus: "상대 입장에서 마음을 먼저 읽고 말을 골라 주기", keys: ["사용자", "고객", "카피"] },
+  realist:    { label: "현실 조언",    focus: "지금 할 수 있는 것과 무리한 계획을 구분하기", keys: ["실행", "전략", "비용", "데이터"] },
+  view_other: { label: "다른 관점",    focus: "다른 쪽에서 보면 어떻게 보이는지 짚어 주기", keys: ["비판", "리스크", "반대"] },
+  calm:       { label: "차분한 정리",  focus: "감정과 사실을 나눠 결정할 것만 남기기", keys: ["사회", "진행", "총괄", "비서"] },
+  step:       { label: "작은 실천",    focus: "이번 주에 해 볼 한 가지를 정해 주기", keys: ["실행", "일정", "비서", "진행"] }
+};
+/* 주제 분류별 역할 구성 — 업무·기획은 전략/데이터/레드팀, 여행·일상·고민은 생활 언어로. */
+var CAT_ROLE_SETS = {
+  travel:  ["plan_trip", "budget_trip", "local", "realist", "trip_check"],
+  daily:   ["food_find", "budget_trip", "food_mood", "realist", "food_check"],
+  counsel: ["empathy", "realist", "calm", "view_other", "step"]
 };
 /* 참여 AI 수에 따른 역할 구성 — 1명은 토론 없이 바로 답하고, 2명부터 역할을 나눈다. */
-function roleKeysFor(n) {
+function roleKeysFor(n, cat) {
+  var set = CAT_ROLE_SETS[cat];
+  if (set) {
+    var picked = [];
+    for (var i = 0; i < Math.max(1, n); i++) picked.push(set[i % set.length]);
+    return picked;
+  }
   if (n <= 1) return ["advice"];
   if (n === 2) return ["proposal", "risk2"];
   if (n === 3) return ["copy", "ops", "risk2"];
@@ -1387,9 +1416,28 @@ function roleKeysFor(n) {
 }
 function roleContext(r) {
   var a = String((r && r.agenda) || "").trim();
-  if (a) return "안건 「" + a + "」";
+  if (a) return "주제 「" + a + "」";
   return "방 「" + String((r && r.name) || "") + "」";
 }
+/* 방 주제 분류 — 방의 성격을 한 칸으로 정하고, 아이콘·역할·목록 표기에 함께 쓴다. */
+function catByKey(k) {
+  for (var i = 0; i < ROOM_CATS.length; i++) if (ROOM_CATS[i].key === k) return ROOM_CATS[i];
+  return ROOM_CATS[0];
+}
+/* 분류를 안 정한 옛 방은 이름에서 자연스럽게 추정한다(여행·맛집·고민 단서). */
+function guessCategory(name) {
+  var s = String(name || "");
+  if (/여행|코스|숙소|호텔|항공|제주|부산|해외|당일치기|캠핑/.test(s)) return "travel";
+  if (/맛집|카페|메뉴|맛있|일상|쇼핑|선물|집들이|장보기/.test(s)) return "daily";
+  if (/고민|상담|연애|힘들|속마음|관계|이직|진로|걱정/.test(s)) return "counsel";
+  return "work";
+}
+function categoryKeyOf(r) {
+  var k = r && ((r.settings && r.settings.category) || r.category);
+  if (k && catByKey(k).key === k) return k;
+  return guessCategory(r ? r.name : "");
+}
+function categoryLabelOf(r) { return catByKey(categoryKeyOf(r)).label; }
 function roleAffinity(a, key) {
   var def = ROLE_DEFS[key];
   if (!a || !def) return 0;
@@ -1403,7 +1451,7 @@ function roleAffinity(a, key) {
 function autoRoles(r) {
   var ids = ((r && r.members) || []).filter(function (id) { return !!state.agents[id]; });
   if (!ids.length) return {};
-  var keys = roleKeysFor(ids.length);
+  var keys = roleKeysFor(ids.length, categoryKeyOf(r));
   var n = ids.length;
   var assigned = new Array(n);                                /* assigned[i] = 역할 index */
   var best = null, bestTotal = -1;
@@ -1443,7 +1491,7 @@ function roleModeOf(r) { return r && r.roleMode === "manual" ? "manual" : "auto"
 var roleCache = { sig: null, map: null };
 function roomRoleMap(r) {
   if (!r) return {};
-  var sig = [r.id, roleModeOf(r), r.agenda || "", r.name || "",
+  var sig = [r.id, roleModeOf(r), categoryKeyOf(r), r.agenda || "", r.name || "",
     r.members.map(function (id) { return id + ":" + ((state.agents[id] || {}).role || ""); }).join(","),
     JSON.stringify(r.roles || {})].join("|");
   if (roleCache.sig === sig) return roleCache.map;
@@ -1486,25 +1534,7 @@ function avatarHtml(id, size) {
   return '<span class="avatar ' + (size || "md") + '" style="--c:' + esc(c) + '" aria-hidden="true">' + esc(n) + "</span>";
 }
 
-/* v3: 방 목록을 상위(프로젝트방 · 자유 수다방) / 하위(방) 트리로 그립니다. */
-var TREE_KEY = "kkiri.tree.v1";
-var treeOpen = { project: true, lounge: true };
-function loadTree() {
-  try {
-    var d = JSON.parse(localStorage.getItem(TREE_KEY) || "{}");
-    if (!d || typeof d !== "object") return;
-    if (d.project === false) treeOpen.project = false;
-    if (d.lounge === false) treeOpen.lounge = false;
-  } catch (e) {}
-}
-function saveTree() { try { localStorage.setItem(TREE_KEY, JSON.stringify(treeOpen)); } catch (e) {} }
-function treeKeyOf(kind) { return kind === "chat" ? "lounge" : "project"; }
-function toggleTree(kind) {
-  var k = treeKeyOf(kind);
-  treeOpen[k] = !treeOpen[k];
-  saveTree();
-  renderSidebar();
-}
+/* 방 목록은 하나 — 종류를 나누지 않고 아이콘·이름만으로 구분한다. */
 /* 내가 이 방의 주인인가? (로컬 데모 방은 항상 내 것, 서버 방은 owner_id 비교) */
 function isRoomOwner(rm) {
   if (!rm) return false;
@@ -1512,7 +1542,7 @@ function isRoomOwner(rm) {
   return !!(rm.ownerId && V3.user && rm.ownerId === V3.user.id);
 }
 function roomRowHtml(rm) {
-  var meta = (rm.kind === "chat" ? "사랑방" : "프로젝트방") + " · " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧";
+  var meta = categoryLabelOf(rm) + " · " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧";
   var mine = isRoomOwner(rm);
   var act = mine ? "삭제" : "나가기";
   return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + '" data-room="' + esc(rm.id) + '">' +
@@ -1524,34 +1554,14 @@ function roomRowHtml(rm) {
     '<button type="button" class="r-del" data-room-del="' + esc(rm.id) + '" title="' + esc(rm.name) + " " + act + '" aria-label="' + esc(rm.name) + " " + act + '">' + (mine ? "🗑" : "✕") + "</button>" +
     "</div>";
 }
-function renderRoomTree() {
-  var groups = [
-    { kind: "project", label: "프로젝트방", icon: "🚀", add: "새 프로젝트방 추가", empty: "만든 프로젝트방이 없어요. +로 새로 만들어 보세요" },
-    { kind: "chat", label: "자유 수다방", icon: "☕", add: "새 사랑방 추가", empty: "만든 사랑방이 없어요. +로 새로 만들어 보세요" }
-  ];
+function renderRoomList() {
+  var list = state.rooms;
   var html = "";
-  groups.forEach(function (g) {
-    var list = state.rooms.filter(function (x) { return x.kind === g.kind; });
-    var open = treeOpen[treeKeyOf(g.kind)] !== false;
-    html += '<div class="room-group">' +
-      '<div class="room-group-head">' +
-        '<button type="button" class="rg-toggle" data-tree="' + g.kind + '" aria-expanded="' + (open ? "true" : "false") + '" title="' + g.label + (open ? " 접기" : " 펼치기") + '">' +
-          '<span class="rg-caret" aria-hidden="true">▾</span>' +
-          '<span class="rg-ico" aria-hidden="true">' + g.icon + "</span>" +
-          '<span class="rg-name">' + g.label + "</span>" +
-          '<span class="rg-count">' + list.length + "</span>" +
-        "</button>" +
-        '<button type="button" class="rg-add" data-tree-add="' + g.kind + '" title="' + g.add + '" aria-label="' + g.add + '">+</button>' +
-      "</div>";
-    if (open) {
-      html += '<div class="room-children">';
-      if (!list.length) html += '<p class="room-empty">' + g.empty + "</p>";
-      else list.forEach(function (rm) { html += roomRowHtml(rm); });
-      html += "</div>";
-    }
-    html += "</div>";
-  });
+  if (!list.length) html = '<p class="room-empty">아직 방이 없어요. + 새 방으로 시작해 보세요</p>';
+  else list.forEach(function (rm) { html += roomRowHtml(rm); });
   $("roomList").innerHTML = html;
+  var cnt = $("roomCount");
+  if (cnt) cnt.textContent = list.length;
 }
 /* 이 방에 들어온 AI 한 줄 — 배정된 역할(자동/수동) + '✕ 빼기' */
 function memberRowHtml(a, r) {
@@ -1566,7 +1576,7 @@ function memberRowHtml(a, r) {
 }
 function renderSidebar() {
   var r = activeRoom();
-  renderRoomTree();
+  renderRoomList();
 
   var mhtml = "", shown = 0;
   if (r) {
@@ -1587,7 +1597,7 @@ function renderSidebar() {
     rb.textContent = manual ? "역할 수동" : "역할 자동";
     rb.setAttribute("aria-pressed", manual ? "false" : "true");
     rb.disabled = !r;
-    rb.title = (manual ? "지금은 수동 — AI별 역할을 직접 적어요" : "지금은 자동 — 참여 AI 수와 안건에 맞춰 역할을 나눠요") + " (눌러서 바꾸기)";
+    rb.title = (manual ? "지금은 수동 — AI별 역할을 직접 적어요" : "지금은 자동 — 참여 AI 수와 방 주제에 맞춰 역할을 나눠요") + " (눌러서 바꾸기)";
   }
   var hint = $("aiHint");
   if (hint) hint.textContent = r ? "‘" + r.name + "’ 방에서 부를 수 있는 AI예요. 줄 친 글씨는 이 방에서 맡은 역할이에요." : "방을 먼저 만들어 주세요.";
@@ -1610,11 +1620,9 @@ function renderRoom() {
     /* 방이 하나도 없을 때(마지막 방을 삭제한 직후) — 빈 상태 안내 */
     $("roomEmoji").textContent = "🗂";
     $("roomName").textContent = "방이 없어요";
-    $("roomKind").textContent = "시작하기";
-    $("roomKind").className = "kind-pill";
-    $("roomSub").textContent = "왼쪽 목록의 + 로 새 방을 만들어 보세요";
+    $("roomSub").textContent = "왼쪽 목록의 + 새 방으로 만들어 보세요";
     document.title = "끼리";
-    $("timelineInner").innerHTML = '<div class="empty-room"><b>아직 방이 없어요</b><p>사이드바의 <b>🚀 프로젝트방 +</b> 또는 <b>☕ 자유 수다방 +</b>를 눌러 새 방을 만들면<br>AI 멤버와 대화를 시작할 수 있어요.</p></div>';
+    $("timelineInner").innerHTML = '<div class="empty-room"><b>아직 방이 없어요</b><p>사이드바의 <b>+ 새 방</b>을 눌러 방을 만들면<br>AI 멤버와 대화를 시작할 수 있어요.</p></div>';
     $("compHint").innerHTML = "";
     $("input").placeholder = "새 방을 먼저 만들어 주세요";
     $("sendBtn").disabled = true;
@@ -1630,11 +1638,12 @@ function renderRoom() {
   }
   $("roomEmoji").textContent = r.emoji || "💬";
   $("roomName").textContent = r.name;
-  $("roomKind").textContent = r.kind === "project" ? "프로젝트방" : "사랑방";
-  $("roomKind").className = "kind-pill" + (r.kind === "project" ? "" : " chat");
-  $("roomSub").textContent = (r.kind === "project"
-    ? "안건: " + (r.agenda || "아직 없음")
-    : "가벼운 수다") + " · AI " + r.members.length + "명 · 역할 " + (roleModeOf(r) === "manual" ? "수동" : "자동");
+  /* 방 이름이 곧 주제 — 이름과 같은 주제를 한 번 더 쓰지 않는다. 토론에서 주제를 따로 좁혔을 때만 보여 준다. */
+  var subBits = [];
+  var topic = String(r.agenda || "").trim();
+  if (topic && topic !== String(r.name || "").trim()) subBits.push("토론 주제: " + topic);
+  subBits.push(categoryLabelOf(r) + " · AI " + r.members.length + "명 · 역할 " + (roleModeOf(r) === "manual" ? "수동" : "자동"));
+  $("roomSub").textContent = subBits.join(" · ");
   document.title = "끼리 · " + r.name;
 
   $("pauseBtn").disabled = !run.active;
@@ -1796,14 +1805,13 @@ function hasRealMessages(r) {
 function emptyHtml(r) {
   var names = memberNames(r).join(" · ");
   var first = r.members.length ? agentName(r.members[0]) : "";
-  var isProject = r.kind === "project";
   var roles = roomRoleMap(r);
   var roleLine = r.members.map(function (id) {
     var ro = roles[id];
     return ro ? esc(agentName(id)) + " " + esc(ro.label) : "";
   }).filter(Boolean).join(" · ");
-  return '<div class="empty"><div class="e-emoji">' + (isProject ? "🚀" : "☕") + '</div><h3>' +
-    (isProject ? esc(r.agenda || "안건을 한 줄 적어 보세요") : "아직 조용해요") + '</h3>' +
+  return '<div class="empty"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div><h3>' +
+    "아직 대화가 없어요</h3>" +
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + r.members.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
     "<br><b>@이름</b>으로 부르면 그 AI가 답하고, 그냥 보내면 대화만 올라가요(크레딧 0). 필요할 때 <b>토론 시작</b>을 누르면 역할을 나눠 토론하고 합의안 카드를 만들어요.</p>" +
@@ -1859,9 +1867,7 @@ function renderQuick() {
     if (a) h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
   });
   h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
-  if (r.kind === "project") {
-    h += '<button type="button" class="q-chip agenda" data-act="agenda" title="안건·턴 설정">🎯 ' + esc(r.agenda || "안건 정하기") + "</button>";
-  }
+  /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작). */
   h += '<button type="button" class="q-chip" data-act="card">📋 합의안</button>';
   $("quickBar").innerHTML = h;
 }
@@ -2095,13 +2101,90 @@ function fillTpl(tpl, room, agent) {
     .replace(/\{other\}/g, others[0] || "다른 AI");
 }
 
+/* 주제 분류별 데모 발언 — 여행·일상·고민 방은 기업 용어 대신 생활 언어로 말한다. */
+var DEMO_CAT = {
+  travel: {
+    open: [
+      "‘{agenda}’ 같이 짜 볼게요. 참여 {n}명, 최대 {turns}턴입니다. 일정·예산·동선으로 나눠 듣고 마지막에 한 코스로 정리하겠습니다.",
+      "‘{agenda}’ 시작해요. 먼저 며칠짜리인지, 누구랑 가는지부터 확인하고 후보를 세 개로 좁히겠습니다."
+    ],
+    opinion: [
+      "2박 3일이면 첫날은 이동과 숙소 근처로 좁히는 게 안전해요. 첫날 오후 일정은 두 개까지만 넣죠.",
+      "이번 시즌엔 오전이 한산해요. 인기 코스는 아침에 넣고 오후는 근처 산책으로 비우면 만족도가 올라갑니다.",
+      "숙소를 중심으로 30분 안쪽으로 묶으면 하루 이동이 두 번으로 줄어요. 비용도 거의 그대로입니다."
+    ],
+    issue: [
+      "쟁점은 두 개로 좁혀지네요. 하나는 일정 밀도, 다른 하나는 숙소 위치입니다. 둘 중 무엇을 먼저 정할지가 관건입니다."
+    ],
+    rebuttal: [
+      "둘째 날이 아직 빡빡합니다. 한 곳을 빼고 근처 카페·산책으로 바꾸면 비용은 그대로, 피로는 크게 줄어요.",
+      "숙소를 시내로 잡자는 말에는 동의하지만, 밤 도착이면 체크인 시간부터 확인해야 합니다."
+    ],
+    converge: [
+      "정리하면 둘째 날은 오전 한 곳, 오후는 숙소 근처로 두고 숙소는 역에서 도보 10분 안쪽으로 잡습니다. 예약은 이번 주 안에 마무리하죠.",
+      "결정: 2박 3일, 첫날 근교 한 곳, 둘째 날 오전 집중·오후 휴식, 숙소는 중심가. 확인 필요: 예약 마감일과 이동 시간입니다."
+    ]
+  },
+  daily: {
+    open: [
+      "‘{agenda}’ 골라 볼게요. 몇 명이, 언제, 예산이 얼마인지부터 정하고 후보를 세 개로 좁히겠습니다.",
+      "‘{agenda}’ 시작하죠. 오늘은 한 곳을 정하고, 나머지는 다음에 볼 수 있게 후보만 남기겠습니다."
+    ],
+    opinion: [
+      "주말 저녁이면 웨이팅 40분은 기본이에요. 같은 메뉴를 조금 더 싸게 먹을 수 있는 근처 두 곳을 후보에 올립니다.",
+      "메뉴가 많은 집보다 한 접시를 잘하는 집이 만족도가 높아요. 그 기준으로 추려 볼게요.",
+      "가격만 보면 A가 싸지만 양을 보면 B가 낫습니다. 둘 다 후보로 두고 시간대를 나누죠."
+    ],
+    issue: [
+      "쟁점은 두 개예요. 웨이팅을 감수할지 예약되는 곳으로 갈지, 그리고 예산을 얼마로 잡을지입니다."
+    ],
+    rebuttal: [
+      "예약이 안 되는 집을 고집하면 시간이 다 갑니다. 예약 한 곳, 웨이팅 한 곳으로 나누는 게 현실적이에요.",
+      "분위기 좋은 곳만 가면 정작 먹는 게 아쉬울 수 있어요. 메뉴를 먼저 보고 고르는 게 낫습니다."
+    ],
+    converge: [
+      "정리하면 예약되는 곳 하나를 먼저 잡고, 두 번째는 근처 웨이팅 감수하는 곳으로 둡니다. 예산은 1인 기준으로 맞춰 두죠.",
+      "결정: 1순위는 예약 가능한 곳, 2순위는 웨이팅 감수, 예산은 1인 3만 원 안쪽. 확인 필요: 영업시간과 주차입니다."
+    ]
+  },
+  counsel: {
+    open: [
+      "‘{agenda}’ 얘기 들을게요. {n}명이 서로 다른 각도에서 듣고, 마지막에 지금 할 수 있는 한 걸음만 정리하겠습니다.",
+      "‘{agenda}’ 천천히 이야기해요. 답을 서두르지 않고, 상황을 정리한 뒤에 결정하죠."
+    ],
+    opinion: [
+      "그 상황이면 마음을 먼저 정리하는 게 순서인 것 같아요. 상대에게 확인할 것과 내가 결정할 것을 나눠 보면 훨씬 가벼워집니다.",
+      "지금은 답을 정하기보다, 내가 실제로 서운했던 지점이 어디였는지 짚는 게 먼저예요.",
+      "그 말을 들었을 때 기분이 상한 건 자연스러워요. 다만 상대도 상황이 있었을 수 있으니 한 번은 확인해 보는 게 좋습니다."
+    ],
+    issue: [
+      "쟁점은 두 가지로 보여요. 지금 말을 꺼낼지, 조금 더 두고 볼지입니다. 둘 다 괜찮은 선택이에요."
+    ],
+    rebuttal: [
+      "바로 말하는 게 낫다는 쪽에도 이유가 있지만, 지금은 감정이 올라와 있어서 말이 세게 나갈 수 있어요. 하루 두고 정리한 뒤 말하는 편이 안전합니다.",
+      "그냥 넘기는 게 낫다는 말에는 반대예요. 넘기면 같은 일이 반복될 수 있으니, 적어도 내 기준은 전해 두는 게 좋습니다."
+    ],
+    converge: [
+      "정리하면 이번 주에는 내가 서운했던 지점을 세 줄로 적어 보고, 다음 주에 한 번 이야기해 보는 걸로 하죠. 결론을 미루는 게 아니라 준비하는 겁니다.",
+      "결정: 이번 주는 정리만, 다음 주에 대화. 확인 필요: 상대가 지금 어떤 상황인지입니다."
+    ]
+  }
+};
+
 function demoTurn(agent, phase) {
   var r = activeRoom();
   var promo = PROMO_RE.test(r.agenda || "");
-  var bank = DEMO[phase] || DEMO.opinion;
-  var arr = bank[agent.id] || bank.generic || [];
+  var catBank = DEMO_CAT[categoryKeyOf(r)];
+  var arr, fromCat = false;
+  if (catBank && catBank[phase] && catBank[phase].length) {
+    arr = catBank[phase];
+    fromCat = true;
+  } else {
+    var bank = DEMO[phase] || DEMO.opinion;
+    arr = bank[agent.id] || bank.generic || [];
+  }
   var usable;
-  if (phase === "chat" || phase === "mention") {
+  if (fromCat || phase === "chat" || phase === "mention") {
     usable = arr.slice();
   } else if (promo) {
     if (phase === "converge") {
@@ -2274,7 +2357,7 @@ function startRoundtable(opts) {
   if (!r) return;
   if (run.active) { toast("이미 진행 중이에요 · 먼저 멈춰 주세요"); return; }
   var agenda = String(opts.agenda || "").trim();
-  if (!agenda) { toast("안건을 적어 주세요"); return; }
+  if (!agenda) { toast("토론 주제를 적어 주세요"); return; }
   var parts = (opts.participants || r.members).filter(function (id) { return !!state.agents[id]; });
   if (parts.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   var mod = opts.moderator && parts.indexOf(opts.moderator) > -1 ? opts.moderator : parts[0];
@@ -2701,6 +2784,27 @@ function defaultTodos(r) {
     for (var j = 0; j < mem.length; j++) { if (re.test(mem[j].role || "")) return mem[j].name; }
     return mem.length ? mem[Math.min(i, mem.length - 1)].name : "피크리";
   }
+  if (categoryKeyOf(r) === "travel") {
+    return [
+      { t: "후보 일정 2안으로 추리기", o: owner(/진행|기획|여행/, 0), d: dday(2) },
+      { t: "숙소·교통 가격 비교", o: owner(/데이터|분석|가성비/, 1), d: dday(3) },
+      { t: "예약 마감일 확인", o: owner(/실행|비서|예약/, 2), d: dday(1) }
+    ];
+  }
+  if (categoryKeyOf(r) === "daily") {
+    return [
+      { t: "후보 3곳 영업시간 확인", o: owner(/실행|예약|동선/, 2), d: dday(1) },
+      { t: "1순위 예약하기", o: owner(/진행|맛집/, 0), d: dday(2) },
+      { t: "메뉴·예산 정리", o: owner(/데이터|가성비/, 1), d: dday(2) }
+    ];
+  }
+  if (categoryKeyOf(r) === "counsel") {
+    return [
+      { t: "서운했던 지점 세 줄로 적기", o: owner(/공감|사용자/, 0), d: dday(3) },
+      { t: "상대에게 확인할 것 정리", o: owner(/현실|실행/, 1), d: dday(4) },
+      { t: "이야기할 때와 방식을 정하기", o: owner(/차분|정리/, 2), d: dday(7) }
+    ];
+  }
   if (/프로모션|할인|사은품|연말|광고|캠페인/.test(agenda)) {
     return [
       { t: "상세페이지 초안 완성", o: owner(/카피|기획/, 1), d: dday(4) },
@@ -2733,7 +2837,7 @@ function cardMarkdown(c) {
   var L = [];
   L.push("# 합의안 카드 · " + c.title);
   L.push("");
-  L.push("- 방: " + c.room + " (" + (c.kind === "project" ? "프로젝트방" : "사랑방") + ")");
+  L.push("- 방: " + c.room);
   L.push("- 일시: " + c.atLabel);
   L.push("- 참여: " + c.stats.members.join(", "));
   L.push("- 통계: " + c.stats.turns + "턴 · " + Math.round(c.stats.tokens).toLocaleString("ko-KR") + " 토큰 · " + (c.stats.credits != null ? creditsLabel(c.stats.credits) + " 크레딧" : "") + " · " + c.stats.duration);
@@ -2967,7 +3071,7 @@ function applyRoleMode(mode, quiet) {
   save();
   dbSaveSettings(r);
   renderAll();
-  if (!quiet) toast(mode === "manual" ? "역할 수동 · AI별 역할을 직접 고칠 수 있어요" : "역할 자동 · 참여 AI 수와 안건에 맞춰 다시 배정했어요");
+  if (!quiet) toast(mode === "manual" ? "역할 수동 · AI별 역할을 직접 고칠 수 있어요" : "역할 자동 · 참여 AI 수와 방 주제에 맞춰 다시 배정했어요");
 }
 function toggleRoleMode() { applyRoleMode(roleModeOf(activeRoom()) === "manual" ? "auto" : "manual"); }
 
@@ -3047,7 +3151,7 @@ function rtRefreshModerators() {
 function openRoundtable(prefill) {
   var r = activeRoom();
   if (run.active) { toast("이미 진행 중이에요"); return; }
-  $("rtAgenda").value = prefill != null ? prefill : (r.agenda || "");
+  $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
   var h = "";
   allAgents().forEach(function (a) {
     var on = r.members.indexOf(a.id) > -1;
@@ -3066,7 +3170,7 @@ function openRoundtable(prefill) {
 }
 function rtStart() {
   var agenda = $("rtAgenda").value.trim();
-  if (!agenda) { toast("안건을 적어 주세요"); $("rtAgenda").focus(); return; }
+  if (!agenda) { toast("토론 주제를 적어 주세요"); $("rtAgenda").focus(); return; }
   var parts = rtSelectedMembers();
   if (parts.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   var mod = $("rtModerator").value;
@@ -3089,9 +3193,24 @@ function openBudgetSheet() {
 /* =========================================================
    15. 방 만들기 · 설정 시트
    ========================================================= */
-var roomForm = { id: null, colorEmoji: "🚀", kind: "project", roleMode: "auto", roles: {} };
-var EMOJIS = ["🚀", "☕", "🎯", "📦", "🎨", "🌙", "💡", "🧩"];
+var roomForm = { id: null, colorEmoji: "🚀", kind: "project", category: "work", roleMode: "auto", roles: {} };
+/* 주제 분류 — 방을 만들 때 한 번 고르면 아이콘·역할·목록 표기가 함께 맞춰진다. */
+var ROOM_CATS = [
+  { key: "work", label: "업무·기획", emoji: "🚀" },
+  { key: "travel", label: "여행·코스", emoji: "✈️" },
+  { key: "daily", label: "일상·맛집", emoji: "🍽️" },
+  { key: "counsel", label: "고민·상담", emoji: "💭" },
+  { key: "etc", label: "기타", emoji: "💡" }
+];
+var EMOJIS = ["🚀", "✈️", "🍽️", "💭", "💡", "☕", "🎯", "📦", "🎨", "🌙", "🧩"];
 
+function renderRfCat() {
+  var h = "";
+  ROOM_CATS.forEach(function (c) {
+    h += '<button type="button" class="pick" data-cat="' + c.key + '" aria-pressed="' + (c.key === roomForm.category ? "true" : "false") + '">' + c.emoji + " " + c.label + "</button>";
+  });
+  $("rfCat").innerHTML = h;
+}
 function renderEmojiPick() {
   var h = "";
   EMOJIS.forEach(function (e) {
@@ -3117,7 +3236,8 @@ function rfDraftRoom() {
     id: roomForm.id || "draft",
     name: $("rfName").value.trim() || "새 방",
     kind: roomForm.kind,
-    agenda: $("rfAgenda").value.trim(),
+    category: roomForm.category,
+    agenda: $("rfName").value.trim(),   /* 방 이름이 곧 주제 */
     members: rfSelectedMembers(),
     roleMode: roomForm.roleMode,
     roles: roomForm.roles
@@ -3162,18 +3282,19 @@ function renderRfRoles() {
   $("rfRoleNote").textContent = manual
     ? "적어 둔 역할·설명이 그 AI의 지시문에 들어가요. 칸을 비우면 자동 배정 값이 쓰이고, AI를 넣고 빼도 적은 값은 남아요."
     : (draft.agenda
-      ? "안건과 참여 AI " + draft.members.length + "명에 맞춰 역할을 나눠요. AI를 넣고 빼면 바로 다시 배정돼요. 직접 고치려면 ‘수동’을 누르세요."
-      : "안건을 한 줄 적으면 역할이 더 정확해져요. 지금은 방 이름과 각 AI의 기본 성격으로 배정했어요.");
+      ? categoryLabelOf(draft) + " 방이라 참여 AI " + draft.members.length + "명에게 맞는 역할을 나눠요. AI를 넣고 빼면 바로 다시 배정돼요. 직접 고치려면 ‘수동’을 누르세요."
+      : "방 이름(주제)을 적으면 역할이 더 정확해져요. 지금은 " + categoryLabelOf(draft) + " 기준으로 각 AI의 기본 성격에 맞춰 배정했어요.");
 }
-function openRoomForm(roomId, kind) {
+function openRoomForm(roomId) {
   var r = roomId ? state.rooms.filter(function (x) { return x.id === roomId; })[0] : null;
   roomForm.id = r ? r.id : null;
-  $("rfTitle").textContent = r ? "방 설정" : (kind === "chat" ? "새 사랑방 만들기" : "새 프로젝트방 만들기");
+  $("rfTitle").textContent = r ? "방 설정" : "새 방 만들기";
   $("rfName").value = r ? r.name : "";
-  roomForm.kind = r ? r.kind : (kind === "chat" ? "chat" : "project");
-  roomForm.colorEmoji = r ? r.emoji : (roomForm.kind === "chat" ? "☕" : "🚀");
+  roomForm.kind = r ? r.kind : "project";
+  roomForm.category = r ? categoryKeyOf(r) : "work";
+  roomForm.colorEmoji = r ? r.emoji : catByKey(roomForm.category).emoji;
+  renderRfCat();
   renderEmojiPick();
-  $("rfAgenda").value = r ? (r.agenda || "") : "";
   roomForm.roleMode = r ? roleModeOf(r) : "auto";
   try { roomForm.roles = r && r.roles ? JSON.parse(JSON.stringify(r.roles)) : {}; } catch (e) { roomForm.roles = {}; }
   renderRfRoleMode();
@@ -3187,7 +3308,7 @@ function openRoomForm(roomId, kind) {
   var mine = isRoomOwner(r);
   var del = $("rfDelete");
   del.textContent = !r ? "" : (!r.remote ? "이 방 삭제"
-    : mine ? (r.kind === "chat" ? "이 사랑방 삭제" : "이 프로젝트방 삭제") : "방 나가기");
+    : mine ? "이 방 삭제" : "방 나가기");
   del.className = r && r.remote && !mine ? "btn" : "btn danger";
   $("rfDeleteNote").textContent = !r ? "" : (!r.remote
     ? "이 브라우저에만 있는 데모 방이에요. 내 화면에서만 지워집니다."
@@ -3207,7 +3328,7 @@ function submitRoomForm() {
   if (!members.length) { toast("AI를 한 명 이상 골라 주세요"); return; }
   var kind = roomForm.kind;
   var emoji = roomForm.colorEmoji;
-  var agenda = $("rfAgenda").value.trim();
+  var category = roomForm.category || "work";
   captureRfRoles();
   var roleMode = roomForm.roleMode === "manual" ? "manual" : "auto";
   var roles = {};
@@ -3225,7 +3346,13 @@ function submitRoomForm() {
   if (roomForm.id) {
     var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
     if (!r) return;
-    r.name = name; r.emoji = emoji; r.kind = kind; r.agenda = agenda;
+    /* 방 이름이 곧 주제 — 예전에 따로 적어 둔 주제가 이름과 달랐다면 그대로 살린다. */
+    var prevName = String(r.name || "").trim();
+    var prevTopic = String(r.agenda || "").trim();
+    r.name = name; r.emoji = emoji; r.kind = kind;
+    r.settings = (r.settings && typeof r.settings === "object" && !Array.isArray(r.settings)) ? r.settings : {};
+    r.settings.category = category;
+    r.agenda = (!prevTopic || prevTopic === prevName) ? name : prevTopic;
     r.mode = "mention"; r.roleMode = roleMode; r.roles = roles;
     r.maxTurns = maxTurns; r.budget = budget; r.members = members;
     if (run.moderator && members.indexOf(run.moderator) < 0) run.moderator = members[0];
@@ -3234,7 +3361,8 @@ function submitRoomForm() {
   } else {
     var room = {
       id: "r_" + uid(""),
-      emoji: emoji, name: name, kind: kind, agenda: agenda, mode: "mention",
+      emoji: emoji, name: name, kind: kind, agenda: name, mode: "mention",
+      settings: { category: category },
       roleMode: roleMode, roles: roles,
       maxTurns: maxTurns, budget: budget, members: members, status: "idle",
       createdAt: Date.now(), session: freshSession(), messages: [],
@@ -3250,8 +3378,6 @@ function submitRoomForm() {
     dbCreateRoom(room, members);
   }
   save();
-  treeOpen[treeKeyOf(kind)] = true;
-  saveTree();
   closeModal("roomFormModal");
   renderAll();
   scrollBottom(true);
@@ -3279,7 +3405,7 @@ function afterRoomRemoved(r, wasOwner) {
   } else {
     dbUnsubscribe();
     toast(wasOwner ? "방을 삭제했어요 · 새 방을 만들어 보세요" : "방에서 나왔어요 · 새 방을 만들어 보세요");
-    setTimeout(function () { if (!state.rooms.length) openRoomForm(null, "project"); }, 320);
+    setTimeout(function () { if (!state.rooms.length) openRoomForm(null); }, 320);
     return;
   }
   toast(wasOwner ? "‘" + r.name + "’ 방을 삭제했어요" : "‘" + r.name + "’ 방에서 나왔어요");
@@ -3587,7 +3713,7 @@ function resetRoom() {
   if (!window.confirm("‘" + r.name + "’ 방의 대화와 완료 표시를 모두 지울까요? 되돌릴 수 없어요. (API 키는 그대로 남습니다)")) return;
   run.epoch++;
   run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
-  r.messages = [{ id: uid("s"), who: "system", kind: "info", at: Date.now(), text: "대화를 초기화했어요. 안건과 설정은 그대로입니다." }];
+  r.messages = [{ id: uid("s"), who: "system", kind: "info", at: Date.now(), text: "대화를 초기화했어요. 방 주제와 설정은 그대로입니다." }];
   r.session = freshSession();
   r.status = "idle";
   save();
@@ -3760,7 +3886,8 @@ function dbApply(roomRows, agentRows, fresh) {
       session: p ? p.session : freshSession(),
       messages: (!fresh && p) ? p.messages : [],
       inviteCode: row.invite_code, hostName: row.host_name, isPublic: row.is_public, remote: true,
-      ownerId: row.owner_id || null
+      ownerId: row.owner_id || null,
+      settings: { category: s.category || "" }
     });
   });
   if (!rooms.length) return false;
@@ -3990,7 +4117,7 @@ async function dbCreateRoom(room, members) {
       is_public: !(V3.signedIn && V3.mode === "cloud"),
       owner_id: (V3.signedIn && V3.mode === "cloud" && V3.user) ? V3.user.id : null,
       host_name: nick(),
-      settings: { emoji: room.emoji, mode: "mention", roleMode: roleModeOf(room), roles: room.roles || {}, maxTurns: room.maxTurns, budget: room.budget }
+      settings: { emoji: room.emoji, mode: "mention", roleMode: roleModeOf(room), roles: room.roles || {}, maxTurns: room.maxTurns, budget: room.budget, category: categoryKeyOf(room) }
     };
     var res = await db.client.from("kkiri_rooms").insert(row);
     if (res.error) { dbToast("방을 서버에 만들지 못했어요 · " + res.error.message); return; }
@@ -4025,7 +4152,7 @@ async function dbUpdateRoom(r, members) {
       name: String(r.name).slice(0, 60),
       kind: r.kind === "chat" ? "lounge" : "project",
       description: String(r.agenda || "").slice(0, 600),
-      settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget }
+      settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget, category: categoryKeyOf(r) }
     }).eq("id", r.id);
     if (res.error) dbToast("방 설정을 저장하지 못했어요 · " + res.error.message);
     for (var i = 0; i < members.length; i++) await dbSetMember(r.id, members[i], true);
@@ -4175,7 +4302,7 @@ function dbSaveSettings(r) {
     name: String(r.name || "방").slice(0, 60),
     kind: r.kind === "chat" ? "lounge" : "project",
     description: String(r.agenda || "").slice(0, 600),
-    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget }
+    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget, category: categoryKeyOf(r) }
   }).eq("id", r.id).then(function (res) {
     if (res && res.error) dbToast("방 설정을 서버에 저장하지 못했어요 · " + res.error.message);
   }, function () {});
@@ -4921,10 +5048,6 @@ function wire() {
   $("roomList").addEventListener("click", function (e) {
     var del = e.target.closest("[data-room-del]");
     if (del) { e.preventDefault(); e.stopPropagation(); roomDeleteQuick(del.getAttribute("data-room-del")); return; }
-    var tree = e.target.closest("[data-tree]");
-    if (tree) { toggleTree(tree.getAttribute("data-tree")); return; }
-    var add = e.target.closest("[data-tree-add]");
-    if (add) { closeSidebar(); openRoomForm(null, add.getAttribute("data-tree-add")); return; }
     var b = e.target.closest("[data-room]");
     if (b) selectRoom(b.getAttribute("data-room"));
   });
@@ -4954,7 +5077,7 @@ function wire() {
   $("menuBtn").addEventListener("click", openSidebar);
   $("sideClose").addEventListener("click", closeSidebar);
   $("backdrop").addEventListener("click", closeSidebar);
-  $("newRoomBtn").addEventListener("click", function () { closeSidebar(); openRoomForm(null, "project"); });
+  $("newRoomBtn").addEventListener("click", function () { closeSidebar(); openRoomForm(null); });
   $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
   $("addAiBtn").addEventListener("click", function () {
     closeSidebar(); aiTab("kkiri"); openModal("inviteModal");
@@ -5095,7 +5218,18 @@ function wire() {
     renderRfRoleMode();
     renderRfRoles();
   });
-  $("rfAgenda").addEventListener("input", function () {
+  $("rfCat").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cat]");
+    if (!b) return;
+    var key = b.getAttribute("data-cat");
+    if (key === roomForm.category) return;
+    roomForm.category = key;
+    roomForm.colorEmoji = catByKey(key).emoji;   /* 분류를 고르면 아이콘도 함께 바뀌고, 아래에서 다시 고를 수 있다 */
+    renderRfCat();
+    renderEmojiPick();
+    renderRfRoles();
+  });
+  $("rfName").addEventListener("input", function () {
     if (roomForm.roleMode === "manual") return;
     clearTimeout(roomForm.roleTimer);
     roomForm.roleTimer = setTimeout(renderRfRoles, 240);
@@ -5197,7 +5331,6 @@ function wire() {
    20. 시작
    ========================================================= */
 loadApi();
-loadTree();
 pinNick();
 var bootedLocal = load();
 if (!bootedLocal) {
