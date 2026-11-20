@@ -72,6 +72,18 @@
   }
   .mini-btn:hover{background:#223241;border-color:#3a5060}
   .mini-btn:disabled{opacity:.45;cursor:default}
+  .mini-btn.green{background:var(--green);border-color:var(--green);color:#fff}
+  .mini-btn.green:hover{background:#0b7a49;border-color:#0b7a49}
+  .rf-add-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px}
+  .rf-add-row span{font-size:10.5px;font-weight:700;color:#7c8894;letter-spacing:-.01em}
+  .sys-acts{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .sys-acts button{
+    border:1px solid #cfdcd6;background:#fff;color:#0d7a48;border-radius:999px;
+    font-size:10.5px;font-weight:900;padding:5px 11px;cursor:pointer;letter-spacing:-.01em;
+  }
+  .sys-acts button:hover{background:var(--green-tint)}
+  .sys-acts button.ghost{color:#3d4d5a;border-color:#dbe3e0}
+  .modal.under{opacity:0 !important;pointer-events:none}
   .room-list{display:flex;flex-direction:column;gap:3px}
   .room-item{
     display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;
@@ -902,19 +914,19 @@
   </main>
 </div>
 
-<!-- ================= AI 추가 (끼리 AI / 내 AI) ================= -->
+<!-- ================= AI 추가 (🤖 끼리 AI / 🙋 나의 AI) ================= -->
 <div class="modal" id="inviteModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
     <div class="sheet-head"><h2 id="inviteTitle">AI 추가</h2><span class="sub" id="inviteBalance"></span><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <div class="seg wide ai-seg" id="aiSeg" role="tablist" aria-label="AI 종류">
-        <button type="button" role="tab" data-tab="kkiri" aria-pressed="true" aria-selected="true"><b>끼리 AI</b><small>끼리가 준비한 전문가 · 크레딧</small></button>
-        <button type="button" role="tab" data-tab="mine" aria-pressed="false" aria-selected="false"><b>내 AI</b><small>내 개인 AI 데려오기 · 무료</small></button>
+        <button type="button" role="tab" data-tab="kkiri" aria-pressed="true" aria-selected="true"><b>🤖 끼리 AI</b><small>끼리 엔진 · 크레딧 또는 내 API 키</small></button>
+        <button type="button" role="tab" data-tab="mine" aria-pressed="false" aria-selected="false"><b>🙋 나의 AI</b><small>초대 링크 · 웹훅 · 무료</small></button>
       </div>
 
       <!-- ---------- 탭 1 · 끼리 AI ---------- -->
       <section id="aiTabKkiri" role="tabpanel" aria-label="끼리 AI">
-        <p class="hint" style="margin-top:0">역할이 다른 전문가를 누르면 바로 이 방에 들어와요. 끼리 AI는 <b>턴마다 크레딧</b>을 쓰고, 내 AI·사람과의 대화는 무료예요. 크레딧이 떨어져도 방은 멈추지 않고 끼리 AI만 잠깁니다.</p>
+        <p class="hint" id="expertHint" style="margin-top:0">역할이 다른 끼리 AI를 누르면 바로 이 방에 들어와요. 끼리 AI는 <b>턴마다 크레딧</b>을 쓰고, 나의 AI·사람과의 대화는 무료예요. 크레딧이 떨어져도 방은 멈추지 않고 끼리 AI만 잠깁니다.</p>
         <div class="expert-grid" id="expertGrid"></div>
         <p class="modal-note" id="expertNote"></p>
 
@@ -923,7 +935,7 @@
         </div>
 
         <details class="spec" id="customWrap">
-          <summary>직접 만들기 · 이름과 성격을 정해 새 AI 만들기</summary>
+          <summary>+ 직접 만들기 · 이름과 성격을 정해 끼리 AI로 만들기</summary>
           <div class="spec-body">
             <label class="field"><span>이름</span><input id="invName" type="text" maxlength="14" placeholder="예: 카피봇" autocomplete="off"></label>
             <div class="field-row">
@@ -935,13 +947,14 @@
               <p class="connect-line" id="customConnect">—</p>
             </div>
             <div class="btn-row"><button class="btn green" id="invAdd">이 방에 추가</button></div>
+            <p class="modal-note">끼리 AI 엔진으로 답하는 커스텀 AI예요. 만들면 이 방에 들이고 홈의 <b>내 AI 팀</b>에도 바로 담아요.</p>
           </div>
         </details>
       </section>
 
-      <!-- ---------- 탭 2 · 내 AI ---------- -->
-      <section id="aiTabMine" role="tabpanel" aria-label="내 AI" hidden>
-        <p class="hint" style="margin-top:0">내 AI 비서에게 이 <b>이 방 초대 링크</b>를 보내면 이 대화방에서 함께 대화해요. 링크를 받은 내 AI는 이 방에만 들어와요. 내 AI 팀에 등록하려면 홈의 <b>🔗 홈 초대</b> 링크를 보내세요. <b>내 AI는 무료</b>로 대화해요.</p>
+      <!-- ---------- 탭 2 · 나의 AI ---------- -->
+      <section id="aiTabMine" role="tabpanel" aria-label="나의 AI" hidden>
+        <p class="hint" style="margin-top:0">내가 데리고 있는 개인 AI 비서(피클 등)를 <b>이 방 초대 링크</b>로 들여보내면 이 대화방에서 함께 대화해요. 링크로 들어온 AI는 이 방에만 들어오고, 대화는 <b>무료</b>예요.</p>
         <label class="field"><span>이 방 초대 링크 · 내 AI에게</span>
           <div class="share-box">
             <input id="mineLink" type="text" readonly aria-label="이 방 초대 링크" spellcheck="false">
@@ -951,7 +964,7 @@
         <p class="hint" id="mineHint">링크를 받은 내 AI는 이 방으로 들어와 함께 대화해요.</p>
 
         <details class="spec" id="hookWrap">
-          <summary>고급 · Webhook으로 연결하기</summary>
+          <summary>+ 웹훅 연결 · 내 AI 서버 주소로 등록</summary>
           <div class="spec-body">
             <label class="field"><span>AI 이름</span><input id="hookName" type="text" maxlength="14" placeholder="예: 피크리" autocomplete="off"></label>
             <label class="field"><span>Webhook URL</span><input id="hookUrl" type="text" placeholder="https://my-agent.example/hook" autocomplete="off" spellcheck="false"></label>
@@ -981,7 +994,7 @@ Content-Type: application/json
             </details>
           </div>
         </details>
-        <p class="modal-note">브라우저에서 직접 호출하므로 <b>내 AI 서버가 CORS를 허용해야</b> 연결 테스트가 통과합니다. 등록한 AI에는 <b>이 방의 대화 내용이 전송</b>되고, 주소·토큰은 이 브라우저에만 저장됩니다. 답하지 못한 턴은 데모 답변으로 대체해 표시합니다.</p>
+        <p class="modal-note">홈의 <b>내 AI 팀</b>에 등록하려면 홈의 <b>🔗 홈 초대</b> 링크를 보내거나, 여기서 등록한 뒤 방 만들기에서 체크하면 돼요. 등록한 AI는 홈의 내 AI 팀에도 함께 저장됩니다. 브라우저에서 직접 호출하므로 <b>내 AI 서버가 CORS를 허용해야</b> 연결 테스트가 통과합니다. 등록한 AI에는 <b>이 방의 대화 내용이 전송</b>되고, 주소·토큰은 이 브라우저에만 저장됩니다. 답하지 못한 턴은 끼리 AI나 데모로 대신하지 않고, 연결을 확인하라는 안내만 남깁니다.</p>
       </section>
 
       <div class="sheet-foot" style="padding-left:0;padding-right:0;margin-top:16px">
@@ -1012,9 +1025,11 @@ Content-Type: application/json
         </div>
       </div>
       <label class="field"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
-      <div class="field"><span>참여 AI · 내 AI 팀에서 체크</span><div class="pick-row" id="rfMembers"></div><p class="modal-note" id="rfMembersNote" style="margin-top:6px"></p></div>
+      <div class="field"><span>참여 AI · 내 AI 팀에서 체크</span><div class="pick-row" id="rfMembers"></div>
+        <div class="rf-add-row"><button type="button" class="mini-btn green" id="rfAddAiBtn">+ AI 추가하기</button><span id="rfAddAiHint"></span></div>
+        <p class="modal-note" id="rfMembersNote" style="margin-top:6px"></p></div>
       <div class="field"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
-      <p class="modal-note">평상시엔 @이름으로 부르고, 부르지 않은 채팅은 크레딧 없이 그냥 올라갑니다. 필요할 때 ‘토론 시작’을 누르면 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요. 끼리 AI는 턴마다 10~30크레딧을 써요.</p>
+      <p class="modal-note">평상시엔 @이름으로 부르고, @이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0). 필요할 때 ‘토론 시작’을 누르면 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요. 끼리 AI는 턴마다 10~30크레딧을 써요.</p>
       <div class="btn-row" id="rfActions">
         <button class="btn green" id="rfSubmit">만들기</button>
       </div>
@@ -1142,28 +1157,47 @@ Content-Type: application/json
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="teamTitle">
     <div class="sheet-head"><h2 id="teamTitle">내 AI 팀에 추가</h2><span class="sub" id="teamSub"></span><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <div class="seg wide" id="teamSeg" role="tablist" aria-label="AI 종류">
-        <button type="button" data-team-tab="kkiri" aria-pressed="true" aria-selected="true">끼리 AI</button>
-        <button type="button" data-team-tab="mine" aria-pressed="false" aria-selected="false">내 AI 직접 만들기</button>
-        <button type="button" data-team-tab="hook" aria-pressed="false" aria-selected="false">웹훅</button>
+      <div class="seg wide ai-seg" id="teamSeg" role="tablist" aria-label="AI 종류">
+        <button type="button" role="tab" data-team-tab="kkiri" aria-pressed="true" aria-selected="true"><b>🤖 끼리 AI</b><small>끼리 엔진 · 크레딧 또는 내 API 키</small></button>
+        <button type="button" role="tab" data-team-tab="mine" aria-pressed="false" aria-selected="false"><b>🙋 나의 AI</b><small>내 AI 데려오기 · 무료</small></button>
       </div>
       <section id="teamTabKkiri" role="tabpanel" aria-label="끼리 AI">
-        <p class="modal-note">방마다 체크해서 부르는 끼리 전문가 AI예요. 팀에 담아 두는 건 무료, 말할 때만 크레딧을 써요.</p>
+        <p class="modal-note">방마다 체크해서 부르는 끼리 AI예요. 팀에 담아 두는 건 무료, 말할 때만 크레딧을 써요. 내 API 키를 연결해 두면 그 키로 답해요.</p>
         <div class="expert-grid" id="teamGrid2" style="margin-top:10px"></div>
+        <details class="spec" id="teamCustomWrap" style="margin-top:14px">
+          <summary>+ 직접 만들기 · 이름과 성격을 정해 끼리 AI로 만들기</summary>
+          <div class="spec-body">
+            <label class="field"><span>이름</span><input id="teamName" type="text" maxlength="14" placeholder="예: 도담" autocomplete="off"></label>
+            <label class="field"><span>역할</span><input id="teamRole" type="text" maxlength="20" placeholder="예: 카피라이터" autocomplete="off"></label>
+            <label class="field"><span>성격·역할 프롬프트</span><textarea id="teamPrompt" maxlength="600" placeholder="예: 너는 브랜드의 카피라이터다. 짧고 리듬 있는 한국어 문장을 쓰고, 늘 선택지 2개를 붙인다."></textarea></label>
+            <div class="field"><span>이 AI는 이렇게 답해요<em class="auto-hint">자동 연결</em></span>
+              <p class="connect-line" id="teamConnect">—</p>
+            </div>
+            <div class="btn-row"><button class="btn green" id="teamCreate">만들어서 팀에 추가</button></div>
+            <p class="modal-note">끼리 AI 엔진으로 답하는 커스텀 AI예요. 만들면 홈의 <b>내 AI 팀</b>에 바로 담겨 새 방에서 체크만 하면 돼요.</p>
+          </div>
+        </details>
       </section>
-      <section id="teamTabMine" role="tabpanel" aria-label="내 AI 직접 만들기" hidden>
-        <label class="field"><span>이름</span><input id="teamName" type="text" maxlength="14" placeholder="예: 도담" autocomplete="off"></label>
-        <label class="field"><span>역할</span><input id="teamRole" type="text" maxlength="20" placeholder="예: 카피라이터" autocomplete="off"></label>
-        <label class="field"><span>성격·역할 프롬프트</span><textarea id="teamPrompt" maxlength="600" placeholder="예: 너는 브랜드의 카피라이터다. 짧고 리듬 있는 한국어 문장을 쓰고, 늘 선택지 2개를 붙인다."></textarea></label>
-        <p class="connect-line" id="teamConnect">—</p>
-        <div class="btn-row"><button class="btn green" id="teamCreate">팀에 추가</button></div>
-      </section>
-      <section id="teamTabHook" role="tabpanel" aria-label="웹훅" hidden>
-        <label class="field"><span>AI 이름</span><input id="teamHookName" type="text" maxlength="14" placeholder="예: 피크리" autocomplete="off"></label>
-        <label class="field"><span>Webhook URL</span><input id="teamHookUrl" type="text" placeholder="https://my-agent.example/hook" autocomplete="off" spellcheck="false"></label>
-        <label class="field"><span>토큰 (선택)</span><input id="teamHookToken" type="text" placeholder="AI가 확인할 비밀 토큰" autocomplete="off" spellcheck="false"></label>
-        <p class="hint">웹훅 AI는 내 서버가 답해요. 끼리는 말을 전달하고 받아 적기만 하고, 크레딧을 쓰지 않아요.</p>
-        <div class="btn-row"><button class="btn green" id="teamHookAdd">팀에 추가</button></div>
+      <section id="teamTabMine" role="tabpanel" aria-label="나의 AI" hidden>
+        <p class="hint" style="margin-top:0">내가 데리고 있는 개인 AI 비서(피클 등)를 <b>홈 초대 링크</b>로 들여보내면 이 홈에서 함께 시작해요. 링크로 들어온 AI는 이 홈에만 들어오고, 대화는 <b>무료</b>예요.</p>
+        <label class="field"><span>홈 초대 링크 · 내 AI에게</span>
+          <div class="share-box">
+            <input id="teamHomeLink" type="text" readonly aria-label="홈 초대 링크" spellcheck="false">
+            <button class="btn dark" id="teamHomeCopy" type="button">복사</button>
+          </div>
+        </label>
+        <p class="hint" id="teamHomeHint">링크를 받은 내 AI는 이 홈으로 들어와 내 AI 팀에서 함께 대화해요.</p>
+        <details class="spec" id="teamHookWrap">
+          <summary>+ 웹훅 연결 · 내 AI 서버 주소로 등록</summary>
+          <div class="spec-body">
+            <label class="field"><span>AI 이름</span><input id="teamHookName" type="text" maxlength="14" placeholder="예: 피크리" autocomplete="off"></label>
+            <label class="field"><span>Webhook URL</span><input id="teamHookUrl" type="text" placeholder="https://my-agent.example/hook" autocomplete="off" spellcheck="false"></label>
+            <label class="field"><span>토큰 (선택)</span><input id="teamHookToken" type="text" placeholder="AI가 확인할 비밀 토큰" autocomplete="off" spellcheck="false"></label>
+            <p class="hint">웹훅 AI는 내 서버가 답해요. 끼리는 말을 전달하고 받아 적기만 하고, 크레딧을 쓰지 않아요. 등록하면 홈의 <b>내 AI 팀</b>에 바로 담겨요.</p>
+            <div class="btn-row"><button class="btn green" id="teamHookAdd">등록하고 팀에 추가</button></div>
+          </div>
+        </details>
+        <p class="modal-note">끼리는 등록한 주소로만 말을 보내요. 웹훅이 답하지 못하면 끼리 AI나 다른 AI가 대신 답하지 않고, 연결을 확인하라는 안내만 남겨요.</p>
       </section>
     </div>
   </div>
@@ -1742,7 +1776,7 @@ function renderRoomList() {
 /* 이 방에 들어온 AI 한 줄 — 배정된 역할(자동/수동) + '✕ 빼기' */
 function memberRowHtml(a, r) {
   var tag = a.type === "expert" ? '<span class="mode-chip cloud">끼리 AI</span>'
-    : (a.type === "byok" || a.type === "webhook") ? '<span class="mode-chip">내 AI</span>' : "";
+    : (a.type === "byok" || a.type === "webhook") ? '<span class="mode-chip">나의 AI</span>' : "";
   var ro = roleOf(r, a.id);
   var chip = ro ? (roleModeOf(r) === "manual" ? "수동 · " : "자동 · ") + ro.label : (a.role || "멤버");
   /* 남의 AI·손님 AI는 자동으로 내 팀에 들어오지 않는다. 원할 때 ‘＋팀’으로 저장한다. */
@@ -1790,7 +1824,7 @@ function renderSidebar() {
 
 function hintFor(r) {
   if (!r) return "";
-  return "<b>@이름</b>을 붙이면 그 AI가 답해요(@전원 = 모두). 그냥 보내면 크레딧 없이 대화만 올라가고, 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요.";
+  return "<b>@이름</b>을 붙이면 그 AI가 답해요(@전원 = 모두). <b>@이름 없이</b> 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0). 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요.";
 }
 
 function renderRoom() {
@@ -1888,8 +1922,8 @@ function findExpertAgent(exId) {
 function agentKindLabel(a) {
   if (!a) return "";
   if (a.type === "expert") return "끼리 AI";
-  if (a.type === "webhook") return "내 AI · 웹훅";
-  if (a.type === "byok") return "내 AI";
+  if (a.type === "webhook") return "나의 AI · 웹훅";
+  if (a.type === "byok") return (a.expert === "custom" || !a.expert) ? "나의 AI" : "나의 AI";
   return "기본 AI";
 }
 function renderHome() {
@@ -1988,7 +2022,7 @@ function renderTeamGrid() {
   if (cn) { var t = customTarget(); cn.textContent = t.label; cn.className = "connect-line" + (t.demo ? " demo" : ""); }
 }
 function teamTab(tab) {
-  teamTabCur = tab === "mine" || tab === "hook" ? tab : "kkiri";
+  teamTabCur = tab === "mine" || tab === "hook" ? "mine" : "kkiri";
   Array.prototype.forEach.call($("teamSeg").querySelectorAll("[data-team-tab]"), function (b) {
     var on = b.getAttribute("data-team-tab") === teamTabCur;
     b.setAttribute("aria-pressed", on ? "true" : "false");
@@ -1996,8 +2030,18 @@ function teamTab(tab) {
   });
   $("teamTabKkiri").hidden = teamTabCur !== "kkiri";
   $("teamTabMine").hidden = teamTabCur !== "mine";
-  $("teamTabHook").hidden = teamTabCur !== "hook";
   if (teamTabCur === "kkiri") renderTeamGrid();
+  else renderTeamMine();
+}
+/* 나의 AI 탭(홈) — 홈 초대 링크(?code= 없음)를 내 AI에게 보낸다 */
+function renderTeamMine() {
+  var link = $("teamHomeLink"), hint = $("teamHomeHint");
+  if (link) link.value = homeInviteLink() || "";
+  if (hint) {
+    hint.innerHTML = V3.mode === "local"
+      ? "지금은 로컬(데모) 모드라 이 링크가 이 브라우저에서만 열려요. 실시간 연결되면 같은 링크로 내 AI가 들어와요."
+      : "링크에 방 코드(?code=)가 붙지 않아요. 링크를 받은 내 AI는 이 홈으로 들어와 내 AI 팀에서 함께 대화해요(무료).";
+  }
 }
 function openTeamAdd() {
   teamTab("kkiri");
@@ -2136,7 +2180,13 @@ function srcBadge(m) {
 function msgHtml(m) {
   if (m.who === "system") {
     var cls = m.kind === "warn" ? " warn" : m.kind === "err" ? " err" : "";
-    return '<div class="msg sys' + cls + '"><div class="note">' + fmtText(m.text) + "</div></div>";
+    var acts = "";
+    if (m.acts && m.acts.length) {
+      acts = '<div class="sys-acts">' + m.acts.map(function (a) {
+        return '<button type="button" data-sys-act="' + esc(a.act) + '">' + esc(a.label) + "</button>";
+      }).join("") + "</div>";
+    }
+    return '<div class="msg sys' + cls + '"><div class="note">' + fmtText(m.text) + "</div>" + acts + "</div>";
   }
   if (m.who === "user") {
     var mine = !m.name || m.name === nick();
@@ -2285,9 +2335,10 @@ function addUserMessage(text) {
   return m;
 }
 
-function addSystem(text, kind) {
+function addSystem(text, kind, acts) {
   var r = activeRoom();
   var m = { id: uid("s"), who: "system", kind: kind || "info", text: text, at: Date.now() };
+  if (acts && acts.length) m.acts = acts;
   r.messages.push(m);
   save();
   renderTimeline(true);
@@ -2696,30 +2747,114 @@ async function loopRoundtable(room, ep) {
   }
 }
 
+/* =========================================================
+   8.5 AI 호출 경로 — 끼리 AI 와 나의 AI 를 섞지 않는다
+   ---------------------------------------------------------
+   · 끼리 AI (전문가 · 직접 만들기 · 기본 AI): 끼리 서버(로그인) 또는 내 API 키(BYOK)
+   · 나의 AI (웹훅 · 초대 링크로 들어온 AI): 오직 그 AI에게만 보낸다.
+     답이 없으면 끼리 AI·OpenAI·데모가 대신 답하지 않고 연결을 확인하라고 안내한다.
+   ========================================================= */
+var KKIRI_SEED = { pikri: 1, kirini: 1, muu: 1, red: 1 };
+function agentClassOf(a) {
+  if (!a) return "kkiri";
+  if (a.type === "expert" || a.type === "byok") return "kkiri";
+  if (a.type === "builtin") return (a.seed || KKIRI_SEED[a.id]) ? "kkiri" : "mine";
+  return "mine";   /* webhook · 초대 링크로 들어온 외부 AI */
+}
+function isKkiriAI(a) { return agentClassOf(a) === "kkiri"; }
+/* 끼리 서버가 아는 모델 이름으로 맞춘다(내 AI를 끼리 서버로 부를 때) */
+function kkiriConfigFor(a) {
+  var m = String((a && a.model) || "");
+  if (/^kkiri-/.test(m)) return m;
+  if (m === "gemini") return "kkiri-gemini-lite";
+  return "kkiri-lite";
+}
+/* 지금 이 AI를 어떤 길로 부를지 */
+function turnRoute(a) {
+  if (agentClassOf(a) === "mine") return (a && a.url) ? "webhook" : "external";
+  if (V3.mode === "mock") return "kkiri-mock";
+  if (V3.mode === "local") return anyKey() ? "kkiri-byok" : "local-demo";
+  /* 내 API 키로 만들어진 AI는 그 키로 부른다(키를 연결해 둔 이유) */
+  var byokAgent = a && (a.type === "byok" || (a.type === "builtin" && (a.model === "gemini" || a.model === "openai")));
+  if (byokAgent && anyKey()) return "kkiri-byok";
+  if (V3.signedIn) return "kkiri-cloud";
+  if (anyKey()) return "kkiri-byok";
+  return "need-connect";
+}
+function routeGuide(a, route) {
+  if (route === "external") return {
+    text: "‘" + a.name + "’은(는) 초대 링크로 직접 접속해야 답할 수 있어요. 상단 🔗 이 방 초대로 링크를 보내 주세요.",
+    acts: [{ label: "🔗 이 방 초대 링크", act: "invite" }]
+  };
+  if (route === "need-connect") return {
+    text: "끼리 AI를 쓰려면 로그인(게스트 100크레딧)하거나 설정에서 내 API 키를 연결해 주세요. 끼리는 대신 다른 AI를 부르지 않아요.",
+    acts: [{ label: "로그인 · 게스트 100크레딧", act: "login" }, { label: "설정 · API 키", act: "settings" }]
+  };
+  return null;
+}
+/* 안내 메시지의 버튼 */
+function sysAct(name) {
+  if (name === "login") {
+    if (V3.mode === "local") { toast("로컬 데모에서는 로그인을 쓸 수 없어요 · 설정에서 내 API 키를 넣어 주세요"); return; }
+    setAuthMsg("", "");
+    openModal("authModal");
+    return;
+  }
+  if (name === "settings") {
+    syncFields(); renderApi(); renderStorage(); hideApiStatus();
+    openModal("settingsModal");
+    return;
+  }
+  if (name === "invite") { openShare(); return; }
+  if (name === "credit") { openCredit(); return; }
+}
+
 async function speak(agent, phase, ep) {
   run.typingAgent = agent.id;
   renderTimeline(true);
   updateMeters();
   await sleep(rand(240, 460));
   if (ep !== run.epoch) { run.typingAgent = null; return; }
-  var out = null, note = "";
+  var route = turnRoute(agent);
+  var out = null, note = "", guide = routeGuide(agent, route);
   try {
-    if (agent.type === "expert") {
-      out = await expertTurn(agent, phase);
-    } else if (agent.type === "webhook" && agent.url) {
+    if (route === "webhook") {
       out = await webhookTurn(agent, phase);
-    } else {
-      var prov = liveProviderFor(agent);
-      if (prov) out = await liveTurn(agent, prov, phase);
+      guide = null;
+    } else if (route === "kkiri-cloud") {
+      out = await cloudExpertTurn(agent, phase);
+    } else if (route === "kkiri-byok") {
+      out = await liveTurn(agent, liveProviderFor(agent) || api.provider, phase);
+    } else if (route === "kkiri-mock") {
+      out = await mockExpertTurn(agent, phase);
+    } else if (route === "local-demo") {
+      out = demoTurn(agent, phase);
+      out.src = "fallback";
     }
   } catch (e) {
-    note = e && (e.webhook || e.cloud) ? e.msg : friendlyError(e);
-    out = null;
+    if (route === "webhook") {          /* 웹훅 실패 → 다른 AI·데모로 대신 답하지 않는다 */
+      guide = {
+        text: "연결된 웹훅 응답을 받지 못했어요. 주소와 서버 상태를 확인해 주세요." + (e && e.msg ? " · " + e.msg : ""),
+        acts: [{ label: "🔗 연결 확인 안내", act: "invite" }]
+      };
+    } else {
+      note = (e && (e.cloud || e.webhook)) ? e.msg : friendlyError(e);
+      guide = {
+        text: agent.name + " 응답을 받지 못했어요 · " + note,
+        acts: [{ label: "설정 · API 키", act: "settings" }]
+      };
+    }
   }
   if (ep !== run.epoch) { run.typingAgent = null; renderTimeline(true); return; }
   run.typingAgent = null;
   if (out && out.skip) {                 /* v3: 크레딧 부족·로그인 필요 → 데모로 대신하지 않고 건너뜀 */
-    if (out.note) addSystem(out.note, "warn");
+    var sk = String(out.note || "");
+    var skActs = null;
+    if (out.note) {
+      if (/로그인|세션/.test(sk)) skActs = [{ label: "로그인 · 게스트 100크레딧", act: "login" }, { label: "설정 · API 키", act: "settings" }];
+      else if (/크레딧/.test(sk)) skActs = [{ label: "💎 내 크레딧", act: "credit" }];
+      addSystem(out.note, "warn", skActs);
+    }
     updateMeters();
     return;
   }
@@ -2744,10 +2879,9 @@ async function speak(agent, phase, ep) {
     addAgentMessage(agent, out, phase);
     return;
   }
-  if (note) addSystem(agent.name + " 응답을 받지 못해 데모 답변으로 이어갑니다 · " + note, "warn");
-  var d = demoTurn(agent, phase);
-  if (note) d.src = "fallback";
-  addAgentMessage(agent, d, phase);
+  if (guide) { addSystem(guide.text, "warn", guide.acts); updateMeters(); return; }
+  /* 여기까지 왔다는 건 끼리 AI·나의 AI 어느 쪽도 답을 주지 못했다는 뜻 — 다른 엔진으로 대신 답하지 않는다. */
+  addSystem(agent.name + " 응답을 받지 못했어요. 잠시 뒤 다시 불러 주세요.", "warn");
 }
 
 function startRoundtable(opts) {
@@ -3382,12 +3516,19 @@ function openModal(id) {
   var m = $(id);
   if (!m) return;
   if (openStack.indexOf(id) < 0) openStack.push(id);
+  /* 나중에 연 창이 위에 오게 — 새 방 창 위에 AI 추가 창을 겹쳐 쓸 수 있다 */
+  m.style.zIndex = String(60 + openStack.length);
   m.hidden = false;
   requestAnimationFrame(function () { m.classList.add("show"); });
 }
 function closeModal(id) {
   var m = $(id);
   if (!m) return;
+  /* 방 만들기 창 위에 띄운 AI 추가 창을 닫으면 방 만들기 창을 다시 보이게 */
+  if (id === "inviteModal") {
+    var under = $("roomFormModal");
+    if (under && !under.hidden) under.classList.remove("under");
+  }
   /* 확인창을 취소·배경 클릭·Esc 로 닫아도 대기 중인 약속이 풀리도록 한다 */
   if (id === "confirmModal" && confirmState) {
     var s = confirmState; confirmState = null; s.resolve(false);
@@ -3718,7 +3859,7 @@ function renderRfRoles() {
     var ar = auto[id] || { label: "멤버", focus: "" };
     if (manual) {
       var cur = roomForm.roles[id] || {};
-      h += '<div class="role-edit"><div class="re-head"><b>' + esc(a.name) + '</b><small>' + esc(a.role || (a.type === "byok" || a.type === "webhook" ? "내 AI" : "끼리 AI")) + '</small></div>' +
+      h += '<div class="role-edit"><div class="re-head"><b>' + esc(a.name) + '</b><small>' + esc(a.role || (a.type === "byok" || a.type === "webhook" ? "나의 AI" : "끼리 AI")) + '</small></div>' +
         '<input type="text" maxlength="16" data-role-label="' + esc(id) + '" placeholder="역할 (예: 리스크 검증)" value="' + esc(cur.label || ar.label) + '" aria-label="' + esc(a.name) + ' 역할">' +
         '<input type="text" maxlength="80" data-role-focus="' + esc(id) + '" placeholder="잘하는 일·말투를 한 줄로" value="' + esc(cur.focus || ar.focus) + '" aria-label="' + esc(a.name) + ' 역할 설명">' +
         '</div>';
@@ -3829,7 +3970,7 @@ function submitRoomForm() {
     };
     room.messages.push({
       id: uid("s"), who: "system", kind: "info", at: Date.now(),
-      text: "새 방이에요. @이름으로 부르면 그 AI가 답하고, 부르지 않은 채팅은 그냥 올라갑니다. 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요."
+      text: "새 방이에요. @이름을 붙이면 그 AI가 답하고, @이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0). 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요."
     });
     state.rooms.push(room);
     state.activeRoomId = room.id;
@@ -3919,6 +4060,8 @@ function roomDeleteQuick(id) {
    16. AI 초대
    ========================================================= */
 var invColor = COLORS[0];
+/* AI를 어디에 넣을지 — "room" = 지금 방에 / "draft" = 새 방 만들기 목록에 (방은 만들기 전) */
+var invTarget = "room";
 function renderSwatches() {
   var h = "";
   COLORS.forEach(function (c) {
@@ -3936,6 +4079,30 @@ function aiTab(tab) {
   $("aiTabMine").hidden = tab !== "mine";
   if (tab === "kkiri") { renderExpertPicker(); renderInviteAgents(); }
   else renderMine();
+}
+/* AI 한 명을 방에 넣거나, 방 만들기 목록(draft)에 넣는다. 넣은 곳을 돌려준다.
+   toPool=true 면 홈 내 AI 팀에도 함께 저장한다(직접 만들기·웹훅). */
+function invAttach(id, toPool) {
+  if (!state.agents[id]) return "";
+  if (toPool || invTarget === "draft") {
+    ensurePool();
+    if (state.pool.indexOf(id) < 0) state.pool.push(id);
+  }
+  if (invTarget === "draft") {
+    var sel = [];
+    try { sel = rfSelectedMembers(); } catch (e) { sel = []; }
+    if (sel.indexOf(id) < 0) sel.push(id);
+    save();
+    try { renderRoomMemberPick(sel); renderRfRoles(); } catch (e2) {}
+    renderAll();
+    return "draft";
+  }
+  var r = activeRoom();
+  if (!r) return "";
+  if (r.members.indexOf(id) < 0) r.members.push(id);
+  save();
+  renderAll();
+  return "room";
 }
 /* 내 AI 탭 — 이 방 초대 링크(방 전용 ?code=). 내 AI 팀 등록은 홈의 '홈 초대' 링크를 쓴다. */
 function renderMine() {
@@ -3968,12 +4135,17 @@ function renderInviteAgents() {
 function addMemberToRoom(id) {
   var r = activeRoom();
   var a = state.agents[id];
-  if (!r || !a) return;
+  if (!a) return;
+  if (invTarget === "draft") {
+    invAttach(id);
+    closeModal("inviteModal");
+    toast("‘" + a.name + "’을(를) 방 만들기 목록에 넣었어요");
+    return;
+  }
+  if (!r) return;
   if (r.members.indexOf(id) > -1) { toast(a.name + "은(는) 이미 이 방에 있어요"); return; }
-  r.members.push(id);
-  save();
+  invAttach(id);
   dbSetMember(r.id, id, true);
-  renderAll();
   renderInviteAgents();
   toast(a.name + " · 이 방에 추가했어요");
 }
@@ -4009,15 +4181,12 @@ function addByokAgent() {
   };
   if (t.type === "expert") state.agents[id].expert = "custom";
   var r = activeRoom();
-  if (r && r.members.indexOf(id) < 0) r.members.push(id);
-  ensurePool();
-  if (state.pool.indexOf(id) < 0) state.pool.push(id);   /* 내가 만든 AI는 내 AI 팀에도 자동 저장 */
-  save();
+  var how = invAttach(id, true);
   $("invName").value = ""; $("invRole").value = ""; $("invPrompt").value = "";
   closeModal("inviteModal");
   renderAll();
-  if (r) dbUpsertAgent(r.id, id);
-  toast(name + " · 이 방에 추가하고 내 AI 팀에도 저장했어요");
+  if (how === "room" && r) { dbUpsertAgent(r.id, id); toast(name + " · 이 방에 추가하고 내 AI 팀에도 저장했어요"); }
+  else toast("‘" + name + "’ · 방 만들기 목록에 넣고 내 AI 팀에도 저장했어요");
 }
 function setHookStatus(kind, msg) {
   var el = $("hookStatus");
@@ -4063,21 +4232,18 @@ function addHookAgent() {
   if (allAgents().some(function (a) { return a.name === name; })) { toast("같은 이름의 AI가 이미 있어요"); return; }
   var id = "wh_" + hash(name + url).toString(36);
   state.agents[id] = {
-    id: id, name: name, role: "내 AI", color: COLORS[3], type: "webhook", model: "demo",
+    id: id, name: name, role: "나의 AI", color: COLORS[3], type: "webhook", model: "demo",
     url: url, token: $("hookToken").value.trim(), status: "unknown", prompt: "",
-    desc: "Webhook으로 연결한 내 AI"
+    desc: "Webhook으로 연결한 나의 AI"
   };
   var r = activeRoom();
-  if (r && r.members.indexOf(id) < 0) r.members.push(id);
-  ensurePool();
-  if (state.pool.indexOf(id) < 0) state.pool.push(id);   /* 내가 등록한 웹훅 AI도 내 AI 팀에 자동 저장 */
-  save();
+  var how = invAttach(id, true);
   $("hookName").value = ""; $("hookUrl").value = ""; $("hookToken").value = "";
   $("hookStatus").hidden = true;
   closeModal("inviteModal");
   renderAll();
-  if (r) dbUpsertAgent(r.id, id);
-  toast(name + " · 이 방에 등록하고 내 AI 팀에도 저장했어요");
+  if (how === "room" && r) { dbUpsertAgent(r.id, id); toast(name + " · 이 방에 등록하고 내 AI 팀에도 저장했어요"); }
+  else toast("‘" + name + "’ · 방 만들기 목록에 넣고 내 AI 팀에도 저장했어요");
 }
 
 /* =========================================================
@@ -5006,6 +5172,13 @@ function renderExpertPicker() {
   var grid = $("expertGrid");
   if (!grid) return;
   var r = activeRoom();
+  var draft = invTarget === "draft";
+  var hint = $("expertHint");
+  if (hint) {
+    hint.innerHTML = draft
+      ? "역할이 다른 끼리 AI를 누르면 <b>방 만들기 목록</b>에 들어가요. 끼리 AI는 <b>턴마다 크레딧</b>을 쓰고, 나의 AI·사람과의 대화는 무료예요."
+      : "역할이 다른 끼리 AI를 누르면 바로 이 방에 들어와요. 끼리 AI는 <b>턴마다 크레딧</b>을 쓰고, 나의 AI·사람과의 대화는 무료예요. 크레딧이 떨어져도 방은 멈추지 않고 끼리 AI만 잠깁니다.";
+  }
   var inRoom = {};
   (r ? r.members : []).forEach(function (id) {
     var a = state.agents[id];
@@ -5013,13 +5186,13 @@ function renderExpertPicker() {
   });
   var h = "";
   EXPERT_CATALOG.forEach(function (ex) {
-    var added = !!inRoom[ex.id] || !!inRoom[ex.name];
+    var added = draft ? !!(findExpertAgent(ex.id) && inPool(findExpertAgent(ex.id))) : (!!inRoom[ex.id] || !!inRoom[ex.name]);
     h += '<button type="button" class="expert-card' + (added ? " added" : "") + '" data-expert="' + esc(ex.id) + '"' + (added ? ' aria-disabled="true"' : "") + '>' +
       '<span class="e-top"><span class="e-ava" aria-hidden="true">' + esc(ex.avatar) + '</span>' +
       '<span class="e-name"><b>' + esc(ex.name) + '</b><small>' + esc(ex.role) + '</small></span></span>' +
       '<p>' + esc(ex.desc) + '</p>' +
       '<span class="e-foot"><span class="e-cost">' + configCost(ex.config) + ' 크레딧 / 턴</span>' +
-      '<span class="e-add">' + (added ? "이 방에 있음" : "+ 이 방에 추가") + '</span></span></button>';
+      '<span class="e-add">' + (added ? (draft ? "목록에 있음" : "이 방에 있음") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가")) + '</span></span></button>';
   });
   grid.innerHTML = h;
   var bal = $("inviteBalance");
@@ -5319,24 +5492,36 @@ function expertDef(exId) {
   EXPERT_CATALOG.forEach(function (x) { if (x.id === exId) found = x; });
   return found;
 }
-async function addExpert(exId) {
-  var ex = expertDef(exId);
-  var r = activeRoom();
-  if (!ex || !r) return;
-  var already = r.members.some(function (id) {
-    var a = state.agents[id];
-    return a && a.type === "expert" && (a.expert === ex.id || String(a.id).indexOf("ex_" + ex.id + "_") === 0);
-  });
-  if (already) { toast(ex.name + "은(는) 이미 이 방에 있어요"); return; }
+function createExpertAgent(ex) {
   var id = "ex_" + ex.id + "_" + Math.random().toString(36).slice(2, 6);
   state.agents[id] = {
     id: id, name: ex.name, role: ex.role, color: COLORS[hash(id) % COLORS.length],
     type: "expert", expert: ex.id, model: ex.config, prompt: ex.persona,
     desc: ex.desc, avatar: ex.avatar
   };
-  r.members.push(id);
-  save();
-  renderAll();
+  return id;
+}
+async function addExpert(exId) {
+  var ex = expertDef(exId);
+  var r = activeRoom();
+  if (!ex) return;
+  var id = findExpertAgent(ex.id);
+  if (invTarget === "draft") {
+    /* 새 방 만들기 중 — 방은 아직 없다. 내 AI 팀 + 방 만들기 목록에 넣는다. */
+    if (!id) id = createExpertAgent(ex);
+    invAttach(id);
+    closeModal("inviteModal");
+    toast("‘" + ex.name + "’ · 방 만들기 목록에 넣었어요 (턴당 " + configCost(ex.config) + "크레딧)");
+    return;
+  }
+  if (!r) return;
+  var already = r.members.some(function (mid) {
+    var a = state.agents[mid];
+    return a && a.type === "expert" && (a.expert === ex.id || String(a.id).indexOf("ex_" + ex.id + "_") === 0);
+  });
+  if (already) { toast(ex.name + "은(는) 이미 이 방에 있어요"); return; }
+  if (!id) id = createExpertAgent(ex);
+  invAttach(id);
   renderExpertPicker();
   renderInviteAgents();
   await dbUpsertAgent(r.id, id);
@@ -5436,7 +5621,7 @@ async function cloudExpertTurn(agent, phase) {
   var ro = roleOf(r, agent.id);
   var body = {
     room_id: r.id,
-    config: agent.model || "kkiri-lite",
+    config: kkiriConfigFor(agent),
     expert: { id: agent.id, name: agent.name, role: ro ? ro.label : (agent.role || ""), persona: (agent.prompt || "") + roleDirective(r, agent), avatar: agent.avatar || "" },
     phase: phase || "",
     instruction: phaseInstruction(phase, r) + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : ""),
@@ -5622,6 +5807,8 @@ function wire() {
     if (m) { insertMention(m.getAttribute("data-mention")); return; }
   });
   $("timelineInner").addEventListener("click", function (e) {
+    var sa = e.target.closest("[data-sys-act]");
+    if (sa) { sysAct(sa.getAttribute("data-sys-act")); return; }
     var a = e.target.closest("[data-act]");
     if (a) { act(a.getAttribute("data-act")); return; }
     var md = e.target.closest("[data-card-md]");
@@ -5638,6 +5825,7 @@ function wire() {
   $("newRoomBtn").addEventListener("click", function () { closeSidebar(); openRoomForm(null); });
   $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
   $("addAiBtn").addEventListener("click", function () {
+    invTarget = "room";
     closeSidebar(); aiTab("kkiri"); openModal("inviteModal");
   });
   $("invQuick").addEventListener("click", function (e) {
@@ -5819,6 +6007,11 @@ function wire() {
   });
   if ($("teamCreate")) $("teamCreate").addEventListener("click", teamCreateMine);
   if ($("teamHookAdd")) $("teamHookAdd").addEventListener("click", teamAddHook);
+  if ($("teamHomeCopy")) $("teamHomeCopy").addEventListener("click", function () {
+    var v = $("teamHomeLink").value;
+    if (!v) { toast("홈 링크를 확인하지 못했어요"); return; }
+    copyText(v, "홈 초대 링크를 복사했어요 · 내 AI에게 그대로 주세요");
+  });
   var nickSave = function () {
     var v = saveNick($("nickInput").value);
     $("nickInput").value = v;
@@ -5839,10 +6032,17 @@ function wire() {
     openRoomForm(null);
   });
 
-  /* AI 추가 (끼리 AI / 내 AI) */
+  /* AI 추가 (🤖 끼리 AI / 🙋 나의 AI) — 방 안에서 */
   $("aiSeg").addEventListener("click", function (e) {
     var b = e.target.closest("[data-tab]");
     if (b) aiTab(b.getAttribute("data-tab"));
+  });
+  /* 새 방 만들기 창 안에서 바로 AI 추가 — 방은 아직 없으니 목록에 넣는다 */
+  if ($("rfAddAiBtn")) $("rfAddAiBtn").addEventListener("click", function () {
+    invTarget = "draft";
+    aiTab("kkiri");
+    openModal("inviteModal");
+    $("roomFormModal").classList.add("under");
   });
   $("mineCopyLink").addEventListener("click", function () {
     var v = $("mineLink").value;
