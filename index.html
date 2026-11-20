@@ -3312,12 +3312,20 @@ async function dbInit() {
     if (!dbApply(res[0].data || [], res[1].data || [])) throw new Error("empty");
     db.ready = true;
     if (pendingJoin) {
-      if (pendingJoin.room && !state.rooms.some(function (r) { return r.id === pendingJoin.room; })) {
-        toast("초대 링크의 방을 찾지 못했어요");
-      } else if (pendingJoin.code && !state.rooms.some(function (r) { return String(r.inviteCode || "").toUpperCase() === pendingJoin.code; })) {
+      var target = null;
+      if (pendingJoin.room) {
+        state.rooms.forEach(function (r) { if (r.id === pendingJoin.room) target = r; });
+      }
+      if (!target && pendingJoin.code) {
+        state.rooms.forEach(function (r) { if (String(r.inviteCode || "").toUpperCase() === pendingJoin.code) target = r; });
+      }
+      if (target) {
+        state.activeRoomId = target.id;
+        toast("초대받은 방 ‘" + target.name + "’(으)로 들어왔어요");
+      } else if (pendingJoin.code) {
         toast("초대 코드를 찾지 못했어요 · " + pendingJoin.code);
       } else {
-        toast("초대받은 방으로 들어왔어요");
+        toast("초대 링크의 방을 찾지 못했어요");
       }
     }
     renderAll();
