@@ -5462,13 +5462,20 @@ function wire() {
   $("testBtn").addEventListener("click", testConnection);
   $("delBtn").addEventListener("click", function () {
     if (!keyFor(api.provider)) { setApiStatus("err", "지울 키가 없어요."); return; }
-    if (!window.confirm(providerLabel(api.provider) + " API 키를 이 브라우저에서 지울까요? 지우면 데모 모드로 돌아갑니다.")) return;
-    if (api.provider === "gemini") api.geminiKey = ""; else api.openaiKey = "";
-    $("apiKey").value = "";
-    saveApi();
-    hideApiStatus();
-    renderApi();
-    toast("키를 지웠어요 · 데모 모드로 돌아갑니다");
+    askConfirm({
+      title: "API 키를 지울까요?",
+      body: providerLabel(api.provider) + " API 키를 이 브라우저에서 지웁니다.",
+      note: "지우면 데모 모드로 돌아갑니다.",
+      okText: "지우기", okClass: "solid-danger"
+    }).then(function (ok) {
+      if (!ok) return;
+      if (api.provider === "gemini") api.geminiKey = ""; else api.openaiKey = "";
+      $("apiKey").value = "";
+      saveApi();
+      hideApiStatus();
+      renderApi();
+      toast("키를 지웠어요 · 데모 모드로 돌아갑니다");
+    });
   });
   $("exportBtn").addEventListener("click", exportJson);
   $("resetBtn").addEventListener("click", resetRoom);
