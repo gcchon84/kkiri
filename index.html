@@ -307,6 +307,8 @@
   .empty h3{font-size:15px;font-weight:900;letter-spacing:-.03em;margin-top:10px}
   .empty p{font-size:11.5px;line-height:1.7;color:#7c8894;margin-top:7px;letter-spacing:-.01em;word-break:keep-all}
   .empty .e-actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .empty .e-cta{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+  .empty .e-cta .btn{min-height:46px;padding:0 16px;font-size:12.5px}
   .empty .empty-roles{font-size:10px;font-weight:800;color:#0d7a48}
   .empty .e-agenda{
     display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:#0d7a48;background:var(--green-tint);
@@ -413,6 +415,23 @@
   .send:disabled{opacity:.5;cursor:default}
   .comp-hint{max-width:860px;margin:7px auto 0;font-size:9.5px;line-height:1.55;color:#93a0aa;padding:0 2px;letter-spacing:-.01em}
   .comp-hint b{color:#5d6c78;font-weight:900}
+
+  /* ============ 크레딧 사용 기준 안내 ============ */
+  .credit-guide{margin-top:13px;padding:12px 13px 10px;background:#f4faf7;border:1px solid #d7ebdf;border-radius:15px}
+  .credit-guide h4{font-size:11px;font-weight:900;color:#0d7a48;letter-spacing:-.01em;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+  .credit-guide ul{list-style:none;margin:0;padding:0}
+  .credit-guide li{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11.5px;line-height:1.55;color:#42525f;padding:4px 0;border-top:1px dashed #e0eee7}
+  .credit-guide li:first-child{border-top:0}
+  .credit-guide li b{font-weight:900;color:#16202b;white-space:nowrap;letter-spacing:-.01em}
+  .credit-guide li.free b{color:#0d7a48}
+  .credit-guide .cg-sub{margin:7px 0 2px;font-size:10px;font-weight:900;color:#5c8f76;letter-spacing:-.01em}
+  .credit-guide .cg-foot{margin-top:6px;font-size:10px;line-height:1.55;color:#7c8894}
+
+  /* ============ 사이드바 AI 없음 ============ */
+  .ai-empty{padding:2px 0 4px;text-align:center}
+  .ai-empty .sec-hint{margin:0 0 8px}
+  .ai-empty .mini-btn{min-height:36px;padding:8px 12px;font-size:11px}
+
 
   /* ============ modal ============ */
   .modal{
@@ -755,9 +774,47 @@
     .empty{margin:16px auto;padding:22px 16px}
     .empty h3{font-size:14px}
   }
+  /* ============ 모바일 가독성 (≤768px) ============ */
+  @media (max-width:768px){
+    .timeline{padding:12px 12px 4px}
+    .msg{margin:12px 0;gap:8px}
+    .msg .body{max-width:88%}
+    .msg .bubble{font-size:15px;line-height:1.65;padding:11px 14px}
+    .msg .who{font-size:12px}
+    .msg .meta{font-size:10.5px}
+    .msg.sys .note{font-size:13px;line-height:1.6;padding:8px 14px;border-radius:16px}
+    .typing{font-size:12px}
+    .empty{padding:24px 18px}
+    .empty h3{font-size:17px;line-height:1.35}
+    .empty p{font-size:14px;line-height:1.65}
+    .empty .empty-roles{font-size:12px}
+    .empty .e-cta{flex-direction:column;gap:9px}
+    .empty .e-cta .btn{width:100%;min-height:48px;font-size:14px}
+    .composer{padding:9px 12px calc(9px + env(safe-area-inset-bottom))}
+    .composer textarea{font-size:16px;line-height:1.6;min-height:48px;padding:12px 13px}
+    .send{height:48px;font-size:13.5px;padding:0 17px}
+    .q-chip{font-size:13px;padding:10px 14px;min-height:44px}
+    .comp-hint{font-size:11.5px;line-height:1.6}
+    .btn{min-height:44px;font-size:13.5px}
+    .send,.btn,.pick,.mini-btn,.q-chip{max-width:100%}
+    .pick{min-height:44px;font-size:13px;padding:9px 12px}
+    .field > span{font-size:12.5px}
+    .field input,.field textarea,.field select{font-size:16px;line-height:1.55;min-height:48px;padding:12px 13px}
+    .field textarea{min-height:96px}
+    .sheet-body,.sheet-foot{padding-left:16px;padding-right:16px}
+    .sheet-body p,.modal-note,.hint,.sec-hint{font-size:13px;line-height:1.6}
+    .credit-guide h4{font-size:12.5px}
+    .credit-guide li{font-size:13.5px;line-height:1.6;padding:6px 0}
+    .credit-guide .cg-sub{font-size:11.5px}
+    .credit-guide .cg-foot{font-size:12px;line-height:1.6}
+    .cf-body{font-size:15px;line-height:1.65}
+  }
+
   @media (max-width:380px){
     .seg button{font-size:9.5px}
     .ctrl-actions .icon-btn{width:30px;flex:0 0 30px}
+    .msg .bubble{font-size:14px;padding:10px 12px}
+    .composer textarea{font-size:16px}
   }
   @media (min-width:901px){
     .modal{padding:32px}
@@ -841,7 +898,7 @@
         </div>
         <section class="home-sec" aria-label="내 AI 팀">
           <div class="home-sec-head">
-            <div><h2>🤖 내 AI 팀 <em id="teamCount">0명</em></h2><p>한 번 등록해 두면 새 방에서 체크만 하면 돼요.</p></div>
+            <div><h2>🤖 내 AI 팀 <em id="teamCount">0명</em></h2><p>끼리 AI는 방에서 <b>🤖 끼리 AI 부르기</b>로 바로 불러요. 웹훅 AI는 주소만 등록하면 돼요.</p></div>
             <button type="button" class="h-btn green" id="teamAddBtn">+ 팀에 AI 추가</button>
           </div>
           <div class="team-grid" id="teamGrid"></div>
@@ -994,7 +1051,7 @@ Content-Type: application/json
             </details>
           </div>
         </details>
-        <p class="modal-note">홈의 <b>내 AI 팀</b>에 등록하려면 홈의 <b>🔗 홈 초대</b> 링크를 보내거나, 여기서 등록한 뒤 방 만들기에서 체크하면 돼요. 등록한 AI는 홈의 내 AI 팀에도 함께 저장됩니다. 브라우저에서 직접 호출하므로 <b>내 AI 서버가 CORS를 허용해야</b> 연결 테스트가 통과합니다. 등록한 AI에는 <b>이 방의 대화 내용이 전송</b>되고, 주소·토큰은 이 브라우저에만 저장됩니다. 답하지 못한 턴은 끼리 AI나 데모로 대신하지 않고, 연결을 확인하라는 안내만 남깁니다.</p>
+        <p class="modal-note">홈의 <b>내 AI 팀</b>에 등록하려면 홈의 <b>🔗 홈 초대</b> 링크를 보내거나, 여기서 등록하면 홈의 내 AI 팀에 저장되고, 방에서 <b>🤖 끼리 AI 부르기</b>로 바로 불러요. 등록한 AI는 홈의 내 AI 팀에도 함께 저장됩니다. 브라우저에서 직접 호출하므로 <b>내 AI 서버가 CORS를 허용해야</b> 연결 테스트가 통과합니다. 등록한 AI에는 <b>이 방의 대화 내용이 전송</b>되고, 주소·토큰은 이 브라우저에만 저장됩니다. 답하지 못한 턴은 끼리 AI나 데모로 대신하지 않고, 연결을 확인하라는 안내만 남깁니다.</p>
       </section>
 
       <div class="sheet-foot" style="padding-left:0;padding-right:0;margin-top:16px">
@@ -1010,26 +1067,26 @@ Content-Type: application/json
     <div class="sheet-head"><h2 id="rfTitle">새 방 만들기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <label class="field"><span>방 이름 (주제)</span><input id="rfName" type="text" maxlength="40" placeholder="예: 12월 프로모션 기획" autocomplete="off"></label>
-      <p class="modal-note" style="margin-top:6px">방 이름이 곧 토론 주제가 돼요. 토론을 시작할 때 더 좁혀 적을 수 있어요.</p>
+      <p class="modal-note" style="margin-top:6px">방 이름이 곧 토론 주제가 돼요. 이름만 적으면 1초 만에 빈 방이 열려요. AI는 방 안에서 바로 부를 수 있어요.</p>
       <div class="field"><span>주제 분류</span><div class="pick-row" id="rfCat"></div></div>
       <div class="field-row">
-        <div class="field"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
+        <div class="field" id="rfEmojiField"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
         <label class="field"><span>최대 턴</span>
           <select id="rfTurns"><option value="5">5턴</option><option value="10" selected>10턴</option><option value="15">15턴</option><option value="20">20턴</option></select>
         </label>
       </div>
-      <div class="field"><span>역할 배정</span>
+      <div class="field" id="rfRoleModeField"><span>역할 배정</span>
         <div class="pick-row" id="rfRoleMode">
           <button type="button" class="pick" data-rolemode="auto" aria-pressed="true">자동 (기본)</button>
           <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
         </div>
       </div>
       <label class="field"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
-      <div class="field"><span>참여 AI · 내 AI 팀에서 체크</span><div class="pick-row" id="rfMembers"></div>
-        <div class="rf-add-row"><button type="button" class="mini-btn green" id="rfAddAiBtn">+ AI 추가하기</button><span id="rfAddAiHint">홈에 다녀오지 않아도 여기서 바로 넣을 수 있어요</span></div>
+      <div class="field" id="rfMembersField"><span>이 방의 AI · 체크해서 넣고 빼기</span><div class="pick-row" id="rfMembers"></div>
+        <div class="rf-add-row"><button type="button" class="mini-btn green" id="rfAddAiBtn">+ AI 추가하기</button><span id="rfAddAiHint">여기서 바로 넣을 수 있어요</span></div>
         <p class="modal-note" id="rfMembersNote" style="margin-top:6px"></p></div>
-      <div class="field"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
-      <p class="modal-note">평상시엔 @이름으로 부르고, @이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0). 필요할 때 ‘토론 시작’을 누르면 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요. 끼리 AI는 턴마다 10~30크레딧을 써요.</p>
+      <div class="field" id="rfRolesField"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
+      <p class="modal-note" id="rfFootNote">새 방은 AI 없이 열려요. 방에서 <b>🤖 끼리 AI 부르기</b>로 AI를 부르고, 끼리 AI는 답할 때마다 10크레딧을 써요. AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 역할을 나눠 토론해요.</p>
       <div class="btn-row" id="rfActions">
         <button class="btn green" id="rfSubmit">만들기</button>
       </div>
@@ -1174,7 +1231,7 @@ Content-Type: application/json
               <p class="connect-line" id="teamConnect">—</p>
             </div>
             <div class="btn-row"><button class="btn green" id="teamCreate">만들어서 팀에 추가</button></div>
-            <p class="modal-note">끼리 AI 엔진으로 답하는 커스텀 AI예요. 만들면 홈의 <b>내 AI 팀</b>에 바로 담겨 새 방에서 체크만 하면 돼요.</p>
+            <p class="modal-note">끼리 AI 엔진으로 답하는 커스텀 AI예요. 만들면 홈의 <b>내 AI 팀</b>에 바로 담겨 어느 방에서든 부를 수 있어요.</p>
           </div>
         </details>
       </section>
@@ -1240,6 +1297,22 @@ Content-Type: application/json
       <div class="panel-card">
         <div class="row"><div class="k">남은 크레딧<small id="creditPlan">Free 플랜 · 게스트</small></div><span class="pill" id="creditNow">0</span></div>
         <div class="row"><div class="k">사용한 크레딧<small>이 방에서 끼리 AI가 쓴 크레딧</small></div><span class="pill gray" id="creditRoom">0</span></div>
+      </div>
+      <div class="credit-guide" id="creditGuide">
+        <h4><span aria-hidden="true">💎</span> 크레딧 사용 기준</h4>
+        <ul>
+          <li><span>끼리 AI (기본 모델) 1번 대답</span><b>10 크레딧</b></li>
+        </ul>
+        <div class="cg-sub">100 크레딧 기준</div>
+        <ul>
+          <li><span><b>@이름</b>으로 질문</span><b>10번</b></li>
+          <li><span>5턴 미니 토론</span><b>2번</b></li>
+          <li><span>10턴 풀 토론</span><b>1번</b></li>
+        </ul>
+        <ul>
+          <li class="free"><span>나의 AI (초대 링크·웹훅) · 사람 간 대화</span><b>0 크레딧 (무료)</b></li>
+        </ul>
+        <p class="cg-foot">@이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).</p>
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
@@ -1799,7 +1872,10 @@ function renderSidebar() {
       shown++;
       mhtml += memberRowHtml(a, r);
     });
-    if (!shown) mhtml = '<p class="sec-hint">아직 이 방에 AI가 없어요. ‘+ AI 추가’로 시작해 보세요.</p>';
+    if (!shown) {
+      mhtml = '<div class="ai-empty"><p class="sec-hint">아직 이 방에 AI가 없어요</p>' +
+        '<button type="button" class="mini-btn" data-add-ai="1">+ AI 추가</button></div>';
+    }
   }
   $("sideMembers").innerHTML = mhtml;
   var cnt = $("aiCount");
@@ -1809,7 +1885,8 @@ function renderSidebar() {
     var manual = roleModeOf(r) === "manual";
     rb.textContent = manual ? "역할 수동" : "역할 자동";
     rb.setAttribute("aria-pressed", manual ? "false" : "true");
-    rb.disabled = !r;
+    rb.disabled = !r || shown < 1;
+    rb.hidden = !r || shown < 1;
     rb.title = (manual ? "지금은 수동 — AI별 역할을 직접 적어요" : "지금은 자동 — 참여 AI 수와 방 주제에 맞춰 역할을 나눠요") + " (눌러서 바꾸기)";
   }
   var hint = $("aiHint");
@@ -1824,7 +1901,13 @@ function renderSidebar() {
 
 function hintFor(r) {
   if (!r) return "";
-  return "<b>@이름</b>을 붙이면 그 AI가 답해요(@전원 = 모두). <b>@이름 없이</b> 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0). 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요.";
+  var n = r.members.filter(function (id) { return !!state.agents[id]; }).length;
+  if (!n) return "이 방에는 아직 AI가 없어요. <b>🤖 끼리 AI 부르기</b>로 AI를 부르면 대화를 시작할 수 있어요.";
+  var base = "<b>@이름</b>을 붙이면 그 AI가 답해요" + (n >= 2 ? "(@전원 = 모두)" : "") +
+    ". <b>@이름 없이</b> 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).";
+  return n >= 2
+    ? base + " 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요."
+    : base + " AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 토론할 수 있어요.";
 }
 
 function renderRoom() {
@@ -1866,7 +1949,7 @@ function renderRoom() {
   $("discussBtn").disabled = run.active;
   $("sendBtn").textContent = "보내기";
   $("sendBtn").disabled = run.active && run.mode === "roundtable";
-  $("input").placeholder = "메시지를 입력하세요 · @이름으로 AI 부르기";
+  $("input").placeholder = r.members.length ? "메시지를 입력하세요 · @이름으로 AI 부르기" : "🤖 끼리 AI 부르기로 AI를 불러 보세요";
   $("compHint").innerHTML = hintFor(r);
   updateMeters();
   renderQuick();
@@ -2256,6 +2339,17 @@ function hasRealMessages(r) {
 }
 
 function emptyHtml(r) {
+  var ids = r.members.filter(function (id) { return !!state.agents[id]; });
+  if (!ids.length) {
+    /* 방을 만든 직후 — AI를 부르고 사람을 부르는 두 길만 보여 준다. */
+    return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div>' +
+      "<h3>아직 이 방에 AI가 없어요</h3>" +
+      "<p>지금 바로 AI를 불러 보세요!<br>끼리 AI는 답할 때마다 10크레딧, 나의 AI·사람끼리 대화는 무료예요.</p>" +
+      '<div class="e-cta">' +
+        '<button type="button" class="btn green" data-empty-call="1">🤖 끼리 AI 부르기</button>' +
+        '<button type="button" class="btn" data-empty-share="1">🔗 이 방 초대 링크</button>' +
+      "</div></div>";
+  }
   var names = memberNames(r).join(" · ");
   var roles = roomRoleMap(r);
   var roleLine = r.members.map(function (id) {
@@ -2264,9 +2358,10 @@ function emptyHtml(r) {
   }).filter(Boolean).join(" · ");
   return '<div class="empty"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div><h3>' +
     "아직 대화가 없어요</h3>" +
-    "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + r.members.length + "명이 이 방에 있어요." +
+    "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + ids.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
-    "<br><b>@이름</b>으로 AI를 불러 바로 대화를 시작해 보세요. 토론이 필요하면 상단 <b>▶ 토론 시작</b>을 누르면 돼요.</p></div>";
+    "<br><b>@이름</b>으로 AI를 불러 바로 대화를 시작해 보세요." +
+    (ids.length >= 2 ? " 토론이 필요하면 상단 <b>▶ 토론 시작</b>을 누르면 돼요." : " AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 토론할 수 있어요.") + "</p></div>";
 }
 
 var pendingCardScroll = null;
@@ -2308,16 +2403,21 @@ function scrollBottom(force) {
 
 function renderQuick() {
   var r = activeRoom();
-  if (!r) { $("quickBar").innerHTML = ""; return; }
+  var qb = $("quickBar");
+  if (!r) { qb.innerHTML = ""; qb.hidden = true; return; }
+  /* 실제로 이 방에 있는 AI만 — 0명이면 칩 줄 자체를 숨기고, @전원은 2명 이상일 때만. */
+  var ids = r.members.filter(function (id) { return !!state.agents[id]; });
+  if (!ids.length) { qb.innerHTML = ""; qb.hidden = true; return; }
   var h = "";
-  r.members.forEach(function (id) {
+  if (ids.length >= 2) h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
+  ids.forEach(function (id) {
     var a = state.agents[id];
-    if (a) h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
+    h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
   });
-  h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
   /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작).
      퀵바는 @이름 부르기만 — 합의안은 헤더의 📋 합의안 버튼 한 곳에서만 연다. */
-  $("quickBar").innerHTML = h;
+  qb.innerHTML = h;
+  qb.hidden = false;
 }
 
 /* =========================================================
@@ -3657,7 +3757,6 @@ function toggleMember(id) {
   if (!r) return;
   var i = r.members.indexOf(id);
   if (i > -1) {
-    if (r.members.length <= 1) { toast("AI가 최소 한 명은 있어야 해요"); return; }
     r.members.splice(i, 1);
     if (run.moderator === id) run.moderator = r.members[0];
     toast(agentName(id) + " · 이 방에서 뺐어요");
@@ -3744,6 +3843,8 @@ function openRoundtable(prefill) {
   var r = activeRoom();
   if (!r) return;
   if (run.active) { toast("이미 진행 중이에요"); return; }
+  /* 토론은 선택 사항 — AI가 2명 이상 모인 뒤에 시작한다. */
+  if (rtRoomParts(r).length < 2) { toast("AI가 2명 이상 모이면 토론을 시작할 수 있어요"); return; }
   $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
   $("rtSummary").textContent = rtSummaryText(rtRoomPlan(r));
   openModal("rtModal");
@@ -3891,16 +3992,17 @@ function openRoomForm(roomId) {
   renderRfRoleMode();
   $("rfTurns").value = String(turnOptionsFor(r ? r.maxTurns : 10, $("rfTurns")));
   $("rfBudget").value = r ? r.budget : 200;
+  /* 새 방은 방 이름·분류·최대 턴·크레딧 상한만 받고 바로 열린다. AI·역할은 방 설정(⋯)에서. */
+  ["rfEmojiField", "rfRoleModeField", "rfMembersField", "rfRolesField"].forEach(function (id) {
+    var el = $(id); if (el) el.hidden = !r;
+  });
+  var foot = $("rfFootNote");
+  if (foot) foot.innerHTML = r
+    ? "이 방에 들어온 AI를 체크로 넣고 뺄 수 있어요. AI를 넣고 빼면 <b>역할 자동</b> 배정이 참여 AI 수와 주제에 맞춰 바로 다시 계산돼요. 필요하면 <b>수동</b>으로 직접 고칠 수 있어요."
+    : "새 방은 AI 없이 열려요. 방에서 <b>🤖 끼리 AI 부르기</b>로 AI를 부르고, 끼리 AI는 답할 때마다 10크레딧을 써요. AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 역할을 나눠 토론해요.";
   var sel;
   if (r) sel = r.members.slice();
-  else {
-    ensurePool();
-    /* 기본값 = 최근에 쓴 AI 3명. 없으면 팀에서 앞의 3명. */
-    var last = state.rooms[state.rooms.length - 1];
-    if (last && last.members) sel = last.members.filter(function (id) { return state.pool.indexOf(id) > -1; });
-    if (!sel || !sel.length) sel = state.pool.slice();
-    sel = sel.slice(0, 3).filter(function (id) { return !!state.agents[id]; });
-  }
+  else sel = [];
   renderRoomMemberPick(sel);
   renderRfRoles();
   $("rfSubmit").textContent = r ? "저장" : "만들기";
@@ -3924,8 +4026,8 @@ function rfSelectedMembers() {
 function submitRoomForm() {
   var name = $("rfName").value.trim();
   if (!name) { toast("방 이름을 적어 주세요"); $("rfName").focus(); return; }
-  var members = rfSelectedMembers();
-  if (!members.length) { toast("AI를 한 명 이상 골라 주세요"); return; }
+  /* 새 방은 빈 방으로 시작한다(AI는 방 안에서 부른다). 방 설정에서만 멤버를 고친다. */
+  var members = roomForm.id ? rfSelectedMembers() : [];
   var kind = roomForm.kind;
   var emoji = roomForm.colorEmoji;
   var category = roomForm.category || "work";
@@ -3970,7 +4072,7 @@ function submitRoomForm() {
     };
     room.messages.push({
       id: uid("s"), who: "system", kind: "info", at: Date.now(),
-      text: "새 방이에요. @이름을 붙이면 그 AI가 답하고, @이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0). 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요."
+      text: "새 방이에요. 아직 이 방에는 AI가 없어요. 🤖 끼리 AI 부르기로 AI를 부르고, @이름을 붙이면 그 AI가 답해요. AI가 2명 이상 모이면 ▶ 토론 시작으로 역할을 나눠 토론할 수 있어요."
     });
     state.rooms.push(room);
     state.activeRoomId = room.id;
@@ -5532,7 +5634,6 @@ function removeExpert(id) {
   if (!r) return;
   var i = r.members.indexOf(id);
   if (i > -1) {
-    if (r.members.length <= 1) { toast("AI가 최소 한 명은 있어야 해요"); return; }
     r.members.splice(i, 1);
     if (run.moderator === id) run.moderator = r.members[0];
   }
@@ -5795,6 +5896,8 @@ function wire() {
   $("sideMembers").addEventListener("click", function (e) {
     var t = e.target.closest("[data-member-team]");
     if (t) { addToPool(t.getAttribute("data-member-team")); return; }
+    var aa = e.target.closest("[data-add-ai]");
+    if (aa) { invTarget = "room"; closeSidebar(); aiTab("kkiri"); openModal("inviteModal"); return; }
     var b = e.target.closest("[data-member-remove]");
     if (b) toggleMember(b.getAttribute("data-member-remove"));
   });
@@ -5807,6 +5910,10 @@ function wire() {
     if (m) { insertMention(m.getAttribute("data-mention")); return; }
   });
   $("timelineInner").addEventListener("click", function (e) {
+    var call = e.target.closest("[data-empty-call]");
+    if (call) { invTarget = "room"; aiTab("kkiri"); openModal("inviteModal"); return; }
+    var share = e.target.closest("[data-empty-share]");
+    if (share) { openShare(); return; }
     var sa = e.target.closest("[data-sys-act]");
     if (sa) { sysAct(sa.getAttribute("data-sys-act")); return; }
     var a = e.target.closest("[data-act]");
@@ -5969,6 +6076,9 @@ function wire() {
     roomForm.roleTimer = setTimeout(renderRfRoles, 240);
   });
   $("rfSubmit").addEventListener("click", submitRoomForm);
+  $("rfName").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); submitRoomForm(); }
+  });
   $("rfDelete").addEventListener("click", deleteRoom);
 
   /* 공유 · 닉네임 */
