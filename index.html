@@ -97,6 +97,12 @@
   .room-item b{display:block;font-size:12.5px;font-weight:800;letter-spacing:-.02em;color:#eef4f6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .room-item small{display:block;font-size:9.5px;font-weight:600;color:#8b9da9;margin-top:3px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .room-item .r-live{width:5px;height:5px;border-radius:50%;background:var(--green);flex:0 0 5px;margin-top:7px;box-shadow:0 0 0 3px rgba(18,160,94,.14)}
+  /* 사이드바 방 선택 삭제 (홈과 같은 체크박스 방식) */
+  .room-item .r-check{flex:0 0 auto;width:18px;height:18px;margin-left:7px;border-radius:6px;border:1px solid #33454f;display:grid;place-items:center;font-size:10px;font-weight:900;color:#6f8090;background:#16222c}
+  .room-item.editing.sel .r-check{border-color:#e2534d;color:#fff;background:#e2534d}
+  .room-item.editing .r-enter{cursor:default}
+  .sec-actions .mini-btn.danger{background:#3a2427;border-color:#5a2f33;color:#ffb3a9}
+  .sec-actions .mini-btn.danger:disabled{opacity:.5;cursor:default}
   /* v3: 상위(그룹)/하위(방) 트리 */
   .room-group{margin-bottom:2px}
   .room-group-head{display:flex;align-items:center;gap:3px}
@@ -113,12 +119,6 @@
   .room-empty{font-size:9.5px;line-height:1.6;color:#6f8391;padding:5px 4px 7px;margin:0;letter-spacing:-.01em}
   .room-item{display:flex;align-items:center;gap:2px;width:100%;border:1px solid transparent;border-radius:12px;padding:0;background:transparent;transition:background .14s ease,border-color .14s ease}
   .r-enter{display:flex;align-items:flex-start;gap:8px;flex:1;min-width:0;background:transparent;border:0;padding:7px 4px 7px 7px;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:12px}
-  .r-del{flex:0 0 auto;width:28px;height:28px;margin-right:2px;border:0;border-radius:9px;background:transparent;color:#8ea1ad;font-size:12px;line-height:1;cursor:pointer;opacity:0;touch-action:manipulation;transition:opacity .12s ease,background .12s ease,color .12s ease}
-  .room-item:hover .r-del,.room-item:focus-within .r-del,.room-item.active .r-del{opacity:1}
-  .r-del:hover{background:#2a1f22;color:#ff9a8f}
-  .r-del:active{background:#39262a;color:#ffb3a9}
-  /* 터치 기기(휴대폰·웹뷰)에서는 호버가 없으니 삭제·나가기 버튼을 항상 보이게, 손가락 크기로 */
-  @media (hover:none){ .r-del{opacity:.9;width:32px;height:32px;font-size:13px} }
   .empty-room{padding:30px 18px;text-align:center;color:#9db0bb}
   .empty-room b{display:block;font-size:14px;font-weight:900;color:#e9f1f4;margin-bottom:7px}
   .empty-room p{font-size:11.5px;line-height:1.75;margin:0}
@@ -485,9 +485,14 @@
   .donate-box .btn:hover{background:#fdeed6}
   .side-donate{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;border:1px dashed #2f4352;background:transparent;color:#c4d2db;font:inherit;font-size:9.5px;font-weight:800;border-radius:10px;padding:7px 8px;cursor:pointer;letter-spacing:-.01em;transition:background .12s ease,color .12s ease}
   .side-donate:hover{background:#1a2733;color:#fff;border-color:#3d5464}
-  .home-foot{margin:20px 0 6px;text-align:center}
+  .home-foot{margin:20px 0 6px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
   .home-donate{border:1px dashed var(--line);background:#fff;color:#7d8993;font:inherit;font-size:10.5px;font-weight:800;border-radius:999px;padding:8px 15px;cursor:pointer;letter-spacing:-.01em;transition:border-color .12s ease,color .12s ease,background .12s ease}
   .home-donate:hover{border-color:#eccd9f;color:#8a5a1f;background:#fffaf2}
+  .home-feedback:hover{border-color:#cfeeda;color:#0d7a48;background:#f4fbf7}
+  .side-feedback{margin-top:6px}
+  .fb-lead{margin:0 0 2px;font-size:12.5px;line-height:1.6;color:#52616d;letter-spacing:-.01em}
+  .fb-count{margin:6px 2px 0;font-size:11.5px;font-weight:800;color:#93a0aa;text-align:right;letter-spacing:-.01em}
+  .fb-count.full{color:#c0472c}
   .donate-hero{font-size:34px;text-align:center;line-height:1;margin:2px 0 10px}
   .donate-msg{margin:0 0 8px;font-size:12px;line-height:1.65;color:#42525f;letter-spacing:-.01em}
   .donate-msg b{color:#8a5a1f}
@@ -1065,7 +1070,14 @@
     </div>
 
     <div class="side-sec">
-      <div class="sec-head"><span>💬 내 대화방 <em id="roomCount">0</em></span><button class="mini-btn" id="newRoomBtn">+ 새 방</button></div>
+      <div class="sec-head"><span>💬 내 대화방 <em id="roomCount">0</em></span>
+        <span class="sec-actions">
+          <button class="mini-btn" id="sideRoomEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden>🗑️</button>
+          <button class="mini-btn" id="sideRoomEditCancel" hidden>취소</button>
+          <button class="mini-btn danger" id="sideRoomBulkDelete" hidden>선택 삭제 (0개)</button>
+          <button class="mini-btn" id="newRoomBtn">+ 새 방</button>
+        </span>
+      </div>
       <div class="room-list" id="roomList"></div>
     </div>
 
@@ -1091,6 +1103,7 @@
         <span class="kb" id="kbOpenai" title="OpenAI API 키">OpenAI OFF</span>
       </div>
       <button type="button" class="side-donate" id="sideDonateBtn" title="끼리 개발·서버비 응원하기">☕ 끼리 개발·서버비 응원하기</button>
+      <button type="button" class="side-donate side-feedback" id="sideFeedbackBtn" title="불편한 점·아이디어 보내기">💬 의견 보내기</button>
       <div class="side-status"><span class="dot demo" id="sideDot"></span><span id="sideMode">데모 모드</span></div>
     </div>
   </aside>
@@ -1125,6 +1138,7 @@
         </section>
         <div class="home-foot">
           <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 개발·서버비 응원하기">☕ 끼리 개발·서버비 응원하기</button>
+          <button type="button" class="home-donate home-feedback" id="homeFeedbackBtn" title="불편한 점·아이디어 보내기">💬 의견 보내기</button>
         </div>
       </div>
     </section>
@@ -1334,9 +1348,6 @@ Content-Type: application/json
         </div>
       </div>
       <label class="field"><span>크레딧 상한</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="200" inputmode="numeric"></label>
-      <div class="field" id="rfMembersField"><span>이 방의 AI · 체크해서 넣고 빼기</span><div class="pick-row" id="rfMembers"></div>
-        <div class="rf-add-row"><button type="button" class="mini-btn green" id="rfAddAiBtn">+ AI 추가하기</button><span id="rfAddAiHint">여기서 바로 넣을 수 있어요</span></div>
-        <p class="modal-note" id="rfMembersNote" style="margin-top:6px"></p></div>
       <div class="field" id="rfRolesField"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
       <p class="modal-note" id="rfFootNote" hidden></p>
       <div class="btn-row" id="rfActions">
@@ -1544,6 +1555,28 @@ Content-Type: application/json
       <p class="donate-msg">후원은 마음으로 하는 것이고, <b>크레딧과는 따로</b> 동작해요. 후원하지 않아도 지금처럼 그대로 무료로 쓰셔도 됩니다.</p>
       <p class="modal-note">후원 링크를 연결하고 있어요. 열리면 바로 여기서 후원할 수 있게 할게요.</p>
       <div class="btn-row"><button class="btn dark" id="donateOk" type="button">확인</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= v3.2 · 💬 의견 보내기 (Supabase kkiri_feedback 저장) ================= -->
+<div class="modal" id="feedbackModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="fbTitle" style="max-width:440px">
+    <div class="sheet-head"><h2 id="fbTitle">💬 의견 보내기</h2><button class="icon-btn" type="button" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <p class="fb-lead">끼리를 더 나아지게 만드는 데 큰 힘이 돼요. 불편했던 점이나 바라는 기능을 편하게 알려 주세요.</p>
+      <div class="field" style="margin-top:12px"><span>분류</span>
+        <div class="pick-row" id="fbCat">
+          <button type="button" class="pick" data-fbcat="idea" aria-pressed="true">💡 아이디어</button>
+          <button type="button" class="pick" data-fbcat="bug" aria-pressed="false">🐞 불편·오류</button>
+          <button type="button" class="pick" data-fbcat="etc" aria-pressed="false">💬 기타</button>
+        </div>
+      </div>
+      <label class="field"><span>의견 내용</span>
+        <textarea id="fbContent" maxlength="500" placeholder="불편한 점이나 이런 기능이 있었으면 좋겠다 싶은 내용을 편하게 남겨 주세요"></textarea>
+      </label>
+      <p class="fb-count" id="fbCount">0 / 500자</p>
+      <div class="btn-row"><button class="btn dark" id="fbCancel" type="button">닫기</button><button class="btn green" id="fbSend" type="button">보내기</button></div>
     </div>
   </div>
 </div>
@@ -2060,15 +2093,14 @@ function isRoomOwner(rm) {
 }
 function roomRowHtml(rm) {
   var meta = categoryLabelOf(rm) + " · " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧";
-  var mine = isRoomOwner(rm);
-  var act = mine ? "삭제" : "나가기";
-  return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + '" data-room="' + esc(rm.id) + '">' +
+  var picked = !!sideEdit.sel[rm.id];
+  return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + (sideEdit.on ? " editing" + (picked ? " sel" : "") : "") + '" data-room="' + esc(rm.id) + '">' +
+    (sideEdit.on ? '<span class="r-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
     '<button type="button" class="r-enter" data-room-enter="' + esc(rm.id) + '"' + (rm.id === state.activeRoomId ? ' aria-current="true"' : "") + ">" +
       '<span class="r-emoji" aria-hidden="true">' + esc(rm.emoji) + "</span>" +
       '<span class="r-body"><b>' + esc(rm.name) + "</b><small>" + esc(meta) + "</small></span>" +
       (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
     "</button>" +
-    '<button type="button" class="r-del" data-room-del="' + esc(rm.id) + '" title="' + esc(rm.name) + " " + act + '" aria-label="' + esc(rm.name) + " " + act + '">' + (mine ? "🗑" : "✕") + "</button>" +
     "</div>";
 }
 function renderRoomList() {
@@ -2079,6 +2111,26 @@ function renderRoomList() {
   $("roomList").innerHTML = html;
   var cnt = $("roomCount");
   if (cnt) cnt.textContent = list.length;
+  /* 선택 삭제 모드 — 방이 없으면 휴지통도 두지 않는다 */
+  if (!state.rooms.length) { sideEdit.on = false; sideEdit.sel = {}; }
+  var eb = $("sideRoomEditBtn"), cb = $("sideRoomEditCancel"), bd = $("sideRoomBulkDelete"), nb = $("newRoomBtn");
+  var n = Object.keys(sideEdit.sel).length;
+  if (eb) eb.hidden = sideEdit.on || !state.rooms.length;
+  if (nb) nb.hidden = !!sideEdit.on;
+  if (cb) cb.hidden = !sideEdit.on;
+  if (bd) {
+    bd.hidden = !sideEdit.on;
+    bd.textContent = "선택 삭제 (" + n + "개)";
+    bd.disabled = n === 0;
+    bd.style.opacity = n === 0 ? ".55" : "1";
+  }
+}
+function sideEditStart() { sideEdit.on = true; sideEdit.sel = {}; renderRoomList(); }
+function sideEditStop() { sideEdit.on = false; sideEdit.sel = {}; renderRoomList(); }
+function sideTogglePick(id) {
+  if (sideEdit.sel[id]) delete sideEdit.sel[id];
+  else sideEdit.sel[id] = true;
+  renderRoomList();
 }
 /* 이 방에 들어온 AI 한 줄 — 배정된 역할(자동/수동) + '✕ 빼기' */
 function memberRowHtml(a, r) {
@@ -2246,6 +2298,7 @@ function agentKindLabel(a) {
 }
 /* 홈 — 방 선택 삭제 (내 방은 삭제, 초대받은 방은 나가기) */
 var homeEdit = { on: false, sel: {} };
+var sideEdit = { on: false, sel: {} };
 function renderHome() {
   var host = $("homeView");
   if (!host) return;
@@ -2293,9 +2346,9 @@ function homeTogglePick(id) {
   else homeEdit.sel[id] = true;
   renderHome();
 }
-async function homeBulkRemove() {
-  var rooms = state.rooms.filter(function (r) { return homeEdit.sel[r.id]; });
-  if (!rooms.length) return;
+async function removeRoomsBulk(rooms) {
+  /* 여러 방을 한 번에 정리 — 홈·사이드바 선택 삭제가 같이 쓴다. 정리한 개수(-1 = 취소·실패)를 돌려준다. */
+  if (!rooms.length) return -1;
   var owners = rooms.filter(isRoomOwner).length;
   var ok = await askConfirm({
     title: "선택한 방을 정리할까요?",
@@ -2303,7 +2356,7 @@ async function homeBulkRemove() {
     note: "내가 만든 방 " + owners + "개는 대화·멤버까지 완전히 삭제되고, 초대받은 방 " + (rooms.length - owners) + "개는 내 목록에서 나가요. 되돌릴 수 없어요.",
     okText: rooms.length + "개 정리", okClass: "solid-danger"
   });
-  if (!ok) return;
+  if (!ok) return -1;
   var gone = [];
   for (var i = 0; i < rooms.length; i++) {
     var r = rooms[i];
@@ -2314,7 +2367,7 @@ async function homeBulkRemove() {
     }
     if (res) gone.push(r.id);
   }
-  if (!gone.length) { toast("정리하지 못했어요 · 잠시 뒤 다시 시도해 주세요"); return; }
+  if (!gone.length) { toast("정리하지 못했어요 · 잠시 뒤 다시 시도해 주세요"); return -1; }
   if (state.activeRoomId && gone.indexOf(state.activeRoomId) >= 0) {
     state.activeRoomId = null;
     var left = state.rooms.filter(function (x) { return gone.indexOf(x.id) < 0; });
@@ -2322,11 +2375,19 @@ async function homeBulkRemove() {
   }
   state.rooms = state.rooms.filter(function (x) { return gone.indexOf(x.id) < 0; });
   homeEdit.on = false; homeEdit.sel = {};
+  sideEdit.on = false; sideEdit.sel = {};
   save();
   renderAll();
   renderHome();
   toast("방 " + gone.length + "개를 정리했어요");
   if (!state.rooms.length) setTimeout(function () { if (!state.rooms.length) openRoomForm(null); }, 320);
+  return gone.length;
+}
+function homeBulkRemove() {
+  return removeRoomsBulk(state.rooms.filter(function (r) { return homeEdit.sel[r.id]; }));
+}
+function sideBulkRemove() {
+  return removeRoomsBulk(state.rooms.filter(function (r) { return sideEdit.sel[r.id]; }));
 }
 function currentView() { return state.view === "room" ? "room" : "home"; }
 function applyView() {
@@ -2564,7 +2625,7 @@ function emptyHtml(r) {
     /* 방을 만든 직후 — AI를 부르고 사람을 부르는 두 길만 보여 준다. */
     return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + esc(r.emoji || "💬") + '</div>' +
       "<h3>아직 이 방에 아무도 없어요</h3>" +
-      "<p>AI를 부르거나, 사람을 불러 함께 시작해 보세요!<br>끼리 AI는 답할 때마다 10크레딧, 나의 AI는 끼리 크레딧을 쓰지 않고 (각 AI 자체 사용량 사용), 사람끼리 대화는 무료예요.</p>" +
+      "<p>AI를 부르거나, 사람을 불러 함께 시작해 보세요!<br>나의 AI는 크레딧을 쓰지 않고(각 AI 자체 사용량 사용), 끼리 AI는 답할 때마다 크레딧을 써요. 사람 대화는 무료예요.</p>" +
       cta + "</div>";
   }
   var names = memberNames(r).join(" · ");
@@ -4207,7 +4268,7 @@ function openBudgetSheet() {
 /* =========================================================
    15. 방 만들기 · 설정 시트
    ========================================================= */
-var roomForm = { id: null, colorEmoji: "🚀", kind: "project", category: "work", roleMode: "auto", roles: {} };
+var roomForm = { id: null, colorEmoji: "🚀", kind: "project", category: "work", roleMode: "auto", roles: {}, members: [] };
 /* 주제 분류 — 방을 만들 때 한 번 고르면 아이콘·역할·목록 표기가 함께 맞춰진다. */
 var ROOM_CATS = [
   { key: "work", label: "업무·기획", emoji: "🚀" },
@@ -4244,27 +4305,6 @@ function renderEmojiPick() {
     h += '<button type="button" class="pick" data-emoji="' + e + '" aria-pressed="' + (e === roomForm.colorEmoji ? "true" : "false") + '">' + e + "</button>";
   });
   $("rfEmoji").innerHTML = h;
-}
-function renderRoomMemberPick(selected) {
-  selected = Array.isArray(selected) ? selected : [];
-  ensurePool();
-  /* 인력풀 + 이미 이 방에 있는 AI(손님·남의 AI)를 함께 보여, 고치다가 남의 AI를 잃지 않게 한다. */
-  var ids = state.pool.slice();
-  selected.forEach(function (id) { if (ids.indexOf(id) < 0 && state.agents[id]) ids.push(id); });
-  var h = "";
-  ids.forEach(function (id) {
-    var a = state.agents[id];
-    if (!a) return;
-    var on = selected.indexOf(id) > -1;
-    h += '<button type="button" class="pick check" data-id="' + esc(id) + '" aria-pressed="' + (on ? "true" : "false") + '">' + esc(a.name) +
-      ' <small class="p-tag">' + esc(agentKindLabel(a)) + "</small></button>";
-  });
-  $("rfMembers").innerHTML = h;
-  var note = $("rfMembersNote");
-  if (note) note.innerHTML = poolAgents().length
-    ? "지금까지 저장해 둔 AI예요. 고른 AI만 이 방에 입장하고, 나중에 방 설정에서 바꿀 수 있어요."
-    : "저장해 둔 AI가 아직 없어요. <b>+ AI 추가하기</b>를 누르면 이 창을 닫지 않고 바로 저장할 수 있어요.";
-  syncRfRoleVisibility();
 }
 /* 방 설정에서 AI가 한 명도 없으면 나눌 역할이 없다 — 역할 칸은 숨긴다. */
 function syncRfRoleVisibility() {
@@ -4329,9 +4369,9 @@ function renderRfRoles() {
   $("rfRoles").innerHTML = h;
   $("rfRoleHead").textContent = manual ? "역할 직접 정하기" : "역할 미리보기 (자동)";
   $("rfRoleNote").textContent = manual
-    ? "적어 둔 역할·설명이 그 AI의 지시문에 들어가요. 칸을 비우면 자동 배정 값이 쓰이고, AI를 넣고 빼도 적은 값은 남아요."
+    ? "적어 둔 역할·설명이 그 AI의 지시문에 들어가요. 칸을 비우면 자동 배정 값이 쓰이고, AI를 부르거나 빼도 적은 값은 남아요."
     : (draft.agenda
-      ? categoryLabelOf(draft) + " 방이라 참여 AI " + draft.members.length + "명에게 맞는 역할을 나눠요. AI를 넣고 빼면 바로 다시 배정돼요. 직접 고치려면 ‘수동’을 누르세요."
+      ? categoryLabelOf(draft) + " 방이라 참여 AI " + draft.members.length + "명에게 맞는 역할을 나눠요. AI를 부르거나 빼면 바로 다시 배정돼요. 직접 고치려면 ‘수동’을 누르세요."
       : "방 이름(주제)을 적으면 역할이 더 정확해져요. 지금은 " + categoryLabelOf(draft) + " 기준으로 각 AI의 기본 성격에 맞춰 배정했어요.");
   syncRfRoleVisibility();
 }
@@ -4354,16 +4394,14 @@ function openRoomForm(roomId) {
      아이콘은 주제 분류가 정하므로 고르는 칸은 어느 모드에서도 두지 않는다. */
   var emojiField = $("rfEmojiField");
   if (emojiField) emojiField.hidden = true;
-  ["rfRoleModeField", "rfMembersField", "rfRolesField"].forEach(function (id) {
+  ["rfRoleModeField", "rfRolesField"].forEach(function (id) {
     var el = $(id); if (el) el.hidden = !r;
   });
   /* 아래 설명 줄은 쓰지 않는다 (중복 설명 제거) */
   var foot = $("rfFootNote");
   if (foot) { foot.hidden = true; foot.innerHTML = ""; }
-  var sel;
-  if (r) sel = r.members.slice();
-  else sel = [];
-  renderRoomMemberPick(sel);
+  /* 이 방에 이미 들어와 있는 AI만 역할 칸의 대상이 된다(멤버 넣고 빼기는 🤖 AI 부르기·사이드바에서). */
+  roomForm.members = r ? r.members.slice() : [];
   renderRfRoles();
   $("rfSubmit").textContent = r ? "저장" : "만들기";
   /* 삭제 버튼: 내 방 → 완전 삭제 / 남의 방(시드방 포함) → 나가기 / 로컬 데모 방 → 내 화면에서 삭제 */
@@ -4381,12 +4419,12 @@ function openRoomForm(roomId) {
   openModal("roomFormModal");
 }
 function rfSelectedMembers() {
-  return Array.prototype.slice.call($("rfMembers").querySelectorAll('[aria-pressed="true"]')).map(function (b) { return b.getAttribute("data-id"); });
+  return Array.isArray(roomForm.members) ? roomForm.members.slice() : [];
 }
 function submitRoomForm() {
   var name = $("rfName").value.trim();
   if (!name) { toast("방 이름을 적어 주세요"); $("rfName").focus(); return; }
-  /* 새 방은 빈 방으로 시작한다(AI는 방 안에서 부른다). 방 설정에서만 멤버를 고친다. */
+  /* 새 방은 빈 방으로 시작한다(AI는 방 안에서 부른다). 방 설정은 이 방에 있는 AI 그대로 저장한다. */
   var members = roomForm.id ? rfSelectedMembers() : [];
   var kind = roomForm.kind;
   var emoji = roomForm.colorEmoji;
@@ -4512,10 +4550,6 @@ function deleteRoom() {
   var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
   if (r) removeRoom(r, { modal: true });
 }
-function roomDeleteQuick(id) {
-  var r = state.rooms.filter(function (x) { return x.id === id; })[0];
-  if (r) removeRoom(r, null);
-}
 
 /* =========================================================
    16. AI 초대
@@ -4552,11 +4586,11 @@ function invAttach(id, toPool) {
     if (state.pool.indexOf(id) < 0) state.pool.push(id);
   }
   if (invTarget === "draft") {
-    var sel = [];
-    try { sel = rfSelectedMembers(); } catch (e) { sel = []; }
+    var sel = rfSelectedMembers();
     if (sel.indexOf(id) < 0) sel.push(id);
+    roomForm.members = sel;
     save();
-    try { renderRoomMemberPick(sel); renderRfRoles(); } catch (e2) {}
+    try { renderRfRoles(); } catch (e2) {}
     renderAll();
     return "draft";
   }
@@ -5844,6 +5878,11 @@ async function afterSignIn(user) {
   V3.user = { id: user.id, email: user.email || "", isAnonymous: !!(user.is_anonymous || !user.email) };
   V3.signedIn = true;
   var got = null;
+  /* 2차 안전장치: 정식 로그인 유저는 접속할 때 매일 200크레딧을 한 번 더 조용히 확인한다.
+     (pg_cron 00:00 KST 지급이 멈춰 있을 때를 대비. 익명 게스트는 대상이 아니므로 건너뜀) */
+  if (!V3.user.isAnonymous && db.client) {
+    try { await db.client.rpc("kkiri_claim_daily_credits"); } catch (e) {}
+  }
   try {
     var res = await db.client.from("kkiri_profiles").select("nickname,plan,credits").eq("user_id", user.id).maybeSingle();
     if (res && res.error) {
@@ -6079,6 +6118,76 @@ function openDonate() {
   openModal("donateModal");
 }
 
+/* ---------- 💬 의견 보내기 (Supabase kkiri_feedback · INSERT 만 허용) ---------- */
+var feedback = { cat: "idea", busy: false };
+function fbCatLabel(c) {
+  return c === "bug" ? "불편·오류" : c === "etc" ? "기타" : "아이디어";
+}
+function renderFbCat() {
+  var host = $("fbCat");
+  if (!host) return;
+  Array.prototype.forEach.call(host.querySelectorAll("[data-fbcat]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-fbcat") === feedback.cat ? "true" : "false");
+  });
+}
+function updateFbCount() {
+  var ta = $("fbContent"), el = $("fbCount");
+  if (!ta || !el) return;
+  var n = ta.value.length;
+  el.textContent = n + " / 500자";
+  el.className = "fb-count" + (n >= 500 ? " full" : "");
+}
+function openFeedback() {
+  if (typeof closeSidebar === "function") closeSidebar();
+  feedback.cat = "idea";
+  feedback.busy = false;
+  renderFbCat();
+  var ta = $("fbContent");
+  if (ta) ta.value = "";
+  var btn = $("fbSend");
+  if (btn) { btn.disabled = false; btn.textContent = "보내기"; }
+  updateFbCount();
+  openModal("feedbackModal");
+  setTimeout(function () { var t = $("fbContent"); if (t) { try { t.focus(); } catch (e) {} } }, 180);
+}
+async function sendFeedback() {
+  if (feedback.busy) return;
+  var ta = $("fbContent");
+  var content = String((ta && ta.value) || "").trim();
+  if (!content) { toast("의견 내용을 적어 주세요"); if (ta) { try { ta.focus(); } catch (e) {} } return; }
+  content = content.slice(0, 500);
+  feedback.busy = true;
+  var btn = $("fbSend");
+  if (btn) { btn.disabled = true; btn.textContent = "보내는 중…"; }
+  try {
+    if (V3.mode === "mock") {
+      /* ?mock=1 오프라인 테스트 모드 — 서버로 보내지 않고 안내만 */
+      await new Promise(function (r) { setTimeout(r, 260); });
+      closeModal("feedbackModal");
+      toast("오프라인 테스트 모드예요 · 의견은 실제로 저장되지 않았어요");
+      return;
+    }
+    if (!db.client) throw new Error("서버에 연결하지 못했어요");
+    var r0 = activeRoom();
+    var row = {
+      category: feedback.cat,
+      content: content,
+      nickname: String(nick() || "").trim().slice(0, 40) || null,
+      room_name: (state.view === "room" && r0) ? String(r0.name || "").slice(0, 80) || null : null,
+      user_id: (V3.signedIn && V3.user && V3.user.id) ? V3.user.id : null
+    };
+    var res = await db.client.from("kkiri_feedback").insert(row);
+    if (res && res.error) throw new Error(res.error.message || "insert failed");
+    closeModal("feedbackModal");
+    toast("소중한 의견 감사해요! 꼼꼼히 읽어볼게요");
+  } catch (e) {
+    toast("의견을 보내지 못했어요 · " + ((e && e.message) || "잠시 뒤 다시 시도해 주세요"));
+  } finally {
+    feedback.busy = false;
+    if (btn) { btn.disabled = false; btn.textContent = "보내기"; }
+  }
+}
+
 /* ---------- 끼리 AI ---------- */
 function expertDef(exId) {
   var found = null;
@@ -6310,6 +6419,25 @@ function wireV3() {
   });
   var dok = $("donateOk");
   if (dok) dok.addEventListener("click", function () { closeModal("donateModal"); });
+  /* 💬 의견 보내기 — 홈 하단·사이드바 하단 어디서 눌러도 같은 창 */
+  ["homeFeedbackBtn", "sideFeedbackBtn"].forEach(function (id) {
+    var b = $(id);
+    if (!b) return;
+    b.addEventListener("click", function () { openFeedback(); });
+  });
+  var fbc = $("fbCat");
+  if (fbc) fbc.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-fbcat]");
+    if (!b) return;
+    feedback.cat = b.getAttribute("data-fbcat");
+    renderFbCat();
+  });
+  var fbt = $("fbContent");
+  if (fbt) fbt.addEventListener("input", updateFbCount);
+  var fbs = $("fbSend");
+  if (fbs) fbs.addEventListener("click", function () { sendFeedback(); });
+  var fbx = $("fbCancel");
+  if (fbx) fbx.addEventListener("click", function () { closeModal("feedbackModal"); });
   /* 크레딧 모달의 ‘내 API 키 연결’ — 설정의 키 입력으로 바로 보낸다 */
   var byk = $("creditByokBtn");
   if (byk) byk.addEventListener("click", function () {
@@ -6320,9 +6448,8 @@ function wireV3() {
   setInterval(function () { if (db.ready && !document.hidden) renderPresence(); }, 60000);
   var rl = $("roomList");
   if (rl) rl.addEventListener("click", function (e) {
-    /* 삭제·나가기 버튼을 눌렀을 때는 방 입장·자동 참여를 하지 않는다
-       (예전에는 같은 클릭에 자동 참여가 함께 걸려, 나간 방의 멤버십이 되살아났다) */
-    if (e.target.closest("[data-room-del]")) return;
+    /* 선택 삭제 모드에서는 방 입장·자동 참여를 하지 않는다 */
+    if (sideEdit.on) return;
     var b = e.target.closest("[data-room]");
     if (b) { V3.roomId = b.getAttribute("data-room"); ensureMembership(V3.roomId); }
   });
@@ -6411,9 +6538,12 @@ function act(name) {
    ========================================================= */
 function wire() {
   $("roomList").addEventListener("click", function (e) {
-    var del = e.target.closest("[data-room-del]");
-    if (del) { e.preventDefault(); e.stopPropagation(); roomDeleteQuick(del.getAttribute("data-room-del")); return; }
     var b = e.target.closest("[data-room]");
+    /* 선택 삭제 모드에서는 방에 들어가지 않고 체크만 바꾼다(홈과 같은 방식) */
+    if (sideEdit.on) {
+      if (b) { e.preventDefault(); sideTogglePick(b.getAttribute("data-room")); }
+      return;
+    }
     if (b) selectRoom(b.getAttribute("data-room"));
   });
   $("sideMembers").addEventListener("click", function (e) {
@@ -6567,14 +6697,6 @@ function wire() {
     roomForm.colorEmoji = b.getAttribute("data-emoji");
     renderEmojiPick();
   });
-  $("rfMembers").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-id]");
-    if (!b) return;
-    captureRfRoles();
-    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
-    renderRfRoles();
-    syncRfRoleVisibility();
-  });
   $("rfRoleMode").addEventListener("click", function (e) {
     var b = e.target.closest("[data-rolemode]");
     if (!b) return;
@@ -6649,6 +6771,10 @@ function wire() {
   if ($("homeEditBtn")) $("homeEditBtn").addEventListener("click", homeEditStart);
   if ($("homeEditCancel")) $("homeEditCancel").addEventListener("click", homeEditStop);
   if ($("homeBulkDelete")) $("homeBulkDelete").addEventListener("click", homeBulkRemove);
+  /* 사이드바도 홈과 같은 선택 삭제 — 🗑️ → 체크 → 선택 삭제 → 앱 확인창 */
+  if ($("sideRoomEditBtn")) $("sideRoomEditBtn").addEventListener("click", sideEditStart);
+  if ($("sideRoomEditCancel")) $("sideRoomEditCancel").addEventListener("click", sideEditStop);
+  if ($("sideRoomBulkDelete")) $("sideRoomBulkDelete").addEventListener("click", sideBulkRemove);
   var nickSave = function () {
     var v = saveNick($("nickInput").value);
     $("nickInput").value = v;
@@ -6688,13 +6814,6 @@ function wire() {
   $("aiSeg").addEventListener("click", function (e) {
     var b = e.target.closest("[data-tab]");
     if (b) aiTab(b.getAttribute("data-tab"));
-  });
-  /* 새 방 만들기 창 안에서 바로 AI 추가 — 방은 아직 없으니 목록에 넣는다 */
-  if ($("rfAddAiBtn")) $("rfAddAiBtn").addEventListener("click", function () {
-    invTarget = "draft";
-    aiTab("mine");
-    openModal("inviteModal");
-    $("roomFormModal").classList.add("under");
   });
   /* 집중 모드 — 10분 고정 · 단일 복사(지시문+링크) */
   $("focusCopyPrompt").addEventListener("click", function () {
