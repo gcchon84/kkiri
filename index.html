@@ -101,10 +101,12 @@
   .room-empty{font-size:9.5px;line-height:1.6;color:#6f8391;padding:5px 4px 7px;margin:0;letter-spacing:-.01em}
   .room-item{display:flex;align-items:center;gap:2px;width:100%;border:1px solid transparent;border-radius:12px;padding:0;background:transparent;transition:background .14s ease,border-color .14s ease}
   .r-enter{display:flex;align-items:flex-start;gap:8px;flex:1;min-width:0;background:transparent;border:0;padding:7px 4px 7px 7px;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:12px}
-  .r-del{flex:0 0 auto;width:24px;height:24px;margin-right:3px;border:0;border-radius:8px;background:transparent;color:#7f929e;font-size:11px;line-height:1;cursor:pointer;opacity:0;transition:opacity .12s ease,background .12s ease,color .12s ease}
+  .r-del{flex:0 0 auto;width:28px;height:28px;margin-right:2px;border:0;border-radius:9px;background:transparent;color:#8ea1ad;font-size:12px;line-height:1;cursor:pointer;opacity:0;touch-action:manipulation;transition:opacity .12s ease,background .12s ease,color .12s ease}
   .room-item:hover .r-del,.room-item:focus-within .r-del,.room-item.active .r-del{opacity:1}
   .r-del:hover{background:#2a1f22;color:#ff9a8f}
-  @media (hover:none){ .r-del{opacity:.75} }
+  .r-del:active{background:#39262a;color:#ffb3a9}
+  /* 터치 기기(휴대폰·웹뷰)에서는 호버가 없으니 삭제·나가기 버튼을 항상 보이게, 손가락 크기로 */
+  @media (hover:none){ .r-del{opacity:.9;width:32px;height:32px;font-size:13px} }
   .empty-room{padding:30px 18px;text-align:center;color:#9db0bb}
   .empty-room b{display:block;font-size:14px;font-weight:900;color:#e9f1f4;margin-bottom:7px}
   .empty-room p{font-size:11.5px;line-height:1.75;margin:0}
@@ -428,6 +430,11 @@
   .btn.green{background:var(--green);color:#fff}
   .btn.green:hover{background:var(--green-deep)}
   .btn.danger{background:#fff;color:#b5342b;border:1px solid #f0cdc9}
+  .btn.solid-danger{background:var(--red);color:#fff}
+  .btn.solid-danger:hover{background:#ab3129}
+  .btn.solid-danger:active{background:#96291f}
+  .cf-body{margin:0;font-size:13.5px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.55;word-break:keep-all}
+  #cfNote{margin-top:9px}
   .btn:disabled{opacity:.5;cursor:default}
   .btn-row{display:flex;gap:8px;margin-top:12px}
   .btn-row .btn{flex:1}
@@ -630,6 +637,9 @@
     .room-titles p{font-size:9.5px}
     .ghost-btn{padding:8px 10px;font-size:10.5px}
     .room-actions .ghost-btn .lbl{display:none}
+    /* 합의안은 방 화면에서 한 곳(헤더)에만 두므로, 좁은 화면에서도 글자를 남겨 알아보게 한다 */
+    .room-actions #cardBtn{padding:8px 9px;gap:4px}
+    .room-actions #cardBtn .lbl{display:inline;font-size:10px}
     .ctrl{margin:9px 10px 0;padding:9px 9px 8px;border-radius:16px}
     .seg button{font-size:10.5px;padding:9px 2px;letter-spacing:-.04em}
     .ctrl-actions .icon-btn{width:36px;height:36px;flex:0 0 36px}
@@ -733,7 +743,7 @@
         <button class="credit-chip off" id="creditBadge" type="button" title="내 크레딧">💎 <b>—</b></button>
         <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참여자">접속 0명</span>
         <button class="ghost-btn" id="shareBtn"><span aria-hidden="true">🔗</span><span class="lbl">초대</span></button>
-        <button class="ghost-btn" id="cardBtn"><span aria-hidden="true">📋</span><span class="lbl">합의안</span></button>
+        <button class="ghost-btn" id="cardBtn" type="button" title="합의안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="합의안 카드"><span aria-hidden="true">📋</span><span class="lbl">합의안</span></button>
         <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정">⋯</button>
       </div>
     </header>
@@ -1041,8 +1051,23 @@ Content-Type: application/json
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
-      <p class="hint">크레딧 충전(결제)은 2단계에서 붙습니다. 지금은 무료 체험 크레딧으로 동작하고, 차감 내역은 서버 원장에 남아요.</p>
+      <p class="hint">크레딧 충전(결제)은 2단계에서 붙습니다. 지금은 무료 크레딧으로 동작하고, 차감 내역은 서버 원장에 남아요.</p>
       <div class="btn-row"><button class="btn" id="creditClose" type="button">닫기</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= v3 · 앱 안 확인창 (window.confirm 대체 · 모바일 웹뷰에서 막히지 않게) ================= -->
+<div class="modal" id="confirmModal" hidden>
+  <div class="sheet" role="alertdialog" aria-modal="true" aria-labelledby="cfTitle" aria-describedby="cfBody" style="max-width:420px">
+    <div class="sheet-head"><h2 id="cfTitle">확인</h2><button class="icon-btn" type="button" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <p class="cf-body" id="cfBody"></p>
+      <p class="modal-note" id="cfNote"></p>
+    </div>
+    <div class="sheet-foot" style="padding-top:12px">
+      <button class="btn" type="button" id="cfCancel">취소</button>
+      <button class="btn dark" type="button" id="cfOk">확인</button>
     </div>
   </div>
 </div>
@@ -1244,7 +1269,7 @@ function load() {
     var raw = localStorage.getItem(STORE_KEY);
     if (!raw) return false;
     var d = JSON.parse(raw);
-    if (!d || d.version !== VERSION || !Array.isArray(d.rooms) || !d.rooms.length) return false;
+    if (!d || d.version !== VERSION || !Array.isArray(d.rooms)) return false;
     state = d;
     if (!state.agents || typeof state.agents !== "object") state.agents = seedAgents();
     Object.keys(state.agents).forEach(function (id) {
@@ -1867,8 +1892,8 @@ function renderQuick() {
     if (a) h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
   });
   h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
-  /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작). */
-  h += '<button type="button" class="q-chip" data-act="card">📋 합의안</button>';
+  /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작).
+     퀵바는 @이름 부르기만 — 합의안은 헤더의 📋 합의안 버튼 한 곳에서만 연다. */
   $("quickBar").innerHTML = h;
 }
 
@@ -2959,6 +2984,7 @@ function generateCard(opts) {
 
 function onCardButton() {
   var r = activeRoom();
+  if (!r) { toast("방을 먼저 만들어 주세요"); return; }
   var lastCard = null, lastAt = 0;
   r.messages.forEach(function (m) {
     if (m.who === "card") lastCard = m;
@@ -2989,11 +3015,47 @@ function openModal(id) {
 function closeModal(id) {
   var m = $(id);
   if (!m) return;
+  /* 확인창을 취소·배경 클릭·Esc 로 닫아도 대기 중인 약속이 풀리도록 한다 */
+  if (id === "confirmModal" && confirmState) {
+    var s = confirmState; confirmState = null; s.resolve(false);
+  }
   m.classList.remove("show");
   openStack = openStack.filter(function (x) { return x !== id; });
   setTimeout(function () { if (!m.classList.contains("show")) m.hidden = true; }, 200);
 }
 function closeAllModals() { openStack.slice().forEach(closeModal); }
+/*
+  앱 안 확인창 — window.confirm() 은 카카오톡 인앱·Android 웹뷰 등에서 막히거나
+  false 를 돌려주어 '버튼이 먹통'처럼 보이는 일이 있어 쓰지 않는다.
+  askConfirm({...}) 은 사용자가 고른 결과를 Promise<boolean> 으로 돌려준다.
+*/
+var confirmState = null;
+function askConfirm(o) {
+  o = o || {};
+  return new Promise(function (resolve) {
+    if (!$("confirmModal")) { resolve(false); return; }
+    $("cfTitle").textContent = o.title || "확인";
+    $("cfBody").textContent = o.body || "";
+    var note = $("cfNote");
+    note.textContent = o.note || "";
+    note.hidden = !o.note;
+    var ok = $("cfOk"), cancel = $("cfCancel");
+    ok.textContent = o.okText || "확인";
+    ok.className = "btn " + (o.okClass || "dark");
+    cancel.textContent = o.cancelText || "취소";
+    /* 이전 확인창이 남아 있으면 먼저 정리한다(연속 클릭 대비) */
+    if (confirmState) { var old = confirmState; confirmState = null; old.resolve(false); }
+    confirmState = { resolve: resolve };
+    openModal("confirmModal");
+    setTimeout(function () { try { cancel.focus(); } catch (e) {} }, 80);
+  });
+}
+function confirmResolve(ok) {
+  var s = confirmState; confirmState = null;
+  if (s) s.resolve(!!ok);
+  var m = $("confirmModal");
+  if (m) { m.classList.remove("show"); openStack = openStack.filter(function (x) { return x !== "confirmModal"; }); setTimeout(function () { if (!m.classList.contains("show")) m.hidden = true; }, 200); }
+}
 function toast(msg) {
   var el = $("toast");
   if (!el) return;
@@ -3384,13 +3446,33 @@ function submitRoomForm() {
   if (db.ready) dbSubscribe(state.activeRoomId);
 }
 /* ---- 방 삭제 / 나가기 (목록의 🗑·✕ 와 방 설정 시트가 같이 쓸니다) ---- */
+/* 확인은 앱 안 모달로 받는다(모바일 웹뷰에서 window.confirm 이 막히는 문제 대응). */
 function roomAskRemove(r) {
-  if (isRoomOwner(r)) {
-    return window.confirm("‘" + r.name + "’ 방을 삭제할까요?\n\n대화·AI 멤버·합의안이 모두 지워지고, 함께 있던 사람들의 목록에서도 사라집니다. 되돌릴 수 없어요.");
+  var mine = isRoomOwner(r);
+  if (r.remote && !V3.user) {
+    return askConfirm({
+      title: "목록에서 숨길까요?",
+      body: "‘" + r.name + "’ 방을 내 목록에서 숨깁니다.",
+      note: "로그인하지 않은 상태라 서버의 멤버십은 그대로예요. 로그인하면 서버에서도 나갈 수 있어요.",
+      okText: "숨기기", okClass: "dark"
+    });
   }
-  return window.confirm("‘" + r.name + "’ 방에서 나갈까요?\n\n내 목록에서 사라지고, 다시 들어오려면 초대 링크가 필요해요.");
+  if (mine) {
+    return askConfirm({
+      title: "이 방을 삭제할까요?",
+      body: "‘" + r.name + "’ 방을 삭제합니다.",
+      note: "대화·AI 멤버·합의안이 모두 지워지고, 함께 있던 사람들의 목록에서도 사라져요. 되돌릴 수 없어요.",
+      okText: "삭제", okClass: "solid-danger"
+    });
+  }
+  return askConfirm({
+    title: "이 방에서 나갈까요?",
+    body: "‘" + r.name + "’ 방에서 나갑니다.",
+    note: "내 목록에서 사라지고, 다시 들어오려면 초대 링크가 필요해요.",
+    okText: "나가기", okClass: "solid-danger"
+  });
 }
-function afterRoomRemoved(r, wasOwner) {
+function afterRoomRemoved(r, wasOwner, quiet) {
   state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
   if (state.activeRoomId === r.id) state.activeRoomId = state.rooms.length ? state.rooms[0].id : null;
   save();
@@ -3402,24 +3484,29 @@ function afterRoomRemoved(r, wasOwner) {
       presenceJoin(state.activeRoomId, true);
     }
     scrollBottom(true);
+    if (!quiet) toast(wasOwner ? "‘" + r.name + "’ 방을 삭제했어요" : "‘" + r.name + "’ 방에서 나왔어요");
   } else {
     dbUnsubscribe();
-    toast(wasOwner ? "방을 삭제했어요 · 새 방을 만들어 보세요" : "방에서 나왔어요 · 새 방을 만들어 보세요");
+    if (!quiet) toast(wasOwner ? "방을 삭제했어요 · 새 방을 만들어 보세요" : "방에서 나왔어요 · 새 방을 만들어 보세요");
     setTimeout(function () { if (!state.rooms.length) openRoomForm(null); }, 320);
-    return;
   }
-  toast(wasOwner ? "‘" + r.name + "’ 방을 삭제했어요" : "‘" + r.name + "’ 방에서 나왔어요");
 }
+var removingRoomId = null;
 async function removeRoom(r, opts) {
-  if (!r) return;
+  if (!r || removingRoomId === r.id) return;
   var wasOwner = isRoomOwner(r);
-  if (!roomAskRemove(r)) return;
-  if (r.remote) {
-    var ok = wasOwner ? await dbDeleteRoom(r) : await dbLeaveRoom(r);
-    if (!ok) return;
+  var ok = await roomAskRemove(r);
+  if (!ok) return;
+  removingRoomId = r.id;
+  try {
+    var res = true;
+    if (r.remote) res = wasOwner ? await dbDeleteRoom(r) : await dbLeaveRoom(r);
+    if (!res) return;
+    if (opts && opts.modal) closeModal("roomFormModal");
+    afterRoomRemoved(r, wasOwner, res === "hidden");
+  } finally {
+    removingRoomId = null;
   }
-  if (opts && opts.modal) closeModal("roomFormModal");
-  afterRoomRemoved(r, wasOwner);
 }
 function deleteRoom() {
   var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
@@ -3695,11 +3782,17 @@ function exportJson() {
   download("kkiri-export-" + stamp + ".json", JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
   toast("대화 내역을 내려받았어요");
 }
-function resetRoom() {
+async function resetRoom() {
   var r = activeRoom();
-  if (!r.messages.length) { toast("초기화할 대화가 없어요"); return; }
+  if (!r || !r.messages.length) { toast("초기화할 대화가 없어요"); return; }
   if (r.remote) {
-    if (!window.confirm("‘" + r.name + "’ 방의 사용 기록(턴·크레딧)만 초기화할까요? 저장된 대화는 서버에 그대로 남습니다.")) return;
+    var okRemote = await askConfirm({
+      title: "사용 기록을 초기화할까요?",
+      body: "‘" + r.name + "’ 방의 사용 기록(턴·크레딧)만 초기화합니다.",
+      note: "저장된 대화는 서버에 그대로 남아요.",
+      okText: "초기화", okClass: "solid-danger"
+    });
+    if (!okRemote) return;
     run.epoch++;
     run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
     r.session = freshSession();
@@ -3710,7 +3803,13 @@ function resetRoom() {
     toast("사용 기록을 초기화했어요 · 대화는 보존됩니다");
     return;
   }
-  if (!window.confirm("‘" + r.name + "’ 방의 대화와 완료 표시를 모두 지울까요? 되돌릴 수 없어요. (API 키는 그대로 남습니다)")) return;
+  var okLocal = await askConfirm({
+    title: "대화를 모두 지울까요?",
+    body: "‘" + r.name + "’ 방의 대화와 완료 표시를 모두 지웁니다.",
+    note: "되돌릴 수 없어요. 방 주제·설정·API 키는 그대로 남습니다.",
+    okText: "지우기", okClass: "solid-danger"
+  });
+  if (!okLocal) return;
   run.epoch++;
   run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
   r.messages = [{ id: uid("s"), who: "system", kind: "info", at: Date.now(), text: "대화를 초기화했어요. 방 주제와 설정은 그대로입니다." }];
@@ -3890,9 +3989,9 @@ function dbApply(roomRows, agentRows, fresh) {
       settings: { category: s.category || "" }
     });
   });
-  if (!rooms.length) return false;
+  if (!roomRows.length) return false;
   state.rooms = rooms;
-  if (!rooms.some(function (r) { return r.id === state.activeRoomId; })) state.activeRoomId = rooms[0].id;
+  if (!rooms.some(function (r) { return r.id === state.activeRoomId; })) state.activeRoomId = rooms.length ? rooms[0].id : null;
   return true;
 }
 function dbMergeInto(room, extra) {
@@ -4122,6 +4221,8 @@ async function dbCreateRoom(room, members) {
     var res = await db.client.from("kkiri_rooms").insert(row);
     if (res.error) { dbToast("방을 서버에 만들지 못했어요 · " + res.error.message); return; }
     room.remote = true; room.inviteCode = row.invite_code; room.hostName = row.host_name;
+    room.ownerId = row.owner_id || (V3.user ? V3.user.id : null);
+    save(); renderAll();
     rememberHost(room.id, row.invite_code);
     var rows = (members || []).map(function (lid) {
       var a = state.agents[lid];
@@ -4170,8 +4271,17 @@ async function dbUpdateRoom(r, members) {
 /* 방 완전 삭제 — 서버에서 지운다. 성공 여부는 '지운 뒤 다시 조회'로 확인한다.
    (PostgREST 의 DELETE ... RETURNING 은 RLS SELECT 정책 때문에 빈 배열로 돌아옵니다) */
 async function dbDeleteRoom(r) {
-  if (!db.ready || !db.client || !r.remote || !V3.user) return false;
-  if (!isRoomOwner(r)) { toast("방장만 이 방을 삭제할 수 있어요"); return false; }
+  if (!r) return false;
+  /* 로컬 데모 방은 서버를 거치지 않고 바로 지운다 */
+  if (!r.remote) { unhideRoomLocal(r.id); return true; }
+  /* 로그인 전(둘러보기) — 서버 삭제 권한이 없으니 내 목록에서 숨기고 이유를 알린다 */
+  if (!V3.user) {
+    hideRoomLocal(r.id);
+    toast("‘" + r.name + "’ 방을 내 목록에서 숨겼어요 · 로그인하면 서버에서도 삭제할 수 있어요");
+    return "hidden";
+  }
+  if (!db.ready || !db.client) { toast("서버에 연결하지 못했어요 · 잠시 후 다시 시도해 주세요"); return false; }
+  if (!isRoomOwner(r)) { toast("방장만 이 방을 삭제할 수 있어요 · 이 방은 ‘나가기’로 정리할 수 있어요"); return false; }
   var res;
   try {
     res = await db.client.from("kkiri_rooms").delete().eq("id", r.id);
@@ -4190,7 +4300,15 @@ async function dbDeleteRoom(r) {
 }
 /* 방 나가기 — 내 멤버십만 지운다. 공개 방은 멤버십을 지워도 보이므로 이 브라우저에서도 숨긴다. */
 async function dbLeaveRoom(r) {
-  if (!db.ready || !db.client || !r.remote || !V3.user) return false;
+  if (!r) return false;
+  if (!r.remote) { unhideRoomLocal(r.id); return true; }
+  /* 로그인 전(둘러보기) — 서버 멤버십을 지울 권한이 없으므로 내 목록에서 숨기고 이유를 알린다 */
+  if (!V3.user) {
+    hideRoomLocal(r.id);
+    toast("‘" + r.name + "’ 방을 내 목록에서 숨겼어요 · 로그인하면 서버에서도 나갈 수 있어요");
+    return "hidden";
+  }
+  if (!db.ready || !db.client) { toast("서버에 연결하지 못했어요 · 잠시 후 다시 시도해 주세요"); return false; }
   var res;
   try {
     res = await db.client.from("kkiri_room_members").delete().eq("room_id", r.id).eq("user_id", V3.user.id);
@@ -4199,7 +4317,14 @@ async function dbLeaveRoom(r) {
   try {
     var chk = await db.client.from("kkiri_room_members").select("role").eq("room_id", r.id).eq("user_id", V3.user.id);
     if (!chk.error && (chk.data || []).length) {
-      toast(isRoomOwner(r) ? "방장은 나가기 대신 방을 삭제해 주세요" : "방에서 나가지 못했어요 · 권한을 확인해 주세요");
+      var role = (chk.data[0] || {}).role;
+      if (role === "owner") {
+        /* 화면이 주인 정보를 아직 못 받은 방(방금 만든 방·예전 데이터) — 주인으로 되살려 '삭제'로 정리하게 한다 */
+        r.ownerId = V3.user.id; save(); renderAll();
+        toast("이 방은 내가 만든 방이에요 · ‘🗑 삭제’로 정리할 수 있어요");
+        return false;
+      }
+      toast("방에서 나가지 못했어요 · 권한을 확인해 주세요");
       return false;
     }
   } catch (e) {}
@@ -4410,7 +4535,7 @@ function renderCredit() {
   if (!el) return;
   var cls = "credit-chip", html = "", title = "";
   if (V3.mode === "local") { cls += " off"; html = "💎 <b>로컬</b>"; title = "로컬 데모 · 크레딧을 쓰지 않아요"; }
-  else if (!V3.signedIn) { cls += " off"; html = "💎 <b>체험</b>"; title = "게스트로 시작하면 100크레딧이 들어와요"; }
+  else if (!V3.signedIn) { cls += " off"; html = "💎 <b>크레딧</b>"; title = "게스트로 시작하면 100크레딧이 들어와요"; }
   else {
     var c = creditsNow();
     if (c < 30) cls += " low";
@@ -4605,16 +4730,16 @@ async function signInGuest() {
     V3.profile = { nickname: "체험손님", plan: "free", credits: Number(mockRead(MOCK_CREDIT_KEY, 100)) || 0 };
     closeModal("authModal");
     renderCredit(); renderAccount(); renderExperts(); renderAll();
-    toast("게스트로 시작 · 체험 크레딧 " + creditsNow());
+    toast("게스트로 시작 · 크레딧 " + creditsNow());
     return;
   }
   try {
     var res = await db.client.auth.signInAnonymously();
     if (res.error) { setAuthMsg("err", authFriendly(res.error)); return; }
-    setAuthMsg("ok", "게스트로 시작했어요 · 체험 크레딧 100");
+    setAuthMsg("ok", "게스트로 시작했어요 · 크레딧 100");
     closeModal("authModal");
     await afterSignIn(res.data.user);
-    toast("게스트로 시작 · 체험 크레딧 " + creditsNow());
+    toast("게스트로 시작 · 크레딧 " + creditsNow());
   } catch (e) { setAuthMsg("err", "네트워크 오류로 로그인하지 못했어요."); }
 }
 async function signInMagic() {
@@ -4662,12 +4787,18 @@ async function signOutAll() {
     V3.signedIn = false; V3.user = null; V3.ready = false;
     V3.profile = { nickname: "", plan: "free", credits: 0 };
     renderAll(); renderCredit(); renderAccount();
-    toast("로그아웃했어요 · 체험 크레딧은 이 브라우저에 남아 있어요");
+    toast("로그아웃했어요 · 크레딧은 이 브라우저에 남아 있어요");
     return;
   }
   try { if (db.client) await db.client.auth.signOut(); } catch (e) {}
   V3.signedIn = false; V3.user = null; V3.ready = false;
   V3.profile = { nickname: "", plan: "free", credits: 0 };
+  /* 서버 연결 상태도 함께 내린다 — 로그아웃 뒤 남은 구독·조회가 401 을 만들고
+     '대화를 불러오지 못했어요' 같은 엉뚱한 안내가 뜨지 않게 */
+  db.ready = false;
+  try { presenceLeave(); } catch (e) {}
+  try { dbUnsubscribe(); } catch (e) {}
+  setLiveStatus(V3.mode === "cloud" ? "wait" : "local", V3.mode === "cloud" ? "로그인하면 연결" : "로컬 모드 · 데모");
   renderAll(); renderCredit(); renderAccount();
   toast("로그아웃했어요");
 }
@@ -4689,6 +4820,7 @@ async function ensureMembership(roomId) {
   /* v3: 공개(둘러보기) 방만 자동 참여. 내 방·초대받은 비공개 방은 멤버십이 이미 있어 호출할 필요가 없습니다.
      (예전에는 비공개 방에서도 호출해 403 콘솔 오류가 생겼습니다) */
   if (!rm || !rm.isPublic) return;
+  if (hiddenRooms()[roomId]) return;   /* 내가 나갔거나 숨긴 방은 자동 참여하지 않는다 */
   V3.joined[roomId] = 1;
   try {
     var res = await db.client.rpc("kkiri_join_public_room", { p_room_id: roomId });
@@ -4703,7 +4835,7 @@ async function joinByCode(code) {
     var res = await db.client.rpc("kkiri_join_room", { p_code: String(code || "") });
     if (res && res.error) return { error: res.error.message };
     var row = Array.isArray(res.data) ? res.data[0] : res.data;
-    if (row && row.room_id) { V3.joined[row.room_id] = 1; return { room_id: row.room_id, role: row.role }; }
+    if (row && row.room_id) { V3.joined[row.room_id] = 1; unhideRoomLocal(row.room_id); return { room_id: row.room_id, role: row.role }; }
     return null;
   } catch (e) { return { error: "네트워크" }; }
 }
@@ -4752,7 +4884,7 @@ async function openCredit() {
   $("creditNow").textContent = V3.signedIn ? creditsNow().toLocaleString("ko-KR") : "—";
   $("creditPlan").textContent = V3.signedIn
     ? (V3.user && V3.user.isAnonymous ? "게스트(익명) · " : "") + V3.profile.plan.toUpperCase() + " 플랜"
-    : "로그인 전 · 체험 크레딧 100";
+    : "로그인 전 · 크레딧 100";
   var actR = activeRoom();
   $("creditRoom").textContent = ((actR && actR.session && actR.session.credits) || 0).toLocaleString("ko-KR");
   openModal("creditModal");
@@ -4938,7 +5070,14 @@ function wireV3() {
   if (cb) cb.addEventListener("click", function () { openCredit(); });
   var ab = $("accountBtn");
   if (ab) ab.addEventListener("click", function () {
-    if (V3.signedIn) { if (window.confirm("로그아웃할까요? 체험 크레딧과 대화 기록은 그대로 남습니다.")) signOutAll(); }
+    if (V3.signedIn) {
+      askConfirm({
+        title: "로그아웃할까요?",
+        body: "이 기기에서 로그아웃합니다.",
+        note: "크레딧과 대화 기록은 그대로 남아요.",
+        okText: "로그아웃", okClass: "dark"
+      }).then(function (ok) { if (ok) signOutAll(); });
+    }
     else { setAuthMsg("", ""); openModal("authModal"); }
   });
   var gb = $("guestBtn");
@@ -4972,6 +5111,9 @@ function wireV3() {
   setInterval(function () { if (db.ready && !document.hidden) renderPresence(); }, 60000);
   var rl = $("roomList");
   if (rl) rl.addEventListener("click", function (e) {
+    /* 삭제·나가기 버튼을 눌렀을 때는 방 입장·자동 참여를 하지 않는다
+       (예전에는 같은 클릭에 자동 참여가 함께 걸려, 나간 방의 멤버십이 되살아났다) */
+    if (e.target.closest("[data-room-del]")) return;
     var b = e.target.closest("[data-room]");
     if (b) { V3.roomId = b.getAttribute("data-room"); ensureMembership(V3.roomId); }
   });
@@ -5115,6 +5257,11 @@ function wire() {
   $("turnMeter").style.cursor = "pointer";
   $("budgetMeter").addEventListener("click", openBudgetSheet);
   $("budgetMeter").style.cursor = "pointer";
+
+  /* 앱 안 확인창 버튼 */
+  var cfOk = $("cfOk"), cfCancel = $("cfCancel");
+  if (cfOk) cfOk.addEventListener("click", function () { confirmResolve(true); });
+  if (cfCancel) cfCancel.addEventListener("click", function () { confirmResolve(false); });
 
   document.addEventListener("click", function (e) {
     var c = e.target.closest("[data-close]");
