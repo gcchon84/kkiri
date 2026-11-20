@@ -993,7 +993,7 @@ Content-Type: application/json
       <div class="auth-hero">
         <div class="ah-emoji" aria-hidden="true">🐥</div>
         <h2>로그인 없이 바로 시작해 보세요</h2>
-        <p>게스트로 시작하면 <b>100 크레딧</b>이 들어와요. 초대방에서 사람·내 AI와 대화하는 건 무료이고, 끼리 전문가 AI만 턴마다 크레딧을 써요.</p>
+        <p>게스트로 시작하면 <b>100 크레딧</b>이 들어와요. 초대방에서 사람·내 AI와 대화하는 건 무료이고, 끼리 AI만 턴마다 크레딧을 써요.</p>
       </div>
       <button class="auth-guest" id="guestBtn" type="button">
         <span class="ag-ico" aria-hidden="true">⚡</span>
@@ -4095,7 +4095,7 @@ function renderExperts() {
   if (!r) { host.innerHTML = ""; return; }
   var ids = r.members.filter(function (id) { return state.agents[id] && state.agents[id].type === "expert"; });
   if (!ids.length) {
-    host.innerHTML = '<p class="sec-hint">아직 투입한 전문가가 없어요.</p>';
+    host.innerHTML = '<p class="sec-hint">아직 추가한 끼리 AI가 없어요.</p>';
     return;
   }
   var h = "";
