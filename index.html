@@ -121,6 +121,19 @@
   .x-btn{flex:0 0 auto;padding:3px 7px;font-size:9.5px;color:#c9d7de}
   .member-row .x-btn{opacity:.75}
   .member-row:hover .x-btn{opacity:1}
+  .role-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:7px 9px;border:1px solid var(--line);border-radius:11px;background:#fbfdfc}
+  .role-row + .role-row{margin-top:6px}
+  .role-row b{font-size:11.5px;font-weight:800;color:var(--ink-2)}
+  .role-row .r-chip{font-size:8.5px;font-weight:900;padding:2px 6px;border-radius:999px;background:var(--green-tint);color:#0d7a48;border:1px solid #c8ebd8}
+  .role-row .r-label{font-size:11px;font-weight:900;color:#0d7a48}
+  .role-row small{flex:1 1 100%;font-size:9px;line-height:1.45;color:#8798a4;letter-spacing:-.01em}
+  .role-edit + .role-edit{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+  .role-edit .re-head{display:flex;align-items:baseline;gap:6px;margin-bottom:5px}
+  .role-edit .re-head b{font-size:11.5px;font-weight:800;color:var(--ink-2)}
+  .role-edit .re-head small{font-size:9px;color:#8798a4;letter-spacing:-.01em}
+  .role-edit input{width:100%;border:1px solid #dfe8e4;border-radius:9px;padding:8px 10px;font-family:inherit;font-size:11.5px;color:var(--ink);outline:none;background:#fff}
+  .role-edit input + input{margin-top:5px}
+  .role-edit input:focus{border-color:#a9d9c0}
   .sec-head em{font-style:normal;color:var(--green);font-weight:900}
   .sec-hint{font-size:9px;line-height:1.6;color:#6f8391;padding:2px 4px 0;letter-spacing:-.01em}
   .pres-list{display:flex;flex-direction:column;gap:1px}
@@ -230,9 +243,23 @@
   .seg.wide button{font-size:12px;padding:10px 4px}
   .ctrl-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
   .ctrl-actions .icon-btn{width:34px;height:34px;flex:0 0 34px;font-size:13px;border-radius:10px}
+  .rt-btn{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--green);background:var(--green);
+    color:#fff;border-radius:12px;padding:9px 13px;font-size:11.5px;font-weight:900;letter-spacing:-.02em;cursor:pointer;
+    font-family:inherit;
+  }
+  .rt-btn:hover{background:var(--green-deep);border-color:var(--green-deep)}
+  .rt-btn:disabled{opacity:.45;cursor:default}
+  .rt-btn span{font-size:9px}
+  .ctrl-lead{margin:0;flex:1 1 140px;min-width:0;font-size:10px;line-height:1.45;color:#8798a4;letter-spacing:-.01em}
+  .ctrl-lead b{color:#5d6c78;font-weight:900}
+  .rmode-btn{font-size:9px}
+  .rmode-btn[aria-pressed="true"]{color:#0d7a48;background:var(--green-tint);border-color:#c8ebd8}
   .meters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
   .meter{min-width:0}
   .m-top{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+  .meter:first-child .m-top{justify-content:flex-start}
+  .meter:first-child .m-val{margin-left:7px}
   .m-top span{font-size:9.5px;font-weight:800;color:#7c8894;letter-spacing:-.01em;white-space:nowrap}
   .m-top .pencil{font-style:normal;color:#b3bec6;font-size:9px;margin-left:2px}
   .m-top .m-val{font-size:10.5px;font-weight:900;color:var(--ink-2);font-variant-numeric:tabular-nums}
@@ -266,6 +293,7 @@
   .empty h3{font-size:15px;font-weight:900;letter-spacing:-.03em;margin-top:10px}
   .empty p{font-size:11.5px;line-height:1.7;color:#7c8894;margin-top:7px;letter-spacing:-.01em;word-break:keep-all}
   .empty .e-actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .empty .empty-roles{font-size:10px;font-weight:800;color:#0d7a48}
   .empty .e-agenda{
     display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:#0d7a48;background:var(--green-tint);
     padding:6px 11px;border-radius:10px;letter-spacing:-.01em;
@@ -589,8 +617,11 @@
     .sidebar .side-close{display:inline-grid}
     .main{height:100dvh}
     .only-mobile{display:inline-grid}
-    .room-head{padding:9px 12px;gap:8px}
+    .room-head{padding:9px 10px;gap:7px}
     .room-head .room-emoji{display:none}
+    .room-head .live-pill{display:none}
+    .room-head .pres-pill{display:none}
+    .room-actions{gap:5px}
     .rt-line h1{font-size:14.5px}
     .kind-pill{font-size:8px}
     .room-titles p{font-size:9.5px}
@@ -668,7 +699,7 @@
 
     <div class="side-sec">
       <div class="sec-head"><span>이 방의 AI <em id="aiCount">0명</em></span>
-        <span class="sec-actions"><button class="mini-btn" id="addAiBtn">+ AI 추가</button></span>
+        <span class="sec-actions"><button class="mini-btn rmode-btn" id="roleModeBtn" aria-pressed="true" title="역할 배정 방식 바꾸기 (자동/수동)">역할 자동</button><button class="mini-btn" id="addAiBtn">+ AI 추가</button></span>
       </div>
       <div class="member-list" id="sideMembers"></div>
       <p class="sec-hint" id="aiHint">이 방에서 부를 수 있는 AI예요.</p>
@@ -706,11 +737,8 @@
 
     <section class="ctrl" id="ctrl" aria-label="대화 제어">
       <div class="ctrl-top">
-        <div class="seg" id="modeSeg" role="group" aria-label="대화 모드">
-          <button type="button" data-mode="mention" aria-pressed="true">@멘션</button>
-          <button type="button" data-mode="roundtable" aria-pressed="false">라운드테이블</button>
-          <button type="button" data-mode="free" aria-pressed="false">자유 잡담</button>
-        </div>
+        <button type="button" class="rt-btn" id="discussBtn" title="이 방 안건으로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><span aria-hidden="true">▶</span> 토론 시작</button>
+        <p class="ctrl-lead" id="ctrlLead">평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요</p>
         <div class="ctrl-actions">
           <button class="icon-btn" id="pauseBtn" title="일시정지" aria-label="일시정지">⏸</button>
           <button class="icon-btn stop" id="stopBtn" title="즉시 정지" aria-label="즉시 정지">⏹</button>
@@ -797,11 +825,6 @@
             <button class="btn dark" id="mineCopyLink" type="button">복사</button>
           </div>
         </label>
-        <div class="panel-card" style="margin-top:10px">
-          <div class="row"><div class="k">초대 코드<small>링크 대신 코드만 건네도 돼요</small></div>
-            <span class="code-chip" id="mineCode">-</span>
-            <button class="mini-btn" id="mineCopyCode" type="button">복사</button></div>
-        </div>
         <p class="hint" id="mineHint">링크를 받은 AI는 접속하면 이 방으로 들어와 같은 대화를 이어가요.</p>
 
         <details class="spec" id="hookWrap">
@@ -862,20 +885,20 @@ Content-Type: application/json
       </div>
       <label class="field"><span>안건 (프로젝트방)</span><input id="rfAgenda" type="text" maxlength="90" placeholder="예: 연말 캠페인 아이디어 3개 제안" autocomplete="off"></label>
       <div class="field-row">
-        <label class="field"><span>기본 대화 모드</span>
-          <select id="rfMode">
-            <option value="mention" selected>@멘션 호출</option>
-            <option value="roundtable">라운드테이블</option>
-            <option value="free">자유 잡담</option>
-          </select>
-        </label>
+        <div class="field"><span>역할 배정</span>
+          <div class="pick-row" id="rfRoleMode">
+            <button type="button" class="pick" data-rolemode="auto" aria-pressed="true">자동 (기본)</button>
+            <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
+          </div>
+        </div>
         <label class="field"><span>최대 턴</span>
           <select id="rfTurns"><option value="6">6턴</option><option value="10" selected>10턴</option><option value="15">15턴</option></select>
         </label>
       </div>
       <label class="field"><span>회차 예산 상한 (원)</span><input id="rfBudget" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
       <div class="field"><span>참여 AI</span><div class="pick-row" id="rfMembers"></div></div>
-      <p class="modal-note">기본은 @멘션 모드예요. 부른 AI만 답하고, 부르지 않은 채팅은 비용 없이 그냥 올라갑니다. 라운드테이블·자유 잡담은 필요할 때 바꿔 쓰세요.</p>
+      <div class="field"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
+      <p class="modal-note">평상시엔 @이름으로 부르고, 부르지 않은 채팅은 비용 없이 그냥 올라갑니다. 필요할 때 ‘토론 시작’을 누르면 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요.</p>
       <div class="btn-row" id="rfActions">
         <button class="btn green" id="rfSubmit">만들기</button>
       </div>
@@ -887,7 +910,7 @@ Content-Type: application/json
 <!-- ================= 라운드테이블 설정 ================= -->
 <div class="modal" id="rtModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtTitle">
-    <div class="sheet-head"><h2 id="rtTitle">라운드테이블 설정</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><h2 id="rtTitle">토론 설정</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <label class="field"><span>안건</span><textarea id="rtAgenda" placeholder="예: 연말 캠페인 아이디어 3개 제안" maxlength="300"></textarea></label>
       <div class="field"><span>참여 AI</span><div class="pick-row" id="rtMembers"></div></div>
@@ -899,7 +922,7 @@ Content-Type: application/json
       </div></div>
       <label class="field"><span>회차 예산 (원)</span><input id="rtBudget" type="number" min="10" max="10000" step="10" value="200" inputmode="numeric"></label>
       <p class="api-status busy" id="rtEstimate" style="display:block"></p>
-      <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">시작</button></div>
+      <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">토론 시작</button></div>
     </div>
   </div>
 </div>
@@ -929,7 +952,7 @@ Content-Type: application/json
     <div class="sheet-body">
       <div class="panel-card">
         <div class="row">
-          <div class="k">외부 AI 연결<small id="apiModeSub">키를 넣으면 실제 AI가 답해요</small></div>
+          <div class="k">내 API 키 연결 (BYOK)<small id="apiModeSub">내 키를 넣으면 그 키로 실제 AI가 답해요</small></div>
           <span class="pill gray" id="apiModePill">데모 모드</span>
         </div>
       </div>
@@ -969,10 +992,7 @@ Content-Type: application/json
       <p class="hint">같은 방에 있는 사람에게 이 이름으로 보여요. 이 브라우저에만 저장되고 서버에는 대화와 함께 남습니다.</p>
       <div class="btn-row"><button class="btn green" id="nickSave">닉네임 저장</button></div>
 
-      <div class="panel-card" style="margin-top:16px">
-        <div class="row"><div class="k">초대 코드<small id="shareRoomName">방</small></div><span class="code-chip" id="shareCode">-</span></div>
-      </div>
-      <label class="field" style="margin-top:10px"><span>초대 링크</span>
+      <label class="field" style="margin-top:16px"><span id="shareLinkLabel">초대 링크</span>
         <div class="share-box">
           <input id="shareLink" type="text" readonly aria-label="초대 링크" spellcheck="false">
           <button class="btn dark" id="shareCopy">복사</button>
@@ -1180,14 +1200,14 @@ function seedState() {
     rooms: [
       {
         id: "r_promo", emoji: "🚀", name: "프로젝트방", kind: "project",
-        agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", maxTurns: 10, budget: 60,
+        agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 10, budget: 60,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 미리보기 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. @이름으로 부르거나, 상단에서 라운드테이블로 바꿔 시작해 보세요." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 미리보기 · 데모 모드로 시작합니다. 안건이 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요." }]
       },
       {
         id: "r_lounge", emoji: "☕", name: "자유 수다방", kind: "chat",
-        agenda: "", mode: "mention", maxTurns: 0, budget: 20,
+        agenda: "", mode: "mention", roleMode: "auto", roles: {}, maxTurns: 0, budget: 20,
         members: ["pikri", "kirini", "muu"], status: "idle", createdAt: now - 5000,
         session: freshSession(),
         messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "사랑방이에요. 편하게 이야기하면 그대로 올라가고, @이름으로 부르면 그 AI가 답해요." }]
@@ -1207,7 +1227,10 @@ function normalizeRoom(r) {
   if (typeof r.budget !== "number" || !isFinite(r.budget)) r.budget = 60;
   if (typeof r.maxTurns !== "number") r.maxTurns = 10;
   if (!Array.isArray(r.messages)) r.messages = [];
-  if (!r.mode) r.mode = "mention";
+  /* 예전 DB·브라우저에 남은 mode(roundtable·free)는 더 이상 고르지 않는 값이라 통합 흐름으로 맞춘다. */
+  r.mode = "mention";
+  r.roleMode = r.roleMode === "manual" ? "manual" : "auto";
+  if (!r.roles || typeof r.roles !== "object" || Array.isArray(r.roles)) r.roles = {};
   if (!r.emoji) r.emoji = r.kind === "chat" ? "☕" : "🚀";
   if (!r.inviteCode && !r.remote) r.inviteCode = newInviteCode();
   if (r.status === "running") r.status = "idle";
@@ -1317,7 +1340,129 @@ var run = {
   lastBy: {}, lastAt: {}, lastGlobalAt: 0, recent: [], moderator: null, mode: null
 };
 
-function modeName(m) { return m === "roundtable" ? "라운드테이블" : m === "free" ? "자유 잡담" : "@멘션"; }
+/* =========================================================
+   3-1. 역할 배정 (방별 자동 / 수동)
+   ---------------------------------------------------------
+   자동: 안건·방 이름 + 참여 AI 수 + 각 AI의 기본 성격으로
+         겹치지 않은 역할을 정해 발권·프롬프트에 반영한다.
+   수동: 사용자가 적은 역할·설명을 그대로 쓴다.
+   ========================================================= */
+var ROLE_DEFS = {
+  advice:   { label: "총괄 자문",      focus: "전체를 보고 판단 기준과 다음 할 일을 정리하기", keys: ["총괄", "자문", "비서", "사회", "실행"] },
+  lead:     { label: "진행·요약",      focus: "순서를 잡고 마지막에 결정과 다음 할 일로 모아 정리하기", keys: ["사회", "실행", "진행", "비서", "총괄"] },
+  proposal: { label: "핵심 제안",      focus: "바로 쓸 수 있는 안을 두 가지로 제안하기", keys: ["기획", "카피", "제안", "아이디어"] },
+  copy:     { label: "아이디어·카피",  focus: "아이디어를 쓸 수 있는 문장으로 바꾸기", keys: ["카피", "기획", "아이디어", "창의"] },
+  creative: { label: "창의 제안",      focus: "새로운 각도의 아이디어와 문장 제안하기", keys: ["카피", "기획", "아이디어", "창의"] },
+  data:     { label: "데이터·근거",    focus: "숫자와 자료로 근거를 만들고 확인한 값과 추정을 나누기", keys: ["리서처", "데이터", "분석", "숫자", "근거"] },
+  risk:     { label: "반대·리스크",    focus: "전제의 약한 고리와 되돌리기 어려운 결정을 짚기", keys: ["비판", "레드팀", "리스크", "반대"] },
+  risk2:    { label: "리스크 검증",    focus: "결정 전에 확인할 것과 위험을 먼저 짚기", keys: ["비판", "레드팀", "리스크", "반대"] },
+  ops:      { label: "실무·전략",      focus: "실행 순서와 비용·일정을 현실적으로 맞추기", keys: ["마케팅", "전략", "실무", "운영", "기획", "실행", "비서", "진행"] },
+  check:    { label: "실행 체크",      focus: "누가 언제 무엇을 할지 실행 항목과 기한으로 바꾸기", keys: ["실행", "운영", "일정", "비서"] },
+  user:     { label: "사용자 관점",    focus: "고객이 실제로 느끼는 불편과 말을 대신 말하기", keys: ["카피", "사용자", "고객"] },
+  legal:    { label: "법무·약관",      focus: "약관·표시·광고 규정에서 걸릴 부분 확인하기", keys: ["법무", "약관", "검토"] }
+};
+/* 참여 AI 수에 따른 역할 구성 — 1명은 토론 없이 바로 답하고, 2명부터 역할을 나눈다. */
+function roleKeysFor(n) {
+  if (n <= 1) return ["advice"];
+  if (n === 2) return ["proposal", "risk2"];
+  if (n === 3) return ["copy", "ops", "risk2"];
+  if (n === 4) return ["lead", "creative", "data", "risk"];
+  var base = ["lead", "creative", "data", "risk", "check"];
+  var extra = ["user", "ops", "legal", "proposal"];
+  var out = base.slice();
+  for (var i = out.length; i < n; i++) out.push(extra[(i - base.length) % extra.length]);
+  return out;
+}
+function roleContext(r) {
+  var a = String((r && r.agenda) || "").trim();
+  if (a) return "안건 「" + a + "」";
+  return "방 「" + String((r && r.name) || "") + "」";
+}
+function roleAffinity(a, key) {
+  var def = ROLE_DEFS[key];
+  if (!a || !def) return 0;
+  var text = [a.role, a.desc, a.name, a.prompt].join(" ");
+  var score = 0;
+  def.keys.forEach(function (k) { if (k && text.indexOf(k) > -1) score += 3; });
+  if (a.type === "byok" || a.type === "webhook") score += 0.5;   /* 내 AI는 맥락 담당으로 먼저 앉힌다 */
+  return score;
+}
+/* 자동 배정 결과: { agentId: { key, label, focus } } — 멤버·안건이 바뀌면 다시 계산 */
+function autoRoles(r) {
+  var ids = ((r && r.members) || []).filter(function (id) { return !!state.agents[id]; });
+  if (!ids.length) return {};
+  var keys = roleKeysFor(ids.length);
+  var n = ids.length;
+  var assigned = new Array(n);                                /* assigned[i] = 역할 index */
+  var best = null, bestTotal = -1;
+  function scoreOf(map) {
+    var t = 0;
+    for (var i = 0; i < n; i++) t += roleAffinity(state.agents[ids[i]], keys[map[i]]);
+    return t;
+  }
+  if (n <= 6) {
+    /* 멤버×역할 배치를 전부 비교해 전체 궁합이 가장 좋은 배치를 고른다(동점이면 앞선 순서). */
+    var used = new Array(keys.length).fill(false);
+    (function place(i) {
+      if (i === n) {
+        var sc = scoreOf(assigned);
+        if (sc > bestTotal) { bestTotal = sc; best = assigned.slice(); }
+        return;
+      }
+      for (var k = 0; k < keys.length; k++) {
+        if (used[k]) continue;
+        used[k] = true; assigned[i] = k;
+        place(i + 1);
+        used[k] = false;
+      }
+    })(0);
+  } else {
+    best = ids.map(function (_, i) { return i; });             /* 7명 이상이면 순서대로 */
+  }
+  var out = {};
+  ids.forEach(function (id, i) {
+    var def = ROLE_DEFS[keys[(best && best[i]) || 0]] || ROLE_DEFS.advice;
+    out[id] = { key: keys[(best && best[i]) || 0], label: def.label, focus: def.focus };
+  });
+  return out;
+}
+function roleModeOf(r) { return r && r.roleMode === "manual" ? "manual" : "auto"; }
+/* 실제로 적용되는 역할(수동이면 직접 적은 값, 빈칸은 자동값으로 대신) — 자주 불리므로 입력이 같으면 재사용 */
+var roleCache = { sig: null, map: null };
+function roomRoleMap(r) {
+  if (!r) return {};
+  var sig = [r.id, roleModeOf(r), r.agenda || "", r.name || "",
+    r.members.map(function (id) { return id + ":" + ((state.agents[id] || {}).role || ""); }).join(","),
+    JSON.stringify(r.roles || {})].join("|");
+  if (roleCache.sig === sig) return roleCache.map;
+  var auto = autoRoles(r);
+  if (roleModeOf(r) !== "manual") { roleCache = { sig: sig, map: auto }; return auto; }
+  var map = {};
+  Object.keys(auto).forEach(function (id) {
+    var m = r.roles && r.roles[id];
+    var label = m && String(m.label || "").trim();
+    var focus = m && String(m.focus || "").trim();
+    map[id] = label || focus
+      ? { key: auto[id].key, label: (label || auto[id].label).slice(0, 24), focus: (focus || auto[id].focus).slice(0, 120) }
+      : auto[id];
+  });
+  roleCache = { sig: sig, map: map };
+  return map;
+}
+function roleOf(r, id) { var m = roomRoleMap(r); return m[id] || null; }
+function roleChip(r, id) {
+  var ro = roleOf(r, id);
+  if (!ro) return "";
+  return (roleModeOf(r) === "manual" ? "수동" : "자동") + " · " + ro.label;
+}
+/* 프롬프트에 넣는 역할 지시문 — @멘션도 라운드테이블도 같은 역할로 답한다. */
+function roleDirective(r, agent) {
+  if (!r || !agent) return "";
+  var ro = roleOf(r, agent.id);
+  if (!ro) return "";
+  return "\n이 방에서 맡은 역할: " + ro.label + " — " + ro.focus + ". " + roleContext(r) +
+    " 맥락에서 이 역할로만 발언하고, 다른 역할의 일을 대신하지 않는다.";
+}
 
 /* =========================================================
    4. 렌더 · 사이드바 / 헤더 / 게이지
@@ -1355,7 +1500,7 @@ function isRoomOwner(rm) {
   return !!(rm.ownerId && V3.user && rm.ownerId === V3.user.id);
 }
 function roomRowHtml(rm) {
-  var meta = (rm.kind === "chat" ? "사랑방" : modeName(rm.mode)) + " · " + rm.members.length + "명 · " + won(rm.session.cost);
+  var meta = (rm.kind === "chat" ? "사랑방" : "프로젝트방") + " · " + rm.members.length + "명 · " + won(rm.session.cost);
   var mine = isRoomOwner(rm);
   var act = mine ? "삭제" : "나가기";
   return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + '" data-room="' + esc(rm.id) + '">' +
@@ -1396,13 +1541,14 @@ function renderRoomTree() {
   });
   $("roomList").innerHTML = html;
 }
-/* 이 방에 들어온 AI 한 줄 — '참여 중' + '✕ 빼기' */
-function memberRowHtml(a) {
+/* 이 방에 들어온 AI 한 줄 — 배정된 역할(자동/수동) + '✕ 빼기' */
+function memberRowHtml(a, r) {
   var tag = a.type === "expert" ? '<span class="mode-chip cloud">끼리 AI</span>'
     : (a.type === "byok" || a.type === "webhook") ? '<span class="mode-chip">내 AI</span>' : "";
+  var ro = roleOf(r, a.id);
+  var chip = ro ? (roleModeOf(r) === "manual" ? "수동 · " : "자동 · ") + ro.label : (a.role || "멤버");
   return '<div class="member-row">' + avatarHtml(a.id, "sm") +
-    '<span class="m-txt"><b>' + esc(a.name) + "</b><small>" + esc(a.role) + "</small></span>" + tag +
-    '<span class="join-chip">참여 중</span>' +
+    '<span class="m-txt"><b>' + esc(a.name) + "</b><small title=\"" + esc(chip + (ro && ro.focus ? " — " + ro.focus : "")) + '\">' + esc(chip) + "</small></span>" + tag +
     '<button type="button" class="mini-btn x-btn" data-member-remove="' + esc(a.id) + '" title="이 방에서 빼기" aria-label="' + esc(a.name) + ' 이 방에서 빼기">✕</button>' +
     "</div>";
 }
@@ -1416,15 +1562,23 @@ function renderSidebar() {
       var a = state.agents[id];
       if (!a) return;
       shown++;
-      mhtml += memberRowHtml(a);
+      mhtml += memberRowHtml(a, r);
     });
     if (!shown) mhtml = '<p class="sec-hint">아직 이 방에 AI가 없어요. ‘+ AI 추가’로 시작해 보세요.</p>';
   }
   $("sideMembers").innerHTML = mhtml;
   var cnt = $("aiCount");
   if (cnt) cnt.textContent = shown + "명";
+  var rb = $("roleModeBtn");
+  if (rb) {
+    var manual = roleModeOf(r) === "manual";
+    rb.textContent = manual ? "역할 수동" : "역할 자동";
+    rb.setAttribute("aria-pressed", manual ? "false" : "true");
+    rb.disabled = !r;
+    rb.title = (manual ? "지금은 수동 — AI별 역할을 직접 적어요" : "지금은 자동 — 참여 AI 수와 안건에 맞춰 역할을 나눠요") + " (눌러서 바꾸기)";
+  }
   var hint = $("aiHint");
-  if (hint) hint.textContent = r ? "‘" + r.name + "’ 방에서 부를 수 있는 AI예요. 방을 바꾸면 그 방에 설정된 AI만 보여요." : "방을 먼저 만들어 주세요.";
+  if (hint) hint.textContent = r ? "‘" + r.name + "’ 방에서 부를 수 있는 AI예요. 줄 친 글씨는 이 방에서 맡은 역할이에요." : "방을 먼저 만들어 주세요.";
   renderExperts();
   $("sideMode").textContent = anyKey()
     ? "실제 AI 연결 · " + (api.geminiKey && api.openaiKey ? "Gemini+OpenAI" : api.geminiKey ? "Gemini" : "OpenAI")
@@ -1434,13 +1588,8 @@ function renderSidebar() {
 }
 
 function hintFor(r) {
-  if (r.mode === "roundtable") {
-    return "라운드테이블은 <b>최대 " + (r.maxTurns || 10) + "턴</b> 안에서 사회자가 진행하고, 끝나면 <b>합의안 카드</b>가 자동으로 만들어져요. 예산 상한에서 스스로 멈춥니다.";
-  }
-  if (r.mode === "mention") {
-    return "<b>@이름</b>으로 부르면 그 AI가 답해요. 부르지 않은 메시지는 일반 채팅처럼 그냥 올라가고 비용도 들지 않아요.";
-  }
-  return "AI가 먼저 말을 걸어요 · <b>연속 3발화</b> 뒤 조용해지고, 끼리장 님이 말을 걸면 다시 이어집니다.";
+  if (!r) return "";
+  return "<b>@이름</b>을 붙이면 그 AI가 답해요(@전원 = 모두). 그냥 보내면 비용 없이 대화만 올라가고, 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요.";
 }
 
 function renderRoom() {
@@ -1459,6 +1608,7 @@ function renderRoom() {
     $("sendBtn").disabled = true;
     $("pauseBtn").disabled = true;
     $("stopBtn").disabled = true;
+    $("discussBtn").disabled = true;
     $("turnVal").textContent = "—";
     $("costVal").textContent = "—";
     $("tokenVal").textContent = "—";
@@ -1472,19 +1622,17 @@ function renderRoom() {
   $("roomKind").className = "kind-pill" + (r.kind === "project" ? "" : " chat");
   $("roomSub").textContent = (r.kind === "project"
     ? "안건: " + (r.agenda || "아직 없음")
-    : "가벼운 수다") + " · " + modeName(r.mode) + " · AI " + r.members.length + "명";
+    : "가벼운 수다") + " · AI " + r.members.length + "명 · 역할 " + (roleModeOf(r) === "manual" ? "수동" : "자동");
   document.title = "끼리 · " + r.name;
 
-  Array.prototype.forEach.call($("modeSeg").querySelectorAll("[data-mode]"), function (b) {
-    b.setAttribute("aria-pressed", b.getAttribute("data-mode") === r.mode ? "true" : "false");
-  });
   $("pauseBtn").disabled = !run.active;
   $("pauseBtn").textContent = run.paused ? "▶" : "⏸";
   $("pauseBtn").setAttribute("aria-label", run.paused ? "재개" : "일시정지");
   $("stopBtn").disabled = !run.active;
-  $("sendBtn").textContent = r.mode === "roundtable" ? "라운드테이블 시작" : "보내기";
-  $("sendBtn").disabled = run.active && r.mode === "roundtable";
-  $("input").placeholder = r.mode === "roundtable" ? "안건을 적고 시작하세요" : r.mode === "mention" ? "메시지를 입력하세요 · @이름으로 AI 호출" : "가볍게 한마디";
+  $("discussBtn").disabled = run.active;
+  $("sendBtn").textContent = "보내기";
+  $("sendBtn").disabled = run.active && run.mode === "roundtable";
+  $("input").placeholder = "메시지를 입력하세요 · @이름으로 AI 부르기";
   $("compHint").innerHTML = hintFor(r);
   updateMeters();
   renderQuick();
@@ -1497,13 +1645,12 @@ function updateMeters() {
   var r = activeRoom();
   if (!r) return;
   var s = r.session || freshSession();
-  var max = r.mode === "roundtable" ? (r.maxTurns || 10) : (r.mode === "free" ? 3 : 0);
-  var cur = r.mode === "free" ? (run.freeConsec || 0) : (s.turn || 0);
-  var pct = max ? clamp(cur / max * 100, 0, 100) : 0;
-  $("turnLabel").textContent = r.mode === "free" ? "연속 AI 발화" : "턴";
-  $("turnVal").textContent = r.mode === "free" ? (cur + " / 3")
-    : r.mode === "roundtable" ? ((s.turn || 0) + " / " + max + "턴")
-    : ((s.turn || 0) + "턴");
+  var discussing = run.active && run.mode === "roundtable";
+  var max = clamp(Number(r.maxTurns) || 10, 3, 24);
+  var cur = s.turn || 0;
+  var pct = discussing ? clamp(cur / max * 100, 0, 100) : 0;
+  $("turnLabel").textContent = "턴";
+  $("turnVal").textContent = discussing ? (cur + " / " + max + "턴") : (cur + "턴");
   $("turnBar").style.width = pct + "%";
 
   var cap = Math.max(1, r.budget || 0);
@@ -1514,11 +1661,11 @@ function updateMeters() {
   $("budgetMeter").classList.toggle("over", costPct >= 100);
 
   var projected = s.cost || 0;
-  if (r.mode === "roundtable" && max > (s.turn || 0)) {
-    var avg = (s.turn || 0) > 0 ? (s.cost || 0) / s.turn : 3.1;
-    projected = (s.cost || 0) + (max - (s.turn || 0)) * avg;
+  if (discussing && max > cur) {
+    var avg = cur > 0 ? (s.cost || 0) / cur : 3.1;
+    projected = (s.cost || 0) + (max - cur) * avg;
   }
-  $("tokenVal").textContent = tok((s.tin || 0) + (s.tout || 0)) + (r.mode === "roundtable" ? " · 예상 " + won(projected) : "");
+  $("tokenVal").textContent = tok((s.tin || 0) + (s.tout || 0)) + (discussing ? " · 예상 " + won(projected) : "");
   var cu = s.credits || 0;                                  /* 이 방·이번 회차에 쓴 크레딧 */
   var cuEl = $("creditUsed"), cuSep = $("creditSep");
   var showCu = !!V3 && V3.mode !== "local";
@@ -1581,8 +1728,9 @@ function msgHtml(m) {
   var meta = "<time>" + esc(timeLabel(m.at)) + "</time>" +
     (m.cost ? "<span>· " + won(m.cost) + "</span>" : "") +
     (m.dup ? '<span class="src demo">중복 방지</span>' : "");
+  var ro = roleOf(activeRoom(), m.who);
   return '<div class="msg">' + avatarHtml(m.who) + '<div class="body">' +
-    '<div class="who">' + esc(a.name) + "<em>" + esc(a.role) + "</em>" + srcBadge(m) + "</div>" +
+    '<div class="who">' + esc(a.name) + "<em>" + esc(ro ? ro.label : a.role) + "</em>" + srcBadge(m) + "</div>" +
     '<div class="bubble">' + fmtText(m.text) + "</div>" +
     '<div class="meta">' + meta + "</div></div></div>";
 }
@@ -1634,25 +1782,22 @@ function hasRealMessages(r) {
 
 function emptyHtml(r) {
   var names = memberNames(r).join(" · ");
-  if (r.mode === "roundtable") {
-    return '<div class="empty"><div class="e-emoji">🚀</div><h3>안건이 준비되어 있어요</h3>' +
-      '<p><b>' + esc(r.agenda || "안건을 정해 주세요") + "</b><br>" + esc(names) + " " + r.members.length + "명이 순서대로 의견을 내고, 쟁점을 좁혀 합의안까지 정리합니다.</p>" +
-      '<div class="e-actions"><button type="button" class="ghost-btn primary" data-act="start">▶ 라운드테이블 시작</button>' +
-      '<button type="button" class="ghost-btn" data-act="agenda">안건·턴 설정</button></div></div>';
-  }
-  if (r.mode === "mention") {
-    var first = r.members.length ? agentName(r.members[0]) : "";
-    return '<div class="empty"><div class="e-emoji">' + (r.kind === "project" ? "🚀" : "☕") + '</div><h3>' +
-      (r.kind === "project" ? "조용히 시작해요" : "아직 조용해요") + '</h3>' +
-      "<p>부른 AI만 답해요. <b>@이름</b>으로 말을 걸면 그 AI가 답하고, 그냥 채팅하듯 보내면 대화만 올라갑니다(비용 0).</p>" +
-      '<div class="e-actions">' +
-      (first ? '<button type="button" class="ghost-btn primary" data-act="mention">@' + esc(first) + ' 부르기</button>' : "") +
-      (r.kind === "project" ? '<button type="button" class="ghost-btn" data-act="start">라운드테이블 시작</button>' : "") +
-      '</div></div>';
-  }
-  return '<div class="empty"><div class="e-emoji">☕</div><h3>아직 조용해요</h3>' +
-    "<p>자유 잡담 모드예요. AI가 먼저 말을 걸고, 연속 3발화가 지나면 스스로 조용해집니다.</p>" +
-    '<div class="e-actions"><button type="button" class="ghost-btn primary" data-act="nudge">AI 불러보기</button></div></div>';
+  var first = r.members.length ? agentName(r.members[0]) : "";
+  var isProject = r.kind === "project";
+  var roles = roomRoleMap(r);
+  var roleLine = r.members.map(function (id) {
+    var ro = roles[id];
+    return ro ? esc(agentName(id)) + " " + esc(ro.label) : "";
+  }).filter(Boolean).join(" · ");
+  return '<div class="empty"><div class="e-emoji">' + (isProject ? "🚀" : "☕") + '</div><h3>' +
+    (isProject ? esc(r.agenda || "안건을 한 줄 적어 보세요") : "아직 조용해요") + '</h3>' +
+    "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + r.members.length + "명이 이 방에 있어요." +
+    (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
+    "<br><b>@이름</b>으로 부르면 그 AI가 답하고, 그냥 보내면 대화만 올라가요(비용 0). 필요할 때 <b>토론 시작</b>을 누르면 역할을 나눠 토론하고 합의안 카드를 만들어요.</p>" +
+    '<div class="e-actions">' +
+    (first ? '<button type="button" class="ghost-btn" data-act="mention">@' + esc(first) + ' 부르기</button>' : "") +
+    '<button type="button" class="ghost-btn primary" data-act="start">▶ 토론 시작</button>' +
+    '</div></div>';
 }
 
 var pendingCardScroll = null;
@@ -1694,22 +1839,17 @@ function scrollBottom(force) {
 
 function renderQuick() {
   var r = activeRoom();
+  if (!r) { $("quickBar").innerHTML = ""; return; }
   var h = "";
-  if (r.mode === "roundtable") {
-    h += '<button type="button" class="q-chip agenda" data-act="agenda" title="안건·턴 설정">🎯 ' + esc(r.agenda || "안건을 정해 주세요") + "</button>";
-    h += '<button type="button" class="q-chip" data-act="card">📋 합의안 요약</button>';
-  } else if (r.mode === "mention") {
-    r.members.forEach(function (id) {
-      var a = state.agents[id];
-      if (a) h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
-    });
-    h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
-  } else {
-    ["오늘 하루", "요즘 고민", "뭐 먹지"].forEach(function (t, i) {
-      h += '<button type="button" class="q-chip" data-topic="' + i + '">' + t + "</button>";
-    });
-    h += '<button type="button" class="q-chip" data-act="card">📋 대화 요약</button>';
+  r.members.forEach(function (id) {
+    var a = state.agents[id];
+    if (a) h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
+  });
+  h += '<button type="button" class="q-chip" data-mention="전원">@전원</button>';
+  if (r.kind === "project") {
+    h += '<button type="button" class="q-chip agenda" data-act="agenda" title="안건·턴 설정">🎯 ' + esc(r.agenda || "안건 정하기") + "</button>";
   }
+  h += '<button type="button" class="q-chip" data-act="card">📋 합의안</button>';
   $("quickBar").innerHTML = h;
 }
 
@@ -2123,9 +2263,8 @@ function startRoundtable(opts) {
   var agenda = String(opts.agenda || "").trim();
   if (!agenda) { toast("안건을 적어 주세요"); return; }
   var parts = (opts.participants || r.members).filter(function (id) { return !!state.agents[id]; });
-  if (parts.length < 2) { toast("AI를 두 명 이상 골라 주세요"); return; }
+  if (parts.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   var mod = opts.moderator && parts.indexOf(opts.moderator) > -1 ? opts.moderator : parts[0];
-  r.mode = "roundtable";
   r.agenda = agenda;
   r.members = parts;
   r.maxTurns = clamp(Number(opts.turns) || 10, 3, 24);
@@ -2208,50 +2347,6 @@ async function runMentions(text) {
   }
   if (ep !== run.epoch) return;
   run.active = false; run.typingAgent = null; r.status = "idle";
-  save(); renderRoom(); renderSidebar();
-}
-
-async function runFree(text) {
-  var r = activeRoom();
-  if (run.active) return;
-  if (budgetExceeded(r)) {
-    addSystem("예산 상한에 닿아 AI가 답하지 못했어요 · 위 예상 비용을 눌러 예산을 올리거나 회차를 초기화해 주세요.", "warn");
-    return;
-  }
-  if (!r.members.length) { toast("이 방에 AI가 없어요 · 멤버를 켜 주세요"); return; }
-  run.epoch++;
-  var ep = run.epoch;
-  run.active = true; run.paused = false; run.mode = "free";
-  run.freeConsec = 0; run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
-  r.status = "running";
-  renderRoom();
-  var members = r.members.slice();
-  var opener = "끼리장 님이 ";
-  for (var i = 0; i < 3; i++) {
-    if (ep !== run.epoch) return;
-    await waitWhilePaused(ep);
-    if (ep !== run.epoch) return;
-    if (budgetExceeded(r)) { endRun("budget", ep); return; }
-    var idx = (hash(text) + i * 7 + rand(0, 20)) % members.length;
-    var id = members[idx];
-    if (id === run.lastSpeaker && members.length > 1) id = members[(idx + 1) % members.length];
-    var ag = state.agents[id];
-    if (!ag) continue;
-    run.freeConsec = i;
-    updateMeters();
-    await cooldown(id, ep);
-    if (ep !== run.epoch) return;
-    await speak(ag, "chat", ep);
-    if (ep !== run.epoch) return;
-    run.freeConsec = Math.min(3, i + 1);
-    updateMeters();
-    if (loopDetected()) { endRun("loop", ep); return; }
-    await sleep(rand(500, 950));
-    if (i >= 1 && Math.random() < 0.5) break;
-  }
-  if (ep !== run.epoch) return;
-  run.active = false; run.typingAgent = null; r.status = "idle";
-  if (run.freeConsec >= 3) addSystem("AI가 3번 연속 말했어요 · 끼리장 님이 말을 걸면 다시 이어집니다.", "info");
   save(); renderRoom(); renderSidebar();
 }
 
@@ -2368,7 +2463,7 @@ function systemFor(agent) {
   var r = activeRoom();
   var team = memberNames(r).join(", ");
   var base = agent.prompt || (agent.type === "webhook" ? "너는 이 방의 AI 멤버다." : "너는 이 방의 AI 멤버다.");
-  return base + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
+  return base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
     "\n함께 있는 AI: " + team +
     "\n규칙: 한국어로 2~4문장. 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다.";
 }
@@ -2390,8 +2485,9 @@ function turnPrompt(agent, phase) {
   var lines = msgs.map(function (m) {
     return agentName(m.who) + ": " + String(m.text || "").replace(/\s+/g, " ").slice(0, 300);
   });
+  var ro = roleOf(r, agent.id);
   return "[지금까지의 발언]\n" + (lines.length ? lines.join("\n") : "(없음)") +
-    "\n\n[차례] 지금은 " + agent.name + "(" + (agent.role || "멤버") + ") 차례다. " + phaseInstruction(phase, r);
+    "\n\n[차례] 지금은 " + agent.name + "(" + (ro ? ro.label : (agent.role || "멤버")) + ") 차례다. " + phaseInstruction(phase, r);
 }
 
 async function liveTurn(agent, provider, phase) {
@@ -2485,7 +2581,8 @@ function buildCard(r, opts) {
   function sents(m) { return sentences(m.text); }
   function isCritic(id) {
     var a = agentById(id);
-    return !!(a && /비판|레드/.test(a.role || ""));
+    var ro = roleOf(r, id);
+    return !!((a && /비판|레드/.test(a.role || "")) || (ro && /비판|리스크|반대/.test(ro.label)));
   }
 
   var decisions = [], evidence = [], risks = [], checks = [];
@@ -2831,19 +2928,33 @@ function selectRoom(id) {
   }
 }
 
-function setMode(mode) {
+/* 방의 역할 배정 방식 바꾸기 — 사이드바 '역할 자동/수동'과 방 설정이 같이 씁니다. */
+function applyRoleMode(mode, quiet) {
   var r = activeRoom();
-  if (run.active) { toast("진행 중에는 모드를 바꿀 수 없어요 · 먼저 멈춰 주세요"); return; }
-  if (["mention", "roundtable", "free"].indexOf(mode) < 0) return;
-  if (r.mode === mode) return;
-  r.mode = mode;
-  if (mode === "roundtable" && !r.agenda) r.agenda = r.kind === "project" ? "오늘 안건 정리" : "이야기 정리";
+  if (!r) return;
+  if (run.active) { toast("진행 중에는 역할 설정을 바꿀 수 없어요 · 먼저 멈춰 주세요"); return; }
+  mode = mode === "manual" ? "manual" : "auto";
+  if (mode === "manual") {
+    /* 지금 자동 배정을 출발점으로 채워 두면, 손 볼 칸만 고치면 된다. */
+    var auto = autoRoles(r);
+    var keep = r.roles || {};
+    var next = {};
+    Object.keys(auto).forEach(function (id) {
+      var k = keep[id] || {};
+      next[id] = {
+        label: String(k.label || "").trim() || auto[id].label,
+        focus: String(k.focus || "").trim() || auto[id].focus
+      };
+    });
+    r.roles = next;
+  }
+  r.roleMode = mode;
   save();
   dbSaveSettings(r);
-  renderRoom();
-  renderSidebar();
-  toast("모드 · " + modeName(mode));
+  renderAll();
+  if (!quiet) toast(mode === "manual" ? "역할 수동 · AI별 역할을 직접 고칠 수 있어요" : "역할 자동 · 참여 AI 수와 안건에 맞춰 다시 배정했어요");
 }
+function toggleRoleMode() { applyRoleMode(roleModeOf(activeRoom()) === "manual" ? "auto" : "manual"); }
 
 function toggleMember(id) {
   var r = activeRoom();
@@ -2911,7 +3022,7 @@ function rtStart() {
   var agenda = $("rtAgenda").value.trim();
   if (!agenda) { toast("안건을 적어 주세요"); $("rtAgenda").focus(); return; }
   var parts = rtSelectedMembers();
-  if (parts.length < 2) { toast("AI를 두 명 이상 골라 주세요"); return; }
+  if (parts.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   var mod = $("rtModerator").value;
   if (parts.indexOf(mod) < 0) mod = parts[0];
   var turns = rtState.turns || 10;
@@ -2932,7 +3043,7 @@ function openBudgetSheet() {
 /* =========================================================
    15. 방 만들기 · 설정 시트
    ========================================================= */
-var roomForm = { id: null, colorEmoji: "🚀", kind: "project" };
+var roomForm = { id: null, colorEmoji: "🚀", kind: "project", roleMode: "auto", roles: {} };
 var EMOJIS = ["🚀", "☕", "🎯", "📦", "🎨", "🌙", "💡", "🧩"];
 
 function renderEmojiPick() {
@@ -2950,6 +3061,64 @@ function renderRoomMemberPick(selected) {
   });
   $("rfMembers").innerHTML = h;
 }
+function renderRfRoleMode() {
+  Array.prototype.forEach.call($("rfRoleMode").querySelectorAll("[data-rolemode]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-rolemode") === roomForm.roleMode ? "true" : "false");
+  });
+}
+function rfDraftRoom() {
+  return {
+    id: roomForm.id || "draft",
+    name: $("rfName").value.trim() || "새 방",
+    kind: roomForm.kind,
+    agenda: $("rfAgenda").value.trim(),
+    members: rfSelectedMembers(),
+    roleMode: roomForm.roleMode,
+    roles: roomForm.roles
+  };
+}
+/* 수동 모드 편집 중인 입력값을 roomForm.roles 로 담아 둔다(다시 그려도 적은 값이 유지되게). */
+function captureRfRoles() {
+  if (roomForm.roleMode !== "manual") return;
+  Array.prototype.forEach.call($("rfRoles").querySelectorAll("[data-role-label]"), function (el) {
+    var id = el.getAttribute("data-role-label");
+    roomForm.roles[id] = roomForm.roles[id] || {};
+    roomForm.roles[id].label = el.value.trim();
+  });
+  Array.prototype.forEach.call($("rfRoles").querySelectorAll("[data-role-focus]"), function (el) {
+    var id = el.getAttribute("data-role-focus");
+    roomForm.roles[id] = roomForm.roles[id] || {};
+    roomForm.roles[id].focus = el.value.trim();
+  });
+}
+function renderRfRoles() {
+  var draft = rfDraftRoom();
+  var auto = autoRoles(draft);
+  var manual = roomForm.roleMode === "manual";
+  var h = "";
+  draft.members.forEach(function (id) {
+    var a = state.agents[id];
+    if (!a) return;
+    var ar = auto[id] || { label: "멤버", focus: "" };
+    if (manual) {
+      var cur = roomForm.roles[id] || {};
+      h += '<div class="role-edit"><div class="re-head"><b>' + esc(a.name) + '</b><small>' + esc(a.role || (a.type === "byok" || a.type === "webhook" ? "내 AI" : "끼리 AI")) + '</small></div>' +
+        '<input type="text" maxlength="16" data-role-label="' + esc(id) + '" placeholder="역할 (예: 리스크 검증)" value="' + esc(cur.label || ar.label) + '" aria-label="' + esc(a.name) + ' 역할">' +
+        '<input type="text" maxlength="80" data-role-focus="' + esc(id) + '" placeholder="잘하는 일·말투를 한 줄로" value="' + esc(cur.focus || ar.focus) + '" aria-label="' + esc(a.name) + ' 역할 설명">' +
+        '</div>';
+    } else {
+      h += '<div class="role-row"><b>' + esc(a.name) + '</b><span class="r-chip">자동</span><span class="r-label">' + esc(ar.label) + '</span><small>' + esc(ar.focus) + '</small></div>';
+    }
+  });
+  if (!h) h = '<p class="sec-hint">참여 AI를 먼저 골라 주세요.</p>';
+  $("rfRoles").innerHTML = h;
+  $("rfRoleHead").textContent = manual ? "역할 직접 정하기" : "역할 미리보기 (자동)";
+  $("rfRoleNote").textContent = manual
+    ? "적어 둔 역할·설명이 그 AI의 지시문에 들어가요. 칸을 비우면 자동 배정 값이 쓰이고, AI를 넣고 빼도 적은 값은 남아요."
+    : (draft.agenda
+      ? "안건과 참여 AI " + draft.members.length + "명에 맞춰 역할을 나눠요. AI를 넣고 빼면 바로 다시 배정돼요. 직접 고치려면 ‘수동’을 누르세요."
+      : "안건을 한 줄 적으면 역할이 더 정확해져요. 지금은 방 이름과 각 AI의 기본 성격으로 배정했어요.");
+}
 function openRoomForm(roomId, kind) {
   var r = roomId ? state.rooms.filter(function (x) { return x.id === roomId; })[0] : null;
   roomForm.id = r ? r.id : null;
@@ -2962,11 +3131,14 @@ function openRoomForm(roomId, kind) {
   });
   renderEmojiPick();
   $("rfAgenda").value = r ? (r.agenda || "") : "";
-  $("rfMode").value = r ? r.mode : "mention";
+  roomForm.roleMode = r ? roleModeOf(r) : "auto";
+  try { roomForm.roles = r && r.roles ? JSON.parse(JSON.stringify(r.roles)) : {}; } catch (e) { roomForm.roles = {}; }
+  renderRfRoleMode();
   $("rfTurns").value = r ? String(r.maxTurns || 10) : "10";
   $("rfBudget").value = r ? r.budget : (roomForm.kind === "chat" ? 20 : 60);
   var sel = r ? r.members.slice() : allAgents().map(function (a) { return a.id; });
   renderRoomMemberPick(sel);
+  renderRfRoles();
   $("rfSubmit").textContent = r ? "저장" : "만들기";
   /* 삭제 버튼: 내 방 → 완전 삭제 / 남의 방(시드방 포함) → 나가기 / 로컬 데모 방 → 내 화면에서 삭제 */
   var mine = isRoomOwner(r);
@@ -2978,7 +3150,7 @@ function openRoomForm(roomId, kind) {
     ? "이 브라우저에만 있는 데모 방이에요. 내 화면에서만 지워집니다."
     : mine
       ? "내가 만든 방이라 서버에서 완전히 지울 수 있어요. 대화·AI 멤버·합의안까지 함께 지워지고, 함께 있던 사람들의 목록에서도 사라집니다. 되돌릴 수 없어요."
-      : "내 목록에서만 나가요. 방은 그대로 남고, 다시 들어오려면 초대 코드가 필요해요.");
+      : "내 목록에서만 나가요. 방은 그대로 남고, 다시 들어오려면 초대 링크가 필요해요.");
   $("rfDeleteWrap").hidden = !r;
   openModal("roomFormModal");
 }
@@ -2993,28 +3165,41 @@ function submitRoomForm() {
   var kind = roomForm.kind;
   var emoji = roomForm.colorEmoji;
   var agenda = $("rfAgenda").value.trim();
-  var mode = $("rfMode").value;
+  captureRfRoles();
+  var roleMode = roomForm.roleMode === "manual" ? "manual" : "auto";
+  var roles = {};
+  if (roleMode === "manual") {
+    members.forEach(function (id) {
+      var m = roomForm.roles[id];
+      if (!m) return;
+      var label = String(m.label || "").trim().slice(0, 24);
+      var focus = String(m.focus || "").trim().slice(0, 120);
+      if (label || focus) roles[id] = { label: label, focus: focus };
+    });
+  }
   var maxTurns = Number($("rfTurns").value) || 10;
   var budget = Math.max(10, Number($("rfBudget").value) || 60);
   if (roomForm.id) {
     var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
     if (!r) return;
     r.name = name; r.emoji = emoji; r.kind = kind; r.agenda = agenda;
-    r.mode = mode; r.maxTurns = maxTurns; r.budget = budget; r.members = members;
+    r.mode = "mention"; r.roleMode = roleMode; r.roles = roles;
+    r.maxTurns = maxTurns; r.budget = budget; r.members = members;
     if (run.moderator && members.indexOf(run.moderator) < 0) run.moderator = members[0];
     toast("방 설정을 저장했어요");
     dbUpdateRoom(r, members);
   } else {
     var room = {
       id: "r_" + uid(""),
-      emoji: emoji, name: name, kind: kind, agenda: agenda, mode: mode,
+      emoji: emoji, name: name, kind: kind, agenda: agenda, mode: "mention",
+      roleMode: roleMode, roles: roles,
       maxTurns: maxTurns, budget: budget, members: members, status: "idle",
       createdAt: Date.now(), session: freshSession(), messages: [],
       inviteCode: newInviteCode(), hostName: nick(), isPublic: true, remote: db.ready
     };
     room.messages.push({
       id: uid("s"), who: "system", kind: "info", at: Date.now(),
-      text: "새 방이에요. @이름으로 부르면 그 AI가 답하고, 부르지 않은 채팅은 그냥 올라갑니다."
+      text: "새 방이에요. @이름으로 부르면 그 AI가 답하고, 부르지 않은 채팅은 그냥 올라갑니다. 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요."
     });
     state.rooms.push(room);
     state.activeRoomId = room.id;
@@ -3034,7 +3219,7 @@ function roomAskRemove(r) {
   if (isRoomOwner(r)) {
     return window.confirm("‘" + r.name + "’ 방을 삭제할까요?\n\n대화·AI 멤버·합의안이 모두 지워지고, 함께 있던 사람들의 목록에서도 사라집니다. 되돌릴 수 없어요.");
   }
-  return window.confirm("‘" + r.name + "’ 방에서 나갈까요?\n\n내 목록에서 사라지고, 다시 들어오려면 초대 코드가 필요해요.");
+  return window.confirm("‘" + r.name + "’ 방에서 나갈까요?\n\n내 목록에서 사라지고, 다시 들어오려면 초대 링크가 필요해요.");
 }
 function afterRoomRemoved(r, wasOwner) {
   state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
@@ -3098,16 +3283,12 @@ function aiTab(tab) {
   if (tab === "kkiri") { renderExpertPicker(); renderInviteAgents(); }
   else renderMine();
 }
-/* 내 AI 탭 — 이 방 초대 링크·코드 */
+/* 내 AI 탭 — 이 방 초대 링크 하나만 (코드는 링크 안에 들어 있어요) */
 function renderMine() {
   var r = ensureRoomCode(activeRoom());
-  var link = $("mineLink"), code = $("mineCode"), hint = $("mineHint");
-  if (!link || !code) return;
-  var inv = roomInviteLink(r);
-  link.value = inv || "";
-  code.textContent = (r && r.inviteCode) ? r.inviteCode : "없음";
-  var cc = $("mineCopyCode");
-  if (cc) cc.disabled = !(r && r.inviteCode);
+  var link = $("mineLink"), hint = $("mineHint");
+  if (!link) return;
+  link.value = roomInviteLink(r) || "";
   if (hint) {
     hint.innerHTML = !r ? "먼저 방을 만들어 주세요."
       : (r.remote ? "링크를 받은 AI는 접속하면 이 방으로 들어와 같은 대화를 이어가요."
@@ -3322,8 +3503,10 @@ function exportJson() {
     mode: anyKey() ? providerLabel(api.provider) + " 실제 AI" : "데모 모드",
     activeRoomId: state.activeRoomId,
     rooms: state.rooms.map(function (r) {
+      var roleMap = roomRoleMap(r);
       return {
-        id: r.id, name: r.name, kind: r.kind, agenda: r.agenda, mode: r.mode,
+        id: r.id, name: r.name, kind: r.kind, agenda: r.agenda, roleMode: roleModeOf(r),
+        roles: r.members.map(function (id) { return { name: agentName(id), role: roleMap[id] ? roleMap[id].label : "" }; }),
         maxTurns: r.maxTurns, budget: r.budget,
         members: r.members.map(agentName),
         stats: r.session,
@@ -3524,7 +3707,9 @@ function dbApply(roomRows, agentRows, fresh) {
     rooms.push({
       id: row.id, name: row.name, kind: row.kind === "lounge" ? "chat" : "project",
       agenda: row.description || "", emoji: s.emoji || (row.kind === "lounge" ? "☕" : "🚀"),
-      mode: s.mode || "mention",
+      mode: "mention",
+      roleMode: s.roleMode === "manual" ? "manual" : "auto",
+      roles: (s.roles && typeof s.roles === "object" && !Array.isArray(s.roles)) ? s.roles : {},
       maxTurns: typeof s.maxTurns === "number" ? s.maxTurns : (row.kind === "lounge" ? 0 : 10),
       budget: typeof s.budget === "number" ? s.budget : 60,
       members: mem, status: p ? p.status : "idle",
@@ -3762,7 +3947,7 @@ async function dbCreateRoom(room, members) {
       is_public: !(V3.signedIn && V3.mode === "cloud"),
       owner_id: (V3.signedIn && V3.mode === "cloud" && V3.user) ? V3.user.id : null,
       host_name: nick(),
-      settings: { emoji: room.emoji, mode: room.mode, maxTurns: room.maxTurns, budget: room.budget }
+      settings: { emoji: room.emoji, mode: "mention", roleMode: roleModeOf(room), roles: room.roles || {}, maxTurns: room.maxTurns, budget: room.budget }
     };
     var res = await db.client.from("kkiri_rooms").insert(row);
     if (res.error) { dbToast("방을 서버에 만들지 못했어요 · " + res.error.message); return; }
@@ -3797,7 +3982,7 @@ async function dbUpdateRoom(r, members) {
       name: String(r.name).slice(0, 60),
       kind: r.kind === "chat" ? "lounge" : "project",
       description: String(r.agenda || "").slice(0, 600),
-      settings: { emoji: r.emoji, mode: r.mode, maxTurns: r.maxTurns, budget: r.budget }
+      settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget }
     }).eq("id", r.id);
     if (res.error) dbToast("방 설정을 저장하지 못했어요 · " + res.error.message);
     for (var i = 0; i < members.length; i++) await dbSetMember(r.id, members[i], true);
@@ -3920,7 +4105,7 @@ async function dbInit() {
         state.activeRoomId = target.id;
         toast("초대받은 방 ‘" + target.name + "’(으)로 들어왔어요");
       } else if (pendingJoin.code) {
-        toast("초대 코드를 찾지 못했어요 · " + pendingJoin.code);
+        toast("초대 링크를 확인하지 못했어요 · 코드가 만료됐을 수 있어요");
       } else {
         toast("초대 링크의 방을 찾지 못했어요");
       }
@@ -3947,7 +4132,7 @@ function dbSaveSettings(r) {
     name: String(r.name || "방").slice(0, 60),
     kind: r.kind === "chat" ? "lounge" : "project",
     description: String(r.agenda || "").slice(0, 600),
-    settings: { emoji: r.emoji, mode: r.mode, maxTurns: r.maxTurns, budget: r.budget }
+    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget }
   }).eq("id", r.id).then(function (res) {
     if (res && res.error) dbToast("방 설정을 서버에 저장하지 못했어요 · " + res.error.message);
   }, function () {});
@@ -3967,8 +4152,8 @@ function openShare() {
   var r = ensureRoomCode(activeRoom());
   if (!r) return;
   $("nickInput").value = nick();
-  $("shareRoomName").textContent = r.name;
-  $("shareCode").textContent = r.inviteCode || "-";
+  var lbl = $("shareLinkLabel");
+  if (lbl) lbl.textContent = "‘" + r.name + "’ 초대 링크";
   $("shareLink").value = roomInviteLink(r);
   $("shareHint").textContent = r.remote
     ? "링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다."
@@ -4205,7 +4390,7 @@ async function afterSignIn(user) {
   await loadModels();
   if (pendingJoin && pendingJoin.code && V3.ready) {
     var j = await joinByCode(pendingJoin.code);
-    if (j && j.error) toast("초대 코드를 확인하지 못했어요 · " + j.error);
+    if (j && j.error) toast("초대 링크를 확인하지 못했어요 · " + j.error);
   }
   renderCredit(); renderAccount(); renderExperts(); renderExpertPicker();
   await dbReload();
@@ -4532,12 +4717,13 @@ async function cloudExpertTurn(agent, phase) {
   var ctx = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; }).slice(-14).map(function (m) {
     return { speaker: agentName(m.who), text: String(m.text || "").slice(0, 600) };
   });
+  var ro = roleOf(r, agent.id);
   var body = {
     room_id: r.id,
     config: agent.model || "kkiri-lite",
-    expert: { id: agent.id, name: agent.name, role: agent.role || "", persona: agent.prompt || "", avatar: agent.avatar || "" },
+    expert: { id: agent.id, name: agent.name, role: ro ? ro.label : (agent.role || ""), persona: (agent.prompt || "") + roleDirective(r, agent), avatar: agent.avatar || "" },
     phase: phase || "",
-    instruction: phaseInstruction(phase, r),
+    instruction: phaseInstruction(phase, r) + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : ""),
     speakers: memberNames(r),
     context: ctx,
     message_id: uid("a")
@@ -4659,23 +4845,13 @@ function onSend() {
   var r = activeRoom();
   if (!r) return;
   var t = $("input").value.trim();
-  if (!t) {
-    if (r.mode === "roundtable") { openRoundtable(null); return; }
-    $("input").focus();
-    return;
-  }
-  if (r.mode === "roundtable") {
-    if (run.active) { toast("AI가 말하는 중이에요 · 멈추거나 기다려 주세요"); return; }
-    openRoundtable(t);
-    return;
-  }
+  if (!t) { $("input").focus(); return; }
   /* 일반 채팅은 예산 상한과 무관하게 언제든 전송됩니다. 예산은 AI 호출에서만 봅니다. */
   addUserMessage(t);
   $("input").value = "";
   growInput();
   if (run.active) { toast("메시지는 올라갔어요 · AI가 말하는 중이라 답장은 이번에 건너봅니다"); return; }
-  if (r.mode === "mention") runMentions(t);
-  else runFree(t);
+  runMentions(t);
 }
 function insertMention(name) {
   var el = $("input");
@@ -4685,24 +4861,9 @@ function insertMention(name) {
   el.focus();
   growInput();
 }
-function sendTopic(i) {
-  var texts = ["오늘 하루 어땠어?", "요즘 고민 있어. 한마디씩 해 줘.", "뭐 먹을까? 추천해 줘."];
-  var r = activeRoom();
-  if (run.active) { toast("AI가 말하는 중이에요"); return; }
-  if (!r.members.length) { toast("이 방에 AI가 없어요"); return; }
-  addUserMessage(texts[i] || texts[0]);
-  runFree(texts[i] || texts[0]);
-}
-function sendNudge() {
-  var r = activeRoom();
-  if (run.active) return;
-  if (!r.members.length) { toast("이 방에 AI가 없어요 · 멤버를 켜 주세요"); return; }
-  runFree("먼저 말 걸어보기");
-}
 function act(name) {
   if (name === "start" || name === "agenda") { openRoundtable(); return; }
   if (name === "card") { onCardButton(); return; }
-  if (name === "nudge") { sendNudge(); return; }
   if (name === "mention") {
     var r = activeRoom();
     if (r && r.members.length) insertMention(agentName(r.members[0]));
@@ -4728,17 +4889,13 @@ function wire() {
     var b = e.target.closest("[data-member-remove]");
     if (b) toggleMember(b.getAttribute("data-member-remove"));
   });
-  $("modeSeg").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-mode]");
-    if (b) setMode(b.getAttribute("data-mode"));
-  });
+  $("roleModeBtn").addEventListener("click", function () { toggleRoleMode(); });
+  $("discussBtn").addEventListener("click", function () { openRoundtable(); });
   $("quickBar").addEventListener("click", function (e) {
     var a = e.target.closest("[data-act]");
     if (a) { act(a.getAttribute("data-act")); return; }
     var m = e.target.closest("[data-mention]");
     if (m) { insertMention(m.getAttribute("data-mention")); return; }
-    var t = e.target.closest("[data-topic]");
-    if (t) sendTopic(Number(t.getAttribute("data-topic")));
   });
   $("timelineInner").addEventListener("click", function (e) {
     var a = e.target.closest("[data-act]");
@@ -4869,8 +5026,8 @@ function wire() {
     if (!roomForm.id) {
       roomForm.colorEmoji = roomForm.kind === "chat" ? "☕" : "🚀";
       renderEmojiPick();
-      $("rfMode").value = roomForm.kind === "chat" ? "free" : "roundtable";
       $("rfBudget").value = roomForm.kind === "chat" ? 20 : 60;
+      renderRfRoles();
     }
   });
   $("rfEmoji").addEventListener("click", function (e) {
@@ -4882,7 +5039,37 @@ function wire() {
   $("rfMembers").addEventListener("click", function (e) {
     var b = e.target.closest("[data-id]");
     if (!b) return;
+    captureRfRoles();
     b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    renderRfRoles();
+  });
+  $("rfRoleMode").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-rolemode]");
+    if (!b) return;
+    var next = b.getAttribute("data-rolemode") === "manual" ? "manual" : "auto";
+    if (next === roomForm.roleMode) return;
+    captureRfRoles();
+    if (next === "manual") {
+      /* 자동 배정을 출발점으로 채워 두고, 손 볼 칸만 고치게 한다. */
+      var auto = autoRoles(rfDraftRoom());
+      var filled = {};
+      Object.keys(auto).forEach(function (id) {
+        var prev = roomForm.roles[id] || {};
+        filled[id] = {
+          label: String(prev.label || "").trim() || auto[id].label,
+          focus: String(prev.focus || "").trim() || auto[id].focus
+        };
+      });
+      roomForm.roles = filled;
+    }
+    roomForm.roleMode = next;
+    renderRfRoleMode();
+    renderRfRoles();
+  });
+  $("rfAgenda").addEventListener("input", function () {
+    if (roomForm.roleMode === "manual") return;
+    clearTimeout(roomForm.roleTimer);
+    roomForm.roleTimer = setTimeout(renderRfRoles, 240);
   });
   $("rfSubmit").addEventListener("click", submitRoomForm);
   $("rfDelete").addEventListener("click", deleteRoom);
@@ -4914,11 +5101,6 @@ function wire() {
     var v = $("mineLink").value;
     if (!v) { toast("먼저 방을 만들어 주세요"); return; }
     copyText(v, "초대 링크를 복사했어요 · 내 AI에게 그대로 주세요");
-  });
-  $("mineCopyCode").addEventListener("click", function () {
-    var v = $("mineCode").textContent.trim();
-    if (!v || v === "-") { toast("아직 초대 코드가 없어요"); return; }
-    copyText(v, "초대 코드 " + v + " 복사했어요");
   });
   $("invColors").addEventListener("click", function (e) {
     var b = e.target.closest("[data-color]");
