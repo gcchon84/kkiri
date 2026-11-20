@@ -3690,7 +3690,9 @@ async function dbInit() {
     return true;
   } catch (e) {
     db.ready = false;
-    setLiveStatus("local", "로컬 모드 · 데모");
+    /* v3: 로그인 전에는 RLS가 막으므로 '로컬 데모'가 아니라 '로그인 후 연결'로 안내 */
+    var waiting = V3.mode === "cloud" && !V3.signedIn;
+    setLiveStatus(waiting ? "wait" : "local", waiting ? "로그인하면 연결" : "로컬 모드 · 데모");
     if (typeof console !== "undefined" && console.warn) console.warn("[kkiri] db init failed", e && e.message);
     return false;
   }
@@ -4367,6 +4369,7 @@ function wireV3() {
 
 /* ---------- 시작 ---------- */
 async function bootV3() {
+  V3.mode = v3ModeNow();            /* dbInit 이 로그인 전/후 상태를 구분할 수 있게 먼저 정한다 */
   var nl = $("nickLabel");
   if (nl) nl.textContent = nick();
   if (MOCK) {                                   /* mock: 서버를 건드리지 않고 화면·흐름만 */
