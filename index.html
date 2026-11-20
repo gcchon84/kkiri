@@ -1428,7 +1428,7 @@ function catByKey(k) {
 function guessCategory(name) {
   var s = String(name || "");
   if (/여행|코스|숙소|호텔|항공|제주|부산|해외|당일치기|캠핑/.test(s)) return "travel";
-  if (/맛집|카페|메뉴|맛있|일상|쇼핑|선물|집들이|장보기/.test(s)) return "daily";
+  if (/맛집|카페|메뉴|맛있|일상|수다|쇼핑|선물|집들이|장보기/.test(s)) return "daily";
   if (/고민|상담|연애|힘들|속마음|관계|이직|진로|걱정/.test(s)) return "counsel";
   return "work";
 }
