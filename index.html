@@ -3024,7 +3024,7 @@ function dbCardFromRow(row) {
   };
   return { id: row.id, who: "card", at: Date.parse(row.created_at) || Date.now(), card: c };
 }
-function dbApply(roomRows, agentRows) {
+function dbApply(roomRows, agentRows, fresh) {
   var prev = {};
   state.rooms.forEach(function (r) { prev[r.id] = r; });
   var agents = {}, members = {};
@@ -3060,7 +3060,7 @@ function dbApply(roomRows, agentRows) {
       members: mem, status: p ? p.status : "idle",
       createdAt: Date.parse(row.created_at) || Date.now(),
       session: p ? p.session : freshSession(),
-      messages: p ? p.messages : [],
+      messages: (!fresh && p) ? p.messages : [],
       inviteCode: row.invite_code, hostName: row.host_name, isPublic: row.is_public, remote: true
     });
   });
@@ -3311,7 +3311,7 @@ async function dbInit() {
       db.client.from("kkiri_agents").select("*").order("created_at", { ascending: true })
     ]);
     if (res[0].error || res[1].error) throw new Error((res[0].error || res[1].error).message);
-    if (!dbApply(res[0].data || [], res[1].data || [])) throw new Error("empty");
+    if (!dbApply(res[0].data || [], res[1].data || [], true)) throw new Error("empty");
     db.ready = true;
     if (pendingJoin) {
       var target = null;
