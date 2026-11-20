@@ -84,6 +84,29 @@
   .room-item b{display:block;font-size:12.5px;font-weight:800;letter-spacing:-.02em;color:#eef4f6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .room-item small{display:block;font-size:9.5px;font-weight:600;color:#8b9da9;margin-top:3px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .room-item .r-live{width:5px;height:5px;border-radius:50%;background:var(--green);flex:0 0 5px;margin-top:7px;box-shadow:0 0 0 3px rgba(18,160,94,.14)}
+  /* v3: 상위(그룹)/하위(방) 트리 */
+  .room-group{margin-bottom:2px}
+  .room-group-head{display:flex;align-items:center;gap:3px}
+  .rg-toggle{flex:1;min-width:0;display:flex;align-items:center;gap:7px;background:transparent;border:1px solid transparent;border-radius:11px;padding:7px 6px;color:#e6eef2;font:inherit;text-align:left;cursor:pointer}
+  .rg-toggle:hover{background:#16222d}
+  .rg-caret{font-size:9px;color:#8b9da9;flex:0 0 auto;transition:transform .15s ease}
+  .rg-toggle[aria-expanded="false"] .rg-caret{transform:rotate(-90deg)}
+  .rg-ico{font-size:14px;line-height:1;flex:0 0 auto}
+  .rg-name{font-size:11.5px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rg-count{font-size:9px;font-weight:800;color:#93a7b4;background:#1b2935;border-radius:999px;padding:1px 6px;flex:0 0 auto}
+  .rg-add{flex:0 0 auto;width:22px;height:22px;border-radius:7px;border:1px solid #2e4050;background:#1b2935;color:#cfe0e8;font-size:13px;font-weight:800;line-height:1;cursor:pointer}
+  .rg-add:hover{background:#223241;border-color:#3a5060}
+  .room-children{display:flex;flex-direction:column;gap:2px;margin:1px 0 5px 11px;padding-left:7px;border-left:1px solid #22303c}
+  .room-empty{font-size:9.5px;line-height:1.6;color:#6f8391;padding:5px 4px 7px;margin:0;letter-spacing:-.01em}
+  .room-item{display:flex;align-items:center;gap:2px;width:100%;border:1px solid transparent;border-radius:12px;padding:0;background:transparent;transition:background .14s ease,border-color .14s ease}
+  .r-enter{display:flex;align-items:flex-start;gap:8px;flex:1;min-width:0;background:transparent;border:0;padding:7px 4px 7px 7px;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:12px}
+  .r-del{flex:0 0 auto;width:24px;height:24px;margin-right:3px;border:0;border-radius:8px;background:transparent;color:#7f929e;font-size:11px;line-height:1;cursor:pointer;opacity:0;transition:opacity .12s ease,background .12s ease,color .12s ease}
+  .room-item:hover .r-del,.room-item:focus-within .r-del,.room-item.active .r-del{opacity:1}
+  .r-del:hover{background:#2a1f22;color:#ff9a8f}
+  @media (hover:none){ .r-del{opacity:.75} }
+  .empty-room{padding:30px 18px;text-align:center;color:#9db0bb}
+  .empty-room b{display:block;font-size:14px;font-weight:900;color:#e9f1f4;margin-bottom:7px}
+  .empty-room p{font-size:11.5px;line-height:1.75;margin:0}
   .member-list{display:flex;flex-direction:column;gap:1px}
   .member-row{display:flex;align-items:center;gap:9px;padding:6px 5px;border-radius:12px}
   .member-row:hover{background:#16222d}
@@ -92,6 +115,11 @@
   .member-row small{display:block;font-size:9px;color:#8798a4;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .member-row.off b{color:#7f929e}
   .member-row.off .avatar{opacity:.45;filter:grayscale(.4)}
+  .sec-actions{display:flex;gap:4px}
+  .join-chip{flex:0 0 auto;font-size:9px;font-weight:900;color:#7dd3a8;background:#12251c;border:1px solid #1f4a36;border-radius:999px;padding:2px 6px;letter-spacing:-.01em}
+  .x-btn{flex:0 0 auto;padding:3px 7px;font-size:9.5px;color:#c9d7de}
+  .member-row .x-btn{opacity:.75}
+  .member-row:hover .x-btn{opacity:1}
   .sec-head em{font-style:normal;color:var(--green);font-weight:900}
   .sec-hint{font-size:9px;line-height:1.6;color:#6f8391;padding:2px 4px 0;letter-spacing:-.01em}
   .pres-list{display:flex;flex-direction:column;gap:1px}
@@ -626,16 +654,13 @@
     </div>
 
     <div class="side-sec">
-      <div class="sec-head"><span>AI 멤버 · 호출 스위치</span><button class="mini-btn" id="inviteBtn">+ AI 초대</button></div>
+      <div class="sec-head"><span>이 방의 AI <em id="aiCount">0명</em></span>
+        <span class="sec-actions"><button class="mini-btn" id="expertBtn">+ 외주 AI</button><button class="mini-btn" id="inviteBtn">+ AI</button></span>
+      </div>
       <div class="member-list" id="sideMembers"></div>
-      <p class="sec-hint">스위치는 이 방에서 그 AI를 부를 수 있게 하는 설정이에요. 실제 접속 여부는 위 ‘지금 접속 중’에서 보세요.</p>
+      <p class="sec-hint" id="aiHint">이 방에서 부를 수 있는 AI예요.</p>
     </div>
-
-    <div class="side-sec">
-      <div class="sec-head"><span>외주 AI · 전문가</span><button class="mini-btn" id="expertBtn">+ 전문가</button></div>
-      <div class="member-list" id="sideExperts"></div>
-      <p class="sec-hint">끼리가 준비한 전문가 AI예요. 부른 만큼만 <b>턴당 크레딧</b>이 나가고, 사람·내 AI 대화는 무료예요.</p>
-    </div>
+    <div class="member-list" id="sideExperts" hidden></div>
 
     <div class="side-foot">
       <button class="side-btn" id="settingsBtn"><span aria-hidden="true">⚙</span> 설정 · API 키</button>
@@ -718,6 +743,9 @@
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
     <div class="sheet-head"><h2 id="inviteTitle">AI 멤버 초대</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
+      <div class="field" id="invQuickWrap" hidden><span>이 방에 바로 추가</span>
+        <div class="pick-row" id="invQuick"></div>
+      </div>
       <div class="seg wide" id="inviteSeg" role="group" aria-label="초대 방식">
         <button type="button" data-tab="byok" aria-pressed="true">내장형 · BYOK</button>
         <button type="button" data-tab="hook" aria-pressed="false">외부 에이전트 · Webhook</button>
@@ -759,7 +787,7 @@ Content-Type: application/json
 
 {
   "event": "turn.request",
-  "room": { "id": "r_promo", "name": "신규 프로젝트 기획", "agenda": "연말 캠페인 아이디어 3개 제안" },
+  "room": { "id": "r_promo", "name": "프로젝트방", "agenda": "연말 캠페인 아이디어 3개 제안" },
   "turn": { "no": 3, "phase": "rebuttal", "agent": "피크리" },
   "context": [ { "speaker": "키리니", "text": "…" } ],
   "deadline_ms": 20000
@@ -783,7 +811,7 @@ Content-Type: application/json
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rfTitle">
     <div class="sheet-head"><h2 id="rfTitle">새 방 만들기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <label class="field"><span>방 이름</span><input id="rfName" type="text" maxlength="30" placeholder="예: 신규 프로젝트 기획" autocomplete="off"></label>
+      <label class="field"><span>방 이름</span><input id="rfName" type="text" maxlength="30" placeholder="예: 프로젝트방" autocomplete="off"></label>
       <div class="field-row">
         <div class="field"><span>방 종류</span>
           <div class="pick-row" id="rfKind">
@@ -812,7 +840,7 @@ Content-Type: application/json
       <div class="btn-row" id="rfActions">
         <button class="btn green" id="rfSubmit">만들기</button>
       </div>
-      <div id="rfDeleteWrap" hidden><button class="btn danger" id="rfDelete" style="width:100%;margin-top:8px">이 방 삭제</button></div>
+      <div id="rfDeleteWrap" hidden><button class="btn danger" id="rfDelete" style="width:100%;margin-top:8px">이 방 삭제</button><p class="modal-note" id="rfDeleteNote" style="margin-top:6px"></p></div>
     </div>
   </div>
 </div>
@@ -1124,7 +1152,7 @@ function seedState() {
     agents: seedAgents(),
     rooms: [
       {
-        id: "r_promo", emoji: "🚀", name: "신규 프로젝트 기획", kind: "project",
+        id: "r_promo", emoji: "🚀", name: "프로젝트방", kind: "project",
         agenda: "연말 캠페인 아이디어 3개 제안", mode: "mention", maxTurns: 10, budget: 60,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
@@ -1273,31 +1301,102 @@ function avatarHtml(id, size) {
   return '<span class="avatar ' + (size || "md") + '" style="--c:' + esc(c) + '" aria-hidden="true">' + esc(n) + "</span>";
 }
 
-function renderSidebar() {
-  var r = activeRoom();
-  if (!r) return;
-  var html = "";
-  state.rooms.forEach(function (rm) {
-    var meta = (rm.kind === "chat" ? "사랑방" : modeName(rm.mode)) + " · " + rm.members.length + "명 · " + won(rm.session.cost);
-    html += '<button type="button" class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + '" data-room="' + esc(rm.id) + '"' +
-      (rm.id === state.activeRoomId ? ' aria-current="true"' : "") + ">" +
+/* v3: 방 목록을 상위(프로젝트방 · 자유 수다방) / 하위(방) 트리로 그립니다. */
+var TREE_KEY = "kkiri.tree.v1";
+var treeOpen = { project: true, lounge: true };
+function loadTree() {
+  try {
+    var d = JSON.parse(localStorage.getItem(TREE_KEY) || "{}");
+    if (!d || typeof d !== "object") return;
+    if (d.project === false) treeOpen.project = false;
+    if (d.lounge === false) treeOpen.lounge = false;
+  } catch (e) {}
+}
+function saveTree() { try { localStorage.setItem(TREE_KEY, JSON.stringify(treeOpen)); } catch (e) {} }
+function treeKeyOf(kind) { return kind === "chat" ? "lounge" : "project"; }
+function toggleTree(kind) {
+  var k = treeKeyOf(kind);
+  treeOpen[k] = !treeOpen[k];
+  saveTree();
+  renderSidebar();
+}
+/* 내가 이 방의 주인인가? (로컬 데모 방은 항상 내 것, 서버 방은 owner_id 비교) */
+function isRoomOwner(rm) {
+  if (!rm) return false;
+  if (!rm.remote) return true;
+  return !!(rm.ownerId && V3.user && rm.ownerId === V3.user.id);
+}
+function roomRowHtml(rm) {
+  var meta = (rm.kind === "chat" ? "사랑방" : modeName(rm.mode)) + " · " + rm.members.length + "명 · " + won(rm.session.cost);
+  var mine = isRoomOwner(rm);
+  var act = mine ? "삭제" : "나가기";
+  return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + '" data-room="' + esc(rm.id) + '">' +
+    '<button type="button" class="r-enter" data-room-enter="' + esc(rm.id) + '"' + (rm.id === state.activeRoomId ? ' aria-current="true"' : "") + ">" +
       '<span class="r-emoji" aria-hidden="true">' + esc(rm.emoji) + "</span>" +
       '<span class="r-body"><b>' + esc(rm.name) + "</b><small>" + esc(meta) + "</small></span>" +
       (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
-      "</button>";
+    "</button>" +
+    '<button type="button" class="r-del" data-room-del="' + esc(rm.id) + '" title="' + esc(rm.name) + " " + act + '" aria-label="' + esc(rm.name) + " " + act + '">' + (mine ? "🗑" : "✕") + "</button>" +
+    "</div>";
+}
+function renderRoomTree() {
+  var groups = [
+    { kind: "project", label: "프로젝트방", icon: "🚀", add: "새 프로젝트방 추가", empty: "만든 프로젝트방이 없어요. +로 새로 만들어 보세요" },
+    { kind: "chat", label: "자유 수다방", icon: "☕", add: "새 사랑방 추가", empty: "만든 사랑방이 없어요. +로 새로 만들어 보세요" }
+  ];
+  var html = "";
+  groups.forEach(function (g) {
+    var list = state.rooms.filter(function (x) { return x.kind === g.kind; });
+    var open = treeOpen[treeKeyOf(g.kind)] !== false;
+    html += '<div class="room-group">' +
+      '<div class="room-group-head">' +
+        '<button type="button" class="rg-toggle" data-tree="' + g.kind + '" aria-expanded="' + (open ? "true" : "false") + '" title="' + g.label + (open ? " 접기" : " 펼치기") + '">' +
+          '<span class="rg-caret" aria-hidden="true">▾</span>' +
+          '<span class="rg-ico" aria-hidden="true">' + g.icon + "</span>" +
+          '<span class="rg-name">' + g.label + "</span>" +
+          '<span class="rg-count">' + list.length + "</span>" +
+        "</button>" +
+        '<button type="button" class="rg-add" data-tree-add="' + g.kind + '" title="' + g.add + '" aria-label="' + g.add + '">+</button>' +
+      "</div>";
+    if (open) {
+      html += '<div class="room-children">';
+      if (!list.length) html += '<p class="room-empty">' + g.empty + "</p>";
+      else list.forEach(function (rm) { html += roomRowHtml(rm); });
+      html += "</div>";
+    }
+    html += "</div>";
   });
   $("roomList").innerHTML = html;
+}
+/* 이 방에 들어온 AI 한 줄 — '참여 중' + '✕ 빼기' */
+function memberRowHtml(a) {
+  var tag = a.type === "expert" ? '<span class="mode-chip cloud">외주</span>'
+    : a.type === "byok" ? '<span class="mode-chip">내 AI</span>' : "";
+  return '<div class="member-row">' + avatarHtml(a.id, "sm") +
+    '<span class="m-txt"><b>' + esc(a.name) + "</b><small>" + esc(a.role) + "</small></span>" + tag +
+    '<span class="join-chip">참여 중</span>' +
+    '<button type="button" class="mini-btn x-btn" data-member-remove="' + esc(a.id) + '" title="이 방에서 빼기" aria-label="' + esc(a.name) + ' 이 방에서 빼기">✕</button>' +
+    "</div>";
+}
+function renderSidebar() {
+  var r = activeRoom();
+  renderRoomTree();
 
-  var mhtml = "";
-  allAgents().forEach(function (a) {
-    if (a.type === "expert") return;            /* v3: 외주 AI는 아래 전용 섹션에 표시 */
-    var on = r.members.indexOf(a.id) > -1;
-    mhtml += '<div class="member-row' + (on ? "" : " off") + '">' + avatarHtml(a.id, "sm") +
-      '<span class="m-txt"><b>' + esc(a.name) + "</b><small>" + esc(a.role) + "</small></span>" +
-      '<button type="button" class="switch" role="switch" aria-checked="' + (on ? "true" : "false") + '" data-member="' + esc(a.id) + '" aria-label="' + esc(a.name) + " " + (on ? "비활성화" : "활성화") + '"></button>' +
-      "</div>";
-  });
+  var mhtml = "", shown = 0;
+  if (r) {
+    r.members.forEach(function (id) {
+      var a = state.agents[id];
+      if (!a) return;
+      shown++;
+      mhtml += memberRowHtml(a);
+    });
+    if (!shown) mhtml = '<p class="sec-hint">아직 이 방에 AI가 없어요. ‘+ AI’로 추가해 보세요.</p>';
+  }
   $("sideMembers").innerHTML = mhtml;
+  var cnt = $("aiCount");
+  if (cnt) cnt.textContent = shown + "명";
+  var hint = $("aiHint");
+  if (hint) hint.textContent = r ? "‘" + r.name + "’ 방에서 부를 수 있는 AI예요. 방을 바꾸면 그 방에 설정된 AI만 보여요." : "방을 먼저 만들어 주세요.";
   renderExperts();
   $("sideMode").textContent = anyKey()
     ? "실제 AI 연결 · " + (api.geminiKey && api.openaiKey ? "Gemini+OpenAI" : api.geminiKey ? "Gemini" : "OpenAI")
@@ -1318,7 +1417,27 @@ function hintFor(r) {
 
 function renderRoom() {
   var r = activeRoom();
-  if (!r) return;
+  if (!r) {
+    /* 방이 하나도 없을 때(마지막 방을 삭제한 직후) — 빈 상태 안내 */
+    $("roomEmoji").textContent = "🗂";
+    $("roomName").textContent = "방이 없어요";
+    $("roomKind").textContent = "시작하기";
+    $("roomKind").className = "kind-pill";
+    $("roomSub").textContent = "왼쪽 목록의 + 로 새 방을 만들어 보세요";
+    document.title = "끼리";
+    $("timelineInner").innerHTML = '<div class="empty-room"><b>아직 방이 없어요</b><p>사이드바의 <b>🚀 프로젝트방 +</b> 또는 <b>☕ 자유 수다방 +</b>를 눌러 새 방을 만들면<br>AI 멤버와 대화를 시작할 수 있어요.</p></div>';
+    $("compHint").innerHTML = "";
+    $("input").placeholder = "새 방을 먼저 만들어 주세요";
+    $("sendBtn").disabled = true;
+    $("pauseBtn").disabled = true;
+    $("stopBtn").disabled = true;
+    $("turnVal").textContent = "—";
+    $("costVal").textContent = "—";
+    $("tokenVal").textContent = "—";
+    $("runState").textContent = "대기 중";
+    renderPresence();
+    return;
+  }
   $("roomEmoji").textContent = r.emoji || "💬";
   $("roomName").textContent = r.name;
   $("roomKind").textContent = r.kind === "project" ? "프로젝트방" : "사랑방";
@@ -2700,16 +2819,17 @@ function setMode(mode) {
 
 function toggleMember(id) {
   var r = activeRoom();
+  if (!r) return;
   var i = r.members.indexOf(id);
   if (i > -1) {
     if (r.members.length <= 1) { toast("AI가 최소 한 명은 있어야 해요"); return; }
     r.members.splice(i, 1);
     if (run.moderator === id) run.moderator = r.members[0];
-    toast(agentName(id) + " 비활성화 · 이 방에서 빠졌어요");
+    toast(agentName(id) + " · 이 방에서 뺐어요");
     dbSetMember(r.id, id, false);
   } else {
     r.members.push(id);
-    toast(agentName(id) + " 활성화 · 이 방에 들어왔어요");
+    toast(agentName(id) + " · 이 방에 추가했어요");
     dbSetMember(r.id, id, true);
   }
   save();
@@ -2802,13 +2922,13 @@ function renderRoomMemberPick(selected) {
   });
   $("rfMembers").innerHTML = h;
 }
-function openRoomForm(roomId) {
+function openRoomForm(roomId, kind) {
   var r = roomId ? state.rooms.filter(function (x) { return x.id === roomId; })[0] : null;
   roomForm.id = r ? r.id : null;
-  $("rfTitle").textContent = r ? "방 설정" : "새 방 만들기";
+  $("rfTitle").textContent = r ? "방 설정" : (kind === "chat" ? "새 사랑방 만들기" : "새 프로젝트방 만들기");
   $("rfName").value = r ? r.name : "";
-  roomForm.kind = r ? r.kind : "project";
-  roomForm.colorEmoji = r ? r.emoji : "🚀";
+  roomForm.kind = r ? r.kind : (kind === "chat" ? "chat" : "project");
+  roomForm.colorEmoji = r ? r.emoji : (roomForm.kind === "chat" ? "☕" : "🚀");
   Array.prototype.forEach.call($("rfKind").querySelectorAll("[data-kind]"), function (b) {
     b.setAttribute("aria-pressed", b.getAttribute("data-kind") === roomForm.kind ? "true" : "false");
   });
@@ -2820,7 +2940,17 @@ function openRoomForm(roomId) {
   var sel = r ? r.members.slice() : allAgents().map(function (a) { return a.id; });
   renderRoomMemberPick(sel);
   $("rfSubmit").textContent = r ? "저장" : "만들기";
-  $("rfDelete").textContent = r && r.remote ? "목록에서 숨기기" : "이 방 삭제";
+  /* 삭제 버튼: 내 방 → 완전 삭제 / 남의 방(시드방 포함) → 나가기 / 로컬 데모 방 → 내 화면에서 삭제 */
+  var mine = isRoomOwner(r);
+  var del = $("rfDelete");
+  del.textContent = !r ? "" : (!r.remote ? "이 방 삭제"
+    : mine ? (r.kind === "chat" ? "이 사랑방 삭제" : "이 프로젝트방 삭제") : "방 나가기");
+  del.className = r && r.remote && !mine ? "btn" : "btn danger";
+  $("rfDeleteNote").textContent = !r ? "" : (!r.remote
+    ? "이 브라우저에만 있는 데모 방이에요. 내 화면에서만 지워집니다."
+    : mine
+      ? "내가 만든 방이라 서버에서 완전히 지울 수 있어요. 대화·AI 멤버·합의안까지 함께 지워지고, 함께 있던 사람들의 목록에서도 사라집니다. 되돌릴 수 없어요."
+      : "내 목록에서만 나가요. 방은 그대로 남고, 다시 들어오려면 초대 코드가 필요해요.");
   $("rfDeleteWrap").hidden = !r;
   openModal("roomFormModal");
 }
@@ -2864,35 +2994,58 @@ function submitRoomForm() {
     dbCreateRoom(room, members);
   }
   save();
+  treeOpen[treeKeyOf(kind)] = true;
+  saveTree();
   closeModal("roomFormModal");
   renderAll();
   scrollBottom(true);
   if (db.ready) dbSubscribe(state.activeRoomId);
 }
-function deleteRoom() {
-  if (!roomForm.id) return;
-  if (state.rooms.length <= 1) { toast("방이 하나는 있어야 해요"); return; }
-  var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
-  if (!r) return;
-  if (r.remote) {
-    if (!window.confirm("‘" + r.name + "’ 방을 목록에서 숨길까요? 실시간 방의 대화 기록은 서버에 남습니다.")) return;
-    dbHideRoom(r);
-    state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
-    if (state.activeRoomId === r.id) state.activeRoomId = state.rooms[0].id;
-    save();
-    closeModal("roomFormModal");
-    renderAll();
-    if (db.ready) { dbLoadMessages(state.activeRoomId); dbSubscribe(state.activeRoomId); }
-    toast("방을 목록에서 숨겼어요");
+/* ---- 방 삭제 / 나가기 (목록의 🗑·✕ 와 방 설정 시트가 같이 쓸니다) ---- */
+function roomAskRemove(r) {
+  if (isRoomOwner(r)) {
+    return window.confirm("‘" + r.name + "’ 방을 삭제할까요?\n\n대화·AI 멤버·합의안이 모두 지워지고, 함께 있던 사람들의 목록에서도 사라집니다. 되돌릴 수 없어요.");
+  }
+  return window.confirm("‘" + r.name + "’ 방에서 나갈까요?\n\n내 목록에서 사라지고, 다시 들어오려면 초대 코드가 필요해요.");
+}
+function afterRoomRemoved(r, wasOwner) {
+  state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
+  if (state.activeRoomId === r.id) state.activeRoomId = state.rooms.length ? state.rooms[0].id : null;
+  save();
+  renderAll();
+  if (state.activeRoomId) {
+    if (db.ready) {
+      dbLoadMessages(state.activeRoomId).then(function () { renderAll(); scrollBottom(true); });
+      dbSubscribe(state.activeRoomId);
+      presenceJoin(state.activeRoomId, true);
+    }
+    scrollBottom(true);
+  } else {
+    dbUnsubscribe();
+    toast(wasOwner ? "방을 삭제했어요 · 새 방을 만들어 보세요" : "방에서 나왔어요 · 새 방을 만들어 보세요");
+    setTimeout(function () { if (!state.rooms.length) openRoomForm(null, "project"); }, 320);
     return;
   }
-  if (!window.confirm("‘" + r.name + "’ 방과 대화를 지울까요? 되돌릴 수 없어요.")) return;
-  state.rooms = state.rooms.filter(function (x) { return x.id !== r.id; });
-  if (state.activeRoomId === r.id) state.activeRoomId = state.rooms[0].id;
-  save();
-  closeModal("roomFormModal");
-  renderAll();
-  toast("방을 지웠어요");
+  toast(wasOwner ? "‘" + r.name + "’ 방을 삭제했어요" : "‘" + r.name + "’ 방에서 나왔어요");
+}
+async function removeRoom(r, opts) {
+  if (!r) return;
+  var wasOwner = isRoomOwner(r);
+  if (!roomAskRemove(r)) return;
+  if (r.remote) {
+    var ok = wasOwner ? await dbDeleteRoom(r) : await dbLeaveRoom(r);
+    if (!ok) return;
+  }
+  if (opts && opts.modal) closeModal("roomFormModal");
+  afterRoomRemoved(r, wasOwner);
+}
+function deleteRoom() {
+  var r = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
+  if (r) removeRoom(r, { modal: true });
+}
+function roomDeleteQuick(id) {
+  var r = state.rooms.filter(function (x) { return x.id === id; })[0];
+  if (r) removeRoom(r, null);
 }
 
 /* =========================================================
@@ -2912,6 +3065,32 @@ function inviteTab(tab) {
   });
   $("invTabByok").hidden = tab !== "byok";
   $("invTabHook").hidden = tab !== "hook";
+}
+/* 초대 시트 상단 — 이 방에 아직 없는 AI 를 한 번에 추가 */
+function renderInviteAgents() {
+  var r = activeRoom();
+  var host = $("invQuick"), wrap = $("invQuickWrap");
+  if (!host || !wrap) return;
+  if (!r) { wrap.hidden = true; host.innerHTML = ""; return; }
+  var rest = allAgents().filter(function (a) { return r.members.indexOf(a.id) < 0; });
+  wrap.hidden = !rest.length;
+  var h = "";
+  rest.forEach(function (a) {
+    h += '<button type="button" class="pick check" data-quick-add="' + esc(a.id) + '" aria-pressed="false">' + esc(a.name) + "</button>";
+  });
+  host.innerHTML = h;
+}
+function addMemberToRoom(id) {
+  var r = activeRoom();
+  var a = state.agents[id];
+  if (!r || !a) return;
+  if (r.members.indexOf(id) > -1) { toast(a.name + "은(는) 이미 이 방에 있어요"); return; }
+  r.members.push(id);
+  save();
+  dbSetMember(r.id, id, true);
+  renderAll();
+  renderInviteAgents();
+  toast(a.name + " · 이 방에 추가했어요");
 }
 function addByokAgent() {
   var name = $("invName").value.trim();
@@ -3283,7 +3462,8 @@ function dbApply(roomRows, agentRows, fresh) {
       createdAt: Date.parse(row.created_at) || Date.now(),
       session: p ? p.session : freshSession(),
       messages: (!fresh && p) ? p.messages : [],
-      inviteCode: row.invite_code, hostName: row.host_name, isPublic: row.is_public, remote: true
+      inviteCode: row.invite_code, hostName: row.host_name, isPublic: row.is_public, remote: true,
+      ownerId: row.owner_id || null
     });
   });
   if (!rooms.length) return false;
@@ -3447,7 +3627,10 @@ async function dbRefresh() {
       db.client.from("kkiri_agents").select("*").order("created_at", { ascending: true })
     ]);
     if (res[0].error || res[1].error) return;
-    if (!dbApply(res[0].data || [], res[1].data || [])) return;
+    if (!dbApply(res[0].data || [], res[1].data || [])) {
+      if (!(res[0].data || []).length) { state.rooms = []; state.activeRoomId = null; save(); renderAll(); }
+      return;
+    }
     renderAll();
   } catch (e) {}
 }
@@ -3560,13 +3743,45 @@ async function dbUpdateRoom(r, members) {
     }
   } catch (e) { dbToast("방 설정을 저장하지 못했어요 · 네트워크"); }
 }
-async function dbHideRoom(r) {
-  if (!db.ready || !db.client || !r.remote) return;
-  hideRoomLocal(r.id);
+/* 방 완전 삭제 — 서버에서 지운다. 성공 여부는 '지운 뒤 다시 조회'로 확인한다.
+   (PostgREST 의 DELETE ... RETURNING 은 RLS SELECT 정책 때문에 빈 배열로 돌아옵니다) */
+async function dbDeleteRoom(r) {
+  if (!db.ready || !db.client || !r.remote || !V3.user) return false;
+  if (!isRoomOwner(r)) { toast("방장만 이 방을 삭제할 수 있어요"); return false; }
+  var res;
   try {
-    var res = await db.client.from("kkiri_rooms").update({ is_public: false }).eq("id", r.id);
-    if (res.error) dbToast("방을 숨기지 못했어요 · " + res.error.message);
+    res = await db.client.from("kkiri_rooms").delete().eq("id", r.id);
+  } catch (e) { dbToast("방을 삭제하지 못했어요 · 네트워크"); return false; }
+  if (res && res.error) { dbToast("방을 삭제하지 못했어요 · " + res.error.message); return false; }
+  try {
+    var chk = await db.client.from("kkiri_rooms").select("id").eq("id", r.id);
+    if (!chk.error && (chk.data || []).length) {
+      if (typeof console !== "undefined" && console.warn) console.warn("[kkiri] delete blocked", r.id);
+      toast("방이 지워지지 않았어요 · 권한을 확인해 주세요");
+      return false;
+    }
   } catch (e) {}
+  unhideRoomLocal(r.id);
+  return true;
+}
+/* 방 나가기 — 내 멤버십만 지운다. 공개 방은 멤버십을 지워도 보이므로 이 브라우저에서도 숨긴다. */
+async function dbLeaveRoom(r) {
+  if (!db.ready || !db.client || !r.remote || !V3.user) return false;
+  var res;
+  try {
+    res = await db.client.from("kkiri_room_members").delete().eq("room_id", r.id).eq("user_id", V3.user.id);
+  } catch (e) { dbToast("방에서 나가지 못했어요 · 네트워크"); return false; }
+  if (res && res.error) { dbToast("방에서 나가지 못했어요 · " + res.error.message); return false; }
+  try {
+    var chk = await db.client.from("kkiri_room_members").select("role").eq("room_id", r.id).eq("user_id", V3.user.id);
+    if (!chk.error && (chk.data || []).length) {
+      toast(isRoomOwner(r) ? "방장은 나가기 대신 방을 삭제해 주세요" : "방에서 나가지 못했어요 · 권한을 확인해 주세요");
+      return false;
+    }
+  } catch (e) {}
+  V3.joined[r.id] = 0;
+  hideRoomLocal(r.id);
+  return true;
 }
 async function dbSetMember(roomId, localId, on) {
   if (!db.ready || !db.client) return;
@@ -4039,6 +4254,11 @@ function maybeAskAuth() {
 /* ---------- 멤버십 ---------- */
 async function ensureMembership(roomId) {
   if (!roomId || V3.mode !== "cloud" || !V3.signedIn || !V3.ready || V3.joined[roomId]) return;
+  var rm = null;
+  state.rooms.forEach(function (x) { if (x.id === roomId) rm = x; });
+  /* v3: 공개(둘러보기) 방만 자동 참여. 내 방·초대받은 비공개 방은 멤버십이 이미 있어 호출할 필요가 없습니다.
+     (예전에는 비공개 방에서도 호출해 403 콘솔 오류가 생겼습니다) */
+  if (!rm || !rm.isPublic) return;
   V3.joined[roomId] = 1;
   try {
     var res = await db.client.rpc("kkiri_join_public_room", { p_room_id: roomId });
@@ -4421,12 +4641,18 @@ function act(name) {
    ========================================================= */
 function wire() {
   $("roomList").addEventListener("click", function (e) {
+    var del = e.target.closest("[data-room-del]");
+    if (del) { e.preventDefault(); e.stopPropagation(); roomDeleteQuick(del.getAttribute("data-room-del")); return; }
+    var tree = e.target.closest("[data-tree]");
+    if (tree) { toggleTree(tree.getAttribute("data-tree")); return; }
+    var add = e.target.closest("[data-tree-add]");
+    if (add) { closeSidebar(); openRoomForm(null, add.getAttribute("data-tree-add")); return; }
     var b = e.target.closest("[data-room]");
     if (b) selectRoom(b.getAttribute("data-room"));
   });
   $("sideMembers").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-member]");
-    if (b) toggleMember(b.getAttribute("data-member"));
+    var b = e.target.closest("[data-member-remove]");
+    if (b) toggleMember(b.getAttribute("data-member-remove"));
   });
   $("modeSeg").addEventListener("click", function (e) {
     var b = e.target.closest("[data-mode]");
@@ -4454,9 +4680,17 @@ function wire() {
   $("menuBtn").addEventListener("click", openSidebar);
   $("sideClose").addEventListener("click", closeSidebar);
   $("backdrop").addEventListener("click", closeSidebar);
-  $("newRoomBtn").addEventListener("click", function () { closeSidebar(); openRoomForm(null); });
+  $("newRoomBtn").addEventListener("click", function () { closeSidebar(); openRoomForm(null, "project"); });
   $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
-  $("inviteBtn").addEventListener("click", function () { closeSidebar(); inviteTab("byok"); openModal("inviteModal"); });
+  $("inviteBtn").addEventListener("click", function () {
+    closeSidebar(); renderInviteAgents(); inviteTab("byok"); openModal("inviteModal");
+  });
+  $("invQuick").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-quick-add]");
+    if (!b) return;
+    var id = b.getAttribute("data-quick-add");
+    addMemberToRoom(id);
+  });
   $("settingsBtn").addEventListener("click", function () {
     closeSidebar(); syncFields(); renderApi(); renderStorage(); hideApiStatus(); openModal("settingsModal");
   });
@@ -4668,6 +4902,7 @@ function wire() {
    20. 시작
    ========================================================= */
 loadApi();
+loadTree();
 pinNick();
 var bootedLocal = load();
 if (!bootedLocal) {
