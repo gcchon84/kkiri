@@ -526,9 +526,13 @@
   .live-pill.local{color:#8a5a12;background:var(--amber-tint)}
   .live-pill.off{color:#8b3a32;background:var(--red-tint)}
   .live-pill.wait{color:#5c6b78;background:#eef3f1}
-  .nick-line{display:flex;align-items:center;gap:6px;margin:10px 4px 0;font-size:9.5px;font-weight:800;color:#8798a4;letter-spacing:-.01em}
-  .nick-line b{color:#eaf1f4;font-size:11px;font-weight:900;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .nick-line .mini-btn{margin-left:auto}
+  /* 닉네임 줄 자체가 버튼 — 누르면 닉네임·이 방 초대 창이 열린다(중복 버튼 제거) */
+  .nick-line{display:flex;align-items:center;gap:6px;width:calc(100% - 8px);margin:10px 4px 0;padding:5px 6px;font:inherit;font-size:9.5px;font-weight:800;color:#8798a4;letter-spacing:-.01em;background:transparent;border:1px solid transparent;border-radius:10px;cursor:pointer;text-align:left;touch-action:manipulation;transition:background .12s ease,border-color .12s ease}
+  .nick-line:hover{background:#16222d;border-color:#263642}
+  .nick-line:active{background:#1c2a36}
+  .nick-line:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+  .nick-line b{color:#eaf1f4;font-size:11px;font-weight:900;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nick-line .nick-edit{margin-left:auto;font-size:11px;color:#6f8391}
   .share-box{display:flex;gap:6px;align-items:center;margin-top:6px}
   .share-box input{
     flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:10.5px;
@@ -638,6 +642,8 @@
     .ghost-btn{padding:8px 10px;font-size:10.5px}
     .room-actions .ghost-btn .lbl{display:none}
     /* 합의안은 방 화면에서 한 곳(헤더)에만 두므로, 좁은 화면에서도 글자를 남겨 알아보게 한다 */
+    .room-actions #shareBtn{padding:8px 8px;gap:3px}
+    .room-actions #shareBtn .lbl{display:inline;font-size:10px}
     .room-actions #cardBtn{padding:8px 9px;gap:4px}
     .room-actions #cardBtn .lbl{display:inline;font-size:10px}
     .ctrl{margin:9px 10px 0;padding:9px 9px 8px;border-radius:16px}
@@ -689,10 +695,10 @@
       <button class="icon-btn side-close" id="sideClose" aria-label="방 목록 닫기">✕</button>
     </div>
     <p class="brand-line">AI들끼리, 우리끼리.<br>같이 일하고 같이 논다.</p>
-    <div class="nick-line">
+    <button type="button" class="nick-line" id="nickLine" title="내 닉네임 바꾸기 · 이 방 초대 링크" aria-label="내 닉네임과 이 방 초대 열기">
       <span aria-hidden="true">👤</span><b id="nickLabel">끼리장</b>
-      <button class="mini-btn" id="nickBtn">닉네임 · 초대</button>
-    </div>
+      <span class="nick-edit" aria-hidden="true">✎</span>
+    </button>
     <div class="account-line" id="accountLine">
       <span class="a-ico" aria-hidden="true">🔑</span>
       <span class="a-txt"><b id="accountName">로그인 전</b><small id="accountSub">게스트로 시작하면 100크레딧</small></span>
@@ -742,7 +748,7 @@
       <div class="room-actions">
         <button class="credit-chip off" id="creditBadge" type="button" title="내 크레딧">💎 <b>—</b></button>
         <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참여자">접속 0명</span>
-        <button class="ghost-btn" id="shareBtn"><span aria-hidden="true">🔗</span><span class="lbl">초대</span></button>
+        <button class="ghost-btn" id="shareBtn" type="button" title="이 방 초대 링크 복사" aria-label="이 방 초대"><span aria-hidden="true">🔗</span><span class="lbl">이 방 초대</span></button>
         <button class="ghost-btn" id="cardBtn" type="button" title="합의안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="합의안 카드"><span aria-hidden="true">📋</span><span class="lbl">합의안</span></button>
         <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정">⋯</button>
       </div>
@@ -993,7 +999,7 @@ Content-Type: application/json
 <!-- ================= 공유 · 초대 · 닉네임 ================= -->
 <div class="modal" id="shareModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle" style="max-width:470px">
-    <div class="sheet-head"><h2 id="shareTitle">초대 · 내 닉네임</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><h2 id="shareTitle">이 방 초대</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <label class="field"><span>내 닉네임</span><input id="nickInput" type="text" maxlength="20" placeholder="끼리장" autocomplete="off"></label>
       <p class="hint">같은 방에 있는 사람에게 이 이름으로 보여요. 이 브라우저에만 저장되고 서버에는 대화와 함께 남습니다.</p>
@@ -1226,13 +1232,6 @@ function seedState() {
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
         messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 미리보기 · 데모 모드로 시작합니다. 주제가 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요." }]
-      },
-      {
-        id: "r_lounge", emoji: "✈️", name: "주말 여행 코스 짜기", kind: "chat",
-        agenda: "주말 여행 코스 짜기", mode: "mention", settings: { category: "travel" }, roleMode: "auto", roles: {}, maxTurns: 0, budget: 100,
-        members: ["pikri", "kirini", "muu"], status: "idle", createdAt: now - 5000,
-        session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 5000, text: "편하게 이야기하면 그대로 올라가고, @이름으로 부르면 그 AI가 답해요." }]
       }
     ]
   };
@@ -1276,8 +1275,9 @@ function load() {
       var a = state.agents[id];
       if (a && a.type === "builtin" && a.model === "gemini") a.model = "auto";
     });
-    state.rooms = state.rooms.map(normalizeRoom);
-    if (!state.rooms.some(function (r) { return r.id === state.activeRoomId; })) state.activeRoomId = state.rooms[0].id;
+    state.rooms = state.rooms.filter(function (r) { return !(r && r.id === "r_lounge" && !r.remote); })
+      .map(normalizeRoom);
+    if (!state.rooms.some(function (r) { return r.id === state.activeRoomId; })) state.activeRoomId = state.rooms.length ? state.rooms[0].id : null;
     return true;
   } catch (e) { return false; }
 }
@@ -4445,10 +4445,11 @@ function ensureRoomCode(r) {
 }
 function openShare() {
   var r = ensureRoomCode(activeRoom());
-  if (!r) return;
+  if (!r) { toast("방을 먼저 만들어 주세요"); return; }
   $("nickInput").value = nick();
+  $("shareTitle").textContent = "‘" + r.name + "’ 이 방 초대";
   var lbl = $("shareLinkLabel");
-  if (lbl) lbl.textContent = "‘" + r.name + "’ 초대 링크";
+  if (lbl) lbl.textContent = "‘" + r.name + "’ 이 방 초대 링크";
   $("shareLink").value = roomInviteLink(r);
   $("shareHint").textContent = r.remote
     ? "링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다."
@@ -5386,7 +5387,7 @@ function wire() {
 
   /* 공유 · 닉네임 */
   $("shareBtn").addEventListener("click", openShare);
-  $("nickBtn").addEventListener("click", openShare);
+  if ($("nickLine")) $("nickLine").addEventListener("click", openShare);
   $("nickSave").addEventListener("click", function () {
     var v = saveNick($("nickInput").value);
     $("nickInput").value = v;
