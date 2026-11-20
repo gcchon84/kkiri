@@ -1181,7 +1181,7 @@ function renderRoom() {
   $("roomKind").className = "kind-pill" + (r.kind === "project" ? "" : " chat");
   $("roomSub").textContent = (r.kind === "project"
     ? "안건: " + (r.agenda || "아직 없음")
-    : "가벼운 수다 · 자유 발화") + " · AI " + r.members.length + "명";
+    : "가벼운 수다") + " · " + modeName(r.mode) + " · AI " + r.members.length + "명";
   document.title = "끼리 · " + r.name;
 
   Array.prototype.forEach.call($("modeSeg").querySelectorAll("[data-mode]"), function (b) {
@@ -1337,15 +1337,25 @@ function hasRealMessages(r) {
 }
 
 function emptyHtml(r) {
-  if (r.kind === "project") {
-    var names = memberNames(r).join(" · ");
+  var names = memberNames(r).join(" · ");
+  if (r.mode === "roundtable") {
     return '<div class="empty"><div class="e-emoji">🚀</div><h3>안건이 준비되어 있어요</h3>' +
       '<p><b>' + esc(r.agenda || "안건을 정해 주세요") + "</b><br>" + esc(names) + " " + r.members.length + "명이 순서대로 의견을 내고, 쟁점을 좁혀 합의안까지 정리합니다.</p>" +
       '<div class="e-actions"><button type="button" class="ghost-btn primary" data-act="start">▶ 라운드테이블 시작</button>' +
       '<button type="button" class="ghost-btn" data-act="agenda">안건·턴 설정</button></div></div>';
   }
+  if (r.mode === "mention") {
+    var first = r.members.length ? agentName(r.members[0]) : "";
+    return '<div class="empty"><div class="e-emoji">' + (r.kind === "project" ? "🚀" : "☕") + '</div><h3>' +
+      (r.kind === "project" ? "조용히 시작해요" : "아직 조용해요") + '</h3>' +
+      "<p>부른 AI만 답해요. <b>@이름</b>으로 말을 걸면 그 AI가 답하고, 그냥 채팅하듯 보내면 대화만 올라갑니다(비용 0).</p>" +
+      '<div class="e-actions">' +
+      (first ? '<button type="button" class="ghost-btn primary" data-act="mention">@' + esc(first) + ' 부르기</button>' : "") +
+      (r.kind === "project" ? '<button type="button" class="ghost-btn" data-act="start">라운드테이블 시작</button>' : "") +
+      '</div></div>';
+  }
   return '<div class="empty"><div class="e-emoji">☕</div><h3>아직 조용해요</h3>' +
-    "<p>AI가 먼저 말을 걸어요. 아래 주제를 골라도 됩니다. 연속 3발화가 지나면 스스로 조용해집니다.</p>" +
+    "<p>자유 잡담 모드예요. AI가 먼저 말을 걸고, 연속 3발화가 지나면 스스로 조용해집니다.</p>" +
     '<div class="e-actions"><button type="button" class="ghost-btn primary" data-act="nudge">AI 불러보기</button></div></div>';
 }
 
@@ -3557,6 +3567,11 @@ function act(name) {
   if (name === "start" || name === "agenda") { openRoundtable(); return; }
   if (name === "card") { onCardButton(); return; }
   if (name === "nudge") { sendNudge(); return; }
+  if (name === "mention") {
+    var r = activeRoom();
+    if (r && r.members.length) insertMention(agentName(r.members[0]));
+    return;
+  }
 }
 
 /* =========================================================
