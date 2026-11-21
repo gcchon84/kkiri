@@ -1778,6 +1778,12 @@
     .room-head #roomHomeBtn,.room-head #roomSettingsBtn{width:42px;height:42px;flex:0 0 42px;border-radius:13px}
     .room-head #roomHomeBtn .ico,.room-head #roomSettingsBtn .ico{width:21px;height:21px}
   }
+  /* ===== 사이드바 계정 카드 위계 =====
+     위 닉네임(#nickLabel)과 헷갈리지 않게: 등급·이름은 작은 보조 라벨, 남은 크레딧을 메인으로. */
+  .account-line.signed b{font-size:12px;font-weight:800;color:#A99BD6;letter-spacing:-.01em}
+  .account-line.signed small{font-size:14px;font-weight:900;color:#F6F4FF;margin-top:3px;letter-spacing:-.02em}
+  .sidebar .account-line.signed b{font-size:12.5px;font-weight:800;color:#A99BD6}
+  .sidebar .account-line.signed small{font-size:15.5px;font-weight:900;color:#F6F4FF;margin-top:3px}
 </style>
 <!-- 비밀번호 재설정 링크로 돌아왔는지 — supabase-js 는 클라이언트를 만드는 순간 주소의 토큰을 읽고
      해시를 지우기 때문에, 그보다 먼저(스크립트 로드 전) 주소를 보고 표시를 남겨 둔다. -->
@@ -8274,7 +8280,9 @@ function renderCredit() {
 function renderAccount() {
   var name = $("accountName"), sub = $("accountSub"), btn = $("accountBtn"), al = $("accountLine");
   if (!name || !sub || !btn) return;
+  var setSigned = function (on) { if (al) al.classList.toggle("signed", !!on); };
   if (V3.mode === "local") {
+    setSigned(false);
     name.textContent = "로컬 데모";
     sub.textContent = "서버 연결 없이 이 브라우저에서만";
     btn.hidden = true;
@@ -8283,6 +8291,7 @@ function renderAccount() {
     return;
   }
   if (!V3.signedIn) {
+    setSigned(false);
     /* 시작 전 — '로그인' 버튼을 따로 두지 않고, 카드 하나를 누르면 시작 모달이 열린다 */
     name.textContent = "끼리 시작하기";
     sub.textContent = "사람·내 AI 대화 무료 · 끼리 AI 매일 체험";
@@ -8292,6 +8301,7 @@ function renderAccount() {
     return;
   }
   btn.hidden = false;
+  setSigned(true);
   if (al) { al.classList.remove("start"); al.removeAttribute("tabindex"); al.removeAttribute("role"); }
   var u = V3.user || {};
   var anonUser = !!(u.is_anonymous || u.isAnonymous);
