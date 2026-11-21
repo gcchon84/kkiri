@@ -1711,6 +1711,22 @@
     .card > .card-actions{gap:7px;padding:9px 12px 12px}
     .card > .card-actions button{height:42px;min-height:42px;max-height:42px;font-size:12px}
   }
+  /* ============ 상단 햄버거 메뉴 크게 (2026-11-21 · 터치 영역 44~46px · 아이콘 확대) ============ */
+  .home-head #homeMenuBtn,.room-head #menuBtn{
+    width:46px;height:46px;flex:0 0 46px;border-radius:14px;
+    background:#F6F2FF;border-color:#D9CDF6;color:#4A3399;
+  }
+  .home-head #homeMenuBtn:hover,.room-head #menuBtn:hover{background:#EDE6FF;border-color:#C5B3F1;color:#3A2580}
+  .home-head #homeMenuBtn:active,.room-head #menuBtn:active{background:#E4DAFF}
+  .home-head #homeMenuBtn .ico,.room-head #menuBtn .ico{width:25px;height:25px;stroke-width:2.2;vertical-align:0}
+  @media (max-width:900px){
+    .home-head{gap:10px;padding-top:2px}
+    .room-head #menuBtn{width:44px;height:44px;flex:0 0 44px;border-radius:13px}
+    .room-head #menuBtn .ico{width:24px;height:24px}
+    /* 방 머리의 다른 아이콘 버튼도 같은 결로 조금 키워 어색하지 않게 */
+    .room-head #roomHomeBtn,.room-head #roomSettingsBtn{width:42px;height:42px;flex:0 0 42px;border-radius:13px}
+    .room-head #roomHomeBtn .ico,.room-head #roomSettingsBtn .ico{width:21px;height:21px}
+  }
 </style>
 </head>
 <body>
