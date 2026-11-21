@@ -9907,11 +9907,19 @@ async function claimGuestRooms(prev, prevRoomId) {
     var rm = targets[i];
     rm.hostUid = uid; rm.ownerId = uid; rm.hostName = nick();
     V3.myRoles[rm.id] = "owner";
-    /* ① 서버 owner_id 넘기기 — 방장·멤버만 수정할 수 있어(RLS) 막히면 조용히 넘어간다 */
-    try { await db.client.from("kkiri_rooms").update({ owner_id: uid, host_name: nick() }).eq("id", rm.id); } catch (e) {}
+    /* ① 서버 소유권 넘기기 — DB 함수(kkiri_claim_guest_room)가 있으면 한 번에 끝난다.
+       아직 없으면(404) 조용히 다음 단계로: 방장·멤버만 수정할 수 있어(RLS) 직접 UPDATE 는 막힌다. */
+    var claimed = false;
+    try {
+      var cr = await db.client.rpc("kkiri_claim_guest_room", { p_room_id: String(rm.id), p_prev_uid: String(prev.id) });
+      claimed = !!(cr && !cr.error && cr.data === true);
+    } catch (e) {}
+    if (!claimed) {
+      try { await db.client.from("kkiri_rooms").update({ owner_id: uid, host_name: nick() }).eq("id", rm.id); } catch (e) {}
+    }
     /* ② 초대 코드로 재입장 — 새 계정이 이 방을 읽고 쓸 수 있는 멤버십을 확보한다 */
-    var serverOk = false;
-    if (rm.inviteCode) {
+    var serverOk = claimed;
+    if (!serverOk && rm.inviteCode) {
       try {
         var jr = await db.client.rpc("kkiri_join_room", { p_code: String(rm.inviteCode) });
         var row = (jr && !jr.error) ? (Array.isArray(jr.data) ? jr.data[0] : jr.data) : null;
