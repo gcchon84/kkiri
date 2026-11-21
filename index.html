@@ -7360,6 +7360,8 @@ function rtStart() {
 function openBudgetSheet() {
   var r = activeRoom();
   if (!r) return;
+  /* 무제한 무료 런치 — 크레딧 상한을 볼 일이 없다(스위치를 끄면 그대로 되살아난다) */
+  if (FREE_LAUNCH_MODE) { toast("지금은 모든 대화가 무제한 무료예요"); return; }
   /* 크레딧 상한은 방장 것 — 초대받은 사람은 바꿀 수 없다 */
   if (!canSpendCredits(r)) { ownerOnlyBlocked("크레딧 상한 바꾸기"); return; }
   $("budgetInput").value = r.budget || 300;
