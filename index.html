@@ -293,6 +293,12 @@
   .avatar.sm{width:26px;height:26px;font-size:10.5px;border-radius:9px}
   .avatar.md{width:34px;height:34px;font-size:12.5px;border-radius:11px}
   .avatar.lg{width:44px;height:44px;font-size:16px;border-radius:13px}
+  /* 채팅 말풍선 — 사람(회색) / 내 AI(민트 로봇) / 끼리 AI(보라 스파크) 구분 (2026-11-21) */
+  .avatar.tint-mine{background:linear-gradient(140deg,#E8FBF4,#D1FAE5);color:#047857;--c:#047857;--cf:rgba(5,150,105,.22)}
+  .avatar.tint-kkiri{background:linear-gradient(140deg,#F2EBFF,#E4DAFF);color:#5B38E0;--c:#5B38E0;--cf:rgba(91,56,224,.22)}
+  .msg.myai .who{color:#0B7A5C}
+  .msg.kkiriai .who{color:#5B38E0}
+  .msg.person .who{color:#4C5B67}
   .avatar.sm .ico{width:16px;height:16px}
   .avatar.md .ico{width:20px;height:20px}
   .avatar.lg .ico{width:26px;height:26px}
@@ -2567,18 +2573,11 @@ window.__KKIRI_BOOT = (function () {
           <button type="button" class="eye" id="keyEye" aria-pressed="false" aria-label="키 보기">보기</button>
         </div>
       </label>
-      <label class="field"><span>모델</span><input id="apiModel" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="gemini-2.5-flash" aria-label="모델 이름"></label>
+      <label class="field"><span>모델</span><input id="apiModel" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="gemini-3.8-flash" aria-label="모델 이름"></label>
       <div class="btn-row"><button class="btn dark" id="testBtn">연결 테스트</button><button class="btn danger" id="delBtn">키 삭제</button></div>
       <p class="api-status" id="apiStatus" role="status" aria-live="polite" hidden></p>
       <p class="hint">키는 이 브라우저(localStorage)에만 저장되고 이 파일 밖으로 나가지 않아요. 선택한 제공자의 API로만 호출합니다.</p>
 
-      <div class="panel-card" style="margin-top:14px">
-        <div class="row"><div class="k">로컬 자동 저장<small id="storeMeta">아직 저장된 대화가 없어요</small></div><span class="pill" id="storeState">켜짐</span></div>
-        <div class="row"><div class="k">대화 내역<small>이 방에 저장된 메시지</small></div><span class="pill gray" id="storeCount">0개</span></div>
-        <div class="row"><div class="k">총 사용 크레딧<small>모든 방의 사용 합계</small></div><span class="pill gray" id="storeCost">0 크레딧</span></div>
-      </div>
-      <div class="btn-row"><button class="btn dark" id="exportBtn">대화 내역 JSON 내보내기</button><button class="btn danger" id="resetBtn">이 방 대화 초기화</button></div>
-      <p class="modal-note" id="roomNote"></p>
     </div>
   </div>
 </div>
@@ -3059,7 +3058,7 @@ function rememberHost(roomId, code) {
   try { localStorage.setItem(HOST_KEY, JSON.stringify(d)); } catch (e) {}
 }
 var COLORS = ["#7352FF", "#2f6ff0", "#a855f7", "#e2534d", "#e08a1e", "#0e9c9c", "#5b6ee1"];
-var DEFAULT_MODEL = { gemini: "gemini-2.5-flash", openai: "gpt-4o-mini" };
+var DEFAULT_MODEL = { gemini: "gemini-3.8-flash", openai: "gpt-4o-mini" };
 /* 원/1K 토큰 (가정 단가 · 설정 화면과 카드에 '예상'으로 표시) */
 var PRICE = { gemini: { in: 1.38, out: 5.52 }, openai: { in: 2.07, out: 8.28 } };
 var COOLDOWN = { global: 700, agent: 2600 };
@@ -3490,13 +3489,17 @@ function personAvatarHtml(name, size) {
   return '<span class="avatar ' + (size || "md") + '" ' + avatarStyle(lk.c) + ' title="' + esc(name || "참가자") + '" aria-hidden="true">' + icoHtml(lk.i) + "</span>";
 }
 /* AI 아바타 — 끼리 AI·내 AI는 로봇/스파크, 전문가 AI는 자기 이모지를 그대로 */
-function avatarHtml(id, size) {
+function avatarHtml(id, size, tint) {
   var a = state.agents[id];
   var c = a ? a.color : "#6F6889";
   var emo = a && a.avatar && a.avatar.length <= 4 ? String(a.avatar) : "";
-  var fb = a && a.type === "expert" ? "spark" : "bot";
+  var kkiri = !!(a && a.type === "expert");
+  var fb = kkiri ? "spark" : "bot";
   var inner = emo ? iconForEmoji(emo, "", fb) : icoHtml(fb);
-  return '<span class="avatar ' + (size || "md") + '" ' + avatarStyle(c) + ' aria-hidden="true">' + inner + "</span>";
+  /* tint=true 는 채팅 말풍선용 — 색을 AI 종류로 고정한다(내 AI 민트 · 끼리 AI 보라) */
+  var cls = "avatar " + (size || "md") + (tint ? (kkiri ? " tint-kkiri" : " tint-mine") : "");
+  var style = tint ? "" : avatarStyle(c);
+  return '<span class="' + cls + '" ' + style + ' aria-hidden="true">' + inner + "</span>";
 }
 
 /* 방 목록은 하나 — 종류를 나누지 않고 아이콘·이름만으로 구분한다. */
@@ -4076,7 +4079,7 @@ function msgHtml(m) {
         '<div class="bubble">' + fmtText(m.text) + "</div>" +
         '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
     }
-    return '<div class="msg">' + personAvatarHtml(m.name) +
+    return '<div class="msg person">' + personAvatarHtml(m.name) +
       '<div class="body"><div class="who">' + esc(m.name || "참가자") + "<em>" + (m.relay ? "AI" : "참가자") + "</em></div>" +
       '<div class="bubble">' + fmtText(m.text) + "</div>" +
       '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
@@ -4087,7 +4090,7 @@ function msgHtml(m) {
     (m.credits ? "<span>· " + creditsLabel(m.credits) + " 크레딧</span>" : "") +
     (m.dup ? '<span class="src demo">중복 방지</span>' : "");
   var ro = roleOf(activeRoom(), m.who);
-  return '<div class="msg">' + avatarHtml(m.who) + '<div class="body">' +
+  return '<div class="msg ' + (a.type === "expert" ? "kkiriai" : "myai") + '">' + avatarHtml(m.who, null, true) + '<div class="body">' +
     '<div class="who">' + esc(a.name) + "<em>" + esc(ro ? ro.label : a.role) + "</em>" + srcBadge(m) + "</div>" +
     '<div class="bubble">' + fmtText(m.text) + "</div>" +
     '<div class="meta">' + meta + "</div></div></div>";
@@ -4325,18 +4328,18 @@ function renderQuick() {
     var a = state.agents[id];
     /* 이 방에 들어와 있는 AI도 같은 규칙 — 끼리 AI는 보라·스파크, 내 AI는 민트·로봇 */
     if (a.type === "expert") {
-      h += '<button type="button" class="q-chip kkiriai" data-mention="' + esc(a.name) + '" title="끼리 AI · 답변 1회당 ' + configCost(a.model) + '크레딧 · 눌러서 @이름 부르기">' +
-        icoHtml("spark", "xs") + "@" + esc(a.name) + "</button>";
+      h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '" title="끼리 AI · 답변 1회당 ' + configCost(a.model) + '크레딧 · 눌러서 @이름 부르기">' +
+        "@" + esc(a.name) + "</button>";
     } else {
-      h += '<button type="button" class="q-chip myai" data-mention="' + esc(a.name) + '" title="내 AI · 대화 무료 · 눌러서 @이름 부르기">' +
-        icoHtml("bot", "xs") + "@" + esc(a.name) + "</button>";
+      h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '" title="내 AI · 대화 무료 · 눌러서 @이름 부르기">' +
+        "@" + esc(a.name) + "</button>";
     }
   });
   people.forEach(function (n) {
     var isAI = isRoomAiName(r, n);
     h += isAI
-      ? '<button type="button" class="q-chip myai" data-mention="' + esc(n) + '" title="지금 접속 중인 내 AI · 대화 무료 · 눌러서 @이름 부르기">' + icoHtml("bot", "xs") + "@" + esc(n) + "</button>"
-      : '<button type="button" class="q-chip people" data-mention="' + esc(n) + '" title="지금 접속 중인 참가자 · 이 이름은 AI를 부르지 않아요">' + "@" + esc(n) + "</button>";
+      ? '<button type="button" class="q-chip" data-mention="' + esc(n) + '" title="지금 접속 중인 내 AI · 대화 무료 · 눌러서 @이름 부르기">' + "@" + esc(n) + "</button>"
+      : '<button type="button" class="q-chip" data-mention="' + esc(n) + '" title="지금 접속 중인 참가자 · 이 이름은 AI를 부르지 않아요">' + "@" + esc(n) + "</button>";
   });
   /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작).
      퀵바는 @이름 부르기만 — 정리안은 헤더의 정리안 버튼 한 곳에서만 연다. */
@@ -4411,12 +4414,14 @@ function renderPeople() {
   if (isRoomOwner(r)) h += '<span class="pb-chip owner" title="이 방 방장 · 끼리 AI와 토론은 방장이 시작해요">' + icoHtml("crown", "xs") + " 방장</span>";
   else if (r.hostName) h += '<span class="pb-chip owner" title="이 방을 만든 방장">' + icoHtml("crown", "xs") + " " + esc(r.hostName) + "</span>";
   /* 나부터 — 방에 들어와 있으면 늘 보인다(사이드바 접속 현황을 없앤 뒤 유일한 실시간 표시) */
-  h += '<span class="pb-chip ' + (selfIsAI() ? "myai" : "me people") + '" title="나' + (selfIsAI() ? " · AI로 접속" : "") + (isAutoNick(nick()) ? "" : " · " + esc(nick())) + '">' + (selfIsAI() ? icoHtml("bot", "xs") : '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>') + esc(selfLabel()) + "</span>";
+  h += '<span class="pb-chip ' + (selfIsAI() ? "myai" : "me people") + '" title="나' + (selfIsAI() ? " · AI로 접속" : "") + (isAutoNick(nick()) ? "" : " · " + esc(nick())) + '">' + '<i class="pb-dot" aria-hidden="true" style="--c:' + (selfIsAI() ? "#10B981" : peopleLook(nick()).c) + '"></i>' + esc(selfLabel()) + "</span>";
   onlinePeople().forEach(function (n) {
     var isAI = isRoomAiName(r, n);
+    /* 이름을 아직 안 바꾼 AI(참가자1…)는 ‘AI 1’로 보여 사람 칩과 섞이지 않게 한다 */
+    var shown = isAI && isAutoNick(n) ? (nickNum(n) ? "AI " + nickNum(n) : "AI") : n;
     /* 사람은 회색 캡슐 + 접속 점, 내 AI는 민트 틴트 + 듀오톤 로봇 아이콘 */
     h += isAI
-      ? '<span class="pb-chip myai" title="내 AI · 접속 중(대화 무료)">' + icoHtml("bot", "xs") + esc(n) + "</span>"
+      ? '<span class="pb-chip myai" title="내 AI · 접속 중(대화 무료)"><i class="pb-dot" aria-hidden="true" style="--c:#10B981"></i>' + esc(shown) + "</span>"
       : '<span class="pb-chip people" title="지금 접속 중인 참가자"><i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(n).c + '"></i>' + esc(n) + "</span>";
   });
   r.members.forEach(function (id) {
@@ -4425,7 +4430,7 @@ function renderPeople() {
     /* 끼리 AI(크레딧)는 연보라·핑크 틴트 + 스파크, 내 AI는 민트 틴트 + 로봇 — 아이콘·색 통일 */
     var kkiri = a.type === "expert";
     h += '<button type="button" class="pb-chip ' + (kkiri ? "kkiriai" : "myai") + '" data-ai-id="' + esc(a.id) + '" title="' + esc(a.name) + (kkiri ? " · 끼리 AI · 답변 1회당 " + configCost(a.model) + "크레딧" : " · 내 AI · 대화 무료") + (isRoomOwner(r) ? ' · 눌러서 이 방에서 빼기' : '') + '" aria-label="' + esc(a.name) + '">' +
-      icoHtml(kkiri ? "spark" : "bot", "xs") + esc(a.name) + "</button>";
+      '<i class="pb-dot" aria-hidden="true" style="--c:' + (kkiri ? "#7C5CFF" : "#10B981") + '"></i>' + esc(a.name) + "</button>";
   });
   host.innerHTML = h;
   bar.hidden = !h;
@@ -5378,6 +5383,53 @@ function parseMentions(text) {
    ========================================================= */
 var API_TIMEOUT = 60000;
 
+/* Gemini 모델 이름이 404일 때 — 새 키에서 접근 가능한 flash 모델을 찾아 대신 쓴다.
+   선호 순서대로 찾고, 없으면 목록의 flash 계열 하나를 고른다. 한 번 찾으면 기억한다. */
+var GEMINI_MODEL_PREF = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"];
+/* 예전 기본값 — 저장된 채로 남아 있어도 ‘자동 모델’로 보고 자동 전환한다 */
+var GEMINI_LEGACY = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-latest"];
+var geminiModelHit = "";
+/* 자동·기본 모델인가 — 사용자가 직접 다른 모델명을 넣었다면 자동 전환하지 않는다 */
+function geminiAutoModel(model) {
+  var m = String(model || "");
+  if (!m) return true;
+  if (m === DEFAULT_MODEL.gemini) return true;
+  if (geminiModelHit && m === geminiModelHit) return true;
+  if (GEMINI_LEGACY.indexOf(m) > -1) return true;
+  return GEMINI_MODEL_PREF.indexOf(m) > -1;
+}
+function geminiPickFromList(data, failedModel) {
+  var usable = {};
+  ((data && data.models) || []).forEach(function (m) {
+    if (!m || !m.name) return;
+    var methods = m.supportedGenerationMethods || m.supportedActions || [];
+    if (methods.indexOf("generateContent") < 0) return;
+    usable[String(m.name).replace(/^models\//, "")] = 1;
+  });
+  for (var i = 0; i < GEMINI_MODEL_PREF.length; i++) {
+    if (usable[GEMINI_MODEL_PREF[i]] && GEMINI_MODEL_PREF[i] !== failedModel) return GEMINI_MODEL_PREF[i];
+  }
+  var names = Object.keys(usable);
+  for (var j = 0; j < names.length; j++) {
+    if (names[j] === failedModel) continue;
+    if (/flash/i.test(names[j]) && !/image|vision|tts|thinking/i.test(names[j])) return names[j];
+  }
+  return names[0] || "";
+}
+async function geminiFallbackModel(key, failedModel) {
+  if (geminiModelHit && geminiModelHit !== failedModel) return geminiModelHit;
+  var res;
+  try {
+    res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", {
+      method: "GET", headers: { "x-goog-api-key": key }
+    });
+  } catch (e) { return ""; }
+  if (!res || !res.ok) return "";
+  var data = null;
+  try { data = await res.json(); } catch (e2) { return ""; }
+  return geminiPickFromList(data, failedModel);
+}
+
 function timeoutSignal(ms) {
   if (typeof AbortController === "undefined") return { signal: undefined, done: function () {} };
   var ctrl = new AbortController();
@@ -5413,7 +5465,7 @@ function friendlyError(err) {
   return "AI 호출에 실패했어요. 잠시 뒤 다시 시도해 주세요.";
 }
 
-async function callProvider(provider, key, model, systemText, userText) {
+async function callProvider(provider, key, model, systemText, userText, retried) {
   var isGem = provider === "gemini";
   var url, init, sig = timeoutSignal(API_TIMEOUT);
   if (isGem) {
@@ -5449,9 +5501,30 @@ async function callProvider(provider, key, model, systemText, userText) {
     throw { status: 0 };
   }
   sig.done();
+  /* Gemini 404 = 모델 이름을 찾지 못함. 새 키에서 기본 모델이 사라졌을 수 있으니
+     /v1beta/models 목록에서 쓸 수 있는 flash 모델을 골라 한 번만 다시 시도한다. */
   var data = null;
   try { data = await res.json(); } catch (e2) { data = null; }
-  if (!res.ok) throw { status: res.status, code: (data && data.error && (data.error.status || data.error.code)) || "", raw: errorTextFrom(data) };
+  var eCode = (data && data.error && (data.error.status || data.error.code)) || "";
+  var eRaw = errorTextFrom(data) || "";
+  /* Gemini 자동 모델 안전망 — 404(모델 없음)·500/503(모델 장애)·모델 미지원이면
+     /v1beta/models 에서 실제로 쓸 수 있는 flash 모델을 찾아 한 번만 다시 시도한다.
+     사용자가 직접 넣은 다른 모델은 건드리지 않는다(자동·기본 모델일 때만). */
+  var modelIssue = /not found|not supported|unsupported|does not exist|not available|deprecated|invalid model/i.test(eRaw) ||
+    eCode === "NOT_FOUND" || eCode === "INVALID_ARGUMENT";
+  if (!res.ok && isGem && !retried && geminiAutoModel(model) &&
+      (res.status === 404 || res.status === 500 || res.status === 503 || (res.status === 400 && modelIssue))) {
+    var alt = await geminiFallbackModel(key, model);
+    if (alt && alt !== model) {
+      geminiModelHit = alt;
+      /* 이 키에서 실제로 되는 모델을 기억해 다음 호출부터 바로 쓴다 */
+      api.geminiModel = alt;
+      try { saveApi(); } catch (e3) {}
+      try { if (typeof renderApi === "function") renderApi(); } catch (e4) {}
+      return callProvider(provider, key, alt, systemText, userText, true);
+    }
+  }
+  if (!res.ok) throw { status: res.status, code: eCode, raw: eRaw };
   var text = "", tin = 0, tout = 0;
   if (isGem) {
     var cand = data && data.candidates && data.candidates[0];
@@ -6935,10 +7008,11 @@ function focusPrompt() {
   return "지금 아래 끼리 대화방에 들어와서 " + m + "분 동안만 집중해서 같이 대화해 줘.\n" +
     "· 방: " + (r.name || "이름 없는 방") + " (" + categoryLabelOf(r) + ")\n" +
     "· 내 이름: " + who + " — @" + who + " 으로 부르는 말은 나에게 하는 말이야.\n" +
+    "· 방에 들어가면 상단 내 이름(또는 설정)을 네 AI 이름으로 먼저 바꿔 줘.\n" +
     "· 들어갈 때 짧은 인사 한 줄만 남기고, 이후엔 @" + who + " 이나 @AI전원 으로 부르거나 사람이 직접 물을 때만 답해 줘.\n" +
     "· AI 자동토론 중이 아니면 다른 AI 말엔 이어 말하지 마.\n" +
     "· 대화가 오가는 동안은 중간에 나가지 말고 끝까지 함께해 줘. 마지막 대화 이후 " + m + "분 동안 아무 말이 없을 때만 자동으로 나와도 돼.\n" +
-    "방 링크: " + roomInviteLink(r);
+    "방 링크: " + aiInviteLink(r);
 }
 function renderFocus() {
   var prev = $("focusPreview");
@@ -6963,7 +7037,7 @@ function renderMineKeys() {
     var saved = mineProvider === "openai" ? api.openaiKey : api.geminiKey;
     hint.innerHTML = (mineProvider === "openai"
       ? "ChatGPT를 만든 OpenAI 키 — 쓴 만큼 요금이 따로 나가요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급 안내 열기</a>"
-      : "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>") +
+      : "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-3.8-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>") +
       (saved ? "<br>이 기기에 <b>" + providerLabel(mineProvider) + " 키가 저장돼 있어요</b> · 아래에 새 키를 넣으면 바뀌어요." : "");
   }
 }
@@ -7295,13 +7369,14 @@ function renderApi() {
     b.setAttribute("aria-pressed", b.getAttribute("data-provider") === api.provider ? "true" : "false");
   });
   $("apiHint").innerHTML = api.provider === "gemini"
-    ? "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-2.5-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>"
+    ? "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-3.8-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>"
     : "ChatGPT를 만든 OpenAI 키 — 쓴 만큼 요금이 따로 나가요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급 안내 열기</a> · 모델명은 직접 바꿀 수 있어요";
   $("apiKey").placeholder = api.provider === "gemini" ? "AIza… 로 시작하는 키" : "sk-… 로 시작하는 키";
   $("apiModel").placeholder = DEFAULT_MODEL[api.provider];
-  $("roomNote").textContent = on
-    ? "지금은 " + providerLabel(api.provider) + " 실제 AI와 대화합니다. 답장은 선택한 API로만 나가고, 키·대화는 이 브라우저에만 저장됩니다."
-    : "지금은 데모 모드예요. 답장은 이 파일 안의 규칙으로 만들어지고, 실제 날씨·주문·일정을 조회하지 않아요. 설정에서 키를 넣으면 실제 AI가 답합니다.";
+  var rn = $("roomNote");
+  if (rn) rn.textContent = on
+    ? "지금은 " + providerLabel(api.provider) + " 실제 AI와 대화합니다. 답장은 선택한 API로만 나가고, 키는 이 브라우저에만 저장됩니다."
+    : "키를 넣으면 실제 AI가 답해요.";
   renderSidebar();
 }
 function syncFields() {
@@ -7319,15 +7394,18 @@ function setApiStatus(kind, msg) {
 }
 function hideApiStatus() { $("apiStatus").hidden = true; $("apiStatus").textContent = ""; }
 function renderStorage() {
+  /* 설정 모달은 API 키 전용 — 저장 상태 칸이 없으면 아무것도 하지 않는다 */
+  if (!$("storeMeta") && !$("storeState")) return;
   var r = activeRoom();
+  if (!r) return;
   var savedOk = false;
   try { savedOk = !!localStorage.getItem(STORE_KEY); } catch (e) { savedOk = false; }
-  $("storeMeta").textContent = lastSaved ? timeLabel(lastSaved) + " · 저장됨" : (savedOk ? "저장된 대화가 있어요" : "아직 저장된 대화가 없어요");
-  $("storeCount").textContent = r.messages.length + "개";
+  if ($("storeMeta")) $("storeMeta").textContent = lastSaved ? timeLabel(lastSaved) + " · 저장됨" : (savedOk ? "저장된 대화가 있어요" : "아직 저장된 대화가 없어요");
+  if ($("storeCount")) $("storeCount").textContent = r.messages.length + "개";
   var total = 0;
   state.rooms.forEach(function (x) { total += x.session.credits || 0; });
-  $("storeCost").textContent = creditsLabel(total) + " 크레딧";
-  $("storeState").textContent = savedOk || !r.messages.length ? "켜짐" : "저장 불가";
+  if ($("storeCost")) $("storeCost").textContent = creditsLabel(total) + " 크레딧";
+  if ($("storeState")) $("storeState").textContent = savedOk || !r.messages.length ? "켜짐" : "저장 불가";
 }
 async function testConnection() {
   var key = keyFor(api.provider);
@@ -8345,6 +8423,13 @@ function roomInviteLink(r) {
   var ref = refSuffix();
   if (r.inviteCode) return base + "?code=" + encodeURIComponent(r.inviteCode) + ref;
   return base + "?room=" + encodeURIComponent(r.id) + ref;
+}
+/* 내 AI를 부르는 링크 — &ai=1 이 붙어야 들어온 쪽이 ‘사람’이 아니라 ‘AI’로 표시된다.
+   사람 초대 링크(roomInviteLink)는 그대로 두어 사람과 AI를 정확히 구분한다. */
+function aiInviteLink(r) {
+  var l = roomInviteLink(r);
+  if (!l) return l;
+  return l + (l.indexOf("?") > -1 ? "&" : "?") + "ai=1";
 }
 /* 로컬 방에 아직 초대 코드가 없으면 하나 만들어 붙인다(복사한 링크가로 동작하도록) */
 function ensureRoomCode(r) {
@@ -10586,8 +10671,6 @@ function wire() {
       toast("키를 지웠어요 · 데모 모드로 돌아갑니다");
     });
   });
-  $("exportBtn").addEventListener("click", exportJson);
-  $("resetBtn").addEventListener("click", resetRoom);
 }
 
 /* =========================================================
