@@ -1535,6 +1535,22 @@
   .auth-mini{border:0;background:none;color:#5B38E0;font-size:10.5px;font-weight:900;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:2px 0;font-family:inherit}
   .empty .e-cta.single{justify-content:center}
   .empty .e-cta.single .btn{min-width:168px}
+  /* 빈 방 — 흰 카드 바깥 아래쪽에 아주 연한 3줄 규칙 (카드와 함께 사라진다) */
+  .empty-rules{
+    max-width:440px;margin:14px auto 0;padding:0 16px;text-align:center;
+    font-size:12px;line-height:1.8;font-weight:600;letter-spacing:-.01em;
+    color:var(--muted-2);word-break:keep-all;
+  }
+  .empty-rules span{display:block}
+  /* 내 크레딧 맨 아래 — 회원 탈퇴 (평소엔 눈에 띄지 않는 글자 버튼) */
+  .del-account{margin-top:10px;text-align:center}
+  .del-account-btn{
+    border:0;background:none;padding:7px 10px;font-family:inherit;cursor:pointer;
+    font-size:12px;font-weight:600;letter-spacing:-.01em;color:var(--muted-2);
+    text-decoration:underline;text-underline-offset:2px;
+  }
+  .del-account-btn:hover{color:var(--muted)}
+  .del-account-btn[disabled]{cursor:default;opacity:.55;text-decoration:none}
   .meter[hidden]{display:none !important}
 
   /* ============ ㄲㄹ 톤 듀오톤 픽토그램 ============ */
@@ -2737,6 +2753,10 @@ window.__KKIRI_BOOT = (function () {
       <div class="ledger" id="ledgerList"></div>
       <p class="hint">차감 내역은 서버 원장에 남아요. 충전 크레딧은 만료가 없고, 보너스는 받은 날부터 30일 동안 쓸 수 있어요.</p>
       <div class="btn-row"><button class="btn" id="creditClose" type="button">닫기</button></div>
+      <!-- 정식 로그인 회원에게만 보이는 조용한 탈퇴 링크 (평소엔 눈에 띄지 않게) -->
+      <div class="del-account" id="delAccountRow" hidden>
+        <button type="button" class="del-account-btn" id="deleteAccountBtn">회원 탈퇴</button>
+      </div>
     </div>
   </div>
 </div>
@@ -4284,6 +4304,16 @@ function useSuggestion(text) {
   } else toast("입력창에 넣었어요 · 확인하고 Enter로 보내세요");
 }
 
+/* 빈 방 카드 바깥 아래쪽에 붙는 3줄 규칙 — 아주 연하고 부담 없는 톤.
+   대화가 시작되거나 AI가 추가되면 카드(#emptyRoom)와 함께 사라진다. */
+function emptyRulesHtml() {
+  return '<div class="empty-rules">' +
+    "<span>· 사람·내 AI 대화는 무료 · @이름으로 부르면 그 AI가 답해요</span>" +
+    "<span>· AI 자동토론을 켜면 AI끼리 의견을 모아 정리안까지 만들어요</span>" +
+    "<span>· 초대한 외부 AI는 10분간 대화가 없으면 자동으로 나가요</span>" +
+    "</div>";
+}
+
 function emptyHtml(r) {
   var ids = r.members.filter(function (id) { return !!state.agents[id]; });
   if (!ids.length) {
@@ -4296,27 +4326,22 @@ function emptyHtml(r) {
        onlinePeople() 은 나를 빼고 세므로, 함께 있는 사람 수는 나를 더해 센다. */
     var here = people.length + 1;
     if (people.length) {
-      return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + icoHtml("chat") + '</div>' +
+      return '<div id="emptyRoom"><div class="empty"><div class="e-emoji">' + icoHtml("chat") + '</div>' +
         "<h3>아직 대화가 없어요 · 지금 " + here + "명이 함께 있어요!</h3>" +
         "<p><b>" + esc(people.join(" · ")) + "</b> 님이 함께 있어요.<br>" +
         "먼저 인사를 건네거나 <b>@이름</b>을 붙여 보내면 그분께 전해져요. 필요할 때 사람이나 AI를 초대할 수 있어요.</p>" +
-        cta + "</div>";
+        cta + "</div>" + emptyRulesHtml() + "</div>";
     }
     /* 혼자 있는 방 — 크레딧 이야기 없이, 초대해서 대화를 시작하도록 안내한다. */
-    return '<div class="empty" id="emptyRoom"><div class="e-emoji e-alone">' + icoHtml("alone") + '</div>' +
+    return '<div id="emptyRoom"><div class="empty"><div class="e-emoji e-alone">' + icoHtml("alone") + '</div>' +
       "<h3>사람이나 AI를 초대해 대화를 시작해 보세요.</h3>" +
-      cta + "</div>";
+      cta + "</div>" + emptyRulesHtml() + "</div>";
   }
   var names = memberNames(r).join(" · ");
-  var roles = roomRoleMap(r);
-  var roleLine = r.members.map(function (id) {
-    var ro = roles[id];
-    return ro ? esc(agentName(id)) + " " + esc(ro.label) : "";
-  }).filter(Boolean).join(" · ");
+  /* 역할 나열 줄(보라색)은 넣지 않는다 — 이름·인원·부르는 방법만 깔끔하게 */
   return '<div class="empty"><div class="e-emoji">' + icoHtml("chat") + '</div><h3>' +
     "아직 대화가 없어요</h3>" +
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + ids.length + "명이 이 방에 있어요." +
-    (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
     "<br><b>@이름</b>으로 AI를 불러 바로 대화를 시작해 보세요." +
     (ids.length + relayPeopleOf(r).length >= 2
       ? (isRoomOwner(r) ? " 토론이 필요하면 상단 <b>AI 자동토론</b>을 켜면 AI끼리 알아서 정리해요." : " 방장이 <b>AI 자동토론</b>을 켜면 AI끼리 알아서 정리해요.")
@@ -9957,6 +9982,63 @@ async function refreshWallet() {
     }
   } catch (e) { renderWallet(); }
 }
+/* ---------- 회원 탈퇴 (내 크레딧 맨 아래 · 정식 로그인 회원만) ----------
+   서버 RPC kkiri_delete_account() 가 방·메시지·프로필·크레딧 원장을 정리하고
+   auth.users 행까지 지운다. 앱은 그 뒤 세션을 내리고 이 브라우저의 흔적도 지운다. */
+function isRegularMember() {
+  return !!(V3.mode === "cloud" && V3.signedIn && !!db.client && V3.user && !V3.user.isAnonymous);
+}
+function renderDeleteAccount() {
+  var row = $("delAccountRow");
+  if (row) row.hidden = !isRegularMember();
+}
+var delAcct = { busy: false };
+/* 탈퇴한 계정의 흔적을 이 브라우저에서도 지운다.
+   게스트 체험 이력(kkiri.guest.claimed.v1)·이용 동의는 되돌이 체험을 막는 장치라 남긴다. */
+function clearAccountLocal() {
+  [
+    "kkiri.state.v2", "kkiri.api.v2", "kkiri.nick.v1", "kkiri.nick.auto.v1", "kkiri.nick.asked.v1",
+    "kkiri.view.v1", "kkiri.hidden.v1", "kkiri.hooks.v1", "kkiri.deletedAgents.v1",
+    "kkiri.kicked.v1", "kkiri.hosts.v1", "kkiri.ref.v1", "kkiri.auth.shown.v1",
+    "kkiri.mock.user.v1", "kkiri.mock.credits.v1", "kkiri.mock.ledger.v1"
+  ].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+}
+async function deleteMyAccount() {
+  if (delAcct.busy) return;
+  if (!isRegularMember()) {
+    toast("이메일로 가입한 회원만 탈퇴할 수 있어요");
+    return;
+  }
+  var ok = window.confirm("정말 탈퇴할까요? 보유 크레딧과 대화 기록이 모두 삭제되며 되돌릴 수 없어요.");
+  if (!ok) return;
+  delAcct.busy = true;
+  var btn = $("deleteAccountBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "탈퇴 처리 중…"; }
+  var res = null, err = null;
+  try { res = await db.client.rpc("kkiri_delete_account"); } catch (e) { err = e; }
+  if (res && res.error) err = res.error;
+  if (err) {
+    delAcct.busy = false;
+    if (btn) { btn.disabled = false; btn.textContent = "회원 탈퇴"; }
+    var msg = String((err && (err.message || err.code || err)) || "");
+    var missing = /PGRST202|PGRST204|404|could not find|not find the function|does not exist/i.test(msg);
+    toast(missing
+      ? "탈퇴 기능이 아직 서버에 준비되지 않았어요 · 잠시 후 다시 시도해 주세요"
+      : "탈퇴를 마치지 못했어요 · " + msg);
+    return;
+  }
+  /* 성공 — 세션을 내리고 화면을 '끼리 시작하기'로 되돌린 뒤, 이 브라우저의 계정 흔적을 지운다 */
+  try { await db.client.auth.signOut(); } catch (e) {}
+  V3.signedIn = false; V3.user = null; V3.ready = false;
+  V3.guestTrialUsed = false; V3.myRoles = {};
+  V3.profile = { nickname: "", plan: "free", credits: 0, daily: 0, bonus: 0, paid: 0, refCode: "", referred: false };
+  resetSessionView();
+  clearAccountLocal();
+  setLiveStatus("wait", "로그인하면 연결");
+  delAcct.busy = false;
+  toast("회원 탈퇴가 완료되었어요.");
+}
+
 async function openCredit() {
   if (V3.mode === "cloud" && V3.signedIn) await refreshWallet();
   $("creditNow").textContent = V3.signedIn ? creditsNow().toLocaleString("ko-KR") : "—";
@@ -9964,6 +10046,7 @@ async function openCredit() {
     ? "매일 300크레딧 무료"
     : "로그인 전 · 매일 300크레딧 무료";
   renderWallet();
+  renderDeleteAccount();
   var actR = activeRoom();
   $("creditRoom").textContent = ((actR && actR.session && actR.session.credits) || 0).toLocaleString("ko-KR");
   openModal("creditModal");
@@ -10566,6 +10649,8 @@ function wireV3() {
   });
   var cc = $("creditClose");
   if (cc) cc.addEventListener("click", function () { closeModal("creditModal"); });
+  var dac = $("deleteAccountBtn");
+  if (dac) dac.addEventListener("click", function () { deleteMyAccount(); });
   /* 자율 후원 — 크레딧 모달·홈 하단·사이드바 하단 어디서 눌러도 같은 안내로 */
   ["donateBtn", "sideDonateBtn", "homeDonateBtn"].forEach(function (id) {
     var b = $(id);
