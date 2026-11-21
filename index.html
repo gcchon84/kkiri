@@ -2485,7 +2485,7 @@ window.__KKIRI_BOOT = (function () {
             <button type="button" class="btn green" id="mineQuickGemini" hidden>+ 내 제미나이 초대</button>
             <button type="button" class="btn" id="mineQuickOpenai" hidden>+ 내 GPT 초대</button>
           </div>
-          <p class="mine-quick-lead">저장된 정보로 바로 불러보세요 (역할 지정 없음)</p>
+          <p class="mine-quick-lead">저장된 정보로 바로 초대해요</p>
         </div>
 
         <details class="spec" id="byokWrap">
@@ -7334,7 +7334,8 @@ function roomMineAgent(p, r) {
   }
   return null;
 }
-/* 저장된 내 키로 '내 제미나이'·'내 GPT'를 바로 방에 부른다(내 AI 하위 기능) */
+/* 저장된 내 키로 '내 제미나이'·'내 GPT'를 바로 방에 부른다(내 AI 하위 기능).
+   ‘내 제미나이·GPT 설정’에 저장해 둔 AI 이름·역할이 있으면 그대로 이 방에 들인다. */
 function addQuickMine(p) {
   var key = p === "openai" ? api.openaiKey : api.geminiKey;
   if (!key) { setMineKeyStatus("err", providerLabel(p) + " 키를 먼저 저장해 주세요."); return; }
@@ -7346,24 +7347,33 @@ function addQuickMine(p) {
     toast("이미 이 방에 " + dup.name + "이(가) 들어와 있어요 (방당 1명)");
     return;
   }
-  var name = p === "openai" ? "내 GPT" : "내 제미나이";
-  var exist = allAgents().filter(function (a) { return a.name === name; })[0];
+  var defName = p === "openai" ? "내 GPT" : "내 제미나이";
+  /* 설정에 저장해 둔 그 제공자의 내 키 AI(마지막 것) — 이름·역할을 그대로 쓴다 */
+  var byokAgents = allAgents().filter(function (a) { return a && a.type === "byok" && (a.model || "") === p; });
+  var pick = byokAgents.length ? byokAgents[byokAgents.length - 1] : null;
+  var name = (pick && pick.name) ? pick.name : defName;
+  var role = (pick && pick.role) ? pick.role : "내 AI";
   var id;
-  if (exist) id = exist.id;
+  if (pick) id = pick.id;
   else {
-    id = "mine_" + hash(name + p + Date.now()).toString(36);
-    state.agents[id] = {
-      id: id, name: name, role: "내 AI", color: COLORS[2], type: "byok", model: p, prompt: "",
-      desc: "내 " + providerLabel(p) + " 키로 답하는 AI"
-    };
+    var exist = allAgents().filter(function (a) { return a.name === name; })[0];
+    if (exist) id = exist.id;
+    else {
+      id = "mine_" + hash(name + p + Date.now()).toString(36);
+      state.agents[id] = {
+        id: id, name: name, role: role, color: COLORS[2], type: "byok", model: p, prompt: "",
+        desc: "내 " + providerLabel(p) + " 키로 답하는 AI"
+      };
+    }
   }
   var how = invAttach(id, true);
   closeModal("inviteModal");
   renderAll();
+  var label = name + (role ? "(" + role + ")" : "");
   if (how === "room" && r) {
     dbUpsertAgent(r.id, id);
-    toast(name + " · 이 방에 들어왔어요 · 끼리 크레딧 없이 답해요");
-  } else toast("‘" + name + "’ · 방 만들기 목록에 넣었어요");
+    toast(label + " · 이 방에 들어왔어요 · 끼리 크레딧 없이 답해요");
+  } else toast("‘" + name + "’" + (role ? "(" + role + ")" : "") + " · 방 만들기 목록에 넣었어요");
 }
 /* 내 키를 저장하고 그 키로 답하는 AI를 이 방에 넣는다. 이미 같은 이름의 내 AI가 있으면 키·모델만 바꿔 다시 들인다. */
 function addMineKeyAgent() {
