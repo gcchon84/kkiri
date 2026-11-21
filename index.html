@@ -10791,13 +10791,63 @@ function mentionNudge(r, text) {
   if (/(^|\s)@/.test(text)) return "";      /* 이미 누군가를 @로 불렀다 */
   return "AI와 대화하고 싶다면 @ 지정을 해 주세요";
 }
+/* @멘션 칩 — @AI전원 과 개별 @AI이름 은 입력창에서 서로 배타한다.
+   · @AI전원 을 누르면 이 방의 개별 @AI이름 토큰을 걷어내고 @AI전원 을 맨 앞에 둔다(이어 쓴 본문은 그대로).
+   · 개별 @AI이름 을 누르면 @AI전원 토큰을 먼저 걷어낸 뒤 그 이름을 붙인다(개별 AI끼리는 여러 명 그대로).
+   · 이미 @AI전원 이 있으면 두 번 넣지 않고 커서만 입력창에 둔다. */
+function allMentionRe() { return /@(AI전원|전원|모두|all)/i; }
+/* 이 방에서 개별 @이름 으로 부를 수 있는 AI 이름 — 내장 AI 멤버 + 접속 중인 내 AI(릴레이) */
+function roomAiMentionNames() {
+  var r = activeRoom();
+  if (!r) return [];
+  var out = [], seen = {};
+  function add(n) {
+    var k = String(n == null ? "" : n).trim().toLowerCase();
+    if (!k || seen[k]) return;
+    seen[k] = 1; out.push(String(n).trim());
+  }
+  r.members.forEach(function (id) { var a = state.agents[id]; if (a) add(a.name); });
+  relayPeopleOf(r).forEach(add);
+  /* 긴 이름부터 걷어내야 ‘내 제미나이’ 와 ‘제미나이’ 처럼 겹치는 이름이 일부만 지워지지 않는다 */
+  out.sort(function (a, b) { return b.length - a.length; });
+  return out;
+}
+/* @AI전원 토큰 하나를 걷어낸다(앞 공백은 남겨 단어가 붙지 않게) */
+function stripAllMention(v) {
+  return String(v == null ? "" : v).replace(/(^|\s)@(AI전원|전원|모두|all)(?=\s|$)/ig, "$1");
+}
+/* 이름 하나의 @토큰을 걷어낸다 — ‘@이름’ 뒤가 공백이거나 끝일 때만(다른 이름의 접두어는 건드리지 않는다) */
+function stripMentionName(v, name) {
+  var n = String(name == null ? "" : name).trim();
+  if (!n) return v;
+  return String(v == null ? "" : v).replace(new RegExp("(^|\\s)@" + escapeRe(n) + "(?=\\s|$)", "g"), "$1");
+}
 function insertMention(name) {
   var el = $("input");
-  var v = el.value;
+  var v = String(el.value || "");
+  if (/^(ai전원|전원|모두|all)$/i.test(String(name == null ? "" : name).trim())) {
+    if (allMentionRe().test(v)) { el.focus(); return; }   /* 이미 전원 호출 — 중복으로 넣지 않는다 */
+    roomAiMentionNames().forEach(function (n) { v = stripMentionName(v, n); });
+    v = "@AI전원 " + v.replace(/^\s+/, "").replace(/[ \t]{2,}/g, " ").replace(/\s+$/, "");
+    el.value = v;
+    el.focus();
+    growInput();
+    try { el.setSelectionRange(v.length, v.length); } catch (e) {}
+    return;
+  }
+  /* 개별 @AI이름 — @AI전원 이 있으면 먼저 걷어낸 뒤, 이어 쓰던 본문 뒤에(기존처럼) 이 이름을 붙인다 */
+  if (allMentionRe().test(v)) {
+    var atFrontAll = /^\s*@(AI전원|전원|모두|all)(?=\s|$)/i.test(v);
+    v = stripAllMention(v);
+    if (atFrontAll) v = v.replace(/^\s+/, "");
+    v = v.replace(/\s+$/, "");
+  }
   var lead = v && !/\s$/.test(v) ? " " : "";
-  el.value = v + lead + "@" + name + " ";
+  v = v + lead + "@" + name + " ";
+  el.value = v;
   el.focus();
   growInput();
+  try { el.setSelectionRange(v.length, v.length); } catch (e) {}
 }
 function act(name) {
   if (name === "start" || name === "agenda") { openRoundtable(); return; }
