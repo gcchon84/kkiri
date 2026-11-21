@@ -374,6 +374,7 @@
   .rmode-btn{font-size:9px}
   .rmode-btn[aria-pressed="true"]{color:#5B38E0;background:var(--brand-tint);border-color:#DACDFF}
   .meters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+  .meters.one{grid-template-columns:1fr}
   .meter{min-width:0}
   .m-top{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
   .meter:first-child .m-top{justify-content:flex-start}
@@ -2527,7 +2528,7 @@ window.__KKIRI_BOOT = (function () {
           <button type="button" class="pick" data-cap="50" aria-pressed="false">50</button>
           <button type="button" class="pick" data-cap="100" aria-pressed="false">100</button>
           <button type="button" class="pick" data-cap="200" aria-pressed="false">200</button>
-          <button type="button" class="pick" data-cap="room" aria-pressed="true">상한까지 <b id="rtCapRoom">300</b></button>
+          <button type="button" class="pick" data-cap="room" aria-pressed="true"><b id="rtCapRoom">300</b></button>
         </div>
         <p class="rt-round-note">상한에 닿으면 남은 라운드를 채우지 않고 멈추고, 정리안을 만들어요.</p>
       </div>
@@ -3719,6 +3720,7 @@ function renderRoom() {
     $("discussBtn").disabled = true;
     $("turnVal").textContent = "—";
     $("costVal").textContent = "—";
+    if ($("turnMeter")) $("turnMeter").hidden = true;   /* 방이 없으면 미터도 감춘다 */
     $("creditEstimate").hidden = true;
     $("runState").textContent = "대기 중";
     renderPresence();
@@ -3999,6 +4001,9 @@ function updateMeters() {
   /* 이번 토론에 더 낮은 상한을 골랐으면 그 값을 보여 준다 */
   var max = maxTurns;
   var cur = s.turn || 0;
+  /* 라운드 미터는 AI 자동토론이 실제로 돌 때만 — 시작 전(turn 0)에는 제어 바를 버튼만 남긴다 */
+  var tmEl = $("turnMeter");
+  if (tmEl) tmEl.hidden = !(discussing || cur > 0);
   var curRound = Math.min(maxRounds, Math.ceil(cur / aiN));
   var pct = discussing ? clamp(curRound / maxRounds * 100, 0, 100) : 0;
   $("turnLabel").textContent = "라운드";
@@ -4036,6 +4041,9 @@ function updateMeters() {
   else if (run.active) st.textContent = run.cooldownLeft ? "진행 중 · 쿨다운 " + run.cooldownLeft + "초" : "진행 중";
   else if (r.status === "ended") st.textContent = "종료 · 정리안 완료";
   else st.textContent = "대기 중";
+  /* 미터가 하나만 남으면 그 하나가 전체 폭을 쓰게 — 빈 반쪽이 생기지 않도록 */
+  var mBox = document.querySelector(".meters");
+  if (mBox) mBox.classList.toggle("one", ((tmEl && !tmEl.hidden) ? 1 : 0) + (bmEl && !bmEl.hidden ? 1 : 0) === 1);
 }
 
 /* =========================================================
@@ -6362,6 +6370,24 @@ function rtSetRounds(n) {
     b.setAttribute("aria-pressed", b.getAttribute("data-rounds") === String(want) ? "true" : "false");
   });
 }
+/* 이번 토론 크레딧 상한 칩 — 50·100·200 + 방 상한 숫자만. 방 상한과 같은 숫자는 칩을 따로 두지 않는다. */
+function rtRenderCapChips(roomCap) {
+  var row = $("rtCap");
+  if (!row) return;
+  roomCap = Math.max(1, Math.round(Number(roomCap)) || 300);
+  if (row.getAttribute("data-roomcap") === String(roomCap) && row.children.length) return;
+  var picked = rtPickCap();
+  var cur = picked > 0 ? String(picked) : "room";
+  var h = "";
+  [50, 100, 200].forEach(function (v) {
+    if (v >= roomCap) return;
+    h += '<button type="button" class="pick" data-cap="' + v + '" aria-pressed="' + (cur === String(v) ? "true" : "false") + '">' + v + "</button>";
+  });
+  h += '<button type="button" class="pick" data-cap="room" aria-pressed="' + (cur === "room" ? "true" : "false") +
+    '"><b id="rtCapRoom">' + creditsLabel(roomCap) + "</b></button>";
+  row.setAttribute("data-roomcap", String(roomCap));
+  row.innerHTML = h;
+}
 /* 이번 토론 크레딧 상한 — 0 이면 방 크레딧 상한을 그대로 쓴다 */
 function rtPickCap() {
   var on = document.querySelector("#rtCap [data-cap][aria-pressed=\"true\"]");
@@ -6371,6 +6397,8 @@ function rtPickCap() {
 }
 function rtSetCap(v) {
   var want = Number(v) > 0 ? String(clamp(Math.round(Number(v)), 50, 5000)) : "room";
+  var r = activeRoom();
+  rtRenderCapChips(Math.max(1, Math.round(Number(r && r.budget)) || 300));
   var has = false;
   Array.prototype.forEach.call(document.querySelectorAll("#rtCap [data-cap]"), function (b) {
     if (b.getAttribute("data-cap") === want) has = true;
@@ -6405,7 +6433,9 @@ function rtRefreshSummary() {
       creditsLabel(est.credits) + " 크레딧</b> <span class=\"muted\">(조기 종결 시 덜 차감)</span>" + settle;
   }
   var roomCapEl = $("rtCapRoom");
-  if (roomCapEl) roomCapEl.textContent = creditsLabel(Math.max(1, Math.round(Number(r.budget)) || 300));
+  var roomCapNum = Math.max(1, Math.round(Number(r.budget)) || 300);
+  rtRenderCapChips(roomCapNum);
+  if (roomCapEl) roomCapEl.textContent = creditsLabel(roomCapNum);
   var plan = rtRoomPlan(r);
   plan.rounds = rounds;
   plan.turns = rounds * rtSpeakerCount(r);
@@ -6421,6 +6451,7 @@ function openRoundtable(prefill) {
   if (!rtCanTalk(r)) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 내 AI는 방 설정에서 ‘AI로 표시’하면 함께 참여해요"); return; }
   $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
   rtSetRounds(r.rounds || RT_DEFAULT_ROUNDS);
+  rtRenderCapChips(Math.max(1, Math.round(Number(r.budget)) || 300));
   rtSetCap(r.discussCap || 0);
   rtRefreshSummary();
   openModal("rtModal");
