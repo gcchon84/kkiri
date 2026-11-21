@@ -757,7 +757,7 @@
   .spec summary::before{content:"▸";color:#A79FD0;font-size:9px;line-height:1}
   .spec[open]>summary::before{content:"▾"}
   .spec summary .ico{width:15px;height:15px;color:#7352FF;vertical-align:0}
-  /* 내 AI 탭 — 내 제미나이·GPT 부르기: 위 카드와 균형 맞춘 큰 헤더 */
+  /* 내 AI 탭 — 내 제미나이·GPT 초대: 위 카드와 균형 맞춘 큰 헤더 */
   #byokWrap > summary{font-size:15px;font-weight:900;color:#3F2A8E;padding:13px 12px;gap:8px;letter-spacing:-.02em}
   #byokWrap > summary .ico{width:19px;height:19px;color:#6C43E8}
   #byokWrap > summary::before{font-size:11px}
@@ -1519,7 +1519,7 @@
   .inv-seg button[aria-pressed="true"]{background:#fff;color:#3A2E6B;box-shadow:0 2px 6px rgba(90,60,180,.14)}
   .inv-seg button b{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:900;letter-spacing:-.02em}
   .mine-quick{margin-top:12px;padding:10px 11px;border:1px solid #EDE6FF;background:#FAF8FF;border-radius:12px}
-  .mine-quick-lead{margin:0 0 8px;font-size:10.5px;font-weight:800;color:#6F6889;letter-spacing:-.01em;line-height:1.5}
+  .mine-quick .mine-quick-lead{margin:8px 0 0;font-size:12px;font-weight:600;color:var(--muted-2);letter-spacing:-.01em;line-height:1.55;text-align:center}
   .mine-quick-row{display:flex;gap:7px;flex-wrap:wrap}
   .mine-quick-row .btn{flex:1 1 130px;min-height:40px;font-size:12px}
   #expertHint .hint-credit{color:#5B38E0;font-weight:900}
@@ -2480,15 +2480,15 @@ window.__KKIRI_BOOT = (function () {
         </div>
 
         <div class="mine-quick" id="mineQuickWrap" hidden>
-          <p class="mine-quick-lead">저장된 키로 바로 부를 수 있어요 · 역할 구분 없이 내 제미나이·GPT 그대로</p>
           <div class="mine-quick-row">
-            <button type="button" class="btn green" id="mineQuickGemini" hidden>+ 내 제미나이 부르기</button>
-            <button type="button" class="btn" id="mineQuickOpenai" hidden>+ 내 GPT 부르기</button>
+            <button type="button" class="btn green" id="mineQuickGemini" hidden>+ 내 제미나이 초대</button>
+            <button type="button" class="btn" id="mineQuickOpenai" hidden>+ 내 GPT 초대</button>
           </div>
+          <p class="mine-quick-lead">저장된 정보로 바로 불러보세요 (역할 지정 없음)</p>
         </div>
 
         <details class="spec" id="byokWrap">
-          <summary><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg> 내 제미나이·GPT 부르기</summary>
+          <summary><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg> 내 제미나이·GPT 초대</summary>
           <div class="spec-body">
             <div class="field" style="margin-top:10px"><span>어떤 AI 키인가요</span>
               <div class="pick-row" id="byokSeg" role="group" aria-label="내 키 제공자">
@@ -7269,13 +7269,13 @@ function renderMineKeys() {
     qg.hidden = !api.geminiKey;
     qg.disabled = !!dupG;
     qg.className = dupG ? "btn" : "btn green";
-    qg.textContent = dupG ? "✓ 이 방에 참여 중" : "+ 내 제미나이 부르기";
+    qg.textContent = dupG ? "✓ 이 방에 참여 중" : "+ 내 제미나이 초대";
   }
   if (qo) {
     qo.hidden = !api.openaiKey;
     qo.disabled = !!dupO;
     qo.className = "btn";
-    qo.textContent = dupO ? "✓ 이 방에 참여 중" : "+ 내 GPT 부르기";
+    qo.textContent = dupO ? "✓ 이 방에 참여 중" : "+ 내 GPT 초대";
   }
   Array.prototype.forEach.call(document.querySelectorAll("#byokSeg [data-byok]"), function (b) {
     b.setAttribute("aria-pressed", b.getAttribute("data-byok") === mineProvider ? "true" : "false");
