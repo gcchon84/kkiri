@@ -1408,6 +1408,28 @@
     .rt-btn{font-size:13.5px;padding:10px 14px;min-height:38px}
     .ctrl-actions .icon-btn{width:38px;height:38px;flex:0 0 38px}
   }
+  /* ============ 2026-11-21 · 무료 기반 개편 (초대 허브 3탭 · 로그인 개선) ============ */
+  /* 상단 크레딧 버튼은 조용히 — 끼리 AI를 부른 방에서만 눈에 띄게 */
+  .room-head .credit-chip.muted,.credit-chip.muted{background:transparent;border-color:transparent;color:#8B84A3;padding:4px 6px;min-height:0;gap:3px;opacity:.66}
+  .room-head .credit-chip.muted:hover,.credit-chip.muted:hover{opacity:1;background:#F5F2FF;border-color:#E4DBFF;color:#5B38E0}
+  .room-head .credit-chip.muted b,.credit-chip.muted b{font-size:10.5px;font-weight:800}
+  .inv-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:#F3EFFF;border-radius:13px;padding:4px;margin-bottom:4px}
+  .inv-seg button{border:0;background:transparent;border-radius:10px;padding:9px 2px;cursor:pointer;color:#6F6889;font-weight:900;font-size:11.5px;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:4px;line-height:1.2;font-family:inherit}
+  .inv-seg button[aria-pressed="true"]{background:#fff;color:#3A2E6B;box-shadow:0 2px 6px rgba(90,60,180,.14)}
+  .inv-seg button b{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:900;letter-spacing:-.02em}
+  .inv-credit-line{display:flex;align-items:center;gap:5px;flex-wrap:wrap;width:100%;text-align:left;margin-top:11px;padding:8px 10px;border:1px solid #EDE6FF;background:#FAF8FF;border-radius:11px;font-size:10.5px;font-weight:700;color:#6F6889;line-height:1.5;letter-spacing:-.01em;cursor:pointer;font-family:inherit}
+  .inv-credit-line:hover{border-color:#DCCFFF;background:#F6F1FF}
+  .inv-credit-line b{color:#3A2E6B;font-weight:900}
+  .inv-credit-line .sub{color:#8B84A3;font-size:10px;font-weight:800}
+  .inv-person-lead{font-size:11px;color:#6F6889;font-weight:700;line-height:1.6;margin:0 0 10px;letter-spacing:-.01em}
+  .auth-forgot{display:inline-block;margin-top:9px;border:0;background:none;padding:2px 0;color:#6F6889;font-size:10.5px;font-weight:800;text-decoration:underline;text-underline-offset:2px;cursor:pointer;letter-spacing:-.01em;font-family:inherit}
+  .auth-forgot:hover{color:#5B38E0}
+  .auth-resend{margin-top:7px;font-size:10.5px;font-weight:800;color:#5B38E0}
+  .auth-mini{border:0;background:none;color:#5B38E0;font-size:10.5px;font-weight:900;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:2px 0;font-family:inherit}
+  .empty .e-cta.single{justify-content:center}
+  .empty .e-cta.single .btn{min-width:168px}
+  .meter[hidden]{display:none !important}
+
   /* ============ ㄲㄹ 톤 듀오톤 픽토그램 ============ */
   .ico{width:1em;height:1em;flex:0 0 auto;display:inline-block;vertical-align:-.14em;
     fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
@@ -1922,7 +1944,7 @@
           <h2 class="gate-copy">AI와 함께, 뭐든지 끼리 하자</h2>
           <p class="gate-sub">AI와 사람이 한 방에서 만나 이야기하는 공간</p>
           <button type="button" class="gate-cta" id="gateStartBtn">끼리 시작하기</button>
-          <p class="gate-note">로그인하면 매일 300크레딧 무료 · 게스트는 1회 100크레딧 체험</p>
+          <p class="gate-note">내 AI·사람 대화는 무제한 무료 · 끼리 AI도 매일 무료 체험</p>
         </div>
         <section class="home-sec" id="homeRoomsSec" aria-label="내 대화방">
           <div class="home-sec-head">
@@ -1955,7 +1977,7 @@
         <button class="icon-btn" id="roomHomeBtn" type="button" title="끼리 홈" aria-label="끼리 홈"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-home"></use></svg></button>
         <button class="credit-chip off" id="creditBadge" type="button" title="내 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> <b>—</b></button>
         <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참가자">접속 0명</span>
-        <button class="ghost-btn" id="shareBtn" type="button" title="이 방 초대 링크 복사" aria-label="이 방 초대"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg><span class="lbl">이 방 초대</span></button>
+        <button class="ghost-btn" id="shareBtn" type="button" title="사람·AI 초대하기" aria-label="초대하기"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg><span class="lbl">초대하기</span></button>
         <button class="ghost-btn" id="cardBtn" type="button" title="합의안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="합의안 카드"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-card"></use></svg><span class="lbl">합의안</span></button>
         <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-dots"></use></svg></button>
       </div>
@@ -1981,7 +2003,7 @@
           <div class="m-top"><span id="turnLabel">턴</span><span class="m-val" id="turnVal">0 / 10턴</span></div>
           <div class="bar"><i id="turnBar"></i></div>
         </div>
-        <div class="meter budget" id="budgetMeter" title="이 방에서 쓸 수 있는 크레딧 한도 (내 보유 크레딧과 별개)">
+        <div class="meter budget" id="budgetMeter" hidden title="이 방에서 쓸 수 있는 크레딧 한도 (내 보유 크레딧과 별개)">
           <div class="m-top"><span>방 한도 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">0 / 300</span></div>
           <div class="bar"><i id="costBar"></i></div>
         </div>
@@ -2021,18 +2043,20 @@
 <!-- ================= AI 추가 (🤖 끼리 AI / 🙋 나의 AI) ================= -->
 <div class="modal" id="inviteModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
-    <div class="sheet-head"><h2 id="inviteTitle">AI 추가</h2><span class="sub" id="inviteBalance"></span><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><h2 id="inviteTitle">초대하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <div class="seg wide ai-seg" id="aiSeg" role="tablist" aria-label="AI 종류">
-        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> 나의 AI</b></button>
-        <button type="button" role="tab" data-tab="kkiri" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> 끼리 AI</b></button>
+      <div class="seg wide ai-seg inv-seg" id="aiSeg" role="tablist" aria-label="초대 종류">
+        <button type="button" role="tab" data-tab="kkiri" aria-pressed="true" aria-selected="true"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> 끼리 AI</b></button>
+        <button type="button" role="tab" data-tab="person" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-hand"></use></svg> 사람 초대</b></button>
+        <button type="button" role="tab" data-tab="mine" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> 내 AI</b></button>
       </div>
 
       <!-- ---------- 탭 1 · 끼리 AI ---------- -->
       <section id="aiTabKkiri" role="tabpanel" aria-label="끼리 AI">
-        <p class="hint" id="expertHint" style="margin-top:0">필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요. (답변 1회당 10크레딧)</p>
+        <p class="hint" id="expertHint" style="margin-top:0">필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요.</p>
         <div class="expert-grid" id="expertGrid"></div>
         <p class="modal-note" id="expertNote"></p>
+        <button type="button" class="inv-credit-line" id="invCreditBtn" title="내 크레딧과 사용 내역 보기"><b>사람·내 AI 대화는 무료</b><span>끼리 AI만 답변 1회당 10크레딧</span><span class="sub" id="inviteBalance"></span></button>
 
         <div class="field" id="invQuickWrap" hidden style="margin-top:14px"><span>이미 만든 AI 바로 추가</span>
           <div class="pick-row" id="invQuick"></div>
@@ -2056,8 +2080,21 @@
         </details>
       </section>
 
-      <!-- ---------- 탭 2 · 나의 AI ---------- -->
-      <section id="aiTabMine" role="tabpanel" aria-label="나의 AI" hidden>
+      <!-- ---------- 탭 2 · 사람 초대 ---------- -->
+      <section id="aiTabPerson" role="tabpanel" aria-label="사람 초대" hidden>
+        <p class="inv-person-lead">초대 링크를 보내면 받은 사람이 바로 이 방에 들어와 함께 대화할 수 있어요. 사람끼리 대화는 무료예요.</p>
+        <label class="field" style="margin-top:0"><span id="shareLinkLabel">초대 링크</span>
+          <div class="share-box">
+            <input id="shareLink" type="text" readonly aria-label="초대 링크" spellcheck="false">
+          </div>
+        </label>
+        <div class="btn-row" style="margin-top:12px"><button class="btn dark" id="shareCopy"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 초대 링크 복사</button></div>
+        <div class="btn-row" style="margin-top:8px"><button class="btn" id="shareKakao"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg> 카카오톡으로 공유하기</button></div>
+        <p class="hint" id="shareHint" style="margin-top:10px">링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다.</p>
+      </section>
+
+      <!-- ---------- 탭 3 · 내 AI ---------- -->
+      <section id="aiTabMine" role="tabpanel" aria-label="내 AI" hidden>
         <p class="hint" id="mineHint" hidden></p>
 
         <div class="focus-card" id="focusCard">
@@ -2157,7 +2194,7 @@ Content-Type: application/json
           <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
         </div>
       </div>
-      <label class="field" id="rfBudgetField"><span>방 한도 (크레딧)</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="300" inputmode="numeric"><em class="auto-hint">이 방에서 쓸 수 있는 양 · 내 보유 크레딧과 별개</em></label>
+      <label class="field" id="rfBudgetField" hidden><span>방 한도 (크레딧)</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="300" inputmode="numeric"><em class="auto-hint">이 방에서 쓸 수 있는 양 · 내 보유 크레딧과 별개</em></label>
       <div class="field" id="rfRolesField"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
       <p class="modal-note" id="rfFootNote" hidden></p>
       <div class="btn-row" id="rfActions">
@@ -2258,33 +2295,16 @@ Content-Type: application/json
   </div>
 </div>
 
-<!-- ================= 이 방에 초대하기 (AI 부르기 / 사람 부르기 선택) ================= -->
-<div class="modal" id="inviteChoiceModal" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="inviteChoiceTitle" style="max-width:430px">
-    <div class="sheet-head"><h2 id="inviteChoiceTitle">이 방에 초대하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+<!-- ================= v3.6 · 비밀번호 재설정 (메일 링크로 돌아왔을 때) ================= -->
+<div class="modal" id="recoveryModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="recoveryTitle" style="max-width:420px">
+    <div class="sheet-head"><h2 id="recoveryTitle">새 비밀번호 정하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <p class="hint" style="margin-top:0">누구를 부를까요? AI는 역할을 골라 바로 들이고, 사람은 초대 링크를 보내요.</p>
-      <div class="invite-choice">
-        <button type="button" class="btn green" id="choiceAiBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> AI 부르기</button>
-        <button type="button" class="btn" id="choicePersonBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-hand"></use></svg> 사람 부르기</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= 이 방 초대 (이 방 초대 링크만) ================= -->
-<div class="modal" id="shareModal" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle" style="max-width:470px">
-    <div class="sheet-head"><h2 id="shareTitle">이 방 초대</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
-    <div class="sheet-body">
-      <label class="field"><span id="shareLinkLabel">초대 링크</span>
-        <div class="share-box">
-          <input id="shareLink" type="text" readonly aria-label="초대 링크" spellcheck="false">
-        </div>
-      </label>
-      <p class="hint" id="shareHint">링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다.</p>
-      <div class="btn-row" style="margin-top:14px"><button class="btn dark" id="shareCopy"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 초대 링크 복사</button></div>
-      <div class="btn-row" style="margin-top:8px"><button class="btn" id="shareKakao"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg> 카카오톡으로 공유하기</button></div>
+      <p class="hint" style="margin-top:0">메일로 받은 링크로 들어왔어요. 앞으로 쓸 새 비밀번호를 정해 주세요.</p>
+      <label class="field"><span>새 비밀번호</span><input id="rcPw" type="password" autocomplete="new-password" placeholder="8자 이상"></label>
+      <label class="field"><span>새 비밀번호 확인</span><input id="rcPw2" type="password" autocomplete="new-password" placeholder="한 번 더 입력"></label>
+      <p class="auth-msg" id="rcMsg" role="status" aria-live="polite" hidden></p>
+      <div class="btn-row"><button class="btn green" id="rcSave" type="button">비밀번호 변경</button><button class="btn dark" id="rcLater" type="button">나중에</button></div>
     </div>
   </div>
 </div>
@@ -2297,7 +2317,7 @@ Content-Type: application/json
       <div class="auth-hero">
         <div class="ah-logo kk-mark" aria-hidden="true"></div>
         <h2>끼리에 오신 걸 환영해요</h2>
-        <p>로그인하면 <b>매일 300크레딧</b>이 무료로 채워져요.</p>
+        <p><b>내 AI와 사람 대화는 무제한 무료</b><br>끼리 AI도 매일 무료로 체험할 수 있어요.</p>
         <p class="auth-soon">카카오·구글 로그인도 곧 연결돼요</p>
       </div>
       <div class="auth-tabs" role="tablist" aria-label="로그인 또는 회원가입">
@@ -2306,6 +2326,7 @@ Content-Type: application/json
       </div>
       <label class="field"><span>이메일</span><input id="authEmail" type="email" placeholder="me@example.com" autocomplete="email" spellcheck="false" autocapitalize="off"></label>
       <label class="field"><span>비밀번호</span><input id="authPw" type="password" autocomplete="current-password" placeholder="8자 이상"></label>
+      <button type="button" class="auth-forgot" id="forgotBtn">비밀번호를 잊으셨나요?</button>
       <div class="auth-consent" id="authConsent" hidden>
         <button type="button" class="ck-all" id="ckAll">전체 동의하기</button>
         <label class="ck"><input type="checkbox" id="ckAge"><span>[필수] 만 14세 이상입니다</span></label>
@@ -2314,10 +2335,11 @@ Content-Type: application/json
       </div>
       <div class="btn-row"><button class="btn green" id="pwLogin" type="button">로그인</button><button class="btn green" id="pwSignup" type="button" hidden>동의하고 가입하기</button></div>
       <p class="auth-msg" id="authMsg" role="status" aria-live="polite" hidden></p>
+      <p class="auth-resend" id="authResendRow" hidden><button type="button" class="auth-mini" id="resendBtn">인증 메일 다시 보내기</button></p>
       <div class="auth-or">또는</div>
       <button class="auth-guest ghost" id="guestBtn" type="button">
         <span class="ag-ico" aria-hidden="true">⚡</span>
-        <span><b>게스트로 먼저 체험하기</b><small>1회 100크레딧 무료 체험 · 이메일 없이 바로</small></span>
+        <span><b id="guestBtnTitle">게스트로 먼저 체험하기</b><small id="guestBtnSub">1회 100크레딧 무료 체험 · 이메일 없이 바로</small></span>
       </button>
       <p class="modal-note">초대 링크로 들어왔다면 로그인 후 그 방의 멤버가 되어 대화가 이어져요.</p>
     </div>
@@ -3103,7 +3125,7 @@ function isRoomOwner(rm) {
   return !!(rm.ownerId && V3.user && rm.ownerId === V3.user.id);
 }
 function roomRowHtml(rm) {
-  var meta = categoryLabelOf(rm) + " · " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧";
+  var meta = categoryLabelOf(rm) + " · " + rm.members.length + "명";
   var picked = !!sideEdit.sel[rm.id];
   return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + (sideEdit.on ? " editing" + (picked ? " sel" : "") : "") + '" data-room="' + esc(rm.id) + '">' +
     (sideEdit.on ? '<span class="r-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
@@ -3404,7 +3426,7 @@ function renderHome() {
       (homeEdit.on ? ' aria-pressed="' + picked + '"' : "") + '>' +
       (homeEdit.on ? '<span class="hr-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
       '<span class="hr-emoji" aria-hidden="true">' + roomIcoHtml(rm.emoji || "💬") + "</span>" +
-      '<span class="hr-body"><b>' + esc(rm.name) + "</b><small>" + esc(categoryLabelOf(rm) + " · AI " + rm.members.length + "명 · " + creditsLabel(rm.session.credits) + " 크레딧") + "</small></span>" +
+      '<span class="hr-body"><b>' + esc(rm.name) + "</b><small>" + esc(categoryLabelOf(rm) + " · AI " + rm.members.length + "명") + "</small></span>" +
       (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
       "</button>";
   });
@@ -3514,7 +3536,7 @@ function applyView() {
   if (mainEl) mainEl.classList.toggle("norooms-mode", noRoom);
   var pane = $("noRoomsPane");
   if (pane) pane.hidden = !noRoom;
-  document.title = home ? "끼리 · 내 홈" : (r ? "끼리 · " + r.name : "끼리");
+  document.title = home ? (startDone() ? "끼리 · 내 홈" : "끼리") : (r ? "끼리 · " + r.name : "끼리");
   renderPeople();
   if (!home) maybeAskNick();
 }
@@ -3530,6 +3552,13 @@ function goHome() {
 function updateMeters() {
   var r = activeRoom();
   if (!r) return;
+  /* 방 한도 바는 실제로 끼리 AI가 들어온 방에서만 — 크레딧을 쓰지 않는 방은 조용히 둔다 */
+  var kkiriAiN = (r.members || []).filter(function (id) {
+    var a = state.agents[id];
+    return !!(a && a.type === "expert");
+  }).length;
+  var bmEl = $("budgetMeter");
+  if (bmEl) bmEl.hidden = kkiriAiN < 1;
   var s = r.session || freshSession();
   var discussing = run.active && run.mode === "roundtable";
   var aiN = Math.max(1, (r.members || []).filter(function (id) { return !!state.agents[id]; }).length);
@@ -3733,9 +3762,9 @@ function emptyHtml(r) {
   var ids = r.members.filter(function (id) { return !!state.agents[id]; });
   if (!ids.length) {
     var people = onlinePeople();
-    var cta = '<div class="e-cta">' +
-        '<button type="button" class="btn green" data-empty-call="1">' + icoHtml("bot", "sm") + ' AI 부르기</button>' +
-        '<button type="button" class="btn" data-empty-share="1">' + icoHtml("hand", "sm") + ' 사람 부르기</button>' +
+    /* 초대는 하나로 — 누르면 [끼리 AI / 사람 초대 / 내 AI] 세 탭에서 고른다 */
+    var cta = '<div class="e-cta single">' +
+        '<button type="button" class="btn green" data-empty-invite="1">' + icoHtml("hand", "sm") + ' 초대하기</button>' +
       "</div>";
     /* 내장 AI가 없을 때 — 링크로 들어와 있는 사람이 있으면 그 사람과 말을 거는 게 먼저다.
        onlinePeople() 은 나를 빼고 세므로, 함께 있는 사람 수는 나를 더해 센다. */
@@ -3744,13 +3773,13 @@ function emptyHtml(r) {
       return '<div class="empty" id="emptyRoom"><div class="e-emoji">' + icoHtml("chat") + '</div>' +
         "<h3>아직 대화가 없어요 · 지금 " + here + "명이 함께 있어요!</h3>" +
         "<p><b>" + esc(people.join(" · ")) + "</b> 님이 함께 있어요.<br>" +
-        "먼저 인사를 건네거나 <b>@이름</b>을 붙여 보내면 그분께 전해져요. AI도 필요하면 불러 보세요.</p>" +
+        "먼저 인사를 건네거나 <b>@이름</b>을 붙여 보내면 그분께 전해져요. 필요할 때 사람이나 AI를 초대할 수 있어요.</p>" +
         cta + "</div>";
     }
-    /* 혼자 있는 방 — 로켓 대신 ‘나 혼자 + 빈 자리’ 픽토그램으로 기다리는 느낌을 준다. */
+    /* 혼자 있는 방 — 크레딧 이야기 없이, 메모장처럼 편하게 쓰는 공간으로 안내한다. */
     return '<div class="empty" id="emptyRoom"><div class="e-emoji e-alone">' + icoHtml("alone") + '</div>' +
-      "<h3>아직 이 방엔 나 혼자예요</h3>" +
-      "<p>AI를 부르거나, 사람을 불러 함께 시작해 보세요!<br>나의 AI는 크레딧을 쓰지 않고(각 AI 자체 사용량 사용), 끼리 AI는 답할 때마다 크레딧을 써요. 사람 대화는 무료예요.</p>" +
+      "<h3>편하게 메모나 대화를 시작해 보세요.</h3>" +
+      "<p>필요할 때 사람이나 AI를 초대할 수 있어요. 사람과의 대화는 언제나 무료예요.</p>" +
       cta + "</div>";
   }
   var names = memberNames(r).join(" · ");
@@ -5240,6 +5269,8 @@ var openStack = [];
 function openModal(id) {
   var m = $(id);
   if (!m) return;
+  /* 시작 모달은 열 때마다 이 기기의 게스트 체험 이력에 맞춰 문구를 다시 그린다 */
+  if (id === "authModal") { try { renderGuestButton(); } catch (e) {} }
   if (openStack.indexOf(id) < 0) openStack.push(id);
   /* 나중에 연 창이 위에 오게 — 새 방 창 위에 AI 추가 창을 겹쳐 쓸 수 있다 */
   m.style.zIndex = String(60 + openStack.length);
@@ -5673,8 +5704,10 @@ function openRoomForm(roomId) {
      방을 만들 때부터 이 방의 상한을 정할 수 있어야 한다. */
   var turnField = $("rfTurnField");
   if (turnField) turnField.hidden = true;
+  /* 크레딧 상한 칸은 기본으로 두지 않는다 — 무료 서비스 첫인상을 위해 숨기고 내부 기본값(300)만 유지.
+     필요하면 방 화면의 '방 한도' 바(끼리 AI가 들어온 방에서만 보임)를 눌러 바꾼다. */
   var budgetField = $("rfBudgetField");
-  if (budgetField) budgetField.hidden = false;
+  if (budgetField) budgetField.hidden = true;
   ["rfRoleModeField", "rfRolesField"].forEach(function (id) {
     var el = $(id); if (el) el.hidden = !r;
   });
@@ -5847,18 +5880,47 @@ function renderSwatches() {
   });
   $("invColors").innerHTML = h;
 }
+/* 초대 허브 3탭 — [끼리 AI / 사람 초대 / 내 AI]. 처음 여는 사람이 바로 써볼 수 있게 끼리 AI가 첫 탭이다. */
 function aiTab(tab) {
-  /* 기본은 🙋 나의 AI — 끼리 AI는 명시적으로 고를 때만 */
-  tab = tab === "kkiri" ? "kkiri" : "mine";
+  tab = (tab === "person" || tab === "mine") ? tab : "kkiri";
   Array.prototype.forEach.call($("aiSeg").querySelectorAll("[data-tab]"), function (b) {
     var on = b.getAttribute("data-tab") === tab;
     b.setAttribute("aria-pressed", on ? "true" : "false");
     b.setAttribute("aria-selected", on ? "true" : "false");
   });
   $("aiTabKkiri").hidden = tab !== "kkiri";
+  if ($("aiTabPerson")) $("aiTabPerson").hidden = tab !== "person";
   $("aiTabMine").hidden = tab !== "mine";
   if (tab === "kkiri") { renderExpertPicker(); renderInviteAgents(); }
+  else if (tab === "person") renderPersonInvite();
   else renderMine();
+}
+/* 사람 초대 탭 — 초대 링크·카톡 공유는 이 방 초대와 같은 링크를 쓴다. */
+function renderPersonInvite() {
+  var r = ensureRoomCode(activeRoom());
+  var el = $("shareLink");
+  if (el) el.value = r ? roomInviteLink(r) : "";
+  var lbl = $("shareLinkLabel");
+  if (lbl) lbl.textContent = "초대 링크";
+  var hint = $("shareHint");
+  if (hint) hint.textContent = !r
+    ? "방을 먼저 만들어 주세요."
+    : (r.remote
+      ? "링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다."
+      : "지금은 로컬(데모) 모드라 링크가 이 브라우저에서만 열려요. 실시간 연결되면 같은 링크로 여러 사람이 함께 쓸 수 있습니다.");
+  renderInviteBalance();
+}
+function renderInviteBalance() {
+  var bal = $("inviteBalance");
+  if (bal) bal.textContent = V3.signedIn ? "· 내 크레딧 " + creditsNow() : "· 로그인하면 매일 300";
+}
+/* 초대하기 하나로 여는 창 — 기본은 끼리 AI 탭, 사람은 '사람 초대', 내 AI는 '내 AI'로 바로 연다. */
+function openInviteHub(tab) {
+  if (needStartFirst()) return;
+  if (!activeRoom()) { toast("방을 먼저 만들어 주세요"); return; }
+  invTarget = "room";
+  aiTab(tab || "kkiri");
+  openModal("inviteModal");
 }
 /* AI 한 명을 방에 넣거나, 방 만들기 목록(draft)에 넣는다. 넣은 곳을 돌려준다.
    toPool=true 면 다른 방에서도 부를 수 있게 내 AI로 함께 저장한다(직접 만들기·웹훅). */
@@ -5893,8 +5955,7 @@ function renderMine() {
     hint.innerHTML = msg;
     hint.hidden = !msg;
   }
-  var bal = $("inviteBalance");
-  if (bal) bal.textContent = V3.signedIn ? "내 크레딧 " + creditsNow() : "";
+  renderInviteBalance();
   renderFocus();
   renderMineKeys();
 }
@@ -7084,31 +7145,21 @@ function openNickModal() {
    오프라인·mock 테스트 모드(?mock=1)는 기존 로컬 동작 그대로. */
 function needStartFirst() {
   if (!(V3.mode === "cloud" && !V3.signedIn)) return false;
-  setAuthMsg("info", "서버에 방을 만들고 초대하려면 먼저 시작해 주세요 · 로그인하면 매일 300크레딧이 무료로 채워져요.");
-  toast("서버에 방을 만들고 초대하려면 먼저 시작해 주세요(매일 300크레딧 무료)");
+  setAuthMsg("info", "서버에 방을 만들고 초대하려면 먼저 시작해 주세요 · 사람·내 AI 대화는 무료예요.");
+  toast("방을 만들고 초대하려면 먼저 시작해 주세요 · 사람·내 AI 대화는 무료예요");
   openModal("authModal");
   return true;
 }
-/* 상단 🔗 이 방 초대 — 이 방 초대 링크만 */
+/* 초대 링크가 필요한 곳(AI에게 넘기는 안내 등) — 사람 초대 탭을 바로 연다. */
 function openShare() {
   if (needStartFirst()) return;
   var r = ensureRoomCode(activeRoom());
   if (!r) { toast("방을 먼저 만들어 주세요"); return; }
-  $("shareTitle").textContent = "‘" + r.name + "’ 이 방 초대";
-  var lbl = $("shareLinkLabel");
-  if (lbl) lbl.textContent = "초대 링크";
-  $("shareLink").value = roomInviteLink(r);
-  $("shareHint").textContent = r.remote
-    ? "링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다."
-    : "지금은 로컬(데모) 모드라 링크가 이 브라우저에서만 열려요. 실시간 연결되면 같은 링크로 여러 사람이 함께 쓸 수 있습니다.";
-  openModal("shareModal");
+  aiTab("person");
+  openModal("inviteModal");
 }
-/* 상단 🔗 이 방 초대 — 빈 방 카드와 같은 두 갈래(AI 부르기 / 사람 부르기)를 먼저 고른다. */
-function openInviteChoice() {
-  if (needStartFirst()) return;
-  if (!activeRoom()) { toast("방을 먼저 만들어 주세요"); return; }
-  openModal("inviteChoiceModal");
-}
+/* 예전 이름 유지 — 초대는 이제 '초대하기' 창 하나로 연다. */
+function openInviteChoice() { openInviteHub("kkiri"); }
 
 
 /* =========================================================
@@ -7149,7 +7200,8 @@ var V3 = {
   profile: { nickname: "", plan: "free", credits: 0, daily: 0, bonus: 0, paid: 0, refCode: "", referred: false },
   models: {},             /* config id -> { display_name, cost_per_turn_credits } */
   roomId: null,
-  joined: {}
+  joined: {},
+  guestTrialUsed: false    /* 이 기기에서 게스트 100크레딧 체험을 이미 마쳤는가 */
 };
 
 var DEFAULT_MODELS = {
@@ -7265,7 +7317,11 @@ function mockRead(k, dflt) {
   try { var raw = localStorage.getItem(k); if (raw == null) return dflt; var v = JSON.parse(raw); return v == null ? dflt : v; } catch (e) { return dflt; }
 }
 function mockWrite(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-function creditsNow() { return Math.max(0, Math.round(Number(V3.profile.credits) || 0)); }
+function creditsNow() {
+  /* 이미 게스트 체험을 마친 기기 — 서버에 남은 100크레딧이 있어도 화면은 0으로 두고 끼리 AI는 로그인 후에 */
+  if (V3.guestTrialUsed) return 0;
+  return Math.max(0, Math.round(Number(V3.profile.credits) || 0));
+}
 function configCost(id) {
   var m = V3.models[id];
   if (m && typeof m.cost_per_turn_credits === "number") return m.cost_per_turn_credits;
@@ -7289,14 +7345,16 @@ function setCredits(n) {
 function renderCredit() {
   var el = $("creditBadge");
   if (!el) return;
-  var cls = "credit-chip", html = "", title = "";
-  if (V3.mode === "local") { cls += " off"; html = icoHtml("gem", "sm") + " <b>로컬</b>"; title = "로컬 데모 · 크레딧을 쓰지 않아요"; }
-  else if (!V3.signedIn) { cls += " off"; html = icoHtml("gem", "sm") + " <b>크레딧</b>"; title = "로그인하면 매일 300크레딧이 무료로 채워져요"; }
+  /* 크레딧은 서비스의 본질이 아니라 끼리 AI를 부를 때만 쓰는 보조 수단 — 평소엔 조용히 둔다 */
+  var cls = "credit-chip muted", html = "", title = "";
+  if (V3.mode === "local") { cls = "credit-chip off muted"; html = icoHtml("gem", "sm") + " <b>로컬</b>"; title = "로컬 데모 · 크레딧을 쓰지 않아요"; }
+  else if (!V3.signedIn) { cls = "credit-chip off muted"; html = icoHtml("gem", "sm") + " <b>크레딧</b>"; title = "로그인하면 매일 300크레딧이 무료로 채워져요"; }
   else {
     var c = creditsNow();
-    if (c < 30) cls += " low";
-    html = icoHtml("gem", "sm") + " <b>" + c.toLocaleString("ko-KR") + "</b>";
-    title = "내 크레딧 " + c + " · 눌러서 사용 내역";
+    if (c < 30) cls = "credit-chip low";
+    html = icoHtml("gem", "sm") + " <b>" + (V3.guestTrialUsed ? "0" : c.toLocaleString("ko-KR")) + "</b>";
+    title = V3.guestTrialUsed ? "게스트 체험 크레딧을 모두 썼어요 · 로그인하면 매일 300크레딧"
+                              : "내 크레딧 " + c + " · 눌러서 사용 내역";
   }
   el.className = cls;
   el.innerHTML = html;
@@ -7316,7 +7374,7 @@ function renderAccount() {
   if (!V3.signedIn) {
     /* 시작 전 — '로그인' 버튼을 따로 두지 않고, 카드 하나를 누르면 시작 모달이 열린다 */
     name.textContent = "끼리 시작하기";
-    sub.textContent = "로그인하면 매일 300크레딧 무료";
+    sub.textContent = "사람·내 AI 대화 무료 · 끼리 AI 매일 체험";
     btn.hidden = true;
     if (al) { al.classList.add("start"); al.setAttribute("tabindex", "0"); al.setAttribute("role", "button"); }
     renderStartUI();
@@ -7377,8 +7435,8 @@ function renderExpertPicker() {
   if (hint) {
     var catLabel = draft ? catByKey(roomForm.category).label : categoryLabelOf(r);
     hint.innerHTML = (draft
-      ? catLabel + " 방에 맞는 끼리 AI예요. 누르면 <b>방 만들기 목록</b>에 들어가요. (답변 1회당 10크레딧)"
-      : catLabel + " 방에 맞는 끼리 AI예요. 누르면 바로 이 방에 들어와요. (답변 1회당 10크레딧)");
+      ? catLabel + " 방에 맞는 끼리 AI예요. 누르면 <b>방 만들기 목록</b>에 들어가요."
+      : catLabel + " 방에 맞는 끼리 AI예요. 누르면 바로 이 방에 들어와요.");
   }
   var inRoom = {};
   (r ? r.members : []).forEach(function (id) {
@@ -7395,14 +7453,13 @@ function renderExpertPicker() {
       '<span class="e-foot"><span class="e-add">' + (added ? (draft ? "✓ 목록에 있음 · 눌러서 빼기" : "✓ 이 방에 있음 · 눌러서 빼기") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가")) + '</span></span></button>';
   });
   grid.innerHTML = h;
-  var bal = $("inviteBalance");
-  if (bal) bal.textContent = V3.signedIn ? "내 크레딧 " + creditsNow() : "";
+  renderInviteBalance();
   var note = $("expertNote");
   if (note) {
     note.innerHTML = V3.mode === "local"
       ? "지금은 <b>로컬 데모</b>라 끼리 AI가 규칙 기반으로 답합니다."
       : (V3.signedIn ? "내 API 키를 연결해 두었다면 그 키로 동작해요."
-                     : "게스트로 시작하면 매일 300크레딧으로 바로 추가해 볼 수 있어요.");
+                     : "게스트는 100크레딧으로 끼리 AI를 한 번 체험할 수 있어요. 로그인하면 매일 300크레딧이 무료로 채워져요.");
   }
   renderCustomTarget();
 }
@@ -7522,26 +7579,51 @@ async function authInit() {
     if (session && session.user) await afterSignIn(session.user);
     db.client.auth.onAuthStateChange(function (evt, sess) {
       if (evt === "SIGNED_IN" && sess && sess.user) { afterSignIn(sess.user); }
+      /* 메일의 재설정 링크로 돌아오면 새 비밀번호를 받는 창을 띄운다 */
+      else if (evt === "PASSWORD_RECOVERY") { openRecovery(); }
       else if (evt === "SIGNED_OUT") {
         V3.signedIn = false; V3.user = null; V3.ready = false;
+        V3.guestTrialUsed = false;
         V3.profile = { nickname: "", plan: "free", credits: 0 };
-        renderCredit(); renderAccount(); renderExperts();
+        /* 세션 만료·다른 탭 로그아웃도 같은 화면으로 — 열려 있던 방을 내리고 게이트로 되돌린다 */
+        resetSessionView();
+        renderExperts();
       }
     });
   } catch (e) {}
+  /* 재설정 링크가 이벤트보다 늦게 처리되는 경우까지 — 주소에 recovery 표시가 있으면 창을 띄운다 */
+  var hs = String(location.hash || "");
+  if (/type=recovery/.test(hs)) setTimeout(function () { openRecovery(); }, 500);
+  else if (/error_code=otp_expired|error=access_denied/.test(hs)) {
+    setTimeout(function () {
+      openModal("authModal");
+      setAuthMsg("err", "재설정 링크가 만료됐어요. 아래 ‘비밀번호를 잊으셨나요?’로 다시 받아 주세요.");
+      try { if (window.history && history.replaceState) history.replaceState(null, "", location.pathname + (location.search || "")); } catch (e) {}
+    }, 400);
+  }
   await loadModels();
   renderCredit(); renderAccount(); renderExperts();
+}
+/* 시작 모달의 게스트 버튼 — 이 기기에서 체험을 마쳤으면 '계속하기'로 바뀐다 */
+function renderGuestButton() {
+  var t = $("guestBtnTitle"), sub = $("guestBtnSub");
+  if (!t || !sub) return;
+  var used = guestClaimed();
+  t.textContent = used ? "게스트로 계속하기 (사람·내 AI 무료)" : "게스트로 먼저 체험하기";
+  sub.textContent = used ? "끼리 AI 체험은 끝났어요 · 사람·내 AI 대화는 무료" : "1회 100크레딧 무료 체험 · 이메일 없이 바로";
 }
 async function signInGuest() {
   setAuthMsg("", "");
   if (V3.mode === "local") { setAuthMsg("err", "서버 연결이 없어 로그인할 수 없어요. 로컬 데모로 계속 사용할 수 있습니다."); return; }
-  /* 이 기기에서 이미 게스트 체험을 썼다면 새 익명 계정을 만들지 않는다(무한 100크레딧 방지) */
-  if (V3.mode === "cloud" && !V3.signedIn && guestClaimed()) { showGuestUsed(); return; }
+  /* 이 기기에서 이미 게스트 체험을 썼어도 입장은 막지 않는다 — 사람·내 AI 무료 대화는 계속 쓸 수 있다.
+     다시 주지 않는 것은 끼리 AI 체험 크레딧(100)뿐: 화면 크레딧 0, 끼리 AI를 부르면 로그인 안내. */
+  var trialUsed = V3.mode === "cloud" && guestClaimed();
   if (V3.mode === "mock") {
     var u = { id: "mock_" + Date.now().toString(36), nickname: "게스트", isAnonymous: true };
     mockWrite(MOCK_USER_KEY, u);
     if (mockRead(MOCK_CREDIT_KEY, null) == null) mockWrite(MOCK_CREDIT_KEY, 300);
     V3.signedIn = true; V3.user = u; V3.ready = true;
+    V3.guestTrialUsed = false;
     V3.profile = { nickname: "게스트", plan: "free", credits: Number(mockRead(MOCK_CREDIT_KEY, 300)) || 0 };
     closeModal("authModal");
     renderCredit(); renderAccount(); renderExperts(); renderAll();
@@ -7551,11 +7633,13 @@ async function signInGuest() {
   try {
     var res = await db.client.auth.signInAnonymously();
     if (res.error) { setAuthMsg("err", authFriendly(res.error)); return; }
-    markGuestClaimed(res.data && res.data.user ? res.data.user.id : "");
-    setAuthMsg("ok", "게스트로 시작했어요 · 100크레딧 체험");
+    if (!trialUsed) markGuestClaimed(res.data && res.data.user ? res.data.user.id : "");
+    V3.guestTrialUsed = !!trialUsed;
+    setAuthMsg("ok", trialUsed ? "게스트로 계속했어요 · 사람·내 AI 대화는 무료" : "게스트로 시작했어요 · 100크레딧 체험");
     closeModal("authModal");
     await afterSignIn(res.data.user);
-    toast("게스트로 시작 · 크레딧 " + creditsNow());
+    if (trialUsed) { V3.profile.credits = 0; renderCredit(); renderAccount(); }
+    toast(trialUsed ? "게스트로 계속 · 사람·내 AI 대화는 무료예요" : "게스트로 시작 · 크레딧 " + creditsNow());
   } catch (e) { setAuthMsg("err", "네트워크 오류로 로그인하지 못했어요."); }
 }
 async function signInPassword() {
@@ -7564,9 +7648,21 @@ async function signInPassword() {
   if (!email || !pw) { setAuthMsg("err", "이메일과 비밀번호를 모두 입력해 주세요."); return; }
   if (V3.mode !== "cloud") { setAuthMsg("err", "지금은 서버 로그인을 쓸 수 없어요."); return; }
   setAuthMsg("info", "로그인 중…");
+  hideResend();
   try {
     var res = await db.client.auth.signInWithPassword({ email: email, password: pw });
-    if (res.error) { setAuthMsg("err", authFriendly(res.error)); return; }
+    if (res.error) {
+      var ec = String((res.error && (res.error.code || res.error.error_code)) || "");
+      var em = String((res.error && res.error.message) || "");
+      if (ec.indexOf("email_not_confirmed") > -1 || /email not confirmed/i.test(em)) {
+        /* 미인증 계정 — 인증 메일을 바로 다시 보낼 수 있게 */
+        setAuthMsg("err", "이메일 인증이 아직 완료되지 않았어요. 메일함의 인증 링크를 눌러 주세요.");
+        showResend(email);
+        return;
+      }
+      setAuthMsg("err", authFriendly(res.error));
+      return;
+    }
     setAuthMsg("ok", "로그인했어요");
     closeModal("authModal");
     await afterSignIn(res.data.user);
@@ -7590,7 +7686,91 @@ function setAuthMode(mode) {
   if (pw) pw.setAttribute("autocomplete", authMode === "signup" ? "new-password" : "current-password");
   var title = $("authTitle");
   if (title) title.textContent = authMode === "signup" ? "끼리 회원가입" : "끼리 시작하기";
+  var fb = $("forgotBtn"); if (fb) fb.hidden = authMode === "signup";
+  hideResend();
   setAuthMsg("", "");
+}
+/* 인증 메일 다시 보내기 — 주소를 기억해 두고 버튼 한 번으로 */
+function showResend(email) {
+  V3._resendEmail = String(email || "").trim();
+  var row = $("authResendRow");
+  if (row) row.hidden = false;
+}
+function hideResend() {
+  var row = $("authResendRow");
+  if (row) row.hidden = true;
+}
+async function resendConfirm() {
+  var email = V3._resendEmail || String(($("authEmail") || {}).value || "").trim();
+  if (!email) { setAuthMsg("err", "이메일을 먼저 적어 주세요."); return; }
+  if (!(V3.mode === "cloud" && db.client)) { setAuthMsg("err", "지금은 서버 로그인을 쓸 수 없어요."); return; }
+  var btn = $("resendBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "보내는 중…"; }
+  try {
+    var r = await db.client.auth.resend({ type: "signup", email: email, options: { emailRedirectTo: location.origin + location.pathname } });
+    if (r && r.error) setAuthMsg("err", authFriendly(r.error));
+    else setAuthMsg("ok", "인증 메일을 다시 보냈어요 · 메일함을 확인해 주세요");
+  } catch (e) { setAuthMsg("err", "네트워크 오류로 보내지 못했어요."); }
+  if (btn) { btn.disabled = false; btn.textContent = "인증 메일 다시 보내기"; }
+}
+/* 비밀번호 재설정 — 메일 링크를 보내고, 돌아오면 새 비밀번호를 받는다 */
+async function sendPasswordReset() {
+  var email = String(($("authEmail") || {}).value || "").trim();
+  if (!email) {
+    setAuthMsg("err", "가입한 이메일을 먼저 적어 주세요.");
+    var em0 = $("authEmail"); if (em0) { try { em0.focus(); } catch (e) {} }
+    return;
+  }
+  if (!(V3.mode === "cloud" && db.client)) { setAuthMsg("err", "지금은 서버 로그인을 쓸 수 없어요."); return; }
+  var btn = $("forgotBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "보내는 중…"; }
+  try {
+    var r = await db.client.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    if (r && r.error) setAuthMsg("err", authFriendly(r.error));
+    else setAuthMsg("ok", "비밀번호 재설정 메일을 보냈어요 · 메일함의 링크를 눌러 주세요");
+  } catch (e) { setAuthMsg("err", "네트워크 오류로 보내지 못했어요."); }
+  if (btn) { btn.disabled = false; btn.textContent = "비밀번호를 잊으셨나요?"; }
+}
+function setRcMsg(kind, text) {
+  var el = $("rcMsg");
+  if (!el) return;
+  el.hidden = !text;
+  el.className = "auth-msg " + (kind || "info");
+  el.textContent = text || "";
+}
+function openRecovery() {
+  var m = $("recoveryModal");
+  if (!m) return;
+  var a = $("authModal");
+  if (a && !a.hidden) closeModal("authModal");
+  var p1 = $("rcPw"), p2 = $("rcPw2");
+  if (p1) p1.value = "";
+  if (p2) p2.value = "";
+  setRcMsg("", "");
+  openModal("recoveryModal");
+  setTimeout(function () { if (p1) { try { p1.focus(); } catch (e) {} } }, 160);
+  /* 주소에 남은 재설정 표시(#...type=recovery)를 지워 새로고침해도 다시 뜨지 않게 */
+  try { if (window.history && history.replaceState) history.replaceState(null, "", location.pathname + (location.search || "")); } catch (e) {}
+}
+async function saveRecoveryPassword() {
+  var p1 = String(($("rcPw") || {}).value || "");
+  var p2 = String(($("rcPw2") || {}).value || "");
+  if (p1.length < 8) { setRcMsg("err", "비밀번호는 8자 이상으로 정해 주세요."); return; }
+  if (p1 !== p2) { setRcMsg("err", "두 비밀번호가 서로 달라요. 다시 확인해 주세요."); return; }
+  if (!(V3.mode === "cloud" && db.client)) { setRcMsg("err", "지금은 서버 로그인을 쓸 수 없어요."); return; }
+  var btn = $("rcSave");
+  if (btn) { btn.disabled = true; btn.textContent = "바꾸는 중…"; }
+  try {
+    var r = await db.client.auth.updateUser({ password: p1 });
+    if (r && r.error) setRcMsg("err", authFriendly(r.error));
+    else {
+      setRcMsg("ok", "비밀번호를 바꿨어요 · 이제 새 비밀번호로 로그인할 수 있어요");
+      closeModal("recoveryModal");
+      toast("비밀번호를 바꿨어요");
+      if (r && r.data && r.data.user) await afterSignIn(r.data.user);
+    }
+  } catch (e) { setRcMsg("err", "네트워크 오류로 바꾸지 못했어요."); }
+  if (btn) { btn.disabled = false; btn.textContent = "비밀번호 변경"; }
 }
 function consentChecked() {
   var age = $("ckAge"), terms = $("ckTerms"), mkt = $("ckMkt");
@@ -7631,6 +7811,15 @@ async function signUpPassword() {
       }
     });
     if (res.error) { setAuthMsg("err", authFriendly(res.error)); return; }
+    /* Supabase는 이미 가입된 이메일이면 오류 대신 '확인 메일을 보냈다'처럼 응답한다(identities 0개).
+       사용자가 기다리지 않게 로그인 탭으로 넘겨 준다. */
+    if (res.data && res.data.user && res.data.user.identities && res.data.user.identities.length === 0) {
+      setAuthMode("login");
+      setAuthMsg("err", "이미 가입된 이메일이에요. 로그인 탭에서 로그인해 주세요!");
+      var pwEl = $("authPw");
+      if (pwEl) setTimeout(function () { try { pwEl.focus(); } catch (e) {} }, 140);
+      return;
+    }
     if (res.data && res.data.session) {
       closeModal("authModal");
       await afterSignIn(res.data.user);
@@ -7640,26 +7829,71 @@ async function signUpPassword() {
     setAuthMsg("ok", "확인 메일을 보냈어요. 메일함에서 링크를 누르면 시작됩니다.");
   } catch (e) { setAuthMsg("err", "네트워크 오류로 가입하지 못했어요."); }
 }
+/* 주소창에 남은 초대 코드(?code=·?room=·?ref=)를 지운다 — 로그아웃 뒤 새로고침해도
+   그 방으로 다시 튕기지 않게. 초대 링크로 '처음' 들어오는 흐름은 load 때 parseJoin 이 먼저 처리한다. */
+function clearJoinQuery() {
+  pendingJoin = null;
+  try {
+    var q = String(location.search || "");
+    if (!/[?&](code|room|ref)=/.test(q)) return;
+    var keep = [];
+    q.replace(/^\?/, "").split("&").forEach(function (kv) {
+      if (!kv) return;
+      var k = kv.split("=")[0];
+      if (k === "code" || k === "room" || k === "ref") return;
+      keep.push(kv);
+    });
+    var url = String(location.pathname || "") + (keep.length ? "?" + keep.join("&") : "") + String(location.hash || "");
+    if (window.history && history.replaceState) history.replaceState(null, "", url);
+  } catch (e) {}
+}
+/* 로그아웃(세션 종료) 뒤 화면을 '끼리 시작하기' 초기 상태로 되돌린다.
+   열려 있던 방·대화·참여자·실시간 구독·진행 중인 토론을 모두 내리고
+   모바일 사이드바와 뜬 창을 닫은 뒤 메인 게이트를 다시 그린다. */
+function resetSessionView() {
+  /* 1) 진행 중이던 토론·자동 진행을 멈춘다(타이머가 남으면 로그아웃 뒤에도 계속 돈다) */
+  run.epoch++;
+  run.active = false; run.paused = false; run.typingAgent = null; run.cooldownLeft = 0;
+  run.schedule = []; run.idx = 0; run.mode = null; run.moderator = null;
+  /* 2) 실시간 구독·접속자(Presence)를 내린다 — 서버 연결이 끊긴 뒤 401 안내가 뜨지 않게 */
+  try { presenceLeave(); } catch (e) {}
+  try { dbUnsubscribe(); } catch (e) {}
+  db.ready = false;
+  /* 3) 뜬 창과 모바일 사이드바를 닫는다 */
+  closeAllModals();
+  closeSidebar();
+  /* 4) 방·대화 상태를 비운다 — 다시 로그인하면 서버에서 그대로 불러온다.
+        (mock 데모 모드의 방은 이 브라우저에만 있는 자료라 지우지 않고 화면만 내린다) */
+  state.activeRoomId = null;
+  if (V3.mode !== "mock") state.rooms = [];
+  state.view = "home";
+  homeEdit.on = false; homeEdit.sel = {};
+  sideEdit.on = false; sideEdit.sel = {};
+  /* 5) 주소에 남은 초대 코드도 정리 */
+  clearJoinQuery();
+  save();
+  renderAll(); renderCredit(); renderAccount();
+  var hv = $("homeView");
+  if (hv) hv.scrollTop = 0;
+}
 async function signOutAll() {
   if (V3.mode === "mock") {
     mockWrite(MOCK_USER_KEY, null);
     V3.signedIn = false; V3.user = null; V3.ready = false;
+    V3.guestTrialUsed = false;
     V3.profile = { nickname: "", plan: "free", credits: 0 };
-    renderAll(); renderCredit(); renderAccount();
+    resetSessionView();          /* 열려 있던 방을 내리고 게이트로 */
     toast("로그아웃했어요 · 크레딧은 이 브라우저에 남아 있어요");
     return;
   }
+  /* 화면·방 상태를 먼저 내린다 — 서버 응답을 기다리지 않고 게이트가 바로 보인다 */
+  V3.signedIn = false; V3.user = null; V3.ready = false;
+  V3.guestTrialUsed = false;
+  V3.profile = { nickname: "", plan: "free", credits: 0 };
+  resetSessionView();
   /* 게스트 체험 이력(쿠키·localStorage)은 로그아웃해도 남긴다 — 다시 게스트로 무한 체험하지 못하게 */
   try { if (db.client) await db.client.auth.signOut(); } catch (e) {}
-  V3.signedIn = false; V3.user = null; V3.ready = false;
-  V3.profile = { nickname: "", plan: "free", credits: 0 };
-  /* 서버 연결 상태도 함께 내린다 — 로그아웃 뒤 남은 구독·조회가 401 을 만들고
-     '대화를 불러오지 못했어요' 같은 엉뚱한 안내가 뜨지 않게 */
-  db.ready = false;
-  try { presenceLeave(); } catch (e) {}
-  try { dbUnsubscribe(); } catch (e) {}
   setLiveStatus(V3.mode === "cloud" ? "wait" : "local", V3.mode === "cloud" ? "로그인하면 연결" : "로컬 모드 · 데모");
-  renderAll(); renderCredit(); renderAccount();
   toast("로그아웃했어요");
 }
 function maybeAskAuth() {
@@ -8040,6 +8274,14 @@ async function sendFeedback() {
 }
 
 /* ---------- 끼리 AI ---------- */
+/* 게스트 체험 크레딧을 마친 기기에서 끼리 AI를 부르면 — 막다른 벽 대신 정식 로그인으로 안내한다 */
+function guestAskLogin(name) {
+  toast("게스트 AI 체험은 끝났어요 · 로그인하면 매일 300크레딧으로 끼리 AI를 부를 수 있어요");
+  setAuthMode("login");
+  setAuthMsg("info", "로그인하면 매일 300크레딧이 무료로 채워져요 · 사람·내 AI 대화는 로그인 없이도 무료예요.");
+  openModal("authModal");
+  return { skip: true, note: (name ? name + " · " : "") + "게스트 AI 체험을 이미 사용했어요. 로그인하면 매일 300크레딧으로 끼리 AI를 부를 수 있어요." };
+}
 function expertDef(exId) {
   var found = null;
   allExpertDefs().forEach(function (x) { if (!found && x.id === exId) found = x; });
@@ -8058,6 +8300,8 @@ async function addExpert(exId) {
   var ex = expertDef(exId);
   var r = activeRoom();
   if (!ex) return;
+  /* 게스트 체험 크레딧을 마친 기기 — 끼리 AI는 정식 로그인 안내로 */
+  if (V3.guestTrialUsed && invTarget !== "draft" && V3.user && V3.user.isAnonymous) { guestAskLogin(ex.name); return; }
   var id = findExpertAgent(ex.id);
   if (invTarget === "draft") {
     /* 새 방 만들기 중 — 방은 아직 없다. 방 만들기 목록에 넣고, 다시 누르면 뺀다. */
@@ -8168,6 +8412,7 @@ function mockExpertText(agent, phase) {
 async function mockExpertTurn(agent, phase) {
   var cost = configCost(agent.model);
   if (!V3.signedIn) return { skip: true, note: "로그인(또는 게스트 시작)하면 끼리 AI를 부를 수 있어요." };
+  if (V3.guestTrialUsed) return guestAskLogin(agent.name);
   if (creditsNow() < cost) return { skip: true, note: agent.name + " · 크레딧이 부족해요(남은 " + creditsNow() + "). 설정에서 내 API 키를 연결하면 크레딧 없이 계속 쓸 수 있어요." };
   await sleep(rand(420, 820));
   var text = mockExpertText(agent, phase);
@@ -8184,6 +8429,7 @@ async function mockExpertTurn(agent, phase) {
 async function cloudExpertTurn(agent, phase) {
   var r = activeRoom();
   if (!r) return { skip: true, note: "" };
+  if (V3.guestTrialUsed) return guestAskLogin(agent.name);
   var token = await accessToken();
   if (!token) return { skip: true, note: "로그인하면 끼리 AI를 부를 수 있어요 · 상단 💎에서 시작하세요." };
   var ctx = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; }).slice(-14).map(function (m) {
@@ -8501,7 +8747,7 @@ function wire() {
     var t = e.target.closest("[data-member-team]");
     if (t) { addToPool(t.getAttribute("data-member-team")); return; }
     var aa = e.target.closest("[data-add-ai]");
-    if (aa) { invTarget = "room"; closeSidebar(); aiTab("mine"); openModal("inviteModal"); return; }
+    if (aa) { closeSidebar(); openInviteHub("kkiri"); return; }
     var b = e.target.closest("[data-member-remove]");
     if (b) toggleMember(b.getAttribute("data-member-remove"));
   });
@@ -8530,10 +8776,8 @@ function wire() {
   }, { passive: true });
   if ($("newMsgBtn")) $("newMsgBtn").addEventListener("click", jumpToLatest);
   $("timelineInner").addEventListener("click", function (e) {
-    var call = e.target.closest("[data-empty-call]");
-    if (call) { invTarget = "room"; aiTab("mine"); openModal("inviteModal"); return; }
-    var share = e.target.closest("[data-empty-share]");
-    if (share) { openShare(); return; }
+    var inv = e.target.closest("[data-empty-invite]");
+    if (inv) { openInviteHub("kkiri"); return; }
     var sg = e.target.closest("[data-suggest]");
     if (sg) { useSuggestion(sg.getAttribute("data-suggest")); return; }
     var sa = e.target.closest("[data-sys-act]");
@@ -8564,8 +8808,7 @@ function wire() {
   $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
   var aab = $("addAiBtn");
   if (aab) aab.addEventListener("click", function () {
-    invTarget = "room";
-    closeSidebar(); aiTab("mine"); openModal("inviteModal");
+    closeSidebar(); openInviteHub("kkiri");
   });
   $("invQuick").addEventListener("click", function (e) {
     var del = e.target.closest("[data-quick-del]");
@@ -8735,15 +8978,16 @@ function wire() {
   $("rfDelete").addEventListener("click", deleteRoom);
 
   /* 공유 · 닉네임 */
-  $("shareBtn").addEventListener("click", openInviteChoice);
-  $("choiceAiBtn").addEventListener("click", function () {
-    closeModal("inviteChoiceModal");
-    invTarget = "room"; aiTab("mine"); openModal("inviteModal");
+  /* 초대하기 — 빈 방·상단 어디서 눌러도 같은 3탭 창(끼리 AI / 사람 초대 / 내 AI) */
+  $("shareBtn").addEventListener("click", function () { openInviteHub("kkiri"); });
+  if ($("forgotBtn")) $("forgotBtn").addEventListener("click", sendPasswordReset);
+  if ($("resendBtn")) $("resendBtn").addEventListener("click", resendConfirm);
+  if ($("rcSave")) $("rcSave").addEventListener("click", saveRecoveryPassword);
+  if ($("rcLater")) $("rcLater").addEventListener("click", function () { closeModal("recoveryModal"); });
+  if ($("rcPw2")) $("rcPw2").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); saveRecoveryPassword(); }
   });
-  $("choicePersonBtn").addEventListener("click", function () {
-    closeModal("inviteChoiceModal");
-    openShare();
-  });
+  if ($("invCreditBtn")) $("invCreditBtn").addEventListener("click", function () { closeModal("inviteModal"); openCredit(); });
   if ($("nickLine")) $("nickLine").addEventListener("click", openNickModal);
 
   /* 끼리 홈 — 사이드바 브랜드(로고·이름) 클릭 · 방 상단 🏠 */
@@ -8817,7 +9061,7 @@ function wire() {
     copyText(link, sayCopy);
   });
 
-  /* AI 추가 (🤖 끼리 AI / 🙋 나의 AI) — 방 안에서 */
+  /* 초대 허브 3탭 (끼리 AI / 사람 초대 / 내 AI) */
   $("aiSeg").addEventListener("click", function (e) {
     var b = e.target.closest("[data-tab]");
     if (b) aiTab(b.getAttribute("data-tab"));
@@ -9017,7 +9261,9 @@ function initInAppBar() {
 loadApi();
 pinNick();
 var bootedLocal = load();
-if (!bootedLocal) {
+/* mock 데모(?mock=1)는 저장된 목록이 비어 있으면 시드 방으로 다시 채운다 —
+   로그아웃으로 목록이 비워진 브라우저에서도 데모 화면이 그대로 보이게 */
+if (!bootedLocal || (MOCK && !state.rooms.length)) {
   state = seedState();
   save();
 }
