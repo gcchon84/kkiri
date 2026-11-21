@@ -100,7 +100,7 @@
   .brand-txt small{display:block;font-size:10px;font-weight:700;color:var(--side-muted);margin-top:3px;letter-spacing:.01em}
   .brand-line{margin:11px 4px 4px;font-size:11px;line-height:1.65;color:#9E95BA;letter-spacing:-.01em}
   .side-sec{margin-top:16px}
-  .sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px 8px}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 8px;padding:0 4px 8px}
   .sec-head > span{font-size:10px;font-weight:900;letter-spacing:.09em;color:#8C83A7}
   .mini-btn{
     border:1px solid #3E3570;background:#292252;color:#E2DCF4;border-radius:9px;
@@ -237,7 +237,7 @@
   .member-row small{display:block;font-size:9px;color:#948BAF;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .member-row.off b{color:#8C83A7}
   .member-row.off .avatar{opacity:.45;filter:grayscale(.4)}
-  .sec-actions{display:flex;gap:4px}
+  .sec-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px}
   .join-chip{flex:0 0 auto;font-size:9px;font-weight:900;color:#CBB9FF;background:#2A2158;border:1px solid #5A3FD0;border-radius:999px;padding:2px 6px;letter-spacing:-.01em}
   .x-btn{flex:0 0 auto;padding:3px 7px;font-size:9.5px;color:#D5CCF0}
   .member-row .x-btn{opacity:.75}
@@ -630,6 +630,15 @@
   /* 🎁 친구 초대 — 서비스를 소개하며 내 초대 링크를 보내는 버튼 */
   .home-donate.home-invite{border-style:solid;border-color:#d6c7ff;background:var(--brand-tint);color:#5B38E0}
   .home-donate.home-invite:hover{border-color:#b9a4ff;color:#4a2bd0;background:#EDE6FF}
+  /* 💎 +300 초대 보상 배지 — 버튼 한 줄 안에 보석 아이콘과 함께 (2026-11-21) */
+  .inv-badge{display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;font-style:normal;font-size:9.5px;font-weight:900;line-height:1.5;letter-spacing:-.02em;white-space:nowrap;padding:1px 6px;border-radius:999px}
+  .inv-badge .ico{width:10px;height:10px;--ico-fill:rgba(115,82,255,.18);color:#5B38E0}
+  .home-donate .inv-badge{background:#fff;border:1px solid #d9caff;color:#5B38E0}
+  .home-donate.home-invite:hover .inv-badge{border-color:#c3aeff}
+  .side-donate .inv-badge{background:rgba(255,255,255,.13);border:1px solid rgba(190,170,255,.42);color:#EFE8FF}
+  .side-donate .inv-badge .ico{--ico-fill:rgba(214,196,255,.30);color:#E2D6FF}
+  /* 배지가 붙어도 초대 버튼은 한 줄 — 좁은 화면에서 아이콘·문구·배지가 따로 떨어지지 않게 */
+  .side-invite,.home-invite{white-space:nowrap;gap:5px}
   .ref-card{background:var(--brand-tint);border:1px solid #e3d9ff;border-radius:16px;padding:14px 13px;text-align:center}
   .ref-lead{margin:0;font-size:13px;font-weight:900;line-height:1.6;color:#3F2A8E;letter-spacing:-.02em;word-break:keep-all}
   .ref-sub{margin:7px 0 0;font-size:12px;font-weight:800;line-height:1.6;color:#5B38E0;letter-spacing:-.01em;word-break:keep-all}
@@ -1341,6 +1350,13 @@
   .m-top .m-val{font-size:13px}
   .ctrl-foot span{font-size:12.5px}
   .credit-guide li{font-size:14px;line-height:1.6}
+  /* 긴 값(0 크레딧 (끼리 크레딧 미사용))이 좁은 화면에서 어중간하게 끊기지 않게 */
+  .credit-guide li span{word-break:keep-all;min-width:0}
+  @media (max-width:430px){
+    .credit-guide li{font-size:13px;gap:8px}
+    .credit-guide li b{font-size:12.5px}
+    .credit-guide li.free b{font-size:11.5px}
+  }
   .credit-guide .cg-sub{font-size:13px}
   .credit-guide .cg-foot,.credit-guide .cg-lead{font-size:13.5px;line-height:1.6}
   .c-sec h4{font-size:12.5px}
@@ -1483,6 +1499,10 @@
   .sidebar .sec-head > span{font-size:13.5px;letter-spacing:.05em}
   .sidebar .sec-head > span em{font-size:12.5px}
   .sidebar .sec-actions .mini-btn{font-size:12.5px;padding:6px 9px}
+  @media (max-width:430px){
+    /* 사이드바 선택 삭제 모드 — [전체 선택][취소][선택 삭제 (N개)]가 제목과 한 줄에 들어가게 */
+    .sidebar .sec-actions .mini-btn{font-size:11.5px;padding:5px 7px;letter-spacing:-.02em}
+  }
   .sidebar .room-item b{font-size:15.5px}
   .sidebar .room-item small{font-size:13.5px;letter-spacing:-.01em}
   .sidebar .room-empty,.sidebar .sec-hint{font-size:13.5px;line-height:1.62}
@@ -1778,6 +1798,17 @@
   .invite-row .mini-btn{flex:0 0 auto;padding:9px 11px;font-size:11.5px}
   /* 충전 모달 */
   .charge-lead{font-size:12.5px;font-weight:700;color:#5F5780;line-height:1.7;letter-spacing:-.01em}
+  /* ===== ☕ 끼리 후원하기 — 후원(위) + 감사 크레딧 요청(아래) 한 창 (2026-11-21) ===== */
+  .donate-hello{margin:0 0 12px;font-size:12.5px;line-height:1.7;color:#4A4270;letter-spacing:-.01em}
+  .donate-hello b{color:var(--brand-deep)}
+  .support-req{margin-top:16px;padding-top:14px;border-top:1px dashed #E3DCF6}
+  .sr-head b{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;font-weight:900;color:#251B4D;letter-spacing:-.02em}
+  .sr-head b em{font-style:normal;font-size:9px;font-weight:900;color:#6C43E8;background:#EFE9FF;border:1px solid #DED3FF;border-radius:999px;padding:1px 7px;white-space:nowrap}
+  .sr-head p{margin:5px 0 0;font-size:11px;line-height:1.65;color:#7B7397;letter-spacing:-.01em}
+  .support-req .charge-pkgs{margin-top:10px;padding-top:0}
+  .support-req .btn.wide{width:100%;min-height:50px;font-size:14px;margin-top:2px}
+  .charge-where{margin:9px 0 0;font-size:11px;font-weight:800;color:#6F6889;line-height:1.6;letter-spacing:-.01em}
+  .charge-where a{color:#4B2ED1;font-weight:900;text-decoration:underline;text-underline-offset:2px}
   .charge-pkgs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:12px;padding-top:8px}
   .pkg{
     position:relative;border:1px solid var(--line);background:#fff;border-radius:14px;cursor:pointer;
@@ -1894,6 +1925,11 @@
   }
   /* ===== 사이드바 계정 카드 위계 =====
      위 닉네임(#nickLabel)과 헷갈리지 않게: 등급·이름은 작은 보조 라벨, 남은 크레딧을 메인으로. */
+  /* 계정 카드 본문 = 내 크레딧 열기 (로그아웃 버튼은 제외) — 누를 수 있게 보이게 */
+  .account-line.signed{cursor:pointer;transition:background .12s ease,border-color .12s ease}
+  .account-line.signed:hover{background:#2A2250;border-color:#4A407E}
+  .account-line.signed:active{background:#241D45}
+  .account-line.signed .a-txt{cursor:pointer}
   .account-line.signed b{font-size:12px;font-weight:800;color:#A99BD6;letter-spacing:-.01em}
   .account-line.signed small{font-size:14px;font-weight:900;color:#F6F4FF;margin-top:3px;letter-spacing:-.02em}
   .sidebar .account-line.signed b{font-size:12.5px;font-weight:800;color:#A99BD6}
@@ -2309,6 +2345,7 @@ window.__KKIRI_BOOT = (function () {
       <div class="sec-head"><span><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>내 대화방 <em id="roomCount">0</em></span>
         <span class="sec-actions">
           <button class="mini-btn" id="sideRoomEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>
+          <button class="mini-btn" id="sideRoomEditAll" hidden aria-pressed="false">전체 선택</button>
           <button class="mini-btn" id="sideRoomEditCancel" hidden>취소</button>
           <button class="mini-btn danger" id="sideRoomBulkDelete" hidden>선택 삭제 (0개)</button>
           <button class="mini-btn" id="newRoomBtn">+ 새 방</button>
@@ -2321,8 +2358,8 @@ window.__KKIRI_BOOT = (function () {
          방 설정(⋯) 시트가 맡는다 — 사이드바는 대화방 목록과 아래 버튼들(친구 초대·응원·의견·설치)만 남긴다. -->
 
     <div class="side-foot">
-      <button type="button" class="side-donate side-invite" id="sideInviteBtn" title="친구 초대 · 끼리 소개하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg><span>친구 초대</span></button>
-      <button type="button" class="side-donate" id="sideDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
+      <button type="button" class="side-donate side-invite" id="sideInviteBtn" title="친구 초대 · 친구가 가입하면 +300 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg><span>친구 초대</span><em class="inv-badge" aria-label="+300 크레딧"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg>+300</em></button>
+      <button type="button" class="side-donate" id="sideDonateBtn" title="끼리 후원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 후원하기</span></button>
       <button type="button" class="side-donate side-feedback" id="sideFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
       <button type="button" class="side-donate side-install" id="sideInstallBtn" title="홈 화면에 추가 · 즐겨찾기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-star"></use></svg><span>홈 화면에 추가</span></button>
       <p class="side-version">Kkiri · v3</p>
@@ -2366,6 +2403,7 @@ window.__KKIRI_BOOT = (function () {
             <div class="home-sec-actions">
               <button type="button" class="h-btn" id="homeEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>
               <button type="button" class="h-btn green" id="homeNewRoomBtn">+ 새 방</button>
+              <button type="button" class="h-btn" id="homeEditAll" hidden aria-pressed="false">전체 선택</button>
               <button type="button" class="h-btn" id="homeEditCancel" hidden>취소</button>
               <button type="button" class="h-btn danger" id="homeBulkDelete" hidden>선택 삭제 (0개)</button>
             </div>
@@ -2373,8 +2411,8 @@ window.__KKIRI_BOOT = (function () {
           <div class="room-grid" id="homeRoomGrid"></div>
         </section>
         <div class="home-foot" id="homeFoot">
-          <button type="button" class="home-donate home-invite" id="homeInviteBtn" title="친구 초대 · 끼리 소개하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg><span>친구 초대</span></button>
-          <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
+          <button type="button" class="home-donate home-invite" id="homeInviteBtn" title="친구 초대 · 친구가 가입하면 +300 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg><span>친구 초대</span><em class="inv-badge" aria-label="+300 크레딧"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg>+300</em></button>
+          <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 후원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 후원하기</span></button>
           <button type="button" class="home-donate home-feedback" id="homeFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
           <button type="button" class="home-donate" id="homeInstallBtn" title="홈 화면에 추가 · 즐겨찾기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-star"></use></svg><span>홈 화면에 추가</span></button>
         </div>
@@ -2770,23 +2808,19 @@ window.__KKIRI_BOOT = (function () {
         <div class="wallet-buckets" id="walletBuckets">
           <div class="wb"><span class="wb-k">오늘 무료</span><b id="wbDaily">—</b><small>매일 자정 300</small></div>
           <div class="wb"><span class="wb-k">보너스 (30일)</span><b id="wbBonus">—</b><small>초대 리워드</small></div>
-          <div class="wb paid"><span class="wb-k">충전 크레딧</span><b id="wbPaid">—</b><small>만료 없음</small></div>
+          <div class="wb paid"><span class="wb-k">후원 크레딧</span><b id="wbPaid">—</b><small>만료 없음</small></div>
         </div>
         <div class="row"><div class="k">이 방에서 사용<small>끼리 AI가 쓴 크레딧</small></div><span class="pill gray" id="creditRoom">0</span></div>
       </div>
       <div class="credit-guide" id="creditGuide">
         <h4><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> 매일 300크레딧이 무료예요</h4>
-        <p class="cg-lead">로그인하면 <b>매일 자정에 300크레딧</b>이 다시 채워져요. 10턴 모임 약 3번, <b>@이름</b> 30번 부를 수 있는 양이에요.</p>
+        <p class="cg-lead">로그인하면 <b>매일 자정에 300크레딧</b>이 다시 채워져요.</p>
         <div class="cg-sub">크레딧 사용 기준</div>
         <ul>
           <li><span>끼리 AI (기본 모델) 1번 대답</span><b>10 크레딧</b></li>
-          <li><span><b>@이름</b>으로 질문</span><b>30번</b></li>
-          <li><span>3라운드 토론 (AI 3명 기준)</span><b>3번</b></li>
-          <li><span>2라운드 짧은 토론 (AI 3명 기준)</span><b>4번</b></li>
           <li class="free"><span>나의 AI (초대 링크·내 키)</span><b>0 크레딧 (끼리 크레딧 미사용)</b></li>
           <li class="free"><span>사람 간 대화</span><b>0 크레딧 (무료)</b></li>
         </ul>
-        <p class="cg-foot">@이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).</p>
       </div>
       <div class="invite-box">
         <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg> 친구 초대하고 +300 크레딧 받기</b>
@@ -2803,12 +2837,12 @@ window.__KKIRI_BOOT = (function () {
           <p>나의 AI → 내 API 키에 구글 제미나이(무료 키)나 OpenAI(챗GPT) 키를 넣으면 끼리 크레딧을 쓰지 않고 내 키로 대화해요.</p>
           <button type="button" class="mini-btn" id="creditByokBtn">내 API 키 연결하기</button>
         </div>
-        <button type="button" class="charge-btn" id="openChargeBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bolt"></use></svg> 크레딧 충전하기</button>
-        <p class="charge-note">1,000원부터 · 카카오페이로 보내고 요청하면 입금 확인 후 채워 드려요</p>
+        <button type="button" class="charge-btn" id="openChargeBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 후원하고 감사 크레딧 받기</button>
+        <p class="charge-note">1,000원부터 · 카카오페이로 후원하고, 원하실 때만 감사 크레딧을 요청하세요</p>
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
-      <p class="hint">차감 내역은 서버 원장에 남아요. 충전 크레딧은 만료가 없고, 보너스는 받은 날부터 30일 동안 쓸 수 있어요.</p>
+      <p class="hint">차감 내역은 서버 원장에 남아요. 후원 크레딧은 만료가 없고, 보너스는 받은 날부터 30일 동안 쓸 수 있어요.</p>
       <div class="btn-row"><button class="btn" id="creditClose" type="button">닫기</button></div>
       <!-- 정식 로그인 회원에게만 보이는 조용한 탈퇴 링크 (평소엔 눈에 띄지 않게) -->
       <div class="del-account" id="delAccountRow" hidden>
@@ -2908,46 +2942,36 @@ window.__KKIRI_BOOT = (function () {
   </div>
 </div>
 
-<!-- ================= v3.5 · ⚡ 크레딧 충전 요청 (카카오페이 송금 → 입금 확인 후 지급) ================= -->
-<div class="modal" id="chargeModal" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="chargeTitle" style="max-width:440px">
-    <div class="sheet-head"><h2 id="chargeTitle"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bolt"></use></svg> 크레딧 충전</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
-    <div class="sheet-body">
-      <p class="charge-lead">카카오페이로 송금하고 <b>충전 요청</b>을 남겨 주세요. 입금을 확인하면 바로 채워 드려요.</p>
-      <div class="charge-pkgs" id="chargePkgs">
-        <button type="button" class="pkg" data-pkg="0" aria-pressed="true"><b>1,000원</b><span>1,000 크레딧</span></button>
-        <button type="button" class="pkg" data-pkg="1" aria-pressed="false"><b>3,000원</b><span>3,300 크레딧</span><em>+10%</em></button>
-        <button type="button" class="pkg" data-pkg="2" aria-pressed="false"><b>5,000원</b><span>6,000 크레딧</span><em>+20%</em></button>
-      </div>
-      <div class="field" style="margin-top:12px"><span>입금자명</span><input id="chargeDepositor" type="text" maxlength="30" placeholder="실제 입금하신 분 이름을 적어 주세요" autocomplete="name"></div>
-      <div class="charge-pay">
-        <img id="chargeQr" alt="카카오페이 송금 QR 코드" decoding="async">
-        <div class="charge-pay-txt">
-          <b>카카오페이 송금</b>
-          <p>QR을 찍거나 아래 버튼으로 <b id="chargeAmountHint">1,000원</b>을 보내 주세요.</p>
-          <a class="charge-cta" id="chargeKakao" href="https://qr.kakaopay.com/FWJqb23fu" target="_blank" rel="noopener noreferrer">카카오페이로 송금하기</a>
-        </div>
-      </div>
-      <p class="charge-msg" id="chargeMsg" role="status" aria-live="polite" hidden></p>
-      <div class="btn-row"><button class="btn green" id="chargeSend" type="button">충전 요청하기</button><button class="btn dark" id="chargeClose" type="button">닫기</button></div>
-      <p class="charge-foot">충전 크레딧은 만료가 없어요. 요청 내역은 본인만 볼 수 있습니다.</p>
-    </div>
-  </div>
-</div>
-
-<!-- ================= v3 · 자율 후원 (카카오페이 송금 QR 연동) ================= -->
+<!-- ================= v3.6 · ☕ 끼리 후원하기 (카카오페이 후원 + 감사 크레딧 요청) ================= -->
 <div class="modal" id="donateModal" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="donateTitle" style="max-width:420px">
-    <div class="sheet-head"><h2 id="donateTitle"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 응원하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="donateTitle" style="max-width:440px">
+    <div class="sheet-head"><h2 id="donateTitle"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 후원하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <p class="donate-msg">끼리를 무료로 잘 쓰고 계신다면, 커피 한 잔으로 <b>개발과 서버비</b>를 응원해 주세요.</p>
+      <p class="donate-hello">끼리를 응원해 주셔서 감사해요. 후원하신 분들 중 <b>감사 크레딧이 필요하신 분만</b> 아래에 요청을 남겨 주세요.</p>
       <div class="donate-qr">
         <img id="donateQrImg" src="data:image/png;base64,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" width="231" height="231" alt="카카오페이 송금 QR 코드 · qr.kakaopay.com/FWJqb23fu" decoding="async">
         <span class="donate-qr-cap"><svg class="ico xs" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 카카오페이 송금 QR</span>
       </div>
       <p class="donate-hint">휴대폰 카메라로 스캔하거나 아래 버튼을 누르면 카카오페이로 연결돼요.</p>
-      <a class="donate-cta" id="donateCta" href="https://qr.kakaopay.com/FWJqb23fu" target="_blank" rel="noopener noreferrer"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-heart"></use></svg> 카카오페이로 응원하기</a>
+      <a class="donate-cta" id="donateCta" href="https://qr.kakaopay.com/FWJqb23fu" target="_blank" rel="noopener noreferrer"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-heart"></use></svg> 카카오페이로 후원하기</a>
       <div class="btn-row donate-acts"><button class="btn donate-copy" id="donateCopy" type="button"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 송금 링크 복사</button><button class="btn dark" id="donateOk" type="button">닫기</button></div>
+      <!-- 후원은 자유 — 감사 크레딧은 원하는 분만 아래에서 요청 (kkiri_charge_requests 그대로 사용) -->
+      <div class="support-req" id="supportReq">
+        <div class="sr-head">
+          <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> 감사 크레딧 요청 <em>선택</em></b>
+          <p>후원만 하셔도 충분해요. 감사 크레딧이 필요하신 분만 금액과 후원자명을 남겨 주세요.</p>
+        </div>
+        <div class="charge-pkgs" id="chargePkgs">
+          <button type="button" class="pkg" data-pkg="0" aria-pressed="true"><b>1,000원</b><span>1,000 크레딧</span></button>
+          <button type="button" class="pkg" data-pkg="1" aria-pressed="false"><b>3,000원</b><span>3,300 크레딧</span><em>+10%</em></button>
+          <button type="button" class="pkg" data-pkg="2" aria-pressed="false"><b>5,000원</b><span>6,000 크레딧</span><em>+20%</em></button>
+        </div>
+        <p class="charge-where">보낼 금액은 <b id="chargeAmountHint">1,000원</b>이에요. <a id="chargeKakao" href="https://qr.kakaopay.com/FWJqb23fu" target="_blank" rel="noopener noreferrer">카카오페이로 송금하기</a></p>
+        <div class="field" style="margin-top:10px"><span>후원자명</span><input id="chargeDepositor" type="text" maxlength="30" placeholder="실제 입금하신 분 이름을 적어 주세요" autocomplete="name"></div>
+        <p class="charge-msg" id="chargeMsg" role="status" aria-live="polite" hidden></p>
+        <button class="btn green wide" id="chargeSend" type="button">감사 크레딧 요청하기</button>
+        <p class="charge-foot">요청을 확인한 뒤 크레딧을 채워 드려요 · 후원 크레딧은 만료가 없어요</p>
+      </div>
     </div>
   </div>
 </div>
@@ -3767,10 +3791,16 @@ function renderRoomList() {
   if (cnt) cnt.textContent = list.length;
   /* 선택 삭제 모드 — 방이 없으면 휴지통도 두지 않는다 */
   if (!state.rooms.length) { sideEdit.on = false; sideEdit.sel = {}; }
-  var eb = $("sideRoomEditBtn"), cb = $("sideRoomEditCancel"), bd = $("sideRoomBulkDelete"), nb = $("newRoomBtn");
+  var eb = $("sideRoomEditBtn"), cb = $("sideRoomEditCancel"), bd = $("sideRoomBulkDelete"), nb = $("newRoomBtn"), ea = $("sideRoomEditAll");
   var n = Object.keys(sideEdit.sel).length;
+  var allOn = !!state.rooms.length && state.rooms.every(function (r) { return !!sideEdit.sel[r.id]; });
   if (eb) eb.hidden = sideEdit.on || !state.rooms.length;
   if (nb) nb.hidden = !!sideEdit.on;
+  if (ea) {
+    ea.hidden = !sideEdit.on;
+    ea.textContent = allOn ? "선택 해제" : "전체 선택";
+    ea.setAttribute("aria-pressed", allOn ? "true" : "false");
+  }
   if (cb) cb.hidden = !sideEdit.on;
   if (bd) {
     bd.hidden = !sideEdit.on;
@@ -3781,6 +3811,13 @@ function renderRoomList() {
 }
 function sideEditStart() { sideEdit.on = true; sideEdit.sel = {}; renderRoomList(); }
 function sideEditStop() { sideEdit.on = false; sideEdit.sel = {}; renderRoomList(); }
+/* 전체 선택 ⇄ 선택 해제 — 한 번 더 누르면 모두 풀리고 카운트도 바로 바뀍다 */
+function sideEditAllToggle() {
+  var allOn = !!state.rooms.length && state.rooms.every(function (r) { return !!sideEdit.sel[r.id]; });
+  sideEdit.sel = {};
+  if (!allOn) state.rooms.forEach(function (r) { sideEdit.sel[r.id] = true; });
+  renderRoomList();
+}
 function sideTogglePick(id) {
   if (sideEdit.sel[id]) delete sideEdit.sel[id];
   else sideEdit.sel[id] = true;
@@ -4034,10 +4071,16 @@ function renderHome() {
   $("homeRoomGrid").innerHTML = rh;
   /* 선택 삭제 모드 — 방이 없으면 편집 버튼도 두지 않는다 */
   if (!state.rooms.length) { homeEdit.on = false; homeEdit.sel = {}; }
-  var eb = $("homeEditBtn"), cb = $("homeEditCancel"), bd = $("homeBulkDelete"), nb = $("homeNewRoomBtn");
+  var eb = $("homeEditBtn"), cb = $("homeEditCancel"), bd = $("homeBulkDelete"), nb = $("homeNewRoomBtn"), ea = $("homeEditAll");
   var n = Object.keys(homeEdit.sel).length;
+  var allOn = !!state.rooms.length && state.rooms.every(function (r) { return !!homeEdit.sel[r.id]; });
   if (eb) eb.hidden = homeEdit.on || !state.rooms.length;
   if (nb) nb.hidden = !!homeEdit.on;
+  if (ea) {
+    ea.hidden = !homeEdit.on;
+    ea.textContent = allOn ? "선택 해제" : "전체 선택";
+    ea.setAttribute("aria-pressed", allOn ? "true" : "false");
+  }
   if (cb) cb.hidden = !homeEdit.on;
   if (bd) {
     bd.hidden = !homeEdit.on;
@@ -4048,6 +4091,13 @@ function renderHome() {
 }
 function homeEditStart() { homeEdit.on = true; homeEdit.sel = {}; renderHome(); }
 function homeEditStop() { homeEdit.on = false; homeEdit.sel = {}; renderHome(); }
+/* 전체 선택 ⇄ 선택 해제 (홈) */
+function homeEditAllToggle() {
+  var allOn = !!state.rooms.length && state.rooms.every(function (r) { return !!homeEdit.sel[r.id]; });
+  homeEdit.sel = {};
+  if (!allOn) state.rooms.forEach(function (r) { homeEdit.sel[r.id] = true; });
+  renderHome();
+}
 function homeTogglePick(id) {
   if (homeEdit.sel[id]) delete homeEdit.sel[id];
   else homeEdit.sel[id] = true;
@@ -9499,7 +9549,13 @@ function renderAccount() {
   }
   btn.hidden = false;
   setSigned(true);
-  if (al) { al.classList.remove("start"); al.removeAttribute("tabindex"); al.removeAttribute("role"); }
+  if (al) {
+    al.classList.remove("start");
+    al.setAttribute("tabindex", "0");
+    al.setAttribute("role", "button");
+    al.setAttribute("title", "내 크레딧 열기");
+    al.setAttribute("aria-label", "내 크레딧 열기");
+  }
   var u = V3.user || {};
   var anonUser = !!(u.is_anonymous || u.isAnonymous);
   var profNick = displayName(V3.profile.nickname);
@@ -10533,22 +10589,8 @@ function setChargeMsg(kind, msg) {
   el.textContent = msg;
 }
 function openCharge() {
-  if (V3.mode === "local" || V3.mode === "mock") {
-    toast("서버에 연결되면 충전할 수 있어요");
-    return;
-  }
-  if (!V3.signedIn) {
-    closeModal("creditModal");
-    setAuthMsg("info", "충전은 로그인 후에 할 수 있어요 · 로그인하면 매일 300크레딧도 무료로 채워져요");
-    openModal("authModal");
-    return;
-  }
-  if (V3.user && V3.user.isAnonymous) {
-    closeModal("creditModal");
-    setAuthMsg("info", "충전은 이메일 회원가입 후에 할 수 있어요 · 게스트는 100크레딧 체험이에요");
-    openModal("authModal");
-    return;
-  }
+  /* 후원과 감사 크레딧 요청은 한 창(☕ 끼리 후원하기)에서 — 로그인 전에도 후원 안내는 볼 수 있고,
+     감사 크레딧 요청 버튼을 눌렀을 때만 로그인을 확인한다. */
   charge.idx = 0;
   charge.busy = false;
   setChargeMsg("", "");
@@ -10556,21 +10598,29 @@ function openCharge() {
   var dep = $("chargeDepositor");
   if (dep) { dep.value = ""; dep.placeholder = "실제 입금하신 분 이름을 적어 주세요"; }
   var btn = $("chargeSend");
-  if (btn) { btn.disabled = false; btn.textContent = "충전 요청하기"; }
-  var qr = $("chargeQr"), src = $("donateQrImg");
-  if (qr && src) qr.src = src.src;
+  if (btn) { btn.disabled = false; btn.textContent = "감사 크레딧 요청하기"; }
   closeModal("creditModal");
-  openModal("chargeModal");
+  openModal("donateModal");
 }
 async function sendChargeRequest() {
   if (charge.busy) return;
+  if (V3.mode === "mock" || V3.mode === "local") {
+    setChargeMsg("ok", "데모 모드예요 · 서버에 연결되면 실제로 요청할 수 있어요");
+    return;
+  }
   if (!(V3.mode === "cloud" && db.client && V3.signedIn && V3.user) || V3.user.isAnonymous) {
-    setChargeMsg("err", "로그인 후에 충전을 요청할 수 있어요.");
+    /* 후원 안내는 그대로 두고, 감사 크레딧 요청만 로그인으로 안내 */
+    var guest = !!(V3.user && (V3.user.isAnonymous || V3.user.is_anonymous));
+    closeModal("donateModal");
+    setAuthMsg("info", guest
+      ? "감사 크레딧 요청은 이메일 회원가입 후에 할 수 있어요 · 게스트는 100크레딧 체험이에요"
+      : "감사 크레딧 요청은 로그인 후에 할 수 있어요 · 로그인하면 매일 300크레딧도 무료로 채워져요");
+    openModal("authModal");
     return;
   }
   var dep = $("chargeDepositor");
   var name = String((dep && dep.value) || "").trim();
-  if (!name) { setChargeMsg("err", "입금자명을 입력해 주세요."); if (dep) { try { dep.focus(); } catch (e) {} } return; }
+  if (!name) { setChargeMsg("err", "후원자명을 입력해 주세요."); if (dep) { try { dep.focus(); } catch (e) {} } return; }
   var pkg = CHARGE_PKGS[charge.idx] || CHARGE_PKGS[0];
   charge.busy = true;
   var btn = $("chargeSend");
@@ -10588,13 +10638,13 @@ async function sendChargeRequest() {
     };
     var res = await db.client.from("kkiri_charge_requests").insert(row);
     if (res && res.error) throw new Error(res.error.message || "insert failed");
-    setChargeMsg("ok", "충전 요청이 접수되었어요! 입금 확인 후 바로 채워 드릴게요.");
+    setChargeMsg("ok", "감사 크레딧 요청이 접수되었어요! 확인 후 채워 드릴게요.");
     if (btn) { btn.textContent = "요청 완료"; }
-    toast("충전 요청이 접수되었어요! 입금 확인 후 바로 채워 드릴게요.");
+    toast("감사 크레딧 요청이 접수되었어요! 확인 후 채워 드릴게요.");
   } catch (e) {
     var m = String((e && e.message) || "");
     setChargeMsg("err", m.indexOf("TOO_MANY") > -1 ? "오늘 요청이 너무 많아요. 잠시 뒤 다시 시도해 주세요." : "요청을 보내지 못했어요 · " + (m || "잠시 뒤 다시 시도해 주세요"));
-    if (btn) { btn.disabled = false; btn.textContent = "충전 요청하기"; }
+    if (btn) { btn.disabled = false; btn.textContent = "감사 크레딧 요청하기"; }
   } finally {
     charge.busy = false;
   }
@@ -10633,8 +10683,9 @@ async function savePendingConsent() {
 }
 /* ---------- 자율 후원 (☕ 개발·서버비 응원 · 카카오페이 송금) ---------- */
 var DONATE_URL = "https://qr.kakaopay.com/FWJqb23fu";
+/* ☕ 끼리 후원하기 — 사이드바·홈 하단·내 크레딧(감사 크레딧 받기) 어디서 눌러도 같은 창 */
 function openDonate() {
-  openModal("donateModal");
+  openCharge();
 }
 
 /* ---------- 💬 의견 보내기 (Supabase kkiri_feedback · INSERT 만 허용) ---------- */
@@ -11033,12 +11084,15 @@ function wireV3() {
   var al = $("accountLine");
   if (al) {
     al.addEventListener("click", function (e) {
-      if (e.target.closest("#accountBtn")) return;
+      if (e.target.closest("#accountBtn")) return;   /* 로그아웃 버튼은 제외 */
+      /* 로그인·게스트 모두: 카드 본문(끼리멤버 · 0 크레딧)을 누르면 내 크레딧이 열린다 */
+      if (V3.signedIn) { openCredit(); return; }
       openStart();
     });
     al.addEventListener("keydown", function (e) {
       if (e.key !== "Enter" && e.key !== " ") return;
       e.preventDefault();
+      if (V3.signedIn) { openCredit(); return; }
       openStart();
     });
   }
@@ -11090,11 +11144,9 @@ function wireV3() {
   if (termsOkBtn) termsOkBtn.addEventListener("click", function () { closeModal("termsModal"); });
   var termsClose = document.querySelector("#termsModal [data-close]");
   if (termsClose) termsClose.addEventListener("click", function () { closeModal("termsModal"); });
-  /* ⚡ 크레딧 충전 */
+  /* ☕ 끼리 후원하기 — 내 크레딧 하단 버튼과 사이드바/홈 후원 버튼이 같은 창을 연다 */
   var chBtn = $("openChargeBtn");
   if (chBtn) chBtn.addEventListener("click", openCharge);
-  var chClose = $("chargeClose");
-  if (chClose) chClose.addEventListener("click", function () { closeModal("chargeModal"); });
   var chPkgs = $("chargePkgs");
   if (chPkgs) chPkgs.addEventListener("click", function (e) {
     var b = e.target.closest("[data-pkg]");
@@ -11658,10 +11710,12 @@ function wire() {
     selectRoom(id);
   });
   if ($("homeEditBtn")) $("homeEditBtn").addEventListener("click", homeEditStart);
+  if ($("homeEditAll")) $("homeEditAll").addEventListener("click", homeEditAllToggle);
   if ($("homeEditCancel")) $("homeEditCancel").addEventListener("click", homeEditStop);
   if ($("homeBulkDelete")) $("homeBulkDelete").addEventListener("click", homeBulkRemove);
   /* 사이드바도 홈과 같은 선택 삭제 — 🗑️ → 체크 → 선택 삭제 → 앱 확인창 */
   if ($("sideRoomEditBtn")) $("sideRoomEditBtn").addEventListener("click", sideEditStart);
+  if ($("sideRoomEditAll")) $("sideRoomEditAll").addEventListener("click", sideEditAllToggle);
   if ($("sideRoomEditCancel")) $("sideRoomEditCancel").addEventListener("click", sideEditStop);
   if ($("sideRoomBulkDelete")) $("sideRoomBulkDelete").addEventListener("click", sideBulkRemove);
   var nickSave = function () {
