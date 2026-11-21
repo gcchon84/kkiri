@@ -1725,6 +1725,18 @@
     .room-head #roomHomeBtn .ico,.room-head #roomSettingsBtn .ico{width:21px;height:21px}
   }
 </style>
+<!-- 비밀번호 재설정 링크로 돌아왔는지 — supabase-js 는 클라이언트를 만드는 순간 주소의 토큰을 읽고
+     해시를 지우기 때문에, 그보다 먼저(스크립트 로드 전) 주소를 보고 표시를 남겨 둔다. -->
+<script>
+window.__KKIRI_BOOT = (function () {
+  var u = String(location.hash || "") + "&" + String(location.search || "");
+  return {
+    recovery: /[#&?]type=recovery([&=]|$)/.test(u),
+    authErr: /error_code=otp_expired|error=access_denied/.test(u),
+    at: Date.now()
+  };
+})();
+</script>
 </head>
 <body>
 <!-- ================= ㄲㄹ 톤 듀오톤 픽토그램 (인라인 SVG 스프라이트) ================= -->
@@ -5501,6 +5513,9 @@ function onCardButton() {
    12. 모달 · 토스트 · 사이드바
    ========================================================= */
 var openStack = [];
+/* 비밀번호 재설정 창의 상태 — want: 링크로 돌아왔다, shown: 한 번 떴다, dismissed: 사용자가 닫았다.
+   (중복 이벤트로 입력값이 지워지거나, 닫은 창이 다시 튀어나오지 않게 하는 가드) */
+var recoveryFlow = { want: false, shown: false, dismissed: false, timer: null };
 function openModal(id) {
   var m = $(id);
   if (!m) return;
@@ -5515,6 +5530,12 @@ function openModal(id) {
 function closeModal(id) {
   var m = $(id);
   if (!m) return;
+  /* 재설정 창을 사용자가 직접 닫았다면(‘나중에’·✕) 늦게 도착한 이벤트나 타이머가 다시 띄우지 않는다 */
+  if (id === "recoveryModal" && recoveryFlow) {
+    recoveryFlow.dismissed = true;
+    recoveryFlow.want = false;
+    if (recoveryFlow.timer) { clearTimeout(recoveryFlow.timer); recoveryFlow.timer = null; }
+  }
   /* 방 만들기 창 위에 띄운 AI 추가 창을 닫으면 방 만들기 창을 다시 보이게 */
   if (id === "inviteModal") {
     var under = $("roomFormModal");
@@ -8249,14 +8270,27 @@ async function authInit() {
     return;
   }
   if (V3.mode === "local") { renderCredit(); renderAccount(); return; }
+  /* ── 비밀번호 재설정 링크로 돌아온 경우 ───────────────────────────
+     메일 링크는 #access_token=…&type=recovery 로 돌아온다. supabase-js 는
+     getSession()(내부 초기화)에서 그 토큰을 곧바로 ‘소비’하며 주소 해시를 지우고
+     PASSWORD_RECOVERY 이벤트를 한 번 쏜다. 그래서
+       ① 링크 여부는 클라이언트가 주소를 읽기 전(head 의 __KKIRI_BOOT)에 이미 잡아 두고
+       ② 이벤트 구독은 getSession() **앞에** 걸고
+       ③ 둘 중 하나라도 걸리면 새 비밀번호 창을 띄운다.
+     (예전에는 구독이 getSession() 뒤여서 이벤트를 놓치고, 해시도 이미 지워져
+      일반 홈 화면으로 넘어가 버렸다) */
+  var boot = (typeof window !== "undefined" && window.__KKIRI_BOOT) || {};
+  var urlish = String(location.hash || "") + "&" + String(location.search || "");
+  var initRecovery = boot.recovery === true || /[#&?]type=recovery([&=]|$)/.test(urlish);
+  var initAuthErr = boot.authErr === true || /error_code=otp_expired|error=access_denied/.test(urlish);
   try {
-    var s = await db.client.auth.getSession();
-    var session = s && s.data ? s.data.session : null;
-    if (session && session.user) await afterSignIn(session.user);
+    /* 구독을 먼저 — getSession() 의 초기화가 토큰을 소비하며 쏘는 PASSWORD_RECOVERY 를 놓치지 않는다 */
     db.client.auth.onAuthStateChange(function (evt, sess) {
-      if (evt === "SIGNED_IN" && sess && sess.user) { afterSignIn(sess.user); }
-      /* 메일의 재설정 링크로 돌아오면 새 비밀번호를 받는 창을 띄운다 */
-      else if (evt === "PASSWORD_RECOVERY") { openRecovery(); }
+      if (evt === "PASSWORD_RECOVERY") {
+        /* 이미 띄운 상태라면 openRecovery 가 입력값을 건드리지 않고 창만 맨 위로 다시 올린다 */
+        if (!recoveryFlow.dismissed) openRecovery();
+      }
+      else if (evt === "SIGNED_IN" && sess && sess.user) { afterSignIn(sess.user); }
       else if (evt === "SIGNED_OUT") {
         V3.signedIn = false; V3.user = null; V3.ready = false;
         V3.guestTrialUsed = false;
@@ -8266,12 +8300,15 @@ async function authInit() {
         renderExperts();
       }
     });
+    var s = await db.client.auth.getSession();
+    var session = s && s.data ? s.data.session : null;
+    if (session && session.user) await afterSignIn(session.user);
   } catch (e) {}
-  /* 재설정 링크가 이벤트보다 늦게 처리되는 경우까지 — 주소에 recovery 표시가 있으면 창을 띄운다 */
-  var hs = String(location.hash || "");
-  if (/type=recovery/.test(hs)) setTimeout(function () { openRecovery(); }, 500);
-  else if (/error_code=otp_expired|error=access_denied/.test(hs)) {
+  /* 재설정 링크였다 — 이벤트를 놓쳤거나 해시가 먼저 지워졌어도 창을 띄운다 */
+  if (initRecovery) scheduleRecovery(300);
+  else if (initAuthErr) {
     setTimeout(function () {
+      if (recoveryFlow.dismissed) return;
       openModal("authModal");
       setAuthMsg("err", "재설정 링크가 만료됐어요. 아래 ‘비밀번호를 잊으셨나요?’로 다시 받아 주세요.");
       try { if (window.history && history.replaceState) history.replaceState(null, "", location.pathname + (location.search || "")); } catch (e) {}
@@ -8414,17 +8451,37 @@ function setRcMsg(kind, text) {
   el.className = "auth-msg " + (kind || "info");
   el.textContent = text || "";
 }
+/* 재설정 창을 예약해서 연다 — 중복 호출(이벤트·해시·타이머)은 무시한다 */
+function scheduleRecovery(delay) {
+  recoveryFlow.want = true;
+  if (recoveryFlow.shown || recoveryFlow.dismissed) return;
+  if (recoveryFlow.timer) return;
+  recoveryFlow.timer = setTimeout(function () {
+    recoveryFlow.timer = null;
+    openRecovery();
+  }, typeof delay === "number" ? delay : 0);
+}
 function openRecovery() {
   var m = $("recoveryModal");
   if (!m) return;
-  var a = $("authModal");
-  if (a && !a.hidden) closeModal("authModal");
+  recoveryFlow.want = true;
+  if (recoveryFlow.timer) { clearTimeout(recoveryFlow.timer); recoveryFlow.timer = null; }
+  /* 재설정 링크가 ?code= 로 오는 흐름에서도 초대 코드로 오해하지 않게 */
+  pendingJoin = null;
+  /* 다른 창·모바일 사이드바가 새 비밀번호 입력을 가리지 않게 먼저 정리한다 */
+  openStack.slice().forEach(function (id) { if (id !== "recoveryModal") closeModal(id); });
+  try { closeSidebar(); } catch (e) {}
+  /* 처음 띄울 때만 입력값을 비운다 — 늦게 온 이벤트가 사용자가 쓰던 값을 지우지 않게 */
+  var first = m.hidden || !m.classList.contains("show");
   var p1 = $("rcPw"), p2 = $("rcPw2");
-  if (p1) p1.value = "";
-  if (p2) p2.value = "";
-  setRcMsg("", "");
-  openModal("recoveryModal");
-  setTimeout(function () { if (p1) { try { p1.focus(); } catch (e) {} } }, 160);
+  if (first) {
+    if (p1) p1.value = "";
+    if (p2) p2.value = "";
+    setRcMsg("", "");
+  }
+  recoveryFlow.shown = true;
+  openModal("recoveryModal");      /* 이미 열려 있으면 다른 창보다 위로 다시 올라온다 */
+  if (first) setTimeout(function () { if (p1) { try { p1.focus(); } catch (e) {} } }, 160);
   /* 주소에 남은 재설정 표시(#...type=recovery)를 지워 새로고침해도 다시 뜨지 않게 */
   try { if (window.history && history.replaceState) history.replaceState(null, "", location.pathname + (location.search || "")); } catch (e) {}
 }
@@ -8441,9 +8498,19 @@ async function saveRecoveryPassword() {
     if (r && r.error) setRcMsg("err", authFriendly(r.error));
     else {
       setRcMsg("ok", "비밀번호를 바꿨어요 · 이제 새 비밀번호로 로그인할 수 있어요");
+      recoveryFlow.dismissed = true; recoveryFlow.want = false;
       closeModal("recoveryModal");
       toast("비밀번호를 바꿨어요");
-      if (r && r.data && r.data.user) await afterSignIn(r.data.user);
+      /* 재설정 링크로 들어온 세션을 그대로 정식 로그인 상태로 이어받는다 */
+      var u = (r && r.data && r.data.user) || null;
+      if (!u && db.client) {
+        try { var ss = await db.client.auth.getSession(); u = (ss && ss.data && ss.data.session && ss.data.session.user) || null; } catch (e2) {}
+      }
+      if (u) { await afterSignIn(u); toast("새 비밀번호로 로그인했어요"); }
+      else if (!V3.signedIn) {
+        openModal("authModal");
+        setAuthMsg("ok", "비밀번호를 바꿨어요. 새 비밀번호로 로그인해 주세요.");
+      }
     }
   } catch (e) { setRcMsg("err", "네트워크 오류로 바꾸지 못했어요."); }
   if (btn) { btn.disabled = false; btn.textContent = "비밀번호 변경"; }
@@ -9342,6 +9409,8 @@ async function bootV3() {
   renderAll();
   renderCredit(); renderAccount(); renderExperts();
   maybeAskAuth();
+  /* 재설정 링크로 들어왔다면 부팅 중 다른 창이 위를 덮었을 수 있으니 마지막으로 한 번 더 올린다 */
+  if (recoveryFlow.want && !recoveryFlow.dismissed) openRecovery();
 }
 
 /* =========================================================
