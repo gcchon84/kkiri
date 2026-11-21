@@ -1594,10 +1594,13 @@
     transition:border-color .14s ease,background .14s ease;
   }
   .sidebar .account-line.start:hover{border-color:#7059D0;background:linear-gradient(135deg,#312868 0%,#3C3180 100%)}
-  .sidebar .account-line.start b{font-size:13px;letter-spacing:-.02em}
-  .sidebar .account-line.start small{color:#BEB3E2;font-size:11px}
-  .sidebar .account-line.start .a-ico{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;flex:0 0 28px;border-radius:9px;background:rgba(255,255,255,.10)}
-  .sidebar .account-line.start .a-ico .ico{width:16px;height:16px;color:#D9CCFF}
+  /* 서브카피 없이 '끼리 시작하기' 한 줄만 — 버튼처럼 크고 단정하게, 아이콘과 세로 중앙 정렬 (2026-11-21) */
+  .sidebar .account-line.start{align-items:center;gap:11px;min-height:52px;padding:10px 12px}
+  .sidebar .account-line.start .a-txt{display:flex;align-items:center;min-height:30px}
+  .sidebar .account-line.start b{font-size:16px;font-weight:900;letter-spacing:-.03em;line-height:1.2}
+  .sidebar .account-line.start small{display:none}
+  .sidebar .account-line.start .a-ico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:0 0 30px;border-radius:10px;background:rgba(255,255,255,.10)}
+  .sidebar .account-line.start .a-ico .ico{width:17px;height:17px;color:#D9CCFF}
   /* 홈 — 브랜드 로고·슬로건 아래 하나뿐인 시작 카드 */
   .home-start{
     display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;
@@ -2242,7 +2245,7 @@ window.__KKIRI_BOOT = (function () {
     </button>
     <div class="account-line" id="accountLine">
       <span class="a-ico" aria-hidden="true"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg></span>
-      <span class="a-txt"><b id="accountName">로그인 전</b><small id="accountSub">매일 300크레딧 무료</small></span>
+      <span class="a-txt"><b id="accountName">로그인 전</b><small id="accountSub"></small></span>
       <button type="button" id="accountBtn">로그인</button>
     </div>
 
@@ -2695,7 +2698,7 @@ window.__KKIRI_BOOT = (function () {
         <span class="ag-ico" aria-hidden="true"><svg class="ico md" aria-hidden="true" focusable="false"><use href="#i-bolt"></use></svg></span>
         <span><b id="guestBtnTitle">게스트로 먼저 체험하기</b><small id="guestBtnSub">1회 100크레딧 무료 체험 · 이메일 없이 바로</small></span>
       </button>
-      <p class="modal-note">초대 링크로 들어왔다면 로그인 후 그 방의 멤버가 되어 대화가 이어져요.</p>
+      <!-- 옛 안내 문구('초대 링크로 들어왔다면 로그인 후…')는 제거 — 초대 링크는 이제 무로그인 바로 입장 (2026-11-21) -->
     </div>
   </div>
 </div>
@@ -9126,7 +9129,7 @@ function renderAccount() {
     setSigned(false);
     /* 시작 전 — '로그인' 버튼을 따로 두지 않고, 카드 하나를 누르면 시작 모달이 열린다 */
     name.textContent = "끼리 시작하기";
-    sub.textContent = "사람·내 AI 대화 무료 · 끼리 AI 매일 체험";
+    sub.textContent = "";   /* 서브카피 제거 — 제목 한 줄만 크게 (2026-11-21) */
     btn.hidden = true;
     if (al) { al.classList.add("start"); al.setAttribute("tabindex", "0"); al.setAttribute("role", "button"); }
     renderStartUI();
