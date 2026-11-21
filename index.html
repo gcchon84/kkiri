@@ -3744,7 +3744,8 @@ function ownerOnlyBlocked(what) {
   return true;
 }
 function roomRowHtml(rm) {
-  var meta = categoryLabelOf(rm) + " · " + rm.members.length + "명";
+  /* 방 카드 인원수도 방 안 상단과 같은 기준(사람 + AI 전체) */
+  var meta = categoryLabelOf(rm) + " · " + peopleOf(rm) + "명";
   var picked = !!sideEdit.sel[rm.id];
   return '<div class="room-item' + (rm.id === state.activeRoomId ? " active" : "") + (sideEdit.on ? " editing" + (picked ? " sel" : "") : "") + '" data-room="' + esc(rm.id) + '">' +
     (sideEdit.on ? '<span class="r-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
@@ -4081,7 +4082,7 @@ function renderHome() {
       (homeEdit.on ? ' aria-pressed="' + picked + '"' : "") + '>' +
       (homeEdit.on ? '<span class="hr-check" aria-hidden="true">' + (picked ? "✓" : "") + "</span>" : "") +
       '<span class="hr-emoji" aria-hidden="true">' + roomIcoHtml(rm.emoji || "💬") + "</span>" +
-      '<span class="hr-body"><b>' + esc(rm.name) + "</b><small>" + esc(categoryLabelOf(rm) + " · AI " + rm.members.length + "명") + "</small></span>" +
+      '<span class="hr-body"><b>' + esc(rm.name) + "</b><small>" + esc(categoryLabelOf(rm) + " · " + peopleOf(rm) + "명") + "</small></span>" +
       (rm.status === "running" ? '<span class="r-live" title="진행 중"></span>' : "") +
       "</button>";
   });
@@ -4677,20 +4678,57 @@ function allMentionCount() {
   });
   return aiN + people.length;
 }
-/* ‘이 방’ 인원수 — 나 + 접속 중인 사람 + 이 방 AI(끼리 AI·내 AI)를 이름 기준으로 중복 없이 센다 */
-function roomPeopleCount(r) {
-  if (!r) return 0;
-  var seen = {}, n = 0;
-  function add(name) {
-    var k = String(name == null ? "" : name).trim().toLowerCase();
-    if (!k || seen[k]) return;
-    seen[k] = 1; n++;
-  }
-  add(selfLabel());
-  onlinePeople().forEach(add);
-  (r.members || []).forEach(function (id) { var a = state.agents[id]; if (a) add(a.name); });
-  return n;
+/* ===== 방 하나의 전체 인원 (사람 + AI) =====
+   홈(내 대화방) 카드·사이드바 방 목록·방 상단 참여 바가 모두 이 함수(peopleOf)를 써서
+   같은 방의 숫자가 화면마다 어긋나지 않는다.
+   · 방에 등록된 AI(끼리 AI·내 AI)와 이 방에 모인 사람(초대 링크로 들어온 외부 AI 포함)을 중복 없이 센다.
+   · 지금 그 방에 들어와 있으면 presence 접속 명단을 쓰고, 그 밖의 방은 이 브라우저가 본 명단과
+     DB에 남은 사람 발언(sender_type='human')으로 채운다. */
+var roomPeopleKnown = {};    /* 방 id → { 사람 키: 표시 이름 } — 접속·발언으로 확인된 사람 한 명당 하나 */
+var roomPersonKeys = {};     /* 방 id → { 소문자 이름: 사람 키 } — 이름으로 같은 사람을 찾는다(개명 포함) */
+function noteRoomPerson(roomId, name, userId) {
+  if (!roomId) return "";
+  var n = String(name == null ? "" : name).trim().slice(0, 40);
+  var uid = String(userId == null ? "" : userId).trim();
+  if (!n && !uid) return "";
+  var box = roomPeopleKnown[roomId] || (roomPeopleKnown[roomId] = {});
+  var map = roomPersonKeys[roomId] || (roomPersonKeys[roomId] = {});
+  var nameKey = n.toLowerCase();
+  /* 같은 이름을 이미 본 적이 있으면 그 사람으로 본다 — 접속 명단(이름만)과 DB(계정 id)가 같은 사람으로 합쳐진다 */
+  var key = (nameKey && map[nameKey]) || (uid ? "u:" + uid : "") || "n:" + nameKey;
+  box[key] = n || box[key] || "";
+  if (nameKey) map[nameKey] = key;
+  return key;
 }
+function noteRoomPeople(roomId, names) {
+  (names || []).forEach(function (n) { noteRoomPerson(roomId, n); });
+}
+function peopleOf(r) {
+  if (!r) return 0;
+  var box = roomPeopleKnown[r.id] || {};
+  var map = roomPersonKeys[r.id] || {};
+  var keys = {};
+  Object.keys(box).forEach(function (k) { if (k) keys[k] = 1; });
+  function addName(name) {
+    var n = String(name == null ? "" : name).trim();
+    if (!n) return;
+    keys[map[n.toLowerCase()] || ("n:" + n.toLowerCase())] = 1;
+  }
+  /* 나 · 지금 접속 중인 사람 — 이 방의 presence 를 듣고 있는 동안이 가장 정확하다 */
+  if (r.id && presence && presence.roomId === r.id) {
+    addName(nick());
+    onlinePeople().forEach(addName);
+  }
+  /* 이 방의 AI — 같은 이름의 사람이 이미 있으면 한 명으로 센다 */
+  (r.members || []).forEach(function (id) {
+    var a = state.agents[id];
+    if (!a || !a.name) return;
+    keys[map[String(a.name).toLowerCase()] || ("ai:" + id)] = 1;
+  });
+  return Object.keys(keys).length;
+}
+/* 방 상단 참여 바가 쓰는 이름 — peopleOf 와 같은 기준 */
+function roomPeopleCount(r) { return peopleOf(r); }
 /* ===== 가로 스크롤 칩 줄 페이드 상태 =====
    실제 넘침(scrollWidth > clientWidth)이 있을 때만 오른쪽 흐림(fade-r)을 켜고,
    끝까지 스크롤했거나 애초에 넘치지 않는 짧은 줄에서는 흐림을 끈다.
@@ -4729,12 +4767,19 @@ function renderPeople() {
   /* 초대 링크로 자동 입장하는 동안에는 데모 방 참가자를 보여 주지 않는다 */
   var joining = currentView() !== "home" && (inviteJoinPending() || joinFlow.busy);
   if (!r || currentView() === "home" || joining) { host.innerHTML = ""; bar.hidden = true; return; }
-  /* ‘이 방’ 라벨 없이 인원수만 — 사람 아이콘 + 숫자 배지 + 명 */
+  /* 이 방에서 확인된 사람(나·접속자·초대된 외부 AI)을 방별로 기억해 둔다 — 홈·사이드바 카드 인원수에 그대로 쓴다 */
+  var pplBefore = peopleOf(r);
+  noteRoomPeople(r.id, [nick()].concat(onlinePeople()));
+  /* 사람이 새로 확인되면 방 목록 카드 인원수도 바로 맞춘다 */
+  if (peopleOf(r) !== pplBefore) { renderRoomList(); renderHome(); }
+  /* ‘이 방’ 라벨 없이 인원수만 — 사람 아이콘 + 숫자 배지 + 명 (사람 + AI 전체) */
   var lab = $("pbLabel");
   if (lab) {
-    var cnt = roomPeopleCount(r);
+    var cnt = peopleOf(r);
+    var liveN = 1 + onlinePeople().length;
     lab.innerHTML = icoHtml("user", "xs") + '<b class="pb-n">' + cnt + "</b>명";
-    lab.setAttribute("aria-label", "이 방 참가자 " + cnt + "명");
+    lab.setAttribute("aria-label", "이 방 전체 참가자 " + cnt + "명(사람·AI 포함)");
+    lab.title = "사람 + AI 전체 " + cnt + "명 · 지금 접속 " + liveN + "명";
   }
   var h = "";
   /* 방장 표시 — 누가 이 방의 크레딧을 쓰는지(끼리 AI·토론) 한눈에 */
@@ -4763,19 +4808,48 @@ function renderPeople() {
   bar.hidden = !h;
   syncChipFades();   /* 넘치는 방이면 오른쪽 끝 페이드, 짧은 방이면 흐림 없음 */
 }
+/* 토론이 이미 끝났다는 증거 — 시작 시각(discussingAt) 이후에 올라온 정리안 카드나 종료 안내가 있으면
+   끝난 토론이다. (탭을 닫아 종료 기록이 남지 않은 방·다른 사람 화면에서도 배지가 남지 않게) */
+var DISCUSS_BADGE_MS = 20 * 60 * 1000;   /* 방장이 아닌 참여자가 ‘진행 중’으로 볼 수 있는 최대 시간 */
+var discussBadgeTimer = null;
+function discussEndedAfter(r, stamp) {
+  if (!r || !stamp) return false;
+  return (r.messages || []).some(function (m) {
+    if ((Number(m.at) || 0) <= stamp) return false;
+    if (m.who === "card" || m.card) return true;
+    return m.who === "system" && /종료|정리안/.test(String(m.text || ""));
+  });
+}
+/* 남아 있는 ‘진행 중’ 기록을 정리한다 — 끝난 토론이면 방장 쪽에서 서버 값(discussingAt)도 0으로 지운다 */
+function settleDiscussAt(r) {
+  var stamp = Number(r && r.discussingAt) || 0;
+  if (!stamp) return false;
+  if (run.active && run.mode === "roundtable" && state.activeRoomId === r.id) return false;
+  if (!discussEndedAfter(r, stamp)) return false;
+  r.discussingAt = 0;
+  if (isRoomOwner(r)) dbSaveSettings(r);
+  return true;
+}
 /* 방장이 아닌 참여자 화면 — 방장이 켠 AI 자동토론이 돌 때만 작은 상태 배너를 보여 준다.
    (제어 버튼·크레딧 상한·크레딧 배지는 방장 것이라 숨긴다) */
 function renderAutoTalkBanner(rm) {
   var el = $("autoTalkBanner");
   if (!el) return;
   var r = rm || activeRoom();
+  settleDiscussAt(r);                      /* 끝난 토론이면 배지·기록을 바로 내린다 */
   var localRun = !!(run.active && run.mode === "roundtable");
   /* 방장이 아닌 참여자는 방 설정에 기록된 discussingAt 으로도 ‘진행 중’을 안다(최대 20분까지 유효) */
-  var remoteRun = !!(r && r.discussingAt && Date.now() - r.discussingAt < 20 * 60 * 1000);
+  var left = (r && r.discussingAt) ? DISCUSS_BADGE_MS - (Date.now() - Number(r.discussingAt)) : 0;
+  var remoteRun = !!(r && r.discussingAt && left > 0);
   var ownerHere = r ? isRoomOwner(r) : true;
   var show = !!(r && !ownerHere && currentView() !== "home" && (localRun || remoteRun));
+  if (discussBadgeTimer) { clearTimeout(discussBadgeTimer); discussBadgeTimer = null; }
   el.hidden = !show;
-  if (!show) return;
+  if (!show) { el.innerHTML = ""; return; }
+  /* 20분이 지나면 다시 그려 줄 사람이 없어도 배지가 스스로 사라지게 한다 */
+  if (!localRun && left > 0) {
+    discussBadgeTimer = setTimeout(function () { discussBadgeTimer = null; renderAutoTalkBanner(); }, left + 80);
+  }
   var txt = "AI 자동토론 진행 중";
   if (localRun) {
     var rounds = clamp(Number(r.rounds) || RT_DEFAULT_ROUNDS, 1, 20);
@@ -4807,6 +4881,7 @@ function addUserMessage(text) {
   var r = activeRoom();
   var m = { id: uid("h"), who: "user", name: nick(), text: text, at: Date.now(), tin: 0, tout: 0, cost: 0 };
   r.messages.push(m);
+  noteRoomPerson(r.id, m.name, V3.user && V3.user.id);   /* 내가 말한 방은 사람 수에 나를 넣는다 */
   if (!r.session.startedAt) r.session.startedAt = Date.now();
   save();
   renderTimeline(true);
@@ -8528,7 +8603,11 @@ async function dbLoadMessages(roomId) {
     var list = (mres.data || []).map(dbMsgFromRow);
     if (!sres.error) list = list.concat((sres.data || []).map(dbCardFromRow));
     dbMergeInto(r, list);
+    /* 방에 남은 사람 말에서 참가자를 모아 둔다 — 접속이 끊긴 사람도 카드 인원수에는 남는다 */
+    (r.messages || []).forEach(function (m) { if (m.who === "user") noteRoomPerson(r.id, m.name || nick()); });
   } catch (e) { dbToast("대화를 불러오지 못했어요 · 네트워크"); }
+  /* 불러온 기록으로 끝난 토론의 ‘진행 중’ 배지를 정리한다 */
+  try { renderAutoTalkBanner(r); } catch (e) {}
 }
 function dbUnsubscribe() {
   if (db.channel && db.client) {
@@ -8881,6 +8960,7 @@ function renderPresence() {
 }
 function dbOnMessage(row) {
   var r = activeRoom();
+  if (row && row.sender_type === "human") noteRoomPerson(row.room_id, row.sender_name, row.user_id);
   if (!r || r.id !== row.room_id) return;
   var dup = false;
   r.messages.forEach(function (m) { if (m.id === row.id) dup = true; });
@@ -8889,6 +8969,7 @@ function dbOnMessage(row) {
   r.messages.push(m);
   renderTimeline(true);
   renderSidebar();
+  renderAutoTalkBanner();        /* 토론 종료 안내가 오면 ‘진행 중’ 배지를 바로 내린다 */
   aiIdleReset();                 /* 새 대화가 올라오면 무응답 시계가 되감긴다 */
 }
 function dbOnSummary(row) {
@@ -8900,6 +8981,7 @@ function dbOnSummary(row) {
   r.messages.push(dbCardFromRow(row));
   renderTimeline(true);
   renderSidebar();
+  renderAutoTalkBanner();        /* 정리안 카드가 도착하면 끝난 토론의 배지를 내린다 */
   aiIdleReset();
 }
 function dbRefreshSoon() {
@@ -8920,7 +9002,25 @@ async function dbRefresh() {
     }
     renderAll();
     refreshRoomFormLists();      /* 방 설정(⋯)이 열려 있으면 참여자·역할도 서버 기준으로 맞춘다 */
+    dbLoadRoomHumans();          /* 다른 방 카드 인원수에도 사람을 넣는다(1분에 한 번만) */
   } catch (e) {}
+}
+/* 방마다 모인 사람을 DB에서 한 번에 모은다 — 홈·사이드바 카드 인원수에 쓰는 이름 목록.
+   사람이 남긴 발언의 sender_name·user_id 를 방별로 모아 두고, 접속 중인 방은 presence 명단을 더한다.
+   (사람이 한 명도 말하지 않은 방은 AI 수만 보인다 — 방에 들어가면 그때 명단으로 채워진다) */
+var roomHumansAt = 0;
+async function dbLoadRoomHumans() {
+  if (!db.ready || !db.client) return;
+  if (roomHumansAt && Date.now() - roomHumansAt < 60000) return;
+  roomHumansAt = Date.now();
+  try {
+    var res = await db.client.from("kkiri_messages").select("room_id,user_id,sender_name")
+      .eq("sender_type", "human").order("created_at", { ascending: false }).limit(2000);
+    if (res && res.error) { roomHumansAt = 0; return; }
+    (res.data || []).forEach(function (row) { noteRoomPerson(row.room_id, row.sender_name, row.user_id); });
+    renderHome();
+    renderRoomList();
+  } catch (e) { roomHumansAt = 0; }
 }
 function dbSendMessage(m) {
   if (!db.ready || !db.client) return;
@@ -9220,6 +9320,7 @@ async function dbInit() {
     scrollBottom(true);
     dbSubscribe(state.activeRoomId);
     presenceJoin(state.activeRoomId);
+    dbLoadRoomHumans();          /* 방 목록 카드 인원수에 사람을 더한다 */
     return true;
   } catch (e) {
     db.ready = false;
