@@ -968,12 +968,12 @@
   .home-chip.green{background:var(--brand);border-color:var(--brand);color:#fff}
   .home-chip.green:hover{background:var(--brand-deep)}
   .home-sec{background:#fff;border:1px solid var(--line);border-radius:20px;padding:13px 13px 15px;box-shadow:var(--shadow)}
-  /* 제목이 길어 버튼 줄이 다음 줄로 내려가도 항상 오른쪽에 붙게 (2026-11-21) */
-  .home-sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-  .home-sec-head > div:first-child{min-width:0}
-  .home-sec-head h2{font-size:13.5px;font-weight:900;letter-spacing:-.03em}
+  /* 1행: 제목(왼쪽) + 버튼(오른쪽)을 한 줄에 / 2행: 설명은 전체 폭 (2026-11-21 — 모바일에서 버튼이 아래로 떨어지며 왼쪽에 빈 공간이 생기던 문제) */
+  .home-sec-head{display:flex;align-items:center;justify-content:space-between;gap:6px 8px;flex-wrap:wrap;margin-bottom:10px}
+  .home-sec-head > div:first-child{min-width:0;flex:0 1 auto;display:flex;align-items:center;gap:4px}
+  .home-sec-head h2{font-size:13.5px;font-weight:900;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .home-sec-head h2 em{font-style:normal;font-size:10px;color:#5B38E0;background:var(--brand-tint);border-radius:999px;padding:2px 7px;margin-left:4px}
-  .home-sec-head p{font-size:9.5px;font-weight:700;color:#948BAF;margin-top:3px;letter-spacing:-.01em}
+  .home-sec-head p{flex:0 0 100%;order:9;font-size:9.5px;font-weight:700;color:#948BAF;margin-top:0;letter-spacing:-.01em}
   .h-btn{
     border:1px solid var(--line);background:#fff;color:var(--ink-2);border-radius:11px;padding:9px 12px;
     font-size:11px;font-weight:900;letter-spacing:-.02em;cursor:pointer;white-space:nowrap;
@@ -1034,8 +1034,12 @@
     .home-sec{padding:11px 10px 13px;border-radius:17px}
     .home-sec-head h2{font-size:12.5px}
     .h-btn{padding:8px 10px;font-size:10px}
-    /* 홈 · 내 대화방 "+ 새 방" — 손가락으로 누르기 좋게 크게 (14.5~15px급) */
-    .h-btn.green#homeNewRoomBtn{font-size:15px;line-height:1.15;padding:12px 17px;min-height:46px;border-radius:14px;letter-spacing:-.02em}
+    /* 홈 · 내 대화방 1행 — "+ 새 방"은 '내 대화방 N'과 같은 줄에 한 줄로 들어가게, 휴지통과 높이 맞춤 (2026-11-21) */
+    .home-sec-head{gap:5px 7px;margin-bottom:9px}
+    .home-sec-head h2{font-size:14px}
+    .home-sec-actions{gap:5px}
+    .h-btn.green#homeNewRoomBtn{font-size:13.5px;line-height:1.2;padding:8px 13px;min-height:36px;border-radius:12px;letter-spacing:-.02em}
+    .h-btn#homeEditBtn{width:36px;min-height:36px;padding:0;display:inline-grid;place-items:center}
     .room-grid{grid-template-columns:1fr}
     .room-actions{gap:5px;margin-left:auto}
     /* 방 이름이 곧 주제 — 모바일에서는 이름이 한 줄을 다 쓴다(잘리지 않게) */
@@ -2254,13 +2258,14 @@ window.__KKIRI_BOOT = (function () {
         </div>
         <section class="home-sec" id="homeRoomsSec" aria-label="내 대화방">
           <div class="home-sec-head">
-            <div><h2><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>내 대화방 <em id="homeRoomCount">0</em></h2><p>주제 하나를 두고 AI와 사람이 모이는 공간이에요.</p></div>
+            <div><h2><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>내 대화방 <em id="homeRoomCount">0</em></h2></div>
             <div class="home-sec-actions">
               <button type="button" class="h-btn" id="homeEditBtn" title="방 선택 삭제" aria-label="방 선택 삭제" hidden><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>
               <button type="button" class="h-btn green" id="homeNewRoomBtn">+ 새 방</button>
               <button type="button" class="h-btn" id="homeEditCancel" hidden>취소</button>
               <button type="button" class="h-btn danger" id="homeBulkDelete" hidden>선택 삭제 (0개)</button>
             </div>
+            <p>주제 하나를 두고 AI와 사람이 모이는 공간이에요.</p>
           </div>
           <div class="room-grid" id="homeRoomGrid"></div>
         </section>
