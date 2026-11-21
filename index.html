@@ -4235,6 +4235,7 @@ function fmtText(text) {
 }
 
 function srcBadge(m) {
+  if (m.kind === "greet") return "";   /* 입장 인사는 모델 발언이 아니다 — ‘데모’ 배지를 달지 않는다 */
   if (m.src === "gemini") return '<span class="src">Gemini</span>';
   if (m.src === "openai") return '<span class="src">OpenAI</span>';
   if (m.src === "ext") return '<span class="src ext">외부</span>';
@@ -5217,23 +5218,27 @@ async function loopRoundtable(room, ep) {
 async function relayTurn(step, ep) {
   var r = activeRoom();
   if (!r) return;
-  var total = Math.max(1, Number(r.rounds) || 1);
-  var n = Math.max(1, Math.round(run.schedule.length / total));
-  var roundNo = clamp(Math.floor(run.idx / n) + 1, 1, total);
+  /* 라운드 숫자는 이번 토론의 스케줄(run)이 기준 — 방 설정(r.rounds)이 동기화·재로딩으로 흔들려도
+     실제로 도는 최대 라운드와 어긋나지 않게 한다(‘최대 5라운드’인데 ‘1/3’로 뜨던 문제). */
+  var total = Math.max(1, Number(run.maxRound) || Number(r.rounds) || 1);
+  var roundNo = clamp(Number(run.roundNo) || 1, 1, total);
   var agenda = String(r.agenda || r.name || "").trim();
   /* 2라운드부터는 사회자 차례에만 결론을 좁혀도 된다고 알려 준다(1라운드는 전원 발언 보장이라 표시 금지) */
   var modHint = "";
   if (run.roundNo >= 2 && !run.lastRound && run.moderator && sameName(step.nick, run.moderator)) {
     modHint = " · 사회자 · 결론이 모였다고 판단될 때만 답변 끝에 [종결]";
   }
-  var ask = "@" + step.nick + " [" + agenda + "]에 대해 앞선 의견을 참고해 짧게 답해 주세요 (토론 라운드 " + roundNo + "/" + total + modHint + ")";
   var known = {};
   r.messages.forEach(function (m) { known[m.id] = 1; });          /* 이미 있던 말은 응답으로 세지 않는다 */
   run.typingName = step.nick;
   run.relayWait = { nick: step.nick, since: Date.now() };
   renderTimeline(true);
   updateMeters();
-  addUserMessage(ask);                                            /* 방장 이름으로 호명 — 그 AI가 이 글을 보고 답한다 */
+  /* 예전에는 방장 이름으로 ‘@닉 [안건] …’ 호명 말풍선을 올렸는데, 바로 위 ‘📌 토론 안건’ 말풍선과
+     겹쳐 내가 두 번 말한 것처럼 보였다(2026-11-21 지용 님 제보). 이제 작은 시스템 차례 줄 하나로만 알린다.
+     외부 AI(&ai=1)·내 AI는 이 줄의 @이름을 보고 자기 차례를 알아채고, DB에도 그대로 남아 전파된다.
+     끼리 AI·내 키 AI는 speak()가 호출 프롬프트로 직접 차례를 넘긴다. */
+  addSystem("@" + step.nick + " 님 차례 · 짧게 답해 주세요 (" + roundNo + "/" + total + "라운드" + modHint + ")", "turn");
   var reply = await waitRelayReply(step.nick, known, ep, run.relayMs || RELAY_WAIT_MS);
   run.typingName = null;
   run.relayWait = null;
@@ -7142,7 +7147,7 @@ function submitRoomForm() {
     state.activeRoomId = room.id;
     state.view = "room";
     toast("방을 만들었어요");
-    dbCreateRoom(room, members);
+    dbCreateRoom(room, members).then(function () { greetAgentsOnEntry(members, room); });   /* 방 개설 때 배정된 끼리 AI 인사(0크레딧) */
   }
   save();
   closeModal("roomFormModal");
@@ -7733,6 +7738,7 @@ function addMemberToRoom(id) {
   if (r.members.indexOf(id) > -1) { toast(a.name + "은(는) 이미 이 방에 있어요"); return; }
   invAttach(id);
   dbSetMember(r.id, id, true);
+  greetAgentOnEntry(id, r);   /* 이미 만든 AI를 이 방에 들일 때도 1줄 인사 — 0크레딧 */
   renderInviteAgents();
   toast(a.name + " · 이 방에 추가했어요");
 }
@@ -7788,7 +7794,11 @@ function addByokAgent() {
   $("invName").value = ""; $("invRole").value = ""; $("invPrompt").value = "";
   closeModal("inviteModal");
   renderAll();
-  if (how === "room" && r) { dbUpsertAgent(r.id, id); toast(name + " · 이 방에 추가하고 다음 방에서도 부를 수 있게 저장했어요"); }
+  if (how === "room" && r) {
+    dbUpsertAgent(r.id, id);
+    greetAgentOnEntry(id, r);   /* 직접 만든 끼리 AI도 입장 인사 1줄 — 0크레딧 */
+    toast(name + " · 이 방에 추가하고 다음 방에서도 부를 수 있게 저장했어요");
+  }
   else toast("‘" + name + "’ · 방 만들기 목록에 넣고 다음 방에서도 부를 수 있게 저장했어요");
 }
 /* =========================================================
@@ -8110,6 +8120,7 @@ function dbMsgFromRow(row) {
     if (mt.phase) m.phase = mt.phase;
     if (mt.dup) m.dup = true;
     m.tin = Number(mt.tin) || 0; m.tout = Number(mt.tout) || 0; m.cost = Number(mt.cost) || 0;
+    if (mt.kind) m.kind = mt.kind;     /* 입장 인사 등 AI 메시지 종류 유지(새로고침 뒤에도 배지·중복 판단 동일) */
   }
   return m;
 }
@@ -10463,6 +10474,71 @@ function expertDef(exId) {
   allExpertDefs().forEach(function (x) { if (!found && x.id === exId) found = x; });
   return found;
 }
+/* ---------- 끼리 AI 입장 인사 (0크레딧 · 서버 AI 호출 없음) ----------
+   방에 새로 들어온 끼리 AI가 남기는 짧은 한 줄. 프리셋은 역할별 문장을 쓰고,
+   직접 만든 AI는 이름·역할로 만든다. 서버 AI를 부르지 않으므로 크레딧이 나가지 않는다.
+   입장 액션(방 만들기·AI 추가)에서만 부르므로 새로고침·재입장에서는 다시 인사하지 않는다. */
+var ENTRY_GREET = {
+  copywriter: "안녕하세요! 짧고 리듬 있는 문장으로 문구를 다듬어 드릴게요.",
+  marketer: "안녕하세요! 예산과 기간부터 정하고 채널·타이밍을 짜 드릴게요.",
+  redteam: "안녕하세요! 계획의 허점과 리스크부터 짚어 드릴게요.",
+  planner: "안녕하세요! 결정할 것과 확인할 것, 다음 할 일로 나눠 순서를 잡아 드릴게요.",
+  analyst: "안녕하세요! 숫자와 근거로 비교해서 보여 드릴게요.",
+  researcher: "안녕하세요! 비교 기준을 먼저 세우고 사례를 정리해 드릴게요.",
+  travel_route: "안녕하세요! 이동 동선과 시간표를 깔끔하게 짜 드릴게요.",
+  travel_spot: "안녕하세요! 분위기와 동선에 맞는 곳으로 골라 드릴게요.",
+  travel_budget: "안녕하세요! 교통·숙소·식비를 숫자로 나눠 총액을 맞춰 드릴게요.",
+  travel_risk: "안녕하세요! 날씨·주차·대기처럼 일정을 흔드는 변수부터 볼게요.",
+  travel_idea: "안녕하세요! 흔한 코스 대신 그 동네에서만 되는 한 곳을 찾아 드릴게요.",
+  daily_taste: "안녕하세요! 지금 기분과 동행에 맞는 메뉴·가게를 골라 드릴게요.",
+  daily_value: "안녕하세요! 같은 값이면 구성이 나은 쪽을 계산해 드릴게요.",
+  daily_mood: "안녕하세요! 조용한지 시끄러운지, 앉을 자리까지 보고 골라 드릴게요.",
+  daily_review: "안녕하세요! 좋은 점만 말하지 않고 단점과 팁도 같이 드릴게요.",
+  counsel_empathy: "안녕하세요! 편하게 이야기해 주세요, 마음부터 같이 들을게요.",
+  counsel_real: "안녕하세요! 현실적인 장단점이랑 선택지를 짚어 드릴게요.",
+  counsel_other: "안녕하세요! 내가 못 본 쪽을 정중하게 짚어 드릴게요.",
+  counsel_sort: "안녕하세요! 고민을 선택지로 나눠 비교해 드릴게요.",
+  free_talker: "안녕하세요! 가볍게 이야기 나눠요.",
+  free_wit: "안녕하세요! 분위기 살리는 한마디 곁들일게요.",
+  free_empathy: "안녕하세요! 편하게 말씀하세요, 마음부터 들을게요.",
+  free_topic: "안녕하세요! 대화가 멈추면 새 얘깃거리를 꺼내 드릴게요.",
+  etc_idea: "안녕하세요! 막힌 지점에서 쓸 아이디어를 꺼내 드릴게요.",
+  etc_research: "안녕하세요! 확인된 사실과 추정을 나눠서 정리해 드릴게요.",
+  etc_reality: "안녕하세요! 계획의 허점과 리스크부터 볼게요.",
+  etc_tidy: "안녕하세요! 이야기를 한 장으로 정리해 드릴게요."
+};
+function entryGreetingText(agent) {
+  if (!agent) return "";
+  var ex = String(agent.expert || "").trim();
+  if (ENTRY_GREET[ex]) return ENTRY_GREET[ex];
+  /* 매칭되지 않는 직접 만든 AI — 역할이 있으면 ‘역할 맡은 이름’, 없으면 이름만 */
+  var name = String(agent.name || "").trim() || "끼리 AI";
+  var role = String(agent.role || "").trim();
+  return role ? "안녕하세요! " + role + " 맡은 " + name + " 들어왔습니다."
+              : "안녕하세요! " + name + " 들어왔습니다.";
+}
+/* 방에 새로 들어온 끼리 AI의 인사 1줄 — 크레딧 0. 입장 액션에서만 1회 부른다. */
+function greetAgentOnEntry(agentId, room) {
+  var r = room || activeRoom();
+  var a = state.agents[agentId];
+  if (!r || !a) return false;
+  if (a.type !== "expert") return false;   /* 끼리 AI(프리셋·직접 만든 AI)만 — 내 AI는 자기 지시문대로 움직인다 */
+  if (r.members.indexOf(agentId) < 0) return false;
+  /* 같은 입장이 아주 짧은 사이에 두 번 불려도 인사가 겹치지 않게(이중 클릭·재진입 경로 안전장치) */
+  var recent = null;
+  r.messages.forEach(function (m) { if (m.who === agentId && m.kind === "greet") recent = m; });
+  if (recent && Date.now() - (recent.at || 0) < 20000) return false;
+  var text = entryGreetingText(a);
+  if (!text) return false;
+  var m = { id: uid("a"), who: agentId, text: text, at: Date.now(), kind: "greet", src: "greet", tin: 0, tout: 0, cost: 0, credits: 0 };
+  r.messages.push(m);
+  save();
+  if (activeRoom() && activeRoom().id === r.id) { renderTimeline(true); renderSidebar(); dbSendMessage(m); }
+  return true;
+}
+function greetAgentsOnEntry(ids, room) {
+  (ids || []).slice().forEach(function (id) { try { greetAgentOnEntry(id, room); } catch (e) {} });
+}
 function createExpertAgent(ex) {
   var id = "ex_" + ex.id + "_" + Math.random().toString(36).slice(2, 6);
   state.agents[id] = {
@@ -10518,6 +10594,7 @@ async function addExpert(exId) {
   renderExpertPicker();
   renderInviteAgents();
   await dbUpsertAgent(r.id, id);
+  greetAgentOnEntry(id, r);   /* 입장 인사 1줄 — 서버 AI 호출 없이 0크레딧 */
   toast(ex.name + " · 이 방에 추가했어요 (턴당 " + configCost(ex.config) + "크레딧)");
 }
 function removeExpert(id) {
@@ -10635,7 +10712,7 @@ async function cloudExpertTurn(agent, phase) {
   if (V3.guestTrialUsed) return guestAskLogin(agent.name);
   var token = await accessToken();
   if (!token) return { skip: true, note: "로그인하면 끼리 AI를 부를 수 있어요 · 상단 ‘내 크레딧’에서 시작하세요." };
-  var ctx = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; }).slice(-14).map(function (m) {
+  var ctx = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card" && m.kind !== "greet"; }).slice(-14).map(function (m) {
     return { speaker: agentName(m.who), text: String(m.text || "").slice(0, 600) };
   });
   var ro = roleOf(r, agent.id);
