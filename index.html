@@ -143,6 +143,10 @@
   .rt-round-credits{font-size:11.5px;font-weight:800;color:#5B38E0;line-height:1.6;margin-top:8px;letter-spacing:-.01em}
   .rt-round-credits em{font-style:normal;color:#8C84A8;font-weight:700}
   .rt-round-credits .muted{color:#8C84A8;font-weight:700;font-size:11px}
+  /* 라운드는 최대 상한 — 조기 종결·상한 도달 안내 (2026-11-21) */
+  .rt-round-note{font-size:11px;font-weight:700;color:#8C84A8;line-height:1.55;margin-top:7px;letter-spacing:-.01em}
+  .rt-round-note b{color:#5B38E0;font-weight:900}
+  @media (max-width:380px){ .rt-round-note{font-size:10.5px} }
   .install-lead{font-size:13px;font-weight:800;color:#3A2E6B;line-height:1.6;letter-spacing:-.01em}
   .install-steps{margin:12px 0 0 16px;list-style:decimal;padding:0}
   .install-steps li{font-size:12.5px;font-weight:700;color:#5F5780;line-height:1.8;letter-spacing:-.01em;margin-bottom:3px}
@@ -687,7 +691,14 @@
   .hint{font-size:10px;line-height:1.6;color:#948BAF;letter-spacing:-.01em;margin-top:8px}
   .hint b{color:#5F5780;font-weight:900}
   .hint a{color:var(--brand-deep);font-weight:900;text-decoration:none;border-bottom:1px solid rgba(101,70,240,.3)}
-  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end}
+  /* 두 칸의 라벨·입력칸 높이를 일직선으로 — 첫 칸만 margin-top:0 이던 것을 없엔다 (2026-11-21) */
+  .field-row > .field{margin-top:0}
+  /* 내 키 제공자 두 버튼은 50:50 으로 나란히 (2026-11-21) */
+  #byokSeg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  #byokSeg .pick{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;text-align:center;min-height:44px;
+    font-size:12.5px;line-height:1.25;word-break:keep-all;padding:9px 8px}
+  #byokSeg .kb{flex:0 0 auto}
   .swatches{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
   .swatch{
     width:26px;height:26px;border-radius:9px;border:2px solid transparent;cursor:pointer;padding:0;
@@ -951,7 +962,9 @@
   .home-chip.green{background:var(--brand);border-color:var(--brand);color:#fff}
   .home-chip.green:hover{background:var(--brand-deep)}
   .home-sec{background:#fff;border:1px solid var(--line);border-radius:20px;padding:13px 13px 15px;box-shadow:var(--shadow)}
+  /* 제목이 길어 버튼 줄이 다음 줄로 내려가도 항상 오른쪽에 붙게 (2026-11-21) */
   .home-sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .home-sec-head > div:first-child{min-width:0}
   .home-sec-head h2{font-size:13.5px;font-weight:900;letter-spacing:-.03em}
   .home-sec-head h2 em{font-style:normal;font-size:10px;color:#5B38E0;background:var(--brand-tint);border-radius:999px;padding:2px 7px;margin-left:4px}
   .home-sec-head p{font-size:9.5px;font-weight:700;color:#948BAF;margin-top:3px;letter-spacing:-.01em}
@@ -973,7 +986,7 @@
   .home-room small{display:block;font-size:9px;font-weight:700;color:#948BAF;margin-top:3px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .home-room .r-live{margin-top:0}
   /* 홈 — 선택 삭제 모드 */
-  .home-sec-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .home-sec-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin-left:auto}
   .h-btn.danger{background:#e2534d;border-color:#e2534d;color:#fff}
   .h-btn.danger:hover{background:#c9433d}
   .home-room .hr-check{flex:0 0 auto;width:20px;height:20px;border-radius:7px;border:1px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:900;color:#B4ABCC;background:#fff}
@@ -1042,7 +1055,7 @@
     .quick{padding:0 0 6px}
     .ghost-btn{padding:8px 10px;font-size:10.5px}
     .room-actions .ghost-btn .lbl{display:none}
-    /* 합의안은 방 화면에서 한 곳(헤더)에만 두므로, 좁은 화면에서도 글자를 남겨 알아보게 한다 */
+    /* 정리안은 방 화면에서 한 곳(헤더)에만 두므로, 좁은 화면에서도 글자를 남겨 알아보게 한다 */
     .room-actions #shareBtn{padding:8px 8px;gap:3px}
     .room-actions #shareBtn .lbl{display:inline;font-size:10px}
     .room-actions #cardBtn{padding:8px 9px;gap:4px}
@@ -1760,7 +1773,7 @@
   @media (max-width:380px){
     .ctrl-act{padding:0 10px;font-size:13px}
   }
-  /* ============ 합의안 카드 공유 버튼 — 세로로 늘어나지 않게 (2026-11-21) ============ */
+  /* ============ 정리안 카드 공유 버튼 — 세로로 늘어나지 않게 (2026-11-21) ============ */
   .timeline-inner > .card{flex:0 0 auto;height:auto;align-self:stretch}
   .card > .card-actions{flex:0 0 auto;height:auto;align-content:start;grid-auto-rows:min-content}
   .card > .card-actions button{flex:0 0 auto;align-self:center;height:42px;min-height:42px;max-height:42px;padding:8px 10px;line-height:1.2}
@@ -2265,7 +2278,7 @@ window.__KKIRI_BOOT = (function () {
         <button class="credit-chip off" id="creditBadge" type="button" title="내 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> <b>—</b></button>
         <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참가자">접속 0명</span>
         <button class="ghost-btn" id="shareBtn" type="button" title="사람·AI 초대하기" aria-label="초대하기"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg><span class="lbl">초대하기</span></button>
-        <button class="ghost-btn" id="cardBtn" type="button" title="합의안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="합의안 카드"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-card"></use></svg><span class="lbl">합의안</span></button>
+        <button class="ghost-btn" id="cardBtn" type="button" title="정리안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="정리안 카드"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-card"></use></svg><span class="lbl">정리안</span></button>
         <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-dots"></use></svg></button>
       </div>
     </header>
@@ -2293,7 +2306,7 @@ window.__KKIRI_BOOT = (function () {
 
     <section class="ctrl" id="ctrl" aria-label="대화 제어" hidden>
       <div class="ctrl-top">
-        <button type="button" class="rt-btn" id="discussBtn" title="AI들끼리 알아서 의견을 주고받고 마지막에 합의안까지 정리해요"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg><span>AI 자동토론</span></button>
+        <button type="button" class="rt-btn" id="discussBtn" title="AI들끼리 알아서 의견을 주고받고 마지막에 정리안까지 만들어요"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg><span>AI 자동토론</span></button>
         <p class="ctrl-lead" id="ctrlLead">평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요</p>
         <div class="ctrl-actions">
           <button class="ctrl-act pause" id="pauseBtn" type="button" title="일시정지" aria-label="일시정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-pause"></use></svg><span class="ca-lbl">일시중지</span></button>
@@ -2302,11 +2315,11 @@ window.__KKIRI_BOOT = (function () {
       </div>
       <div class="meters">
         <div class="meter" id="turnMeter" title="턴·주제 설정">
-          <div class="m-top"><span id="turnLabel">턴</span><span class="m-val" id="turnVal">0 / 10턴</span></div>
+          <div class="m-top"><span id="turnLabel">라운드</span><span class="m-val" id="turnVal">0 / 최대 3라운드</span></div>
           <div class="bar"><i id="turnBar"></i></div>
         </div>
-        <div class="meter budget" id="budgetMeter" hidden title="이 방에서 쓸 수 있는 크레딧 한도 (내 보유 크레딧과 별개)">
-          <div class="m-top"><span>방 한도 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">0 / 300</span></div>
+        <div class="meter budget" id="budgetMeter" hidden title="이 방에서 쓸 수 있는 크레딧 상한 · 쓴 크레딧 / 상한 (내 보유 크레딧과 별개)">
+          <div class="m-top"><span>크레딧 상한 <em class="pencil" aria-hidden="true">✎</em></span><span class="m-val" id="costVal">0 / 300</span></div>
           <div class="bar"><i id="costBar"></i></div>
         </div>
       </div>
@@ -2470,14 +2483,14 @@ window.__KKIRI_BOOT = (function () {
           <button type="button" class="pick" data-rolemode="manual" aria-pressed="false">수동</button>
         </div>
       </div>
-      <label class="field" id="rfBudgetField" hidden><span>방 한도 (크레딧)</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="300" inputmode="numeric"><em class="auto-hint">이 방에서 쓸 수 있는 양 · 내 보유 크레딧과 별개</em></label>
+      <label class="field" id="rfBudgetField" hidden><span>크레딧 상한 (크레딧)</span><input id="rfBudget" type="number" min="100" max="5000" step="10" value="300" inputmode="numeric"><em class="auto-hint">이 방에서 쓸 수 있는 크레딧 상한 · 내 보유 크레딧과 별개</em></label>
       <div class="field" id="rfRolesField"><span id="rfRoleHead">역할 미리보기</span><div id="rfRoles"></div><p class="modal-note" id="rfRoleNote" style="margin-top:6px"></p></div>
-      <div class="field" id="rfParticipantsField" hidden><span>이 방 참여자</span><div class="ppl-list" id="rfParticipants"></div><p class="modal-note">‘AI로 표시’한 접속자는 토론에 함께 참여해요(크레딧 0). 방장은 ‘내보내기’로 내보낼 수 있고, 내보내면 그 화면에서도 방이 닫혀요.</p></div>
+      <div class="field" id="rfParticipantsField" hidden><span>이 방 참여자</span><div class="ppl-list" id="rfParticipants"></div></div>
       <p class="modal-note" id="rfFootNote" hidden></p>
       <div class="btn-row" id="rfActions">
         <button class="btn green" id="rfSubmit">만들기</button>
       </div>
-      <div id="rfDeleteWrap" hidden><button class="btn danger" id="rfDelete" style="width:100%;margin-top:8px">이 방 삭제</button><p class="modal-note" id="rfDeleteNote" style="margin-top:6px"></p></div>
+      <div id="rfDeleteWrap" hidden><button class="btn danger" id="rfDelete" style="width:100%;margin-top:8px">이 방 삭제</button></div>
     </div>
   </div>
 </div>
@@ -2487,17 +2500,27 @@ window.__KKIRI_BOOT = (function () {
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtTitle">
     <div class="sheet-head"><h2 id="rtTitle">AI 자동토론</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <p class="modal-note rt-lead" style="margin:0 0 12px">내가 계속 지시하지 않아도 AI들끼리 알아서 의견을 주고받고, 마지막에 <b>합의안</b>까지 정리해요.</p>
+      <p class="modal-note rt-lead" style="margin:0 0 12px">내가 계속 지시하지 않아도 AI들끼리 알아서 의견을 주고받고, 마지막에 <b>정리안</b>까지 만들어요.</p>
       <label class="field"><span>토론 주제(안건)</span><textarea id="rtAgenda" placeholder="방 이름(주제)이 그대로 들어가요 · 필요하면 더 좁혀 적어도 돼요" maxlength="300"></textarea></label>
-      <div class="field"><span>라운드 (AI 전원이 한 번씩 말하면 1라운드)</span>
+      <div class="field"><span>최대 라운드 (AI 전원이 한 번씩 말하면 1라운드)</span>
         <div class="pick-row" id="rtTurns">
-          <button type="button" class="pick" data-rounds="2" aria-pressed="false">2라운드</button>
+          <button type="button" class="pick" data-rounds="1" aria-pressed="false">1라운드</button>
           <button type="button" class="pick" data-rounds="3" aria-pressed="true">3라운드</button>
           <button type="button" class="pick" data-rounds="5" aria-pressed="false">5라운드</button>
           <button type="button" class="pick" data-rounds="10" aria-pressed="false">10라운드</button>
         </div>
-        <p class="rt-round-credits" id="rtRoundCredits"></p>
+        <p class="rt-round-note">설정한 라운드는 <b>최대 상한</b>이에요. 의견이 모이면 일찍 끝나고, 실제로 말한 만큼만 크레딧을 써요.</p>
       </div>
+      <div class="field"><span>이번 토론 크레딧 상한</span>
+        <div class="pick-row" id="rtCap">
+          <button type="button" class="pick" data-cap="50" aria-pressed="false">50</button>
+          <button type="button" class="pick" data-cap="100" aria-pressed="false">100</button>
+          <button type="button" class="pick" data-cap="200" aria-pressed="false">200</button>
+          <button type="button" class="pick" data-cap="room" aria-pressed="true">상한까지 <b id="rtCapRoom">300</b></button>
+        </div>
+        <p class="rt-round-note">상한에 닿으면 남은 라운드를 채우지 않고 멈추고, 정리안을 만들어요.</p>
+      </div>
+      <p class="rt-round-credits" id="rtRoundCredits"></p>
       <p class="modal-note" id="rtSummary"></p>
       <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">AI 자동토론 시작</button></div>
     </div>
@@ -2516,7 +2539,7 @@ window.__KKIRI_BOOT = (function () {
         <button type="button" class="pick" data-budget="300">300</button>
         <button type="button" class="pick" data-budget="500">500</button>
       </div>
-      <p class="hint">끼리 AI는 턴마다 10~30크레딧을 써요. 상한의 80%에서 경고하고, 100%에서 자동으로 멈춰요. 지금까지 쓴 <b id="budgetSpent">0 크레딧</b>은 이 방의 사용 기록입니다.</p>
+      <p class="hint">끼리 AI는 턴마다 10~30크레딧을 써요. 상한의 80%에서 경고하고, 100%에 닿으면 자동으로 멈춘 뒤 정리안을 만들어요. 지금까지 쓴 <b id="budgetSpent">0 크레딧</b>은 이 방의 사용 기록입니다.</p>
       <div class="btn-row"><button class="btn" id="budgetReset">사용 기록 초기화</button><button class="btn green" id="budgetSave">저장</button></div>
     </div>
   </div>
@@ -3083,7 +3106,7 @@ function seedState() {
         agenda: "연말 캠페인 기획", mode: "mention", settings: { category: "work" }, roleMode: "auto", roles: {}, maxTurns: 30, rounds: 3, budget: 200,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 · 데모 모드로 시작합니다. 주제가 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 AI 자동토론을 켜면 AI끼리 알아서 합의안까지 정리해요." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 · 데모 모드로 시작합니다. 주제가 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 AI 자동토론을 켜면 AI끼리 알아서 정리안까지 만들어요." }]
       }
     ]
   };
@@ -3159,7 +3182,7 @@ function agentById(id) { return state.agents[id] || null; }
 function agentName(id) {
   if (id === "user") return nick();
   if (id === "system") return "안내";
-  if (id === "card") return "합의안 카드";
+  if (id === "card") return "정리안 카드";
   var a = state.agents[id];
   return a ? a.name : "AI";
 }
@@ -3215,8 +3238,12 @@ function estimateTin(r) {
 }
 function budgetExceeded(r) {
   if (!r) return false;
+  var used = Number(r.session && r.session.credits) || 0;
   var cap = Number(r.budget) || 0;
-  return cap > 0 && (Number(r.session && r.session.credits) || 0) >= cap;
+  if (cap > 0 && used >= cap) return true;
+  /* 이번 토론에서 고른 상한(방 상한보다 낮을 때)에 닿아도 멈춘다 */
+  var talkCap = Number(run.cap) || 0;
+  return talkCap > 0 && used >= talkCap;
 }
 /* 이 방(또는 주어진 AI 목록)의 턴당 평균 크레딧 — 끼리 AI만 크레딧을 쓴다. */
 function turnCreditCost(ids) {
@@ -3654,7 +3681,7 @@ function hintFor(r) {
   var talk = !isRoomOwner(r)
     ? " <b>끼리 AI·AI 자동토론</b>은 방장이 시작해요."
     : total >= 2
-    ? " 필요할 때 <b>AI 자동토론</b>을 켜면 AI들끼리 알아서 의견을 주고받고 <b>합의안</b>까지 정리해요."
+    ? " 필요할 때 <b>AI 자동토론</b>을 켜면 AI들끼리 알아서 의견을 주고받고 <b>정리안</b>까지 만들어요."
     : " AI가 2명 이상이면 <b>AI 자동토론</b>을 켤 수 있어요.";
   if (!n) {
     var pp = onlinePeople();
@@ -3712,7 +3739,7 @@ function renderRoom() {
     dbt.disabled = !canDiscuss;
     dbt.title = !ownerNow ? "AI 자동토론은 방장만 켤 수 있어요 · 사람·내 AI 대화는 무료예요"
       : aiN < 2 ? "AI가 2명 이상이면 AI 자동토론을 켤 수 있어요"
-      : (run.active ? "AI 자동토론이 진행 중이에요" : "AI들끼리 알아서 의견을 주고받고 마지막에 합의안까지 정리해요");
+      : (run.active ? "AI 자동토론이 진행 중이에요" : "AI들끼리 알아서 의견을 주고받고 마지막에 정리안까지 만들어요");
   }
   var clead = $("ctrlLead");
   if (clead) clead.innerHTML = !ownerNow
@@ -3907,7 +3934,7 @@ function applyView() {
     var el = $(id);
     if (el) el.hidden = map[id];
   });
-  /* 방이 하나도 없으면 방 전용 UI(초대·합의안·설정·참여 줄·턴/크레딧 미터·입력창)를 감추고
+  /* 방이 하나도 없으면 방 전용 UI(초대·정리안·설정·참여 줄·턴/크레딧 미터·입력창)를 감추고
      가운데 '새 방 만들기' 하나만 남긴다. */
   var noRoom = !home && !r;
   var mainEl = document.querySelector(".main");
@@ -3926,7 +3953,7 @@ function applyView() {
     if (mainEl) mainEl.classList.toggle("norooms-mode", noRoom);
     if (pane) pane.hidden = !noRoom;
   }
-  /* 방장이 아닌 참여자 — 자동토론 제어·방 한도·크레딧 배지를 숨겨 채팅만 크게 본다 */
+  /* 방장이 아닌 참여자 — 자동토론 제어·크레딧 상한·크레딧 배지를 숨겨 채팅만 크게 본다 */
   var ownerView = r ? isRoomOwner(r) : true;
   var hideOwnerOnly = !home && !!r && !ownerView;
   var cb = $("creditBadge");
@@ -3949,7 +3976,7 @@ function goHome() {
 function updateMeters() {
   var r = activeRoom();
   if (!r) return;
-  /* 방 한도 바는 실제로 끼리 AI가 들어온 방에서만 — 크레딧을 쓰지 않는 방은 조용히 둔다 */
+  /* 크레딧 상한 바는 실제로 끼리 AI가 들어온 방에서만 — 크레딧을 쓰지 않는 방은 조용히 둔다 */
   var kkiriAiN = (r.members || []).filter(function (id) {
     var a = state.agents[id];
     return !!(a && a.type === "expert");
@@ -3961,15 +3988,17 @@ function updateMeters() {
   var aiN = Math.max(1, (r.members || []).filter(function (id) { return !!state.agents[id]; }).length);
   var maxTurns = clamp(Number(r.maxTurns) || aiN * RT_DEFAULT_ROUNDS, 1, 400);
   var maxRounds = clamp(Number(r.rounds) || Math.max(1, Math.ceil(maxTurns / aiN)), 1, 40);
+  /* 이번 토론에 더 낮은 상한을 골랐으면 그 값을 보여 준다 */
   var max = maxTurns;
   var cur = s.turn || 0;
   var curRound = Math.min(maxRounds, Math.ceil(cur / aiN));
   var pct = discussing ? clamp(curRound / maxRounds * 100, 0, 100) : 0;
   $("turnLabel").textContent = "라운드";
-  $("turnVal").textContent = discussing ? (curRound + " / " + maxRounds + "라운드") : (curRound + "라운드");
+  $("turnVal").textContent = curRound + " / 최대 " + maxRounds + "라운드";
   $("turnBar").style.width = pct + "%";
 
   var cap = Math.max(1, r.budget || 0);
+  if (run.active && run.cap) cap = Math.min(cap, run.cap);
   var used = s.credits || 0;
   var costPct = clamp(used / cap * 100, 0, 100);
   $("costVal").textContent = creditsLabel(used) + " / " + creditsLabel(cap);
@@ -3997,7 +4026,7 @@ function updateMeters() {
   var st = $("runState");
   if (run.active && run.paused) st.textContent = "일시정지";
   else if (run.active) st.textContent = run.cooldownLeft ? "진행 중 · 쿨다운 " + run.cooldownLeft + "초" : "진행 중";
-  else if (r.status === "ended") st.textContent = "종료 · 합의안으로 정리";
+  else if (r.status === "ended") st.textContent = "종료 · 정리안 완료";
   else st.textContent = "대기 중";
 }
 
@@ -4005,7 +4034,7 @@ function updateMeters() {
    5. 타임라인 렌더
    ========================================================= */
 function fmtText(text) {
-  var out = esc(text);
+  var out = esc(stripEarlyMark(text));
   allAgents().sort(function (a, b) { return b.name.length - a.name.length; }).forEach(function (a) {
     if (!a.name) return;
     var re = new RegExp("@" + escapeRe(esc(a.name)), "g");
@@ -4177,10 +4206,10 @@ function emptyHtml(r) {
         "먼저 인사를 건네거나 <b>@이름</b>을 붙여 보내면 그분께 전해져요. 필요할 때 사람이나 AI를 초대할 수 있어요.</p>" +
         cta + "</div>";
     }
-    /* 혼자 있는 방 — 크레딧 이야기 없이, 메모장처럼 편하게 쓰는 공간으로 안내한다. */
+    /* 혼자 있는 방 — 크레딧 이야기 없이, 초대해서 대화를 시작하도록 안내한다. */
     return '<div class="empty" id="emptyRoom"><div class="e-emoji e-alone">' + icoHtml("alone") + '</div>' +
-      "<h3>편하게 메모나 대화를 시작해 보세요.</h3>" +
-      "<p>필요할 때 사람이나 AI를 초대할 수 있어요. 사람과의 대화는 언제나 무료예요.</p>" +
+      "<h3>사람이나 AI를 초대해 대화를 시작해 보세요.</h3>" +
+      "<p>사람과의 대화는 언제나 무료예요 · 필요할 때 위 <b>초대하기</b>로 부르면 돼요.</p>" +
       cta + "</div>";
   }
   var names = memberNames(r).join(" · ");
@@ -4310,7 +4339,7 @@ function renderQuick() {
       : '<button type="button" class="q-chip people" data-mention="' + esc(n) + '" title="지금 접속 중인 참가자 · 이 이름은 AI를 부르지 않아요">' + "@" + esc(n) + "</button>";
   });
   /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작).
-     퀵바는 @이름 부르기만 — 합의안은 헤더의 📋 합의안 버튼 한 곳에서만 연다. */
+     퀵바는 @이름 부르기만 — 정리안은 헤더의 정리안 버튼 한 곳에서만 연다. */
   qb.innerHTML = h;
   qb.hidden = false;
 }
@@ -4402,7 +4431,7 @@ function renderPeople() {
   bar.hidden = !h;
 }
 /* 방장이 아닌 참여자 화면 — 방장이 켠 AI 자동토론이 돌 때만 작은 상태 배너를 보여 준다.
-   (제어 버튼·방 한도·크레딧 배지는 방장 것이라 숨긴다) */
+   (제어 버튼·크레딧 상한·크레딧 배지는 방장 것이라 숨긴다) */
 function renderAutoTalkBanner(rm) {
   var el = $("autoTalkBanner");
   if (!el) return;
@@ -4508,7 +4537,7 @@ function addAgentMessage(agent, d, phase) {
 var DEMO = {
   open: {
     pikri: [
-      { t: "안건은 “{agenda}”입니다. 참여는 {members} {n}명, 최대 {turns}라운드, 크레딧 상한 {budget}으로 잡았습니다. 1차 의견을 듣고 쟁점을 두 개로 좁힌 뒤 합의안까지 정리하겠습니다." },
+      { t: "안건은 “{agenda}”입니다. 참여는 {members} {n}명, 최대 {turns}라운드, 크레딧 상한 {budget}으로 잡았습니다. 1차 의견을 듣고 쟁점을 두 개로 좁힌 뒤 정리안까지 만들겠습니다." },
       { t: "오늘 안건은 “{agenda}”입니다. 목표는 결정 1개와 다음 할 일 3개입니다. {members} 순서로 의견을 듣고, 중간에 제가 쟁점을 정리하겠습니다." },
       { t: "“{agenda}” 시작하겠습니다. 참여 {n}명, 최대 {turns}라운드입니다. 서로 다른 관점을 먼저 듣고, 숫자로 확인할 것은 따로 표시하겠습니다." }
     ],
@@ -4545,7 +4574,7 @@ var DEMO = {
   },
   issue: {
     pikri: [
-      { t: "쟁점은 둘로 좁혀집니다. ① 할인율 12% vs 15% ② 사은품 선택형 vs 고정 2종. 다음 턴에 서로 반박하고, 마지막에 제가 합의안으로 정리하겠습니다.", promo: true },
+      { t: "쟁점은 둘로 좁혀집니다. ① 할인율 12% vs 15% ② 사은품 선택형 vs 고정 2종. 다음 턴에 서로 반박하고, 마지막에 제가 정리안을 만들겠습니다.", promo: true },
       { t: "정리하면 쟁점은 ‘얼마나 세게 갈 것인가’와 ‘무엇으로 체감을 줄 것인가’입니다. 각자 반대 근거를 한 줄씩만 보태 주세요." },
       { t: "두 갈래로 갈렸습니다. 비용을 아끼는 안과 체감을 키우는 안입니다. 숫자와 카피로 나눠 반박해 보죠." }
     ],
@@ -4583,14 +4612,14 @@ var DEMO = {
   converge: {
     pikri: [
       { promo: true, t: "정리합니다. 결정은 12/1~12/14 13% 할인 + 사은품 선택형 2종, 광고 예산 상한 120만 원입니다. 이견은 재고·반품 리스크로 남기고, 11/28 재고 실사 결과에 따라 할인율을 15%까지 올리는 조건을 붙였습니다. 다음 할 일은 카드에 담았습니다." },
-      { promo: true, t: "합의안을 정리합니다. 할인은 13%, 사은품은 선택형 2종, 광고 예산 상한은 120만 원입니다. 확인 필요 항목은 11/28 재고 실사와 반품률이고, 결과에 따라 15%까지 열어 둡니다. 다음 할 일 3건을 카드로 올립니다." },
+      { promo: true, t: "정리안으로 마무리합니다. 할인은 13%, 사은품은 선택형 2종, 광고 예산 상한은 120만 원입니다. 확인 필요 항목은 11/28 재고 실사와 반품률이고, 결과에 따라 15%까지 열어 둡니다. 다음 할 일 3건을 카드로 올립니다." },
       { promo: true, t: "오늘 결정은 12/1~12/14 13% 할인과 선택형 사은품 2종입니다. 광고 예산은 120만 원을 넘지 않습니다. 확인할 것은 11/28 재고 실사와 반품률이며, 결과에 따라 할인율을 15%까지 올립니다." },
       { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 다음 할 일 3개를 카드에 담았습니다." },
-      { t: "합의안을 정리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
+      { t: "정리안으로 마무리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
     ],
     generic: [
       { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 다음 할 일 3개를 카드에 담았습니다." },
-      { t: "합의안을 정리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
+      { t: "정리안으로 마무리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
     ]
   },
   chat: {
@@ -4839,7 +4868,7 @@ function loopDetected() {
   return false;
 }
 
-/* 라운드 = 참여 AI 전원이 한 번씩 발언. 마지막 발언은 사회자가 합의안으로 마무리한다.
+/* 라운드 = 참여 AI 전원이 한 번씩 발언. 마지막 발언은 사회자가 정리안으로 마무리한다.
    내 AI(릴레이 참가자)도 같은 순서에 들어가고, 그 차례에는 채팅으로 호명해 답을 기다린다. */
 function buildSchedule(room) {
   var agents = (room.members || []).filter(function (id) { return !!state.agents[id]; });
@@ -4877,6 +4906,12 @@ async function loopRoundtable(room, ep) {
       if (ep !== run.epoch) return;
       var step = run.schedule[run.idx];
       if (!step) break;
+      /* 지금 몇 라운드인지 · 마지막 라운드/마지막 발언인지 — 프롬프트와 조기 종결 판단에 쓴다 */
+      var perRound = Math.max(1, Math.round(run.schedule.length / Math.max(1, Number(room.rounds) || 1)));
+      run.maxRound = Math.max(1, Number(room.rounds) || 1);
+      run.roundNo = clamp(Math.floor(run.idx / perRound) + 1, 1, run.maxRound);
+      run.lastRound = run.roundNo >= run.maxRound;
+      run.isLastStep = run.idx === run.schedule.length - 1;
       if (budgetExceeded(room)) { endRun("budget", ep); return; }
       /* 내 AI 차례 — 채팅으로 호명하고 답이 올 때까지 기다린다(크레딧 0) */
       if (step.kind === "relay") {
@@ -4933,6 +4968,11 @@ async function relayTurn(step, ep) {
   run.relayWait = null;
   if (ep !== run.epoch) return;
   if (reply) {
+    var relayEarly = run.mode === "roundtable" && hasEarlyMark(reply.text);
+    if (relayEarly) {
+      reply.text = stripEarlyMark(reply.text);
+      if (!reply.text) reply.text = "더 논의할 쟁점이 없어 여기서 마무리합니다.";
+    }
     reply.relay = step.nick;
     reply.phase = step.phase;
     run.lastBy["relay:" + String(step.nick).toLowerCase()] = reply.text;
@@ -4942,6 +4982,7 @@ async function relayTurn(step, ep) {
     save();
     renderTimeline(true);
     renderSidebar();
+    if (relayEarly) finishEarly(step.nick);
     return;
   }
   addSystem("‘" + step.nick + "’ 응답이 없어 다음 차례로 넘어갔어요 · " +
@@ -5118,6 +5159,12 @@ async function speak(agent, phase, ep) {
     return;
   }
   if (out && out.text) {
+    /* 조기 종결 신호 — 남은 라운드를 채우지 않고 정리안으로 끝낸다(표시는 화면에 남기지 않는다) */
+    var early = run.mode === "roundtable" && hasEarlyMark(out.text);
+    if (early) {
+      out.text = stripEarlyMark(out.text);
+      if (!out.text) out.text = "더 논의할 쟁점이 없어 여기서 마무리합니다.";
+    }
     if (similarity(out.text, run.lastBy[agent.id] || "") >= 0.9) {
       var rr = activeRoom();
       var dtin = out.tin || estimateTin(rr);
@@ -5136,6 +5183,7 @@ async function speak(agent, phase, ep) {
     /* v3: 서버가 저장한 발언(id·noSend·credits)까지 그대로 넘겨 중복 저장/중복 표시를 막는다 */
     out.src = out.src || "demo";
     addAgentMessage(agent, out, phase);
+    if (early) finishEarly(agent.name);
     return;
   }
   if (guide) { addSystem(guide.text, "warn", guide.acts); updateMeters(); return; }
@@ -5156,9 +5204,11 @@ function startRoundtable(opts) {
   var mod = opts.moderator && parts.indexOf(opts.moderator) > -1 ? opts.moderator : (parts[0] || null);
   r.agenda = agenda;
   r.members = parts;
-  r.rounds = clamp(Number(opts.rounds) || RT_DEFAULT_ROUNDS, 1, 20);
+  r.rounds = clamp(Number(opts.rounds) || RT_DEFAULT_ROUNDS, 1, 10);      /* 1·3·5·10 — 최대 상한 */
   r.maxTurns = clamp(r.rounds * (parts.length + people.length), 1, 400);   /* 한 라운드 = 참여 AI 전원 1회 발언 */
   r.budget = clamp(Math.round(Number(opts.budget) || r.budget || 300), 100, 5000);
+  /* 이번 토론만의 크레딧 상한 — 방 상한보다 낮게 고르면 그 값에서 먼저 멈춘다 */
+  r.discussCap = Math.max(0, Math.round(Number(opts.cap) || 0));
   r.session = freshSession();
   r.session.startedAt = Date.now();
   r.session.startIndex = r.messages.length;
@@ -5168,6 +5218,8 @@ function startRoundtable(opts) {
   run.active = true; run.paused = false; run.typingAgent = null; run.typingName = null; run.cooldownLeft = 0;
   run.idx = 0; run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
   run.freeConsec = 0; run.moderator = mod; run.mode = "roundtable";
+  run.cap = r.discussCap ? rtEffectiveCap(r, r.discussCap) : 0;
+  run.roundNo = 1; run.maxRound = r.rounds; run.lastRound = r.rounds <= 1; run.isLastStep = false;
   run.relayPeople = people.slice();
   run.roundId = uid("rd");
   run.schedule = buildSchedule(r);
@@ -5183,6 +5235,7 @@ function finishRoundtable(ep) {
   if (ep !== run.epoch) return;
   var r = activeRoom();
   run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
+  run.cap = 0; run.lastRound = false; run.isLastStep = false;
   r.status = "ended";
   r.session.endedAt = Date.now();
   r.discussingAt = 0;
@@ -5190,7 +5243,7 @@ function finishRoundtable(ep) {
   save();
   renderAll();
   var card = generateCard({ auto: true, draft: false });
-  toast(card ? "AI 자동토론 종료 · 합의안 카드를 만들었어요" : "AI 자동토론 종료 · 정리할 발언이 없어 카드는 만들지 않았어요");
+  toast(card ? "AI 자동토론 종료 · 정리안을 만들었어요" : "AI 자동토론 종료 · 정리할 발언이 없어 카드는 만들지 않았어요");
 }
 
 function endRun(reason, ep) {
@@ -5199,18 +5252,57 @@ function endRun(reason, ep) {
   run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
   var r = activeRoom();
   if (!r) return;
+  var cap = Math.max(1, Math.round(Number(r.budget)) || 0);
+  if (run.cap) cap = Math.min(cap, run.cap);
+  run.cap = 0;
   r.status = "ended";
   r.session.endedAt = Date.now();
   r.discussingAt = 0;
   dbSaveSettings(r);
-  if (reason === "budget") addSystem("크레딧 상한 " + creditsLabel(r.budget) + "에 닿아 자동으로 정지했어요. 대화는 그대로이고, 합의안으로 정리할 수 있습니다.", "warn");
-  else if (reason === "loop") addSystem("같은 말이 반복되어 자동으로 정지했어요(루프 감지). 합의안 요약으로 정리해 보세요.", "warn");
-  else if (reason === "stop") addSystem("멈췄어요. 대화는 남아 있고, 합의안으로 정리할 수 있습니다.", "info");
+  var card = null;
+  if (reason === "budget") addSystem("크레딧 상한 " + creditsLabel(cap) + "에 닿아 자동으로 정지했어요. 대화는 그대로 남아 있어요.", "warn");
+  else if (reason === "loop") addSystem("같은 말이 반복되어 자동으로 정지했어요(루프 감지). 정리안으로 정리해 보세요.", "warn");
+  else if (reason === "stop") addSystem("멈췄어요. 대화는 남아 있고, 정리안으로 정리할 수 있습니다.", "info");
   else if (reason === "error") addSystem("오류로 진행이 멈췄어요. 다시 시작해 주세요.", "err");
   else if (reason === "switch") addSystem("방을 옮겨 진행을 멈췄어요.", "info");
   save();
   renderRoom();
   renderSidebar();
+  /* 크레딧 상한에 닿아 멈춘 경우 — 손으로 다시 만들 필요 없이 정리안까지 만들어 둔다 */
+  if (reason === "budget") {
+    card = generateCard({ auto: true, draft: false });
+    toast(card ? "크레딧 상한 도달 · 정리안을 만들었어요" : "크레딧 상한에 닿아 멈췄어요");
+  }
+}
+
+/* ============ 조기 종결 ============
+   AI가 “더 논의할 쟁점이 없다”고 판단하면 답변 끝에 [종결]을 붙인다.
+   그러면 남은 라운드를 억지로 채우지 않고 바로 정리안을 만들고 끝낸다. 화면에는 표시를 지운다. */
+var EARLY_TEST_RE = /\[\s*(?:토론\s*)?종결\s*\]/;
+var EARLY_ALL_RE = /\[\s*(?:토론\s*)?종결\s*\]/g;
+function hasEarlyMark(t) { return EARLY_TEST_RE.test(String(t == null ? "" : t)); }
+function stripEarlyMark(t) {
+  var s = String(t == null ? "" : t);
+  if (!EARLY_TEST_RE.test(s)) return s;
+  return s.replace(EARLY_ALL_RE, "").replace(/[ \t]{2,}/g, " ").replace(/[ \t]+\n/g, "\n").replace(/\s+$/, "");
+}
+function finishEarly(byName) {
+  var r = activeRoom();
+  if (!r) return;
+  var where = run.maxRound ? run.roundNo + "/" + run.maxRound + "라운드" : "";
+  run.epoch++;                        /* 남은 차례를 즉시 멈춘다 */
+  run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
+  run.cap = 0;
+  r.status = "ended";
+  r.session.endedAt = Date.now();
+  r.discussingAt = 0;
+  dbSaveSettings(r);
+  addSystem((byName ? byName + " AI가 " : "AI가 ") + "더 논의할 쟁점이 없다고 판단해 " +
+    (where ? where + "에서 " : "") + "조기 종결했어요 · 정리안을 만들었어요", "info");
+  save();
+  renderAll();
+  var card = generateCard({ auto: true, draft: false });
+  toast(card ? "조기 종결 · 정리안을 만들었어요" : "조기 종결 · 정리할 발언이 없어 카드는 만들지 않았어요");
 }
 
 async function runMentions(text) {
@@ -5229,7 +5321,7 @@ async function runMentions(text) {
     if (!parsed.ids.length) return;
   }
   if (budgetExceeded(r)) {
-    addSystem("이 방의 크레딧 한도에 닿아 AI가 답하지 못했어요 · 위 방 한도를 눌러 올리거나 사용 기록을 초기화해 주세요.", "warn");
+    addSystem("이 방의 크레딧 상한에 닿아 AI가 답하지 못했어요 · 위 크레딧 상한을 눌러 올리거나 사용 기록을 초기화해 주세요.", "warn");
     return;
   }
   run.epoch++;
@@ -5384,12 +5476,21 @@ function systemFor(agent, phase) {
   var r = activeRoom();
   var team = memberNames(r).join(", ");
   var base = agent.prompt || (agent.type === "webhook" ? "너는 이 방의 AI 멤버다." : "너는 이 방의 AI 멤버다.");
-  /* 모바일에서 한눈에 들어오게: 보통 답변은 1~2문장, 합의안(converge)만 요약이라 2~4문장 */
+  /* 모바일에서 한눈에 들어오게: 보통 답변은 1~2문장, 정리안(converge)만 요약이라 2~4문장 */
   var lengthRule = phase === "converge" ? "한국어로 2~4문장" : "한국어로 핵심만 1~2문장(짧고 읽기 쉽게)";
   return base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
     "\n함께 있는 AI: " + team +
     "\n규칙: " + lengthRule + ". 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다." +
+    roundRule() +
     "\n" + SPECIFICITY_RULE;
+}
+
+/* 라운드 진행 규칙 — 마지막이 아닌 라운드에서는 결론이 모이면 [종결]로 스스로 끝낼 수 있고,
+   마지막 라운드에서는 반드시 추천안 1~2개로 좁혀 마무리한다. */
+function roundRule() {
+  if (!(run.active && run.mode === "roundtable")) return "";
+  if (run.lastRound) return " 이번이 마지막 라운드다. 반드시 최종 추천안 1~2개로 결론을 좁혀 마무리하라.";
+  return " 충분히 논의돼 결론을 낼 수 있으면 답변 끝에 [종결]을 붙이고 핵심 결론 1~2개로 좁혀 마무리하라. 아직 쟁점이 남았으면 붙이지 마라.";
 }
 
 function phaseInstruction(phase, r) {
@@ -5397,7 +5498,7 @@ function phaseInstruction(phase, r) {
   if (phase === "opinion") return "안건에 대한 1차 의견을 제시하라. 앞선 발언이 있으면 읽고 다른 각도를 보태라.";
   if (phase === "issue") return "지금까지 발언에서 쟁점을 두 개로 압축하고, 각 쟁점에 대한 입장을 한 줄씩 정리하라.";
   if (phase === "rebuttal") return "직전 발언 중 하나를 이름으로 지목해 반박하거나 보완하라. 같은 말을 반복하지 마라.";
-  if (phase === "converge") return "결정·근거·이견·다음 할 일을 담아 3~5문장으로 합의안을 정리하라. 숫자는 ‘제안’ 또는 ‘확인 필요’로 표시하라.";
+  if (phase === "converge") return "결정·근거·이견·다음 할 일을 담아 3~5문장으로 정리안을 만들라. 숫자는 ‘제안’ 또는 ‘확인 필요’로 표시하라.";
   if (phase === "chat") return "가벼운 수다다. 1~2문장으로 편하게 답하라.";
   if (phase === "mention") return "사용자가 이름을 불렀다. 짧게 답하고, 자기 몫에서 도울 일을 한 가지 제안하라.";
   return "안건에 맞게 짧게 발언하라.";
@@ -5470,7 +5571,7 @@ async function webhookTurn(agent, phase) {
 }
 
 /* =========================================================
-   11. 합의안 카드
+   11. 정리안 카드
    ========================================================= */
 function sentences(t) {
   return String(t || "")
@@ -5501,7 +5602,7 @@ function buildCard(r, opts) {
   }
   function isMeta(s) {
     if (/^(숫자는|기준은|자,)\s/.test(s)) return true;
-    if (/(다음 할 일은 카드|카드에 담았|카드로 올립|카드에 남겼|목표는 결정|한 줄씩|다음 턴|반박해 보죠|순서로 의견|발언을 듣고|마무리합니다|오늘 정리입니다|합의안을 정리합니다|비용과 기간의 절충안|범위를 좁히고)/.test(s)) return true;
+    if (/(다음 할 일은 카드|카드에 담았|카드로 올립|카드에 남겼|목표는 결정|한 줄씩|다음 턴|반박해 보죠|순서로 의견|발언을 듣고|마무리합니다|오늘 정리입니다|정리안으로 마무리합니다|비용과 기간의 절충안|범위를 좁히고)/.test(s)) return true;
     return false;
   }
   function sents(m) { return sentences(m.text); }
@@ -5665,7 +5766,7 @@ function defaultTodos(r) {
 
 function cardMarkdown(c) {
   var L = [];
-  L.push("# 합의안 카드 · " + c.title);
+  L.push("# 정리안 · " + c.title);
   L.push("");
   L.push("- 방: " + c.room);
   L.push("- 일시: " + c.atLabel);
@@ -5709,7 +5810,7 @@ function download(filename, text, mime) {
 }
 
 function copyText(text, label) {
-  var okMsg = label || "합의안을 복사했어요";
+  var okMsg = label || "정리안을 복사했어요";
   function fallback() {
     try {
       var ta = document.createElement("textarea");
@@ -5738,10 +5839,10 @@ function messageById(id) {
   return null;
 }
 
-/* 합의안 일반 텍스트(.txt) — 마크다운 기호 없이 누구나 열 수 있는 형식 */
+/* 정리안 일반 텍스트(.txt) — 마크다운 기호 없이 누구나 열 수 있는 형식 */
 function cardPlain(c) {
   var L = [];
-  L.push("합의안 카드 · " + c.title);
+  L.push("정리안 · " + c.title);
   L.push("");
   L.push("방: " + c.room);
   L.push("일시: " + c.atLabel);
@@ -5774,33 +5875,33 @@ function exportCardTxt(mid) {
   if (!m || !m.card) return;
   var r = activeRoom();
   var roomName = String((r && r.name) || "끼리").replace(/[\\/:*?"<>|]/g, "-").slice(0, 40);
-  download(roomName + "_합의안_" + cardDateStamp() + ".txt", cardPlain(m.card), "text/plain;charset=utf-8");
-  toast("합의안을 .txt 파일로 저장했어요");
+  download(roomName + "_정리안_" + cardDateStamp() + ".txt", cardPlain(m.card), "text/plain;charset=utf-8");
+  toast("정리안을 .txt 파일로 저장했어요");
 }
 /* 카톡·문자·메모 등 휴대폰 공유 시트 — 지원하지 않으면 클립보드로 */
 function shareCard(mid) {
   var m = messageById(mid);
   if (!m || !m.card) return;
   var text = cardPlain(m.card);
-  var title = "합의안 · " + m.card.title;
+  var title = "정리안 · " + m.card.title;
   if (navigator.share) {
     try {
       navigator.share({ title: title, text: text }).then(function () {
         toast("공유 창을 열었어요");
       }, function (err) {
         if (err && err.name === "AbortError") return;
-        copyText(text, "합의안을 복사했어요! 카톡에 바로 붙여넣어 주세요");
+        copyText(text, "정리안을 복사했어요! 카톡에 바로 붙여넣어 주세요");
       });
       return;
     } catch (e) {}
   }
-  copyText(text, "합의안을 복사했어요! 카톡에 바로 붙여넣어 주세요");
+  copyText(text, "정리안을 복사했어요! 카톡에 바로 붙여넣어 주세요");
 }
 function mailCard(mid) {
   var m = messageById(mid);
   if (!m || !m.card) return;
   var to = (V3.user && V3.user.email) ? String(V3.user.email) : "";
-  var subject = "합의안 · " + m.card.title;
+  var subject = "정리안 · " + m.card.title;
   var body = cardPlain(m.card);
   if (body.length > 1600) body = body.slice(0, 1600) + "\n… (끼리에서 더 보기)";
   var href = "mailto:" + encodeURIComponent(to) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
@@ -5808,7 +5909,7 @@ function mailCard(mid) {
     window.location.href = href;
     toast("메일 앱을 열었어요");
   } catch (e) {
-    copyText(body, "메일 앱을 열 수 없어 합의안을 복사했어요");
+    copyText(body, "메일 앱을 열 수 없어 정리안을 복사했어요");
   }
 }
 
@@ -5830,10 +5931,10 @@ function redoCard(mid) {
   renderTimeline(false);
   var el = document.querySelector('[data-card="' + m.card.id + '"]');
   if (el && el.scrollIntoView) el.scrollIntoView({ block: "center", behavior: "smooth" });
-  toast("합의안을 다시 정리했어요");
+  toast("정리안을 다시 만들었어요");
 }
 
-/* 합의안 재료 — AI 발언과 내 AI(릴레이) 발언만. 사람 채팅과 호명 글은 빼 둔다. */
+/* 정리안 재료 — AI 발언과 내 AI(릴레이) 발언만. 사람 채팅과 호명 글은 빼 둔다. */
 function isCardSource(m) {
   if (!m || m.who === "system" || m.who === "card") return false;
   if (m.who === "user" && !m.relay) return false;
@@ -5869,12 +5970,12 @@ function onCardButton() {
   if (lastCard && lastAt <= lastCard.at) {
     var el = document.querySelector('[data-card="' + lastCard.card.id + '"]');
     if (el && el.scrollIntoView) el.scrollIntoView({ block: "center", behavior: "smooth" });
-    toast("최근 합의안 카드로 이동했어요");
+    toast("최근 정리안 카드로 이동했어요");
     return;
   }
   if (run.active) { run.paused = true; updateMeters(); renderRoom(); }
   var card = generateCard({ draft: run.active });
-  if (card) toast("합의안 카드를 만들었어요");
+  if (card) toast("정리안을 만들었어요");
 }
 
 /* =========================================================
@@ -6141,7 +6242,7 @@ function rtRoomPlan(r) {
     participants: parts,
     people: people,
     moderator: rtAutoModerator(r, parts),
-    rounds: clamp(Number(r.rounds) || RT_DEFAULT_ROUNDS, 1, 20),
+    rounds: clamp(Number(r.rounds) || RT_DEFAULT_ROUNDS, 1, 10),
     turns: clamp(Number(r.maxTurns) || 30, 1, 400),
     budget: clamp(Math.round(Number(r.budget) || 300), 100, 5000)
   };
@@ -6152,26 +6253,55 @@ function rtSummaryText(plan) {
   var n = Math.max(1, ai + people);
   var bits = [];
   if (plan.moderator) bits.push("사회자 " + agentName(plan.moderator));
-  bits.push("방 한도 " + creditsLabel(plan.budget) + " 크레딧");
+  bits.push("크레딧 상한 " + creditsLabel(plan.budget));
   if (people) bits.push("내 AI 차례는 채팅으로 불러 45초 기다려요");
   var txt = bits.join(" · ");
   if (n < 2) txt = "AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · " + txt;
   return txt;
 }
 /* 토론 시작 시트의 라운드 칩 — AI 전원이 한 번씩 말하면 1라운드 */
-var RT_ROUNDS = [2, 3, 5, 10];
+var RT_ROUNDS = [1, 3, 5, 10];
 var RT_DEFAULT_ROUNDS = 3;
 function rtAiCost() { return configCost("kkiri-lite") || 10; }
 function rtSpeakerCount(r) { return Math.max(1, rtTalkParts(r).total); }
 function rtPickRounds() {
   var on = document.querySelector("#rtTurns [data-rounds][aria-pressed=\"true\"]");
-  return clamp(Number(on && on.getAttribute("data-rounds")) || RT_DEFAULT_ROUNDS, 1, 20);
+  return clamp(Number(on && on.getAttribute("data-rounds")) || RT_DEFAULT_ROUNDS, 1, 10);
 }
 function rtSetRounds(n) {
-  var want = String(clamp(Number(n) || RT_DEFAULT_ROUNDS, 1, 20));
+  var want = clamp(Number(n) || RT_DEFAULT_ROUNDS, 1, 10);
+  if (RT_ROUNDS.indexOf(want) < 0) {           /* 예전에 저장된 2·4라운드 → 가까운 칩으로 */
+    var near = RT_ROUNDS[RT_ROUNDS.length - 1];
+    RT_ROUNDS.forEach(function (v) { if (v >= want && v < near) near = v; });
+    want = near;
+  }
   Array.prototype.forEach.call(document.querySelectorAll("#rtTurns [data-rounds]"), function (b) {
-    b.setAttribute("aria-pressed", b.getAttribute("data-rounds") === want ? "true" : "false");
+    b.setAttribute("aria-pressed", b.getAttribute("data-rounds") === String(want) ? "true" : "false");
   });
+}
+/* 이번 토론 크레딧 상한 — 0 이면 방 크레딧 상한을 그대로 쓴다 */
+function rtPickCap() {
+  var on = document.querySelector("#rtCap [data-cap][aria-pressed=\"true\"]");
+  var v = on ? on.getAttribute("data-cap") : "room";
+  if (v === "room") return 0;
+  return clamp(Math.round(Number(v)) || 0, 50, 5000);
+}
+function rtSetCap(v) {
+  var want = Number(v) > 0 ? String(clamp(Math.round(Number(v)), 50, 5000)) : "room";
+  var has = false;
+  Array.prototype.forEach.call(document.querySelectorAll("#rtCap [data-cap]"), function (b) {
+    if (b.getAttribute("data-cap") === want) has = true;
+  });
+  if (!has) want = "room";
+  Array.prototype.forEach.call(document.querySelectorAll("#rtCap [data-cap]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-cap") === want ? "true" : "false");
+  });
+}
+/* 실제로 지켜질 상한 = min(이번 토론 상한, 방 크레딧 상한) */
+function rtEffectiveCap(room, cap) {
+  var roomCap = Math.max(1, Math.round(Number(room && room.budget)) || 300);
+  var c = Math.round(Number(cap) || 0);
+  return c > 0 ? Math.min(c, roomCap) : roomCap;
 }
 function rtEstimateCredits(r, rounds) {
   var p = rtTalkParts(r);
@@ -6187,11 +6317,12 @@ function rtRefreshSummary() {
   var el = $("rtRoundCredits");
   if (el) {
     var who = "끼리 AI " + est.ai + "명" + (est.people ? " + 내 AI " + est.people + "명(무료)" : "");
-    /* 마지막 합의안 정리 1회(끼리 AI 턴)도 크레딧에 들어간다 — 왜 30인지 화면에서 바로 보이게 */
-    var settle = est.ai ? ' <span class="muted">(합의안 정리 +' + creditsLabel(rtAiCost()) + " 포함)</span>" : "";
-    el.innerHTML = who + " × " + rounds + "라운드 = <b>" + (est.total * rounds) + "번 발언</b> · 예상 <b>" +
-      creditsLabel(est.credits) + " 크레딧</b>" + settle;
+    var settle = est.ai ? ' <span class="muted">(정리안 만들기 +' + creditsLabel(rtAiCost()) + " 포함)</span>" : "";
+    el.innerHTML = who + " × " + rounds + "라운드 = <b>최대 " + (est.total * rounds) + "번 발언</b> · 최대 예상 <b>" +
+      creditsLabel(est.credits) + " 크레딧</b> <span class=\"muted\">(조기 종결 시 덜 차감)</span>" + settle;
   }
+  var roomCapEl = $("rtCapRoom");
+  if (roomCapEl) roomCapEl.textContent = creditsLabel(Math.max(1, Math.round(Number(r.budget)) || 300));
   var plan = rtRoomPlan(r);
   plan.rounds = rounds;
   plan.turns = rounds * rtSpeakerCount(r);
@@ -6207,6 +6338,7 @@ function openRoundtable(prefill) {
   if (!rtCanTalk(r)) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 내 AI는 방 설정에서 ‘AI로 표시’하면 함께 참여해요"); return; }
   $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
   rtSetRounds(r.rounds || RT_DEFAULT_ROUNDS);
+  rtSetCap(r.discussCap || 0);
   rtRefreshSummary();
   openModal("rtModal");
   setTimeout(function () { $("rtAgenda").focus(); }, 220);
@@ -6222,14 +6354,15 @@ function rtStart() {
   if (plan.participants.length + plan.people.length < 2) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   closeModal("rtModal");
   startRoundtable({ agenda: agenda, participants: plan.participants, people: plan.people, moderator: plan.moderator,
-                    rounds: rounds, turns: rounds * (plan.participants.length + plan.people.length), budget: plan.budget });
+                    rounds: rounds, turns: rounds * (plan.participants.length + plan.people.length), budget: plan.budget,
+                    cap: rtPickCap() });
 }
 function openBudgetSheet() {
   var r = activeRoom();
   if (!r) return;
-  /* 방 한도(크레딧 상한)는 방장 것 — 초대받은 사람은 바꿀 수 없다 */
-  if (!canSpendCredits(r)) { ownerOnlyBlocked("방 크레딧 한도 바꾸기"); return; }
-  $("budgetInput").value = r.budget || 200;
+  /* 크레딧 상한은 방장 것 — 초대받은 사람은 바꿀 수 없다 */
+  if (!canSpendCredits(r)) { ownerOnlyBlocked("크레딧 상한 바꾸기"); return; }
+  $("budgetInput").value = r.budget || 300;
   $("budgetSpent").textContent = creditsLabel(r.session.credits) + " 크레딧";
   Array.prototype.forEach.call($("budgetChips").querySelectorAll("[data-budget]"), function (b) {
     b.setAttribute("aria-pressed", Number(b.getAttribute("data-budget")) === Number(r.budget) ? "true" : "false");
@@ -6488,7 +6621,7 @@ function openRoomForm(roomId) {
   var turnField = $("rfTurnField");
   if (turnField) turnField.hidden = true;
   /* 크레딧 상한 칸은 기본으로 두지 않는다 — 무료 서비스 첫인상을 위해 숨기고 내부 기본값(300)만 유지.
-     필요하면 방 화면의 '방 한도' 바(끼리 AI가 들어온 방에서만 보임)를 눌러 바꾼다. */
+     필요하면 방 화면의 '크레딧 상한' 바(끼리 AI가 들어온 방에서만 보임)를 눌러 바꾼다. */
   var budgetField = $("rfBudgetField");
   if (budgetField) budgetField.hidden = true;
   ["rfRoleModeField", "rfRolesField"].forEach(function (id) {
@@ -6508,19 +6641,39 @@ function openRoomForm(roomId) {
   del.textContent = !r ? "" : (!r.remote ? "이 방 삭제"
     : mine ? "이 방 삭제" : "방 나가기");
   del.className = r && r.remote && !mine ? "btn" : "btn danger";
-  $("rfDeleteNote").textContent = !r ? "" : (!r.remote
-    ? "이 브라우저에만 있는 데모 방이에요. 내 화면에서만 지워집니다."
-    : mine
-      ? "내가 만든 방이라 서버에서 완전히 지울 수 있어요. 대화·AI 멤버·합의안까지 함께 지워지고, 함께 있던 사람들의 목록에서도 사라집니다. 되돌릴 수 없어요."
-      : "내 목록에서만 나가요. 방은 그대로 남고, 다시 들어오려면 초대 링크가 필요해요.");
   $("rfDeleteWrap").hidden = !r;
   openModal("roomFormModal");
 }
 /* (예전 결정 유지) 방 설정 시트에는 멤버 넣고 빼기 칸을 두지 않는다.
    AI 빼기는 방 화면 참여 줄의 AI 칩을 눌러서 한다. */
+/* 프리셋 끼리 AI id 인가 — EXPERT_SETS 카탈로그에 실제로 있는 전문가 id 만 프리셋으로 본다.
+   서버에서 불러온 직접 만든 AI는 로컬 id 가 ag_… 라 expert 값이 비거나 임의 값일 수 있다.
+   type 만 보고 프리셋으로 오판하면 그 AI가 ‘이미 만든 AI’ 목록에서 사라지고,
+   이름 중복 검사에서만 걸려 “같은 이름이 있어요”로 막히는 일이 생긴다. */
+var PRESET_X_IDX = null;
+function presetExpertIndex() {
+  if (PRESET_X_IDX) return PRESET_X_IDX;
+  var idx = {};
+  var sets = (typeof EXPERT_SETS !== "undefined" && EXPERT_SETS) || {};
+  Object.keys(sets).forEach(function (k) {
+    (sets[k] || []).forEach(function (x) { if (x && x.id) idx[x.id] = 1; });
+  });
+  if (Object.keys(idx).length) PRESET_X_IDX = idx;   /* EXPERT_SETS 준비 전 호출은 캐시하지 않는다 */
+  return idx;
+}
+function isPresetExpertId(exId) {
+  var id = String(exId == null ? "" : exId).trim();
+  if (!id || id === "custom") return false;
+  return !!presetExpertIndex()[id];
+}
+/* 로컬 id 에서 프리셋 전문가 id를 꺼낸다 — ex_<preset>_<rand> 만 프리셋, 그 밖(ag_…)은 직접 만든 AI */
+function presetIdFromLocalId(lid) {
+  var m = /^ex_(.+)_[a-z0-9]{1,8}$/i.exec(String(lid || ""));
+  return m && isPresetExpertId(m[1]) ? m[1] : "";
+}
 /* 기본 프리셋 끼리 AI인가 — 직접 만든 AI(expert:"custom")·내 AI·초대 AI는 아니다 */
 function isPresetExpertAgent(a) {
-  return !!(a && a.type === "expert" && a.expert !== "custom");
+  return !!(a && a.type === "expert" && isPresetExpertId(a.expert));
 }
 /* 방 주제(분류)를 바꾸면 기본 프리셋 끼리 AI를 새 주제 라인업으로 함께 바꾼다.
    직접 만든 AI·내 제미나이/GPT·초대 AI는 그대로 둔다. (roleMode auto일 때만 호출) */
@@ -6624,7 +6777,7 @@ function roomAskRemove(r) {
     return askConfirm({
       title: "이 방을 삭제할까요?",
       body: "‘" + r.name + "’ 방을 삭제합니다.",
-      note: "대화·AI 멤버·합의안이 모두 지워지고, 함께 있던 사람들의 목록에서도 사라져요. 되돌릴 수 없어요.",
+      note: "대화·AI 멤버·정리안이 모두 지워지고, 함께 있던 사람들의 목록에서도 사라져요. 되돌릴 수 없어요.",
       okText: "삭제", okClass: "solid-danger"
     });
   }
@@ -7093,7 +7246,12 @@ function addByokAgent() {
     ownerOnlyBlocked("끼리 AI 만들기");
     return;
   }
-  if (allAgents().some(function (a) { return a.name === name; })) { toast("같은 이름의 AI가 이미 있어요"); return; }
+  /* 이름은 공백·대소문자만 다른 것도 같은 이름으로 본다 — 목록(이미 만든 AI)과 같은 기준 */
+  var lname = name.toLowerCase();
+  if (allAgents().some(function (a) { return String(a.name || "").trim().toLowerCase() === lname; })) {
+    toast("같은 이름의 AI가 이미 있어요 · ‘이미 만든 AI’ 목록에서 그대로 추가할 수 있어요");
+    return;
+  }
   var role = $("invRole").value.trim() || "새 멤버";
   var prompt = $("invPrompt").value.trim() || ("너는 ‘" + name + "’다. 역할: " + role + ". 한국어로 짧고 분명하게 말하고, 자기 몫에 집중한다.");
   var t = customTarget();
@@ -7201,7 +7359,7 @@ function exportJson() {
         stats: r.session,
         messages: r.messages.map(function (m) {
           return {
-            speaker: m.who === "card" ? "합의안 카드" : agentName(m.who),
+            speaker: m.who === "card" ? "정리안" : agentName(m.who),
             speakerId: m.who, text: m.text || "", at: new Date(m.at).toISOString(),
             source: m.src || null, tokens: m.tin || m.tout ? { in: m.tin || 0, out: m.tout || 0 } : null,
             cost: m.cost || 0, card: m.card || null
@@ -7403,7 +7561,7 @@ function dbAgentFromRow(row) {
     color: COLORS[hash(lid) % COLORS.length],
     type: isCloud ? "expert" : prov === "webhook" ? "webhook" : isByok ? "byok" : "builtin",
     model: isCloud ? (row.model || "kkiri-lite") : prov === "webhook" ? "demo" : isByok ? prov : "auto",
-    expert: isCloud ? String(lid).replace(/^ex_([a-z0-9]+)_.*$/i, "$1") : "",
+    expert: isCloud ? (presetIdFromLocalId(lid) || "custom") : "",
     prompt: row.persona || "", desc: row.role || "", avatar: row.avatar || "",
     url: row.webhook_url || ""
   };
@@ -7431,7 +7589,7 @@ function dbMsgFromRow(row) {
 }
 function dbCardFromRow(row) {
   var c = row.card && row.card.title ? row.card : {
-    id: row.id, title: row.title, badge: row.badge || "합의안", draft: false,
+    id: row.id, title: row.title, badge: row.badge || "정리안", draft: false,
     decisions: row.decisions || [],
     evidence: row.rationale ? String(row.rationale).split("\n").filter(Boolean) : [],
     risks: row.dissent ? String(row.dissent).split("\n").filter(Boolean) : [],
@@ -7881,7 +8039,7 @@ function dbSendCard(m) {
   var c = m.card || {};
   var row = {
     id: m.id, room_id: r.id,
-    title: String(c.title || r.name + " 합의안").slice(0, 120),
+    title: String(c.title || r.name + " 정리안").slice(0, 120),
     decisions: c.decisions || [],
     rationale: (c.evidence || []).join("\n").slice(0, 4000),
     dissent: (c.risks || []).join("\n").slice(0, 4000),
@@ -7892,8 +8050,8 @@ function dbSendCard(m) {
     card: c
   };
   db.client.from("kkiri_summaries").insert(row).then(function (res) {
-    if (res && res.error) dbToast("합의안을 서버에 저장하지 못했어요 · " + res.error.message);
-  }, function () { dbToast("합의안을 서버에 저장하지 못했어요 · 네트워크"); });
+    if (res && res.error) dbToast("정리안을 서버에 저장하지 못했어요 · " + res.error.message);
+  }, function () { dbToast("정리안을 서버에 저장하지 못했어요 · 네트워크"); });
 }
 async function dbCreateRoom(room, members) {
   if (!db.ready || !db.client) return;
@@ -8039,7 +8197,7 @@ async function dbSetMember(roomId, localId, on, opts) {
     function () { return db.client.from("kkiri_agents").update({ is_active: on }).eq("room_id", roomId).eq("id", localId).select("id,is_active"); },
     function () { return db.client.from("kkiri_agents").update({ is_active: on }).eq("room_id", roomId).eq("name", name).select("id,is_active"); }
   ];
-  var confirmed = false, unverified = false, lastErr = null;
+  var confirmed = false, unverified = false, missing = false, lastErr = null;
   for (var i = 0; i < writes.length && !confirmed; i++) {
     var res = null;
     try { res = await writes[i](); } catch (e) { lastErr = e; continue; }
@@ -8056,10 +8214,14 @@ async function dbSetMember(roomId, localId, on, opts) {
         if (chk.data.some(function (x) { return x && x.is_active === on; })) confirmed = true;
         continue;
       }
+      if (!chk.error) { missing = true; continue; }   /* 이 방에는 이 AI 행이 없다 */
     } catch (e2) {}
     unverified = true;                /* 썼지만 확인할 수도 없는 경우 — 실패라고 단정하지 않는다 */
   }
+  /* 다른 방에서 만든 AI를 이 방에 처음 부르는 경우 — 이 방 몫 행이 없으니 새로 저장한다 */
+  if (on && missing) { await dbUpsertAgent(roomId, localId); return true; }
   if (on && !confirmed && !unverified) await dbUpsertAgent(roomId, localId);
+  if (missing) return true;           /* 빼기 — 이 방에는 원래 없었으니 그대로 둔다 */
   if (confirmed) return true;
   if (unverified) return true;
   dbClearKick(roomId, localId);
@@ -9630,6 +9792,9 @@ function mockExpertText(agent, phase) {
   var seed = hash(String(r ? r.id : "") + agent.id + String(phase || "") + String((r ? r.messages.length : 0)));
   return arr[seed % arr.length];
 }
+/* 테스트용 훅 — ?mock=1&early=1 이면 2라운드(반박) 발언 끝에 [종결]을 붙여 화면 흐름을 확인한다.
+   실제 모드(mock 아님)에서는 절대 동작하지 않는다. */
+var MOCK_EARLY = /[?&]mock(=1)?(&|$)/.test(String(location.search || "")) && /[?&]early(=1)?(&|$)/.test(String(location.search || ""));
 async function mockExpertTurn(agent, phase) {
   var cost = configCost(agent.model);
   if (!canSpendCredits(activeRoom())) return { skip: true, note: "끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요" };
@@ -9638,6 +9803,7 @@ async function mockExpertTurn(agent, phase) {
   if (creditsNow() < cost) return { skip: true, note: agent.name + " · 크레딧이 부족해요(남은 " + creditsNow() + "). 설정에서 내 API 키를 연결하면 크레딧 없이 계속 쓸 수 있어요." };
   await sleep(rand(420, 820));
   var text = mockExpertText(agent, phase);
+  if (MOCK_EARLY && phase === "rebuttal") text += " [종결]";
   var r = activeRoom();
   var left = Math.max(0, creditsNow() - cost);
   V3.profile.credits = left;
@@ -9664,7 +9830,7 @@ async function cloudExpertTurn(agent, phase) {
     config: kkiriConfigFor(agent),
     expert: { id: agent.id, name: agent.name, role: ro ? ro.label : (agent.role || ""), persona: (agent.prompt || "") + roleDirective(r, agent), avatar: agent.avatar || "" },
     phase: phase || "",
-    instruction: phaseInstruction(phase, r) + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : "") +
+    instruction: phaseInstruction(phase, r) + roundRule() + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : "") +
       " " + SPECIFICITY_RULE,
     speakers: memberNames(r),
     context: ctx,
@@ -10130,6 +10296,15 @@ function wire() {
     var b = e.target.closest("[data-rounds]");
     if (!b) return;
     rtSetRounds(b.getAttribute("data-rounds"));
+    rtRefreshSummary();
+  });
+  var rtcap = $("rtCap");
+  if (rtcap) rtcap.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cap]");
+    if (!b) return;
+    Array.prototype.forEach.call(rtcap.querySelectorAll("[data-cap]"), function (x) {
+      x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    });
     rtRefreshSummary();
   });
 
