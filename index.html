@@ -606,6 +606,18 @@
   .home-foot{margin:20px 0 6px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
   .home-donate{border:1px dashed var(--line);background:#fff;color:#8A819F;font:inherit;font-size:11.5px;font-weight:800;border-radius:999px;padding:8px 15px;cursor:pointer;letter-spacing:-.01em;transition:border-color .12s ease,color .12s ease,background .12s ease}
   .home-donate:hover{border-color:#eccd9f;color:#8a5a1f;background:#fffaf2}
+  /* 🎁 친구 초대 — 서비스를 소개하며 내 초대 링크를 보내는 버튼 */
+  .home-donate.home-invite{border-style:solid;border-color:#d6c7ff;background:var(--brand-tint);color:#5B38E0}
+  .home-donate.home-invite:hover{border-color:#b9a4ff;color:#4a2bd0;background:#EDE6FF}
+  .ref-card{background:var(--brand-tint);border:1px solid #e3d9ff;border-radius:16px;padding:14px 13px;text-align:center}
+  .ref-lead{margin:0;font-size:13px;font-weight:900;line-height:1.6;color:#3F2A8E;letter-spacing:-.02em;word-break:keep-all}
+  .ref-sub{margin:7px 0 0;font-size:12px;font-weight:800;line-height:1.6;color:#5B38E0;letter-spacing:-.01em;word-break:keep-all}
+  .ref-url{margin:11px 0 0;font-size:11px;font-weight:800;line-height:1.5;color:#5F5780;background:#fff;border:1px solid #e6dcff;border-radius:10px;padding:9px 10px;word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace}
+  /* 좁은 화면에서는 네 버튼이 2×2로 고르게 — 하나만 둘째 줄에 남지 않게 */
+  @media (max-width:560px){
+    .home-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:400px;margin:20px auto 6px;align-items:stretch}
+    .home-foot .home-donate{min-height:44px;padding:8px 10px}
+  }
   .home-feedback:hover{border-color:#E0D6FF;color:#5B38E0;background:#F7F4FF}
   .side-feedback{margin-top:6px}
   .fb-lead{margin:0 0 2px;font-size:12.5px;line-height:1.6;color:#554D75;letter-spacing:-.01em}
@@ -2272,6 +2284,7 @@ window.__KKIRI_BOOT = (function () {
           <div class="room-grid" id="homeRoomGrid"></div>
         </section>
         <div class="home-foot" id="homeFoot">
+          <button type="button" class="home-donate home-invite" id="homeInviteBtn" title="친구 초대 · 끼리 소개하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg><span>친구 초대</span></button>
           <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
           <button type="button" class="home-donate home-feedback" id="homeFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
           <button type="button" class="home-donate" id="homeInstallBtn" title="홈 화면에 추가 · 즐겨찾기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-star"></use></svg><span>홈 화면에 추가</span></button>
@@ -2707,6 +2720,24 @@ window.__KKIRI_BOOT = (function () {
       <div class="ledger" id="ledgerList"></div>
       <p class="hint">차감 내역은 서버 원장에 남아요. 충전 크레딧은 만료가 없고, 보너스는 받은 날부터 30일 동안 쓸 수 있어요.</p>
       <div class="btn-row"><button class="btn" id="creditClose" type="button">닫기</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= v3 · 🎁 친구 초대 (서비스 소개 + 내 초대 링크 공유) ================= -->
+<div class="modal" id="refShareModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="refShareTitle" style="max-width:440px">
+    <div class="sheet-head"><h2 id="refShareTitle"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg> 친구 초대</h2><button class="icon-btn" type="button" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-body">
+      <div class="ref-card">
+        <p class="ref-lead">끼리는 AI와 사람이 한 방에 모여 같이 생각하는 대화방이에요.</p>
+        <p class="ref-sub" id="refShareSub"></p>
+        <p class="ref-url" id="refShareUrl"></p>
+      </div>
+      <div class="btn-row">
+        <button class="btn green" id="refShareKakao" type="button"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-share"></use></svg> 카톡으로 보내기</button>
+        <button class="btn dark" id="refShareCopyBtn" type="button"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 초대 링크 복사</button>
+      </div>
     </div>
   </div>
 </div>
@@ -8585,6 +8616,39 @@ function myReferralLink() {
   var code = (V3.profile && V3.profile.refCode) || "";
   return base + (code ? "?ref=" + encodeURIComponent(code) : "");
 }
+/* 🎁 친구 초대 — 서비스 자체를 소개하며 보내는 링크. 남에게 보낼 주소라 항상 공식 주소를 쓴다. */
+var REF_SITE_URL = "https://kkiri.ai.kr/";
+function referralInviteLink() {
+  var code = (V3.profile && V3.profile.refCode) || "";
+  var anon = !!(V3.user && V3.user.isAnonymous);
+  if (!V3.signedIn || !code || anon) return REF_SITE_URL;   /* 비로그인·게스트 — 내 코드 없이 서비스 주소만 */
+  return REF_SITE_URL + "?ref=" + encodeURIComponent(code);
+}
+function referralNote() {
+  return "끼리 — AI와 사람이 한 방에 모여 같이 생각하는 대화방이에요. 한번 들어와 볼래요?\n" + referralInviteLink();
+}
+function renderReferralShare() {
+  var link = referralInviteLink();
+  var u = $("refShareUrl");
+  if (u) u.textContent = link;
+  var sub = $("refShareSub");
+  if (sub) sub.innerHTML = link.indexOf("ref=") > -1
+    ? "친구가 내 링크로 가입하면 <b>나 +300</b>, <b>친구 +200</b> 크레딧!"
+    : "지금은 서비스 주소만 보내요. 로그인하면 내 초대 코드가 자동으로 붙어 크레딧도 받을 수 있어요.";
+}
+function openReferralShare() { renderReferralShare(); openModal("refShareModal"); }
+/* 카톡 등 기기 공유창을 먼저 쓰고, 없는 브라우저면 문구+링크를 복사해 붙여넣게 한다. */
+function shareReferral() {
+  var text = referralNote();
+  if (navigator.share) {
+    navigator.share({ title: "끼리 초대", text: text }).catch(function (e) {
+      if (e && e.name === "AbortError") return;
+      copyText(text, "공유 창을 열지 못해 초대 문구와 링크를 복사했어요 · 카카오톡에 붙여넣어 보내 주세요");
+    });
+    return;
+  }
+  copyText(text, "공유 창이 없는 브라우저예요 · 초대 문구와 링크를 복사했어요 · 카카오톡에 붙여넣어 보내 주세요");
+}
 function roomInviteLink(r) {
   if (!r) return "";
   var base = String(location.href).split("#")[0].split("?")[0];
@@ -10260,6 +10324,18 @@ function wireV3() {
   var dcp = $("donateCopy");
   if (dcp) dcp.addEventListener("click", function () {
     copyText(DONATE_URL, "송금 링크를 복사했어요");
+  });
+  /* 🎁 친구 초대 — 서비스를 소개하며 내 초대 링크를 보낸다 */
+  var hInvite = $("homeInviteBtn");
+  if (hInvite) hInvite.addEventListener("click", function () {
+    if (typeof closeSidebar === "function") closeSidebar();
+    openReferralShare();
+  });
+  var rk = $("refShareKakao");
+  if (rk) rk.addEventListener("click", shareReferral);
+  var rc2 = $("refShareCopyBtn");
+  if (rc2) rc2.addEventListener("click", function () {
+    copyText(referralInviteLink(), "초대 링크를 복사했어요 · 카카오톡에 붙여넣어 보내 주세요");
   });
   /* 💬 의견 보내기 — 홈 하단·사이드바 하단 어디서 눌러도 같은 창 */
   ["homeFeedbackBtn", "sideFeedbackBtn"].forEach(function (id) {
