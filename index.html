@@ -6543,7 +6543,8 @@ async function deleteAgentEverywhere(id) {
   /* 2) 서버 — 모든 방에서 끄고(is_active=false), 정말 꺼졌는지 다시 읽어 확인한다. */
   var verdict = await dbRemoveAgentEverywhere(id, remoteIds);
   if (verdict.ok) {
-    toast("'" + name + "'을(를) 목록에서 지웠어요");
+    toast("'" + name + "'을(를) 목록에서 지웠어요" +
+      (verdict.skipped ? " · 내가 참여하지 않은 공개 방 " + verdict.skipped + "곳에는 그대로 있어요" : ""));
     return;
   }
 
@@ -6564,13 +6565,24 @@ async function deleteAgentEverywhere(id) {
 async function dbRemoveAgentEverywhere(localId, roomIds) {
   if (!db.ready || !db.client) return { ok: true };            /* 로컬·mock 화면은 서버가 없다 */
   if (!roomIds || !roomIds.length) return { ok: true };
+  /* 내가 멤버인 방만 끈다. 공개 둘러보기 방(참여하지 않은 남의 방)은 쓰기 권한이 없고,
+     그 방의 AI 목록은 그 방의 몫이라 건드리지 않는다(건드리려다 전체 지우기를 실패로 만들지 않는다). */
+  var mine = null;
+  try {
+    var mm = await db.client.from("kkiri_room_members").select("room_id")
+      .eq("user_id", V3.user ? V3.user.id : "");
+    if (!mm.error) mine = (mm.data || []).map(function (x) { return x.room_id; });
+  } catch (e0) { mine = null; }
+  var scope = (mine && mine.length) ? roomIds.filter(function (id) { return mine.indexOf(id) > -1; }) : roomIds.slice();
+  var skipped = roomIds.length - scope.length;                /* 권한이 없어 그대로 두는 방 수 */
+  if (!scope.length) return { ok: true, skipped: skipped };
   /* 지금 서버에서 이 AI 가 켜져 있는 방만 손댄다(이미 꺼져 있으면 요청도 보내지 않는다) */
   var rows = null;
   try {
-    var sel = await db.client.from("kkiri_agents").select("id,room_id,is_active").in("room_id", roomIds);
+    var sel = await db.client.from("kkiri_agents").select("id,room_id,is_active").in("room_id", scope);
     if (!sel.error) rows = sel.data || [];
   } catch (e) { rows = null; }
-  var targets = roomIds.slice();
+  var targets = scope.slice();
   if (rows) {
     targets = [];
     rows.forEach(function (row) {
@@ -6578,7 +6590,7 @@ async function dbRemoveAgentEverywhere(localId, roomIds) {
       if (row.is_active === false) return;
       if (targets.indexOf(row.room_id) < 0) targets.push(row.room_id);
     });
-    if (!targets.length) return { ok: true };                   /* 이미 모든 방에서 꺼져 있다 */
+    if (!targets.length) return { ok: true, skipped: skipped };   /* 이미 내 방들에서는 꺼져 있다 */
   }
   var reason = {}, failed = [];
   for (var i = 0; i < targets.length; i++) {
@@ -6599,7 +6611,7 @@ async function dbRemoveAgentEverywhere(localId, roomIds) {
     if (typeof console !== "undefined" && console.warn) console.warn("[kkiri] agent delete failed", localId, failed);
     return { ok: false, why: reason.msg || (" · " + failed.length + "개 방에서 서버가 받지 않았어요") };
   }
-  return { ok: true };
+  return { ok: true, skipped: skipped };
 }
 function addMemberToRoom(id) {
   var r = activeRoom();
