@@ -476,10 +476,6 @@
   .c-sec ul{margin:0;padding-left:15px}
   .c-sec li{font-size:11.5px;line-height:1.62;color:#332B5C;letter-spacing:-.012em;margin-bottom:2px;word-break:keep-all}
   .c-sec.risk h4{color:#a8691a}
-  .c-sec.todo h4{color:#2b5cc4}
-  .c-sec.todo li{list-style:none;position:relative;padding-left:14px}
-  .c-sec.todo li::before{content:"☐";position:absolute;left:0;color:#8E85A9;font-size:11px}
-  .c-sec.todo .own{color:#6F6889;font-size:10px;font-weight:700;margin-left:4px}
   .c-stats{
     display:flex;gap:6px;flex-wrap:wrap;padding:9px 0 0;border-top:1px dashed #E8E4F8;margin-top:2px;
   }
@@ -4227,9 +4223,6 @@ function cardHtml(m) {
   sec("핵심 근거", c.evidence, "", function (t) { return "<li>" + esc(t) + "</li>"; });
   sec("이견 · 리스크", c.risks, "risk", function (t) { return "<li>" + esc(t) + "</li>"; });
   sec("확인 필요", c.checks, "risk", function (t) { return "<li>" + esc(t) + "</li>"; });
-  sec("다음 할 일", c.todos, "todo", function (t) {
-    return "<li>" + esc(t.t) + '<span class="own"> · ' + esc(t.o || "") + (t.d ? " · " + esc(t.d) : "") + "</span></li>";
-  });
   var stats = '<div class="c-stats">' +
     "<span>참여 " + c.stats.members.length + "명</span>" +
     "<span>" + c.stats.turns + "턴</span>" +
@@ -4762,15 +4755,15 @@ var DEMO = {
   },
   converge: {
     pikri: [
-      { promo: true, t: "정리합니다. 결정은 12/1~12/14 13% 할인 + 사은품 선택형 2종, 광고 예산 상한 120만 원입니다. 이견은 재고·반품 리스크로 남기고, 11/28 재고 실사 결과에 따라 할인율을 15%까지 올리는 조건을 붙였습니다. 다음 할 일은 카드에 담았습니다." },
-      { promo: true, t: "정리안으로 마무리합니다. 할인은 13%, 사은품은 선택형 2종, 광고 예산 상한은 120만 원입니다. 확인 필요 항목은 11/28 재고 실사와 반품률이고, 결과에 따라 15%까지 열어 둡니다. 다음 할 일 3건을 카드로 올립니다." },
+      { promo: true, t: "정리합니다. 결정은 12/1~12/14 13% 할인 + 사은품 선택형 2종, 광고 예산 상한 120만 원입니다. 이견은 재고·반품 리스크로 남기고, 11/28 재고 실사 결과에 따라 할인율을 15%까지 올리는 조건을 붙였습니다. 이견과 확인 항목은 카드에 정리했습니다." },
+      { promo: true, t: "정리안으로 마무리합니다. 할인은 13%, 사은품은 선택형 2종, 광고 예산 상한은 120만 원입니다. 확인 필요 항목은 11/28 재고 실사와 반품률이고, 결과에 따라 15%까지 열어 둡니다. 확인 필요 항목은 카드에 정리했습니다." },
       { promo: true, t: "오늘 결정은 12/1~12/14 13% 할인과 선택형 사은품 2종입니다. 광고 예산은 120만 원을 넘지 않습니다. 확인할 것은 11/28 재고 실사와 반품률이며, 결과에 따라 할인율을 15%까지 올립니다." },
-      { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 다음 할 일 3개를 카드에 담았습니다." },
-      { t: "정리안으로 마무리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
+      { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 결정과 이견만 카드에 정리했습니다." },
+      { t: "정리안으로 마무리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 결정과 이견만 카드에 정리했습니다." }
     ],
     generic: [
-      { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 다음 할 일 3개를 카드에 담았습니다." },
-      { t: "정리안으로 마무리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 다음 할 일 3개를 카드에 담았습니다." }
+      { t: "정리합니다. 방향은 중간안으로 두고, 확인이 필요한 숫자는 따로 표시했습니다. 결정과 이견만 카드에 정리했습니다." },
+      { t: "정리안으로 마무리합니다. 방향은 절충안으로 두고, 확인 항목은 다음 단계에서 정리합니다. 결정과 이견만 카드에 정리했습니다." }
     ]
   },
   chat: {
@@ -5947,7 +5940,6 @@ function buildCard(r, opts) {
       if (/확인 필요|확인해야|실사|검증|추정|근거가 약/.test(s)) push(checks, s, 3);
     });
   });
-  var todos = defaultTodos(r);
   var s = r.session || freshSession();
   var turns = s.turn || all.length;
   var tokens = (s.tin || 0) + (s.tout || 0);
@@ -5969,7 +5961,6 @@ function buildCard(r, opts) {
     evidence: evidence,
     risks: risks.length ? risks : ["특별한 이견 없이 정리됐습니다. 실행 전 확인 항목만 남겼습니다."],
     checks: checks,
-    todos: todos,
     stats: {
       members: memberNames(r).concat(relayNames),
       turns: turns,
@@ -5979,62 +5970,6 @@ function buildCard(r, opts) {
       duration: dur(Math.max(0, en - st))
     }
   };
-}
-
-function defaultTodos(r) {
-  var agenda = r.agenda || "";
-  var mem = r.members.map(function (id) { return state.agents[id]; }).filter(Boolean);
-  function owner(re, i) {
-    for (var j = 0; j < mem.length; j++) { if (re.test(mem[j].role || "")) return mem[j].name; }
-    return mem.length ? mem[Math.min(i, mem.length - 1)].name : "피크리";
-  }
-  if (categoryKeyOf(r) === "travel") {
-    return [
-      { t: "후보 일정 2안으로 추리기", o: owner(/진행|기획|여행/, 0), d: dday(2) },
-      { t: "숙소·교통 가격 비교", o: owner(/데이터|분석|가성비/, 1), d: dday(3) },
-      { t: "예약 마감일 확인", o: owner(/실행|비서|예약/, 2), d: dday(1) }
-    ];
-  }
-  if (categoryKeyOf(r) === "daily") {
-    return [
-      { t: "후보 3곳 영업시간 확인", o: owner(/실행|예약|동선/, 2), d: dday(1) },
-      { t: "1순위 예약하기", o: owner(/진행|맛집/, 0), d: dday(2) },
-      { t: "메뉴·예산 정리", o: owner(/데이터|가성비/, 1), d: dday(2) }
-    ];
-  }
-  if (categoryKeyOf(r) === "counsel") {
-    return [
-      { t: "서운했던 지점 세 줄로 적기", o: owner(/공감|사용자/, 0), d: dday(3) },
-      { t: "상대에게 확인할 것 정리", o: owner(/현실|실행/, 1), d: dday(4) },
-      { t: "이야기할 때와 방식을 정하기", o: owner(/차분|정리/, 2), d: dday(7) }
-    ];
-  }
-  if (/프로모션|할인|사은품|연말|광고|캠페인/.test(agenda)) {
-    return [
-      { t: "상세페이지 초안 완성", o: owner(/카피|기획/, 1), d: dday(4) },
-      { t: "광고 소재 3종 준비", o: owner(/리서|분석/, 2), d: dday(6) },
-      { t: "재고 실사 결과 공유", o: owner(/사회|실행/, 0), d: dday(3) }
-    ];
-  }
-  if (/채용|면접|인력/.test(agenda)) {
-    return [
-      { t: "후보 리스트 정리", o: owner(/리서|분석/, 1), d: dday(3) },
-      { t: "면접 질문 확정", o: owner(/카피|기획/, 2), d: dday(4) },
-      { t: "일정 공유", o: owner(/사회|실행/, 0), d: dday(2) }
-    ];
-  }
-  if (/재고|발주|입고/.test(agenda)) {
-    return [
-      { t: "재고 실사", o: owner(/리서|분석/, 1), d: dday(3) },
-      { t: "발주 수량 확정", o: owner(/사회|실행/, 0), d: dday(4) },
-      { t: "입고 일정 공유", o: owner(/카피|기획/, 2), d: dday(5) }
-    ];
-  }
-  return [
-    { t: "안건 확정안 문서화", o: owner(/사회|실행/, 0), d: dday(2) },
-    { t: "근거 자료 첨부", o: owner(/리서|분석/, 1), d: dday(3) },
-    { t: "실행 일정 반영", o: owner(/카피|기획/, 2), d: dday(5) }
-  ];
 }
 
 function cardMarkdown(c) {
@@ -6059,7 +5994,6 @@ function cardMarkdown(c) {
   block("핵심 근거", c.evidence);
   block("이견 · 리스크", c.risks);
   block("확인 필요", c.checks);
-  block("다음 할 일", c.todos);
   L.push("---");
   L.push("숫자와 일정은 확인 후 확정하세요.");
   return L.join("\n");
@@ -6135,7 +6069,6 @@ function cardPlain(c) {
   block("핵심 근거", c.evidence);
   block("이견 · 리스크", c.risks);
   block("확인 필요", c.checks);
-  block("다음 할 일", c.todos);
   L.push("숫자와 일정은 확인 후 확정하세요.");
   return L.join("\n");
 }
