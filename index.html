@@ -743,6 +743,7 @@
   #byokWrap > summary::before{font-size:11px}
   .spec-body{padding:2px 11px 13px}
   .spec-body .btn-row{margin-top:12px}
+  .spec-body .btn-row #mineKeyTest{flex:0 0 auto;white-space:nowrap;padding-left:16px;padding-right:16px}
   .connect-line{margin:0;font-size:10.5px;line-height:1.6;font-weight:800;color:#5B38E0;background:var(--brand-tint);border-radius:10px;padding:9px 11px;letter-spacing:-.01em}
   .connect-line.demo{color:#8a5a12;background:var(--amber-tint)}
   .auto-hint{font-style:normal;font-size:8.5px;font-weight:900;color:#5B38E0;background:var(--brand-tint);border-radius:999px;padding:2px 6px;margin-left:4px;vertical-align:middle}
@@ -2463,7 +2464,7 @@ window.__KKIRI_BOOT = (function () {
               </div>
             </label>
             <p class="hint" id="mineKeyHint"></p>
-            <div class="btn-row"><button class="btn green" id="mineKeyAdd">키 저장하고 이 방에 추가</button></div>
+            <div class="btn-row"><button type="button" class="btn dark" id="mineKeyTest">연결 테스트</button><button class="btn green" id="mineKeyAdd">키 저장하고 이 방에 추가</button></div>
             <p class="api-status" id="mineKeyStatus" role="status" aria-live="polite" hidden></p>
             <p class="modal-note">내 AI의 하위 기능이에요. 키는 이 기기에만 저장되고, 이 키로 답하는 내 제미나이·내 GPT는 끼리 크레딧을 쓰지 않아요.</p>
           </div>
@@ -7040,7 +7041,13 @@ function renderMine() {
   }
   renderInviteBalance();
   renderFocus();
+  syncByokOpen();
   renderMineKeys();
+}
+/* 내 키 칸은 저장된 키가 있으면 접어 두고(화면이 짧아짐), 아직 하나도 없을 때만 펼친다. */
+function syncByokOpen() {
+  var d = $("byokWrap");
+  if (d) d.open = !anyKey();
 }
 /* ── 나의 AI · 집중 모드 지시문 ───────────────────────────────
    주기적 확인(예: 10분마다)을 지시하면 내 AI가 계속 새 글을 읽으며 토큰을 쓴다.
@@ -7067,6 +7074,26 @@ function renderFocus() {
 }
 /* ── 나의 AI · 내 API 키로 바로 붙이기 (설정 · API 키와 같은 값) ── */
 var mineProvider = "gemini";
+/* 입력칸을 ‘지금 비어 있을 때만’ 저장된 값으로 채운다 — 탭을 바꾸면 그 제공자의 값으로 바꿔 준다. */
+var minePrefilledFor = "";
+function fillMineFields() {
+  var p = mineProvider, k = $("mineKey"), saved = keyFor(p);
+  var switched = minePrefilledFor !== p;
+  minePrefilledFor = p;
+  if (k && (switched || !k.value)) {
+    k.value = saved || "";
+    k.type = "password";
+    var eye = $("mineKeyEye");
+    if (eye) { eye.setAttribute("aria-pressed", "false"); eye.textContent = "보기"; }
+  }
+  /* 이름·역할 — 이 방의 그 제공자 내 AI → 다른 방의 그 제공자 내 AI → 키가 있으면 기본 이름 */
+  var mine = allAgents().filter(function (a) { return a && a.type === "byok" && (a.model || "") === p; });
+  var pick = roomMineAgent(p, activeRoom()) || mine[mine.length - 1] || null;
+  var nm = $("mineName"), rl = $("mineRole");
+  var defName = p === "openai" ? "내 GPT" : "내 제미나이";
+  if (nm && (switched || !nm.value)) nm.value = pick ? (pick.name || "") : (saved ? defName : "");
+  if (rl && (switched || !rl.value)) rl.value = pick ? (pick.role || "") : (saved ? "내 AI" : "");
+}
 function renderMineKeys() {
   setKeyBadge($("kbMineGemini"), !!api.geminiKey, "");
   setKeyBadge($("kbMineOpenai"), !!api.openaiKey, "");
@@ -7099,6 +7126,7 @@ function renderMineKeys() {
       : "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-3.6-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>") +
       (saved ? "<br>이 기기에 <b>" + providerLabel(mineProvider) + " 키가 저장돼 있어요</b> · 아래에 새 키를 넣으면 바뀌어요." : "");
   }
+  fillMineFields();
 }
 function setMineKeyStatus(kind, msg) {
   var el = $("mineKeyStatus");
@@ -7108,6 +7136,29 @@ function setMineKeyStatus(kind, msg) {
   el.textContent = msg;
 }
 function hideMineKeyStatus() { var el = $("mineKeyStatus"); if (el) { el.hidden = true; el.textContent = ""; } }
+/* 입력한 키(없으면 저장된 키)로 실제 AI를 한 번 불러 연결을 확인한다 — 키를 저장하거나 AI를 방에 넣지는 않는다. */
+async function testMineKey() {
+  var p = mineProvider, btn = $("mineKeyTest");
+  var typed = ($("mineKey") && $("mineKey").value) ? $("mineKey").value.trim() : "";
+  var key = typed || keyFor(p);
+  if (!key) { setMineKeyStatus("err", "API 키를 먼저 입력해 주세요."); if ($("mineKey")) $("mineKey").focus(); return; }
+  if (p === "gemini" && !/^(AIza|AQ\.)/.test(key)) { setMineKeyStatus("err", "Gemini 키는 AIza… 또는 AQ.… 로 시작해요. 붙여넣은 값을 확인해 주세요."); return; }
+  if (p === "openai" && !/^sk[-_]/.test(key)) { setMineKeyStatus("err", "OpenAI 키는 sk-… 로 시작해요. 붙여넣은 값을 확인해 주세요."); return; }
+  var before = modelFor(p);
+  if (btn) { btn.disabled = true; btn.setAttribute("aria-busy", "true"); }
+  setMineKeyStatus("busy", "확인 중…");
+  try {
+    await callProvider(p, key, before, "너는 연결 확인용 도우미다. 아주 짧게 답한다.", "연결 확인. ‘연결됐어요’라고만 답해 주세요.");
+    /* 자동 폴백이 모델을 바꿨다면 modelFor()가 그 모델을 돌려준다 — 실제로 답한 모델을 보여 준다 */
+    var used = modelFor(p);
+    setMineKeyStatus("ok", "연결 성공 · " + providerLabel(p) + " (" + used + ") 응답을 받았어요." +
+      (used !== before ? " · 이 키에서 되는 모델로 자동 전환했어요." : ""));
+  } catch (e) {
+    setMineKeyStatus("err", "연결 실패 · " + friendlyError(e));
+  } finally {
+    if (btn) { btn.disabled = false; btn.removeAttribute("aria-busy"); }
+  }
+}
 /* 이 방에 이미 그 제공자(gemini·openai 등)의 ‘내 키’ AI가 있는가 — 방당 1명만 허용 */
 function roomMineAgent(p, r) {
   r = r || activeRoom();
@@ -7181,7 +7232,7 @@ function addMineKeyAgent() {
     save();
     renderAll();
     renderMineKeys();
-    $("mineName").value = ""; $("mineRole").value = ""; $("mineKey").value = "";
+    $("mineKey").value = keyFor(p) || "";
     $("mineKey").type = "password";
     $("mineKeyEye").setAttribute("aria-pressed", "false");
     $("mineKeyEye").textContent = "보기";
@@ -7215,7 +7266,7 @@ function addMineKeyAgent() {
   }
   var r = activeRoom();
   var how = invAttach(id, true);
-  $("mineName").value = ""; $("mineRole").value = ""; $("mineKey").value = "";
+  $("mineKey").value = keyFor(p) || "";
   $("mineKey").type = "password";
   $("mineKeyEye").setAttribute("aria-pressed", "false");
   $("mineKeyEye").textContent = "보기";
@@ -10721,6 +10772,7 @@ function wire() {
     $("mineKeyEye").textContent = show ? "숨기기" : "보기";
   });
   $("mineKeyAdd").addEventListener("click", addMineKeyAgent);
+  $("mineKeyTest").addEventListener("click", function () { testMineKey(); });
   $("mineKey").addEventListener("keydown", function (e) {
     if (e.key === "Enter") { e.preventDefault(); addMineKeyAgent(); }
   });
