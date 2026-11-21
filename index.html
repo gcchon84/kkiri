@@ -4225,7 +4225,6 @@ function emptyHtml(r) {
     /* 혼자 있는 방 — 크레딧 이야기 없이, 초대해서 대화를 시작하도록 안내한다. */
     return '<div class="empty" id="emptyRoom"><div class="e-emoji e-alone">' + icoHtml("alone") + '</div>' +
       "<h3>사람이나 AI를 초대해 대화를 시작해 보세요.</h3>" +
-      "<p>사람과의 대화는 언제나 무료예요 · 필요할 때 위 <b>초대하기</b>로 부르면 돼요.</p>" +
       cta + "</div>";
   }
   var names = memberNames(r).join(" · ");
