@@ -3744,12 +3744,17 @@ function renderRoom() {
   var rtP = rtTalkParts(r);
   var aiN = rtP.total;
   var canDiscuss = ownerNow && aiN >= 2 && !run.active;
+  /* 일시중지·정지·크레딧 상한은 모두 AI 자동토론(roundtable) 제어다.
+     @멘션 응답 대기 중(run.mode === "mention")에는 자동토론이 아니므로 비활성(회색)으로 둔다. */
+  var rtActive = !!(run.active && run.mode === "roundtable");
   var dbt = $("discussBtn");
   if (dbt) {
     dbt.disabled = !canDiscuss;
     dbt.title = !ownerNow ? "AI 자동토론은 방장만 켤 수 있어요 · 사람·내 AI 대화는 무료예요"
       : aiN < 2 ? "AI가 2명 이상이면 AI 자동토론을 켤 수 있어요"
-      : (run.active ? "AI 자동토론이 진행 중이에요" : "AI들끼리 알아서 의견을 주고받고 마지막에 정리안까지 만들어요");
+      : rtActive ? "AI 자동토론이 진행 중이에요"
+      : run.active ? "AI가 답변을 만드는 중이에요 · 답변이 끝난 뒤에 켤 수 있어요"
+      : "AI들끼리 알아서 의견을 주고받고 마지막에 정리안까지 만들어요";
   }
   var clead = $("ctrlLead");
   if (clead) clead.innerHTML = !ownerNow
@@ -3758,18 +3763,19 @@ function renderRoom() {
     ? "평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>AI 자동토론</b>을 켜세요"
     : "AI를 <b>2명 이상</b> 부르면 <b>AI 자동토론</b>을 켤 수 있어요";
   var pbt = $("pauseBtn"), sbt = $("stopBtn");
+  var pausedNow = rtActive && !!run.paused;
+  var ctrlOffTitle = !ownerNow ? "토론 제어는 방장만 할 수 있어요" : "AI 자동토론 중에만 쓸 수 있어요";
   if (pbt) {
-    pbt.disabled = !run.active || !ownerNow;
-    pbt.title = !ownerNow ? "토론 제어는 방장만 할 수 있어요" : (run.paused ? "재개" : "일시정지");
-    pbt.classList.toggle("paused", !!run.paused);
+    pbt.disabled = !rtActive || !ownerNow;
+    pbt.classList.toggle("paused", pausedNow);
     var puse = pbt.querySelector("use");
-    if (puse) puse.setAttribute("href", run.paused ? "#i-play" : "#i-pause");
+    if (puse) puse.setAttribute("href", pausedNow ? "#i-play" : "#i-pause");
     var plbl = pbt.querySelector(".ca-lbl");
-    if (plbl) plbl.textContent = run.paused ? "재개" : "일시중지";
-    pbt.setAttribute("aria-label", run.paused ? "재개" : "일시정지");
-    pbt.title = !ownerNow ? "토론 제어는 방장만 할 수 있어요" : (run.paused ? "재개" : "일시정지");
+    if (plbl) plbl.textContent = pausedNow ? "재개" : "일시중지";
+    pbt.setAttribute("aria-label", pausedNow ? "재개" : "일시정지");
+    pbt.title = rtActive ? (pausedNow ? "재개" : "일시정지") : ctrlOffTitle;
   }
-  if (sbt) { sbt.disabled = !run.active || !ownerNow; sbt.title = !ownerNow ? "토론 제어는 방장만 할 수 있어요" : "즉시 정지"; }
+  if (sbt) { sbt.disabled = !rtActive || !ownerNow; sbt.title = rtActive ? "즉시 정지" : ctrlOffTitle; }
   $("sendBtn").textContent = "보내기";
   $("sendBtn").disabled = run.active && run.mode === "roundtable";
   $("input").placeholder = inputPlaceholder(r);
@@ -4011,7 +4017,7 @@ function updateMeters() {
   $("turnBar").style.width = pct + "%";
 
   var cap = Math.max(1, r.budget || 0);
-  if (run.active && run.cap) cap = Math.min(cap, run.cap);
+  if (discussing && run.cap) cap = Math.min(cap, run.cap);
   var used = s.credits || 0;
   var costPct = clamp(used / cap * 100, 0, 100);
   $("costVal").textContent = creditsLabel(used) + " / " + creditsLabel(cap);
@@ -4037,8 +4043,9 @@ function updateMeters() {
   else { warn.hidden = true; }
 
   var st = $("runState");
-  if (run.active && run.paused) st.textContent = "일시정지";
-  else if (run.active) st.textContent = run.cooldownLeft ? "진행 중 · 쿨다운 " + run.cooldownLeft + "초" : "진행 중";
+  if (discussing && run.paused) st.textContent = "일시정지";
+  else if (discussing) st.textContent = run.cooldownLeft ? "진행 중 · 쿨다운 " + run.cooldownLeft + "초" : "진행 중";
+  else if (run.active) st.textContent = "답변 작성 중";   /* @멘션 응답 대기 — 자동토론 상태가 아니다 */
   else if (r.status === "ended") st.textContent = "종료 · 정리안 완료";
   else st.textContent = "대기 중";
   /* 미터가 하나만 남으면 그 하나가 전체 폭을 쓰게 — 빈 반쪽이 생기지 않도록 */
@@ -10444,7 +10451,7 @@ function wire() {
 
   $("pauseBtn").addEventListener("click", function () {
     if (!canSpendCredits(activeRoom())) { ownerOnlyBlocked("토론 제어"); return; }
-    if (!run.active) { toast("진행 중일 때만 일시정지할 수 있어요"); return; }
+    if (!(run.active && run.mode === "roundtable")) { toast("AI 자동토론 중일 때만 일시정지할 수 있어요"); return; }
     run.paused = !run.paused;
     updateMeters();
     renderRoom();
@@ -10452,7 +10459,7 @@ function wire() {
   });
   $("stopBtn").addEventListener("click", function () {
     if (!canSpendCredits(activeRoom())) { ownerOnlyBlocked("토론 제어"); return; }
-    if (!run.active) { toast("지금은 진행 중이 아니에요"); return; }
+    if (!(run.active && run.mode === "roundtable")) { toast("지금은 AI 자동토론 중이 아니에요"); return; }
     endRun("stop");
     toast("멈췄어요 · 대화는 그대로 남아 있어요");
   });
