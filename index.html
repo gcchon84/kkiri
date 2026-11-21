@@ -1797,7 +1797,6 @@
   #creditModal .invite-box{padding:14px 14px 15px;margin-top:13px}
   #creditModal .invite-box > b{font-size:14px}
   #creditModal .invite-box p{font-size:12px;line-height:1.7;color:#5C5480;margin-top:7px}
-  #creditModal .charge-note{font-size:11.5px;color:#6B6484;line-height:1.6;margin-top:8px}
   #creditModal .sec-head{padding:6px 2px 8px}
   #creditModal .sec-head > span{font-size:12px;color:#5B5382;letter-spacing:.02em}
   #creditModal .led-row{padding:11px 12px;font-size:12.5px}
@@ -2855,7 +2854,6 @@ window.__KKIRI_BOOT = (function () {
       <div class="credit-guide alt">
         <h4><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-spark"></use></svg> 더 쓰고 싶을 때</h4>
         <button type="button" class="charge-btn" id="openChargeBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 후원하고 후원 크레딧 받기</button>
-        <p class="charge-note">1,000원부터 · 후원 금액과 1:1 비율로 후원 크레딧을 드려요</p>
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
@@ -10399,7 +10397,7 @@ async function dbReload() {
 /* ---------- 크레딧 원장 ---------- */
 function ledgerLabel(reason) {
   var r = String(reason || "");
-  if (r.indexOf("turn.reserve") === 0) return "끼리 AI 턴";
+  if (r.indexOf("turn.reserve") === 0) return "끼리 AI 대답";
   if (r.indexOf("turn.extra") === 0) return "크레딧 추가 정산";
   if (r.indexOf("turn.settle") === 0) return "정산 복구";
   if (r.indexOf("turn.refund") === 0) return "실패 복구";
@@ -10431,7 +10429,8 @@ function paintLedger() {
   show.forEach(function (row) {
     var d = Number(row.delta) || 0;
     var at = row.created_at ? Date.parse(row.created_at) : Number(row.at) || Date.now();
-    h += '<div class="led-row"><span class="l-what"><b>' + esc(ledgerLabel(row.reason)) + (row.model ? " · " + esc(configName(row.model)) : "") + '</b>' +
+    /* 모델 표시명('끼리 경량' 등)은 내부 이름이라 내역에 붙이지 않는다 */
+    h += '<div class="led-row"><span class="l-what"><b>' + esc(ledgerLabel(row.reason)) + '</b>' +
       '<small>' + esc(timeLabel(at)) + ' · 잔액 ' + (Number(row.balance_after) || 0).toLocaleString("ko-KR") + '</small></span>' +
       '<span class="l-delta ' + (d < 0 ? "minus" : "plus") + '">' + (d > 0 ? "+" : "") + d.toLocaleString("ko-KR") + '</span></div>';
   });
