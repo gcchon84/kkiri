@@ -6920,6 +6920,8 @@ function openModal(id) {
   if (!m) return;
   /* 시작 모달은 열 때마다 이 기기의 게스트 체험 이력에 맞춰 문구를 다시 그린다 */
   if (id === "authModal") { try { renderGuestButton(); } catch (e) {} }
+  /* 초대 창을 열 때의 멤버를 기준점으로 — 닫을 때 새로 남은 AI만 인사하게 한다 */
+  if (id === "inviteModal") { try { beginInviteSession(); } catch (e) {} }
   if (openStack.indexOf(id) < 0) openStack.push(id);
   /* 나중에 연 창이 위에 오게 — 새 방 창 위에 AI 추가 창을 겹쳐 쓸 수 있다 */
   m.style.zIndex = String(60 + openStack.length);
@@ -6929,6 +6931,9 @@ function openModal(id) {
 function closeModal(id) {
   var m = $(id);
   if (!m) return;
+  /* 초대 창을 닫을 때(완료·✕·배경·Esc) — 이번에 새로 남은 끼리 AI만 인사한다.
+     고르다 빼고 다시 넣어도 최종 멤버 기준이라 쓸데없는 인사가 남지 않는다. */
+  if (id === "inviteModal") { try { finishInviteSession(); } catch (e) {} }
   /* 재설정 창을 사용자가 직접 닫았다면(‘나중에’·✕) 늦게 도착한 이벤트나 타이머가 다시 띄우지 않는다 */
   if (id === "recoveryModal" && recoveryFlow) {
     recoveryFlow.dismissed = true;
@@ -8346,7 +8351,7 @@ function addMemberToRoom(id) {
   if (r.members.indexOf(id) > -1) { toast(a.name + "은(는) 이미 이 방에 있어요"); return; }
   invAttach(id);
   dbSetMember(r.id, id, true);
-  greetAgentOnEntry(id, r);   /* 이미 만든 AI를 이 방에 들일 때도 1줄 인사 — 0크레딧 */
+  /* 인사는 초대 창을 닫을 때 새로 남은 AI만 — 여기서는 바로 보내지 않는다(2026-11-22) */
   renderInviteAgents();
   toast(a.name + " · 이 방에 추가했어요");
 }
@@ -8444,7 +8449,6 @@ function addByokAgent() {
   renderAll();
   if (how === "room" && r) {
     dbUpsertAgent(r.id, id);
-    greetAgentOnEntry(id, r);   /* 직접 만든 끼리 AI도 입장 인사 1줄 — 0크레딧 */
     toast(name + " · 이 방에 추가하고 다음 방에서도 부를 수 있게 저장했어요");
   }
   else toast("‘" + name + "’ · 방 만들기 목록에 넣고 다음 방에서도 부를 수 있게 저장했어요");
@@ -11320,6 +11324,22 @@ function greetAgentOnEntry(agentId, room) {
 function greetAgentsOnEntry(ids, room) {
   (ids || []).slice().forEach(function (id) { try { greetAgentOnEntry(id, room); } catch (e) {} });
 }
+/* 초대 창 한 번의 세션 — 연 순간의 멤버(base)와 닫는 순간의 멤버를 비교한다. */
+var invGreet = { base: null };
+function beginInviteSession() {
+  /* 새 방 만들기(draft)나 방이 없을 때는 인사할 방이 없다 — 기준점도 두지 않는다 */
+  invGreet.base = (invTarget === "draft" || !activeRoom()) ? null : activeRoom().members.slice();
+}
+function finishInviteSession() {
+  var base = invGreet.base;
+  invGreet.base = null;
+  if (!base) return;
+  var r = activeRoom();
+  if (!r) return;
+  var added = (r.members || []).filter(function (id) { return base.indexOf(id) < 0; });
+  if (!added.length) return;
+  added.forEach(function (id) { try { greetAgentOnEntry(id, r); } catch (e) {} });
+}
 function createExpertAgent(ex) {
   var id = "ex_" + ex.id + "_" + Math.random().toString(36).slice(2, 6);
   state.agents[id] = {
@@ -11375,7 +11395,7 @@ async function addExpert(exId) {
   renderExpertPicker();
   renderInviteAgents();
   await dbUpsertAgent(r.id, id);
-  greetAgentOnEntry(id, r);   /* 입장 인사 1줄 — 서버 AI 호출 없이 0크레딧 */
+  /* 인사는 창을 닫을 때 — 새로 남은 AI만(2026-11-22) */
   toast(ex.name + " · 이 방에 추가했어요");
 }
 function removeExpert(id) {
