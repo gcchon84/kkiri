@@ -3140,7 +3140,9 @@ var COOLDOWN = { global: 700, agent: 2600 };
 var PROMO_RE = /프로모션|할인|사은품|연말|12월|광고|캠페인|세일/;
 
 function freshSession() {
-  return { turn: 0, tin: 0, tout: 0, cost: 0, credits: 0, startedAt: null, endedAt: null, startIndex: 0, blocked: 0 };
+  /* rt = 이 기록이 AI 자동토론(라운드테이블)에서 생겼다는 표시.
+     @멘션만으로는 크레딧·턴이 쌓여도 상단 라운드·크레딧 상한 미터를 띄우지 않는다. */
+  return { turn: 0, tin: 0, tout: 0, cost: 0, credits: 0, startedAt: null, endedAt: null, startIndex: 0, blocked: 0, rt: 0 };
 }
 
 function seedAgents() {
@@ -4092,9 +4094,12 @@ function updateMeters() {
   /* 이번 토론에 더 낮은 상한을 골랐으면 그 값을 보여 준다 */
   var max = maxTurns;
   var cur = s.turn || 0;
-  /* 라운드 미터는 AI 자동토론이 실제로 돌 때만 — 시작 전(turn 0)에는 제어 바를 버튼만 남긴다 */
+  /* 라운드·크레딧 상한 미터는 AI 자동토론이 도는 중이거나, 이 방에서 자동토론이 실제로 시작된 적이 있을 때만.
+     @멘션으로만 크레딧을 쓴 방(예: 20 크레딧)에는 미터 줄을 띄우지 않는다 — 자동토론을 켠 적이 없기 때문. */
+  var rtUsed = !!s.rt;
+  var showMeters = !!(discussing || rtUsed);
   var tmEl = $("turnMeter");
-  if (tmEl) tmEl.hidden = !(discussing || cur > 0);
+  if (tmEl) tmEl.hidden = !showMeters;
   var curRound = Math.min(maxRounds, Math.ceil(cur / aiN));
   var pct = discussing ? clamp(curRound / maxRounds * 100, 0, 100) : 0;
   $("turnLabel").textContent = "라운드";
@@ -4106,7 +4111,7 @@ function updateMeters() {
   var used = s.credits || 0;
   /* 크레딧 상한 미터도 라운드 미터와 같다 — 끼리 AI가 있는 방이라도 자동토론 전(turn 0 · 쓴 크레딧 0)에는
      제어 바를 버튼 한 줄로 남긴다. 토론을 시작하거나 발언·사용이 생기면 보인다. */
-  if (bmEl) bmEl.hidden = kkiriAiN < 1 || !(discussing || cur > 0 || used > 0);
+  if (bmEl) bmEl.hidden = kkiriAiN < 1 || !showMeters;
   var costPct = clamp(used / cap * 100, 0, 100);
   $("costVal").textContent = creditsLabel(used) + " / " + creditsLabel(cap);
   $("costBar").style.width = costPct + "%";
@@ -5390,6 +5395,7 @@ function startRoundtable(opts) {
   /* 이번 토론만의 크레딧 상한 — 방 상한보다 낮게 고르면 그 값에서 먼저 멈춘다 */
   r.discussCap = Math.max(0, Math.round(Number(opts.cap) || 0));
   r.session = freshSession();
+  r.session.rt = 1;                 /* AI 자동토론에서 시작된 기록 — 이 방은 라운드·크레딧 상한 미터를 보여 준다 */
   r.session.startedAt = Date.now();
   r.session.startIndex = r.messages.length;
   r.status = "running";
@@ -5518,7 +5524,9 @@ async function runMentions(text) {
   run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
   r.status = "running";
   renderRoom();
-  var ids = parsed.ids.slice(0, 3);
+  /* @AI전원 = 방 안의 내장 AI 전원이 차례대로 한 번씩 답한다(인원 제한 없음).
+     이름을 지정한 @멘션은 크레딧이 한꺼번에 나가지 않도록 3명까지만 답한다. */
+  var ids = parsed.all ? parsed.ids.slice() : parsed.ids.slice(0, 3);
   for (var i = 0; i < ids.length; i++) {
     if (ep !== run.epoch) return;
     if (budgetExceeded(r)) { endRun("budget", ep); return; }
@@ -5528,7 +5536,8 @@ async function runMentions(text) {
     if (ep !== run.epoch) return;
     await speak(ag, "mention", ep);
     if (ep !== run.epoch) return;
-    if (loopDetected()) { endRun("loop", ep); return; }
+    /* @멘션 응답은 AI마다 1회로 끝나는 유한한 반복이라 루프 감지로 중간에 끊지 않는다
+       (전원 호출에서 답이 비슷하다고 뒷사람 차례가 사라지면 ‘전원 응답’이 깨진다). */
     await sleep(rand(300, 620));
   }
   if (ep !== run.epoch) return;
