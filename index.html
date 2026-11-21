@@ -748,12 +748,12 @@
   #byokSeg .pick{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;text-align:center;min-height:44px;
     font-size:12.5px;line-height:1.25;word-break:keep-all;white-space:nowrap;padding:9px 8px}
   #byokSeg .kb{flex:0 0 auto}
-  /* 좀 좌은 화면에서도 ‘제미나이 (무료 키)’·‘OpenAI (챗GPT)’가 1줄로 나란히 */
+  /* 좀 좁은 화면에서도 ‘제미나이 (무료 키)’·‘OpenAI (챗GPT)’가 1줄로 나란히 */
   @media (max-width:380px){
     #byokSeg .pick{font-size:12px;padding:9px 6px;gap:5px}
     #byokSeg .kb.mini{margin-left:4px;padding:2px 6px;font-size:8px}
   }
-  /* 아주 좌은 화면(320px대)에서는 넘치는 대신 두 줄로 — 높이는 그리드가 맞춰 준다 */
+  /* 아주 좁은 화면(320px대)에서는 넘치는 대신 두 줄로 — 높이는 그리드가 맞춰 준다 */
   @media (max-width:345px){ #byokSeg .pick{white-space:normal} }
   .swatches{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
   .swatch{
