@@ -744,10 +744,17 @@
   /* 두 칸의 라벨·입력칸 높이를 일직선으로 — 첫 칸만 margin-top:0 이던 것을 없엔다 (2026-11-21) */
   .field-row > .field{margin-top:0}
   /* 내 키 제공자 두 버튼은 50:50 으로 나란히 (2026-11-21) */
-  #byokSeg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  #byokSeg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
   #byokSeg .pick{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;text-align:center;min-height:44px;
-    font-size:12.5px;line-height:1.25;word-break:keep-all;padding:9px 8px}
+    font-size:12.5px;line-height:1.25;word-break:keep-all;white-space:nowrap;padding:9px 8px}
   #byokSeg .kb{flex:0 0 auto}
+  /* 좀 좌은 화면에서도 ‘제미나이 (무료 키)’·‘OpenAI (챗GPT)’가 1줄로 나란히 */
+  @media (max-width:380px){
+    #byokSeg .pick{font-size:12px;padding:9px 6px;gap:5px}
+    #byokSeg .kb.mini{margin-left:4px;padding:2px 6px;font-size:8px}
+  }
+  /* 아주 좌은 화면(320px대)에서는 넘치는 대신 두 줄로 — 높이는 그리드가 맞춰 준다 */
+  @media (max-width:345px){ #byokSeg .pick{white-space:normal} }
   .swatches{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
   .swatch{
     width:26px;height:26px;border-radius:9px;border:2px solid transparent;cursor:pointer;padding:0;
@@ -2613,7 +2620,7 @@ window.__KKIRI_BOOT = (function () {
           <div class="spec-body">
             <div class="field" style="margin-top:10px"><span>어떤 AI 키인가요</span>
               <div class="pick-row" id="byokSeg" role="group" aria-label="내 키 제공자">
-                <button type="button" class="pick" data-byok="gemini" aria-pressed="true">구글 제미나이 (무료 키)<span class="kb mini" id="kbMineGemini" title="Gemini 키 저장 여부">OFF</span></button>
+                <button type="button" class="pick" data-byok="gemini" aria-pressed="true">제미나이 (무료 키)<span class="kb mini" id="kbMineGemini" title="Gemini 키 저장 여부">OFF</span></button>
                 <button type="button" class="pick" data-byok="openai" aria-pressed="false">OpenAI (챗GPT)<span class="kb mini" id="kbMineOpenai" title="OpenAI 키 저장 여부">OFF</span></button>
               </div>
             </div>
@@ -2923,7 +2930,7 @@ window.__KKIRI_BOOT = (function () {
           <li><b>수집 항목</b> — 이메일, 비밀번호(암호화 저장), 닉네임, 크레딧 잔액·사용 기록, 대화 내용, 접속 기록</li>
           <li><b>이용 목적</b> — 회원 식별·로그인, 대화방 제공, 크레딧 지급·차감·후원 확인, 문의 응대, 부정 이용 방지</li>
           <li><b>보유 기간</b> — 회원 탈퇴 시까지. 다만 전자상거래법 등 관련 법령이 정한 기록은 해당 기간 동안 보관합니다.</li>
-          <li>회원 탈퇴 시 계정·방·대화 기록은 바로 지워집니다. 단, 무료 크레딧과 초대 혜택을 여러 번 받는 것을 막기 위한 확인 기록만 암호화해서 30일 뒤 자동으로 지워집니다.</li>
+          <li>회원 탈퇴 시 계정과 내가 만든 방·대화는 바로 지워집니다. 다른 사람 방에 남긴 발언은 내용만 남고 이름은 '나간 회원'으로 가려집니다. 단, 무료 크레딧과 초대 혜택을 여러 번 받는 것을 막기 위한 확인 기록만 암호화해서 30일 뒤 자동으로 지워집니다.</li>
           <li><b>제3자 제공</b> — 원칙적으로 제공하지 않습니다. 법령에 따라 요구되는 경우에만 제공합니다.</li>
           <li><b>처리 위탁</b> — 서버·데이터 보관: Supabase, AI 답변 생성: OpenAI (대화 내용이 답변 생성을 위해 전송됩니다)</li>
           <li><b>이용자의 권리</b> — 본인 정보의 열람·정정·삭제·처리 정지를 언제든 요청할 수 있습니다.</li>
@@ -3462,7 +3469,7 @@ function creditsLabel(n) { return Math.round(Number(n) || 0).toLocaleString("ko-
    ========================================================= */
 var RELAY_WAIT_MS = 30000;   /* 내 AI(릴레이) · 사람 참가자 응답을 기다리는 시간(30초) */
 /* 초대 링크(&ai=1)로 들어온 외부 AI는 모델이 느릴 수 있어 더 넉넉하게 기다린다(60초).
-   내 제미나이·GPT(내 키 AI)와 끼리 AI는 각자의 호출 경로(API_TIMEOUT 30초)를 그대로 쓴다. */
+   내 제미나이·GPT(내 키 AI)와 끼리 AI는 각자의 호출 경로(API_TIMEOUT 60초)를 그대로 쓴다. */
 var RELAY_WAIT_EXTERNAL_MS = 60000;
 var run = {
   epoch: 0, active: false, paused: false, typingAgent: null, cooldownLeft: 0,
@@ -5814,7 +5821,7 @@ function parseMentions(text) {
 /* =========================================================
    9. 실제 API 호출
    ========================================================= */
-var API_TIMEOUT = 30000;   /* AI 응답 대기 — 30초 넘으면 끊고 안내한다 */
+var API_TIMEOUT = 60000;   /* AI 응답 대기 — 60초 넘으면 끊고 안내한다 */
 
 /* Gemini 모델 이름이 404일 때 — 새 키에서 접근 가능한 flash 모델을 찾아 대신 쓴다.
    선호 순서대로 찾고, 없으면 목록의 flash 계열 하나를 고른다. 한 번 찾으면 기억한다. */
@@ -5882,7 +5889,7 @@ function friendlyError(err) {
   var st = err.status || 0;
   var raw = String(err.raw || "").toLowerCase();
   var code = String(err.code || "").toUpperCase();
-  if (err.timeout) return "응답이 너무 늦어요(30초). 잠시 뒤 다시 시도해 주세요.";
+  if (err.timeout) return "응답이 너무 늦어요(60초). 잠시 뒤 다시 시도해 주세요.";
   if (err.empty) return err.raw || "빈 응답을 받았어요.";
   if (st === 0) return "AI에 연결하지 못했어요. 인터넷 연결과 브라우저의 외부 호출 차단(광고 차단 확장·회사망)을 확인해 주세요.";
   if (st === 401 || st === 403) return "API 키가 올바르지 않거나 권한이 없어요. 설정에서 키를 다시 확인해 주세요.";
@@ -5898,18 +5905,22 @@ function friendlyError(err) {
   return "AI 호출에 실패했어요. 잠시 뒤 다시 시도해 주세요.";
 }
 
-async function callProvider(provider, key, model, systemText, userText, retried) {
+async function callProvider(provider, key, model, systemText, userText, retried, noThinking) {
   var isGem = provider === "gemini";
   var url, init, sig = timeoutSignal(API_TIMEOUT);
   if (isGem) {
     url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent";
+    /* Gemini 3 계열은 기본이 ‘생각(thinking)’ 모드라 짧은 답도 수십 초 걸린다.
+       연결 테스트·대화 응답이 늦어 실패하던 원인 — 생각 예산을 0으로 두고 바로 답하게 한다. */
+    var genCfg = { temperature: 0.85, maxOutputTokens: 1024 };
+    if (!noThinking) genCfg.thinkingConfig = { thinkingBudget: 0 };
     init = {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": key },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemText }] },
         contents: [{ role: "user", parts: [{ text: userText }] }],
-        generationConfig: { temperature: 0.85, maxOutputTokens: 1024 }
+        generationConfig: genCfg
       }),
       signal: sig.signal
     };
@@ -5940,6 +5951,11 @@ async function callProvider(provider, key, model, systemText, userText, retried)
   try { data = await res.json(); } catch (e2) { data = null; }
   var eCode = (data && data.error && (data.error.status || data.error.code)) || "";
   var eRaw = errorTextFrom(data) || "";
+  /* 이 모델이 thinkingConfig(생각 예산)를 모르면 400 INVALID_ARGUMENT 로 거절한다.
+     그때는 모델을 바꾸지 않고, 생각 설정만 빼고 같은 모델로 한 번 더 부른다. */
+  if (!res.ok && isGem && !noThinking && res.status === 400 && /thinking|thought/i.test(eRaw + " " + eCode)) {
+    return callProvider(provider, key, model, systemText, userText, retried, true);
+  }
   /* Gemini 자동 모델 안전망 — 404(모델 없음)·500/503(모델 장애)·모델 미지원이면
      /v1beta/models 에서 실제로 쓸 수 있는 flash 모델을 찾아 한 번만 다시 시도한다.
      사용자가 직접 넣은 다른 모델은 건드리지 않는다(자동·기본 모델일 때만). */
@@ -5959,7 +5975,7 @@ async function callProvider(provider, key, model, systemText, userText, retried)
       api.geminiModel = alt;
       try { saveApi(); } catch (e3) {}
       try { if (typeof renderApi === "function") renderApi(); } catch (e4) {}
-      return callProvider(provider, key, alt, systemText, userText, true);
+      return callProvider(provider, key, alt, systemText, userText, true, noThinking);
     }
   }
   if (!res.ok) throw { status: res.status, code: eCode, raw: eRaw };
@@ -10517,7 +10533,7 @@ async function deleteMyAccount() {
   }
   var ok = await askConfirm({
     title: "정말 탈퇴할까요?",
-    body: "계정과 대화는 바로 지워지고, 무료 크레딧 중복 방지용 확인 기록만 30일 뒤 자동으로 사라져요.",
+    body: "계정과 내가 만든 방은 바로 지워지고, 다른 사람 방에 남긴 글은 '나간 회원'으로 바뀌어요. 무료 크레딧 중복 방지용 확인 기록만 30일 뒤 자동으로 사라져요.",
     note: "보유 크레딧도 함께 사라지고 되돌릴 수 없어요.",
     okText: "탈퇴하기",
     okClass: "danger",
