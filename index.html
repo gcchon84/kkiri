@@ -1798,26 +1798,18 @@
   .invite-row .mini-btn{flex:0 0 auto;padding:9px 11px;font-size:11.5px}
   /* 충전 모달 */
   .charge-lead{font-size:12.5px;font-weight:700;color:#5F5780;line-height:1.7;letter-spacing:-.01em}
-  /* ===== ☕ 끼리 후원하기 — 후원(위) + 감사 크레딧 요청(아래) 한 창 (2026-11-21) ===== */
+  /* ===== ☕ 끼리 후원하기 — 후원(위) + 후원 크레딧 요청(아래) 한 창 (2026-11-21) ===== */
   .donate-hello{margin:0 0 12px;font-size:12.5px;line-height:1.7;color:#4A4270;letter-spacing:-.01em}
   .donate-hello b{color:var(--brand-deep)}
   .support-req{margin-top:16px;padding-top:14px;border-top:1px dashed #E3DCF6}
   .sr-head b{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;font-weight:900;color:#251B4D;letter-spacing:-.02em}
   .sr-head b em{font-style:normal;font-size:9px;font-weight:900;color:#6C43E8;background:#EFE9FF;border:1px solid #DED3FF;border-radius:999px;padding:1px 7px;white-space:nowrap}
   .sr-head p{margin:5px 0 0;font-size:11px;line-height:1.65;color:#7B7397;letter-spacing:-.01em}
-  .support-req .charge-pkgs{margin-top:10px;padding-top:0}
   .support-req .btn.wide{width:100%;min-height:50px;font-size:14px;margin-top:2px}
-  .charge-where{margin:9px 0 0;font-size:11px;font-weight:800;color:#6F6889;line-height:1.6;letter-spacing:-.01em}
-  .charge-where a{color:#4B2ED1;font-weight:900;text-decoration:underline;text-underline-offset:2px}
-  .charge-pkgs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:12px;padding-top:8px}
-  .pkg{
-    position:relative;border:1px solid var(--line);background:#fff;border-radius:14px;cursor:pointer;
-    padding:12px 6px 11px;text-align:center;font:inherit;color:inherit;transition:border-color .12s ease,background .12s ease;
-  }
-  .pkg b{display:block;font-size:14px;font-weight:900;color:#251B4D;letter-spacing:-.02em}
-  .pkg span{display:block;font-size:10.5px;font-weight:800;color:#6F6889;margin-top:3px}
-  .pkg em{position:absolute;top:-7px;right:6px;font-style:normal;font-size:9px;font-weight:900;color:#fff;background:linear-gradient(135deg,#7B4DFF,#FF5FA2);border-radius:999px;padding:2px 6px}
-  .pkg[aria-pressed="true"]{border-color:#8B6BFF;background:linear-gradient(180deg,#FBF8FF,#F1EAFF);box-shadow:0 0 0 2px rgba(139,107,255,.18) inset}
+  /* 후원 금액 직접 입력(1,000원 이상 · 1:1) + 실시간 크레딧 계산 */
+  .charge-amount input{font-size:15px;font-weight:900;letter-spacing:-.01em}
+  .charge-calc{margin:6px 2px 0;font-size:11.5px;font-weight:900;color:#948BAF;letter-spacing:-.01em}
+  .charge-calc.on{color:#4B2ED1}
   .charge-pay{display:flex;gap:11px;align-items:center;margin-top:13px;border:1px solid var(--line);border-radius:14px;padding:11px;background:#FAF9FF}
   .charge-pay img{width:86px;height:86px;flex:0 0 86px;border-radius:9px;background:#fff;object-fit:contain;border:1px solid var(--line-2)}
   .charge-pay-txt{min-width:0}
@@ -1832,7 +1824,7 @@
   .charge-msg.ok{background:#EAE4FF;color:#4B2ED1}
   .charge-msg.err{background:#FDECEC;color:#B03A3A}
   .charge-foot{font-size:10.5px;font-weight:700;color:#948BAF;margin-top:10px;line-height:1.6;letter-spacing:-.01em}
-  @media (max-width:420px){ .charge-pkgs{gap:5px} .pkg b{font-size:13px} .pkg span{font-size:9.5px} .charge-pay img{width:74px;height:74px;flex:0 0 74px} }
+  @media (max-width:420px){ .charge-pay img{width:74px;height:74px;flex:0 0 74px} }
   /* 로그인/회원가입 토글 + 동의 */
   .auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#F3EFFF;border-radius:12px;padding:4px;margin-bottom:12px}
   .auth-tab{
@@ -2837,8 +2829,8 @@ window.__KKIRI_BOOT = (function () {
           <p>나의 AI → 내 API 키에 구글 제미나이(무료 키)나 OpenAI(챗GPT) 키를 넣으면 끼리 크레딧을 쓰지 않고 내 키로 대화해요.</p>
           <button type="button" class="mini-btn" id="creditByokBtn">내 API 키 연결하기</button>
         </div>
-        <button type="button" class="charge-btn" id="openChargeBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 후원하고 감사 크레딧 받기</button>
-        <p class="charge-note">1,000원부터 · 카카오페이로 후원하고, 원하실 때만 감사 크레딧을 요청하세요</p>
+        <button type="button" class="charge-btn" id="openChargeBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 후원하고 후원 크레딧 받기</button>
+        <p class="charge-note">1,000원부터 · 카카오페이로 후원하고, 원하실 때만 후원 크레딧을 요청하세요</p>
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
@@ -2942,12 +2934,12 @@ window.__KKIRI_BOOT = (function () {
   </div>
 </div>
 
-<!-- ================= v3.6 · ☕ 끼리 후원하기 (카카오페이 후원 + 감사 크레딧 요청) ================= -->
+<!-- ================= v3.6 · ☕ 끼리 후원하기 (카카오페이 후원 + 후원 크레딧 요청) ================= -->
 <div class="modal" id="donateModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="donateTitle" style="max-width:440px">
     <div class="sheet-head"><h2 id="donateTitle"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 후원하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
-      <p class="donate-hello">끼리를 응원해 주셔서 감사해요. 후원하신 분들 중 <b>감사 크레딧이 필요하신 분만</b> 아래에 요청을 남겨 주세요.</p>
+      <p class="donate-hello">끼리를 응원해 주셔서 감사해요. 후원해 주신 분들 중 <b>크레딧이 부족한 분만</b> 아래에 요청을 남겨 주세요.</p>
       <div class="donate-qr">
         <img id="donateQrImg" src="data:image/png;base64,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" width="231" height="231" alt="카카오페이 송금 QR 코드 · qr.kakaopay.com/FWJqb23fu" decoding="async">
         <span class="donate-qr-cap"><svg class="ico xs" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 카카오페이 송금 QR</span>
@@ -2955,21 +2947,19 @@ window.__KKIRI_BOOT = (function () {
       <p class="donate-hint">휴대폰 카메라로 스캔하거나 아래 버튼을 누르면 카카오페이로 연결돼요.</p>
       <a class="donate-cta" id="donateCta" href="https://qr.kakaopay.com/FWJqb23fu" target="_blank" rel="noopener noreferrer"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-heart"></use></svg> 카카오페이로 후원하기</a>
       <div class="btn-row donate-acts"><button class="btn donate-copy" id="donateCopy" type="button"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 송금 링크 복사</button><button class="btn dark" id="donateOk" type="button">닫기</button></div>
-      <!-- 후원은 자유 — 감사 크레딧은 원하는 분만 아래에서 요청 (kkiri_charge_requests 그대로 사용) -->
+      <!-- 후원은 자유 — 후원 크레딧은 1,000원 이상 후원한 분만 아래에서 요청 (kkiri_charge_requests 그대로 사용) -->
       <div class="support-req" id="supportReq">
         <div class="sr-head">
-          <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> 감사 크레딧 요청 <em>선택</em></b>
-          <p>후원만 하셔도 충분해요. 감사 크레딧이 필요하신 분만 금액과 후원자명을 남겨 주세요.</p>
+          <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> 후원 크레딧 요청 <em>선택</em></b>
+          <p>1,000원 이상 후원해 주신 분들만 크레딧 요청이 가능해요. 후원 크레딧은 후원 금액과 1:1 비율로 드려요.</p>
         </div>
-        <div class="charge-pkgs" id="chargePkgs">
-          <button type="button" class="pkg" data-pkg="0" aria-pressed="true"><b>1,000원</b><span>1,000 크레딧</span></button>
-          <button type="button" class="pkg" data-pkg="1" aria-pressed="false"><b>3,000원</b><span>3,300 크레딧</span><em>+10%</em></button>
-          <button type="button" class="pkg" data-pkg="2" aria-pressed="false"><b>5,000원</b><span>6,000 크레딧</span><em>+20%</em></button>
-        </div>
-        <p class="charge-where">보낼 금액은 <b id="chargeAmountHint">1,000원</b>이에요. <a id="chargeKakao" href="https://qr.kakaopay.com/FWJqb23fu" target="_blank" rel="noopener noreferrer">카카오페이로 송금하기</a></p>
+        <label class="field charge-amount" style="margin-top:10px" for="chargeAmount"><span>후원 금액 (원)</span>
+          <input id="chargeAmount" type="number" inputmode="numeric" min="1000" step="100" placeholder="1,000원 이상 입력" autocomplete="off" aria-describedby="chargeCalc">
+        </label>
+        <p class="charge-calc" id="chargeCalc" aria-live="polite">→ 금액을 입력하면 바로 계산돼요</p>
         <div class="field" style="margin-top:10px"><span>후원자명</span><input id="chargeDepositor" type="text" maxlength="30" placeholder="실제 입금하신 분 이름을 적어 주세요" autocomplete="name"></div>
         <p class="charge-msg" id="chargeMsg" role="status" aria-live="polite" hidden></p>
-        <button class="btn green wide" id="chargeSend" type="button">감사 크레딧 요청하기</button>
+        <button class="btn green wide" id="chargeSend" type="button">후원 크레딧 요청하기</button>
         <p class="charge-foot">요청을 확인한 뒤 크레딧을 채워 드려요 · 후원 크레딧은 만료가 없어요</p>
       </div>
     </div>
@@ -10564,21 +10554,26 @@ async function maybeClaimReferral() {
 
 /* ---------- ⚡ 크레딧 충전 요청 (카카오페이 송금 → 입금 확인 후 지급) ---------- */
 var KAKAO_PAY_URL = "https://qr.kakaopay.com/FWJqb23fu";
-var CHARGE_PKGS = [
-  { label: "1,000원 · 1,000크레딧", amount: 1000, credits: 1000 },
-  { label: "3,000원 · 3,300크레딧", amount: 3000, credits: 3300 },
-  { label: "5,000원 · 6,000크레딧", amount: 5000, credits: 6000 }
-];
-var charge = { idx: 0, busy: false };
-function renderChargePkgs() {
-  var host = $("chargePkgs");
-  if (host) {
-    Array.prototype.forEach.call(host.querySelectorAll("[data-pkg]"), function (b) {
-      b.setAttribute("aria-pressed", Number(b.getAttribute("data-pkg")) === charge.idx ? "true" : "false");
-    });
+/* 후원 크레딧 — 1,000원 이상 후원한 분께 후원 금액과 1:1로 드림. 금액은 직접 입력 */
+var CHARGE_MIN = 1000, CHARGE_MAX = 1000000;
+var charge = { busy: false };
+function chargeAmount() {
+  var el = $("chargeAmount");
+  var raw = String((el && el.value) || "").replace(/[^0-9]/g, "");
+  var n = Number(raw);
+  return isFinite(n) ? n : 0;
+}
+function renderChargeCalc() {
+  var el = $("chargeCalc");
+  if (!el) return;
+  var n = chargeAmount();
+  if (n >= CHARGE_MIN) {
+    el.textContent = "→ " + n.toLocaleString("ko-KR") + " 크레딧 (1:1)";
+    el.className = "charge-calc on";
+  } else {
+    el.textContent = "→ 금액을 입력하면 바로 계산돼요";
+    el.className = "charge-calc";
   }
-  var hint = $("chargeAmountHint");
-  if (hint) hint.textContent = (CHARGE_PKGS[charge.idx] || CHARGE_PKGS[0]).amount.toLocaleString("ko-KR") + "원";
 }
 function setChargeMsg(kind, msg) {
   var el = $("chargeMsg");
@@ -10589,16 +10584,17 @@ function setChargeMsg(kind, msg) {
   el.textContent = msg;
 }
 function openCharge() {
-  /* 후원과 감사 크레딧 요청은 한 창(☕ 끼리 후원하기)에서 — 로그인 전에도 후원 안내는 볼 수 있고,
-     감사 크레딧 요청 버튼을 눌렀을 때만 로그인을 확인한다. */
-  charge.idx = 0;
+  /* 후원과 후원 크레딧 요청은 한 창(☕ 끼리 후원하기)에서 — 로그인 전에도 후원 안내는 볼 수 있고,
+     후원 크레딧 요청 버튼을 눌렀을 때만 로그인을 확인한다. */
   charge.busy = false;
   setChargeMsg("", "");
-  renderChargePkgs();
+  var amt = $("chargeAmount");
+  if (amt) amt.value = "";
+  renderChargeCalc();
   var dep = $("chargeDepositor");
   if (dep) { dep.value = ""; dep.placeholder = "실제 입금하신 분 이름을 적어 주세요"; }
   var btn = $("chargeSend");
-  if (btn) { btn.disabled = false; btn.textContent = "감사 크레딧 요청하기"; }
+  if (btn) { btn.disabled = false; btn.textContent = "후원 크레딧 요청하기"; }
   closeModal("creditModal");
   openModal("donateModal");
 }
@@ -10609,19 +10605,30 @@ async function sendChargeRequest() {
     return;
   }
   if (!(V3.mode === "cloud" && db.client && V3.signedIn && V3.user) || V3.user.isAnonymous) {
-    /* 후원 안내는 그대로 두고, 감사 크레딧 요청만 로그인으로 안내 */
+    /* 후원 안내는 그대로 두고, 후원 크레딧 요청만 로그인으로 안내 */
     var guest = !!(V3.user && (V3.user.isAnonymous || V3.user.is_anonymous));
     closeModal("donateModal");
     setAuthMsg("info", guest
-      ? "감사 크레딧 요청은 이메일 회원가입 후에 할 수 있어요 · 게스트는 100크레딧 체험이에요"
-      : "감사 크레딧 요청은 로그인 후에 할 수 있어요 · 로그인하면 매일 300크레딧도 무료로 채워져요");
+      ? "후원 크레딧 요청은 이메일 회원가입 후에 할 수 있어요 · 게스트는 100크레딧 체험이에요"
+      : "후원 크레딧 요청은 로그인 후에 할 수 있어요 · 로그인하면 매일 300크레딧도 무료로 채워져요");
     openModal("authModal");
+    return;
+  }
+  var amtEl = $("chargeAmount");
+  var amount = chargeAmount();
+  if (!amount || amount < CHARGE_MIN) {
+    setChargeMsg("err", "1,000원 이상부터 후원 크레딧 요청이 가능해요.");
+    if (amtEl) { try { amtEl.focus(); } catch (e) {} }
+    return;
+  }
+  if (amount > CHARGE_MAX) {
+    setChargeMsg("err", "후원 크레딧 요청은 1,000,000원까지 가능해요.");
+    if (amtEl) { try { amtEl.focus(); } catch (e) {} }
     return;
   }
   var dep = $("chargeDepositor");
   var name = String((dep && dep.value) || "").trim();
   if (!name) { setChargeMsg("err", "후원자명을 입력해 주세요."); if (dep) { try { dep.focus(); } catch (e) {} } return; }
-  var pkg = CHARGE_PKGS[charge.idx] || CHARGE_PKGS[0];
   charge.busy = true;
   var btn = $("chargeSend");
   if (btn) { btn.disabled = true; btn.textContent = "보내는 중…"; }
@@ -10630,21 +10637,21 @@ async function sendChargeRequest() {
       user_id: V3.user.id,
       email: V3.user.email || "",
       nickname: (V3.profile && V3.profile.nickname) || nick() || "",
-      package_label: pkg.label,
-      amount_krw: pkg.amount,
-      credits_requested: pkg.credits,
+      package_label: "후원 " + amount.toLocaleString("ko-KR") + "원",
+      amount_krw: amount,
+      credits_requested: amount,
       depositor_name: name.slice(0, 30),
       status: "pending"
     };
     var res = await db.client.from("kkiri_charge_requests").insert(row);
     if (res && res.error) throw new Error(res.error.message || "insert failed");
-    setChargeMsg("ok", "감사 크레딧 요청이 접수되었어요! 확인 후 채워 드릴게요.");
+    setChargeMsg("ok", "후원 크레딧 요청이 접수되었어요! 확인 후 채워 드릴게요.");
     if (btn) { btn.textContent = "요청 완료"; }
-    toast("감사 크레딧 요청이 접수되었어요! 확인 후 채워 드릴게요.");
+    toast("후원 크레딧 요청이 접수되었어요! 확인 후 채워 드릴게요.");
   } catch (e) {
     var m = String((e && e.message) || "");
     setChargeMsg("err", m.indexOf("TOO_MANY") > -1 ? "오늘 요청이 너무 많아요. 잠시 뒤 다시 시도해 주세요." : "요청을 보내지 못했어요 · " + (m || "잠시 뒤 다시 시도해 주세요"));
-    if (btn) { btn.disabled = false; btn.textContent = "감사 크레딧 요청하기"; }
+    if (btn) { btn.disabled = false; btn.textContent = "후원 크레딧 요청하기"; }
   } finally {
     charge.busy = false;
   }
@@ -10683,7 +10690,7 @@ async function savePendingConsent() {
 }
 /* ---------- 자율 후원 (☕ 개발·서버비 응원 · 카카오페이 송금) ---------- */
 var DONATE_URL = "https://qr.kakaopay.com/FWJqb23fu";
-/* ☕ 끼리 후원하기 — 사이드바·홈 하단·내 크레딧(감사 크레딧 받기) 어디서 눌러도 같은 창 */
+/* ☕ 끼리 후원하기 — 사이드바·홈 하단·내 크레딧(후원 크레딧 받기) 어디서 눌러도 같은 창 */
 function openDonate() {
   openCharge();
 }
@@ -11147,14 +11154,10 @@ function wireV3() {
   /* ☕ 끼리 후원하기 — 내 크레딧 하단 버튼과 사이드바/홈 후원 버튼이 같은 창을 연다 */
   var chBtn = $("openChargeBtn");
   if (chBtn) chBtn.addEventListener("click", openCharge);
-  var chPkgs = $("chargePkgs");
-  if (chPkgs) chPkgs.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-pkg]");
-    if (!b) return;
-    charge.idx = Number(b.getAttribute("data-pkg")) || 0;
-    renderChargePkgs();
-    setChargeMsg("", "");
-  });
+  var chAmt = $("chargeAmount");
+  if (chAmt) {
+    chAmt.addEventListener("input", function () { renderChargeCalc(); setChargeMsg("", ""); });
+  }
   var chSend = $("chargeSend");
   if (chSend) chSend.addEventListener("click", sendChargeRequest);
   /* 🎁 친구 초대 링크 복사 */
