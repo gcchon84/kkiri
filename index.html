@@ -258,6 +258,9 @@
   .switch[aria-checked="true"]{background:var(--brand)}
   .switch[aria-checked="true"]::after{left:16px;background:#fff}
   .side-foot{margin-top:auto;padding:16px 4px 2px;display:flex;flex-direction:column;gap:9px}
+  /* 버튼 4개 사이 간격은 위 gap 하나로 — 버튼마다 따로 준 margin 이 간격을 어긋나게 하지 않게 */
+  .side-foot>.side-donate{margin:0}
+  .side-foot>.side-version{margin:2px 0 2px}
   .side-btn{
     display:flex;align-items:center;gap:8px;width:100%;border:1px solid #352D64;background:#241D45;
     color:#E2DCF4;border-radius:11px;padding:10px 11px;font-size:11.5px;font-weight:800;cursor:pointer;letter-spacing:-.01em;
@@ -622,7 +625,7 @@
     .home-foot .home-donate{min-height:44px;padding:8px 10px}
   }
   .home-feedback:hover{border-color:#E0D6FF;color:#5B38E0;background:#F7F4FF}
-  .side-feedback{margin-top:6px}
+  .side-feedback{border-color:#2f4352}
   .fb-lead{margin:0 0 2px;font-size:12.5px;line-height:1.6;color:#554D75;letter-spacing:-.01em}
   .fb-count{margin:6px 2px 0;font-size:11.5px;font-weight:800;color:#93a0aa;text-align:right;letter-spacing:-.01em}
   .fb-count.full{color:#c0472c}
@@ -728,11 +731,17 @@
   }
   .swatch[aria-pressed="true"]{border-color:#251B4D;box-shadow:0 0 0 3px rgba(37,27,77,.1)}
   .pick-row{display:flex;gap:6px;flex-wrap:wrap}
+  /* 주제 분류 6개 — 3열 2줄, 버튼 모두 같은 너비·높이 */
+  #rfCat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  #rfCat .pick{display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;min-height:42px;
+    padding:8px 6px;font-size:12.5px;line-height:1.2;white-space:nowrap}
   .pick{
     border:1px solid #E7E2F7;background:#fff;border-radius:9px;padding:7px 10px;font-size:11px;font-weight:800;
     cursor:pointer;color:#4c5b67;letter-spacing:-.01em;
   }
   .pick[aria-pressed="true"]{border-color:#7352FF;background:var(--brand-tint);color:var(--brand-deep)}
+  .pick .mod-tag{font-size:9.5px;font-weight:800;color:#8b86a8;letter-spacing:-.01em}
+  .pick[aria-pressed="true"] .mod-tag{color:#6b4fd0}
   .pick.check::before{content:"☐ ";font-weight:900}
   .pick.check[aria-pressed="true"]::before{content:"☑ "}
   .api-status{margin:10px 0 0;font-size:10.5px;line-height:1.6;font-weight:800;letter-spacing:-.01em;border-radius:10px;padding:9px 11px;word-break:break-word}
@@ -814,7 +823,9 @@
     border-bottom:1px solid var(--line);flex:0 0 auto;
   }
   .people-bar[hidden]{display:none}
-  .pb-label{flex:0 0 auto;font-size:9.5px;font-weight:900;letter-spacing:-.01em;color:#948BAF}
+  .pb-label{flex:0 0 auto;font-size:9.5px;font-weight:900;letter-spacing:-.01em;color:#948BAF;display:inline-flex;align-items:center;gap:2px}
+  .pb-label .ico{width:12px;height:12px;color:#948BAF}
+  .pb-label .pb-n{display:inline-block;min-width:15px;padding:0 4px;border-radius:999px;background:#EFEAFF;color:#5B38E0;font-size:9px;font-weight:900;text-align:center;line-height:15px}
   /* ===== 방장이 아닌 참여자 — 채팅만 크게 보이고, 자동토론이 돌 때만 작은 상태 띄우기 ===== */
   .auto-banner{
     display:flex;align-items:center;gap:6px;flex:0 0 auto;
@@ -1293,6 +1304,7 @@
   .credit-chip{font-size:12.5px}
   .credit-chip b{font-size:13px}
   .pb-label{font-size:12px}
+  .pb-label .pb-n{font-size:11px;min-width:17px;line-height:17px}
   .pb-chip{font-size:13px}
   .home-chip{font-size:13px}
   .kind-pill{font-size:11.5px}
@@ -1372,7 +1384,7 @@
   .brand-txt b{color:#F6F4FF;letter-spacing:-.045em}
   .brand-txt small{color:#A79FD0}
   .sidebar .brand-line{color:#BBB0DE;font-weight:700;letter-spacing:-.01em}
-  .side-version{margin:2px 0 2px;text-align:center;font-size:11.5px;font-weight:700;color:#8B82AD;letter-spacing:.03em}
+  .side-version{margin:0;text-align:center;font-size:11.5px;font-weight:700;color:#8B82AD;letter-spacing:.03em}
   @media (max-width:900px){ .brand-copy{font-size:13.5px} }
   .home-head .h-emoji.h-logo{
     width:46px;height:46px;flex:0 0 46px;border-radius:0;padding:0;background-color:transparent;
@@ -2329,7 +2341,7 @@ window.__KKIRI_BOOT = (function () {
 
     <!-- 방 머리 아래 참여 줄 — 🟢 지금 접속 중인 참가자 / 🤖 이 방의 AI. 모바일에서도 사이드바 없이 보인다. -->
     <div class="people-bar" id="peopleBar" hidden aria-label="이 방 참가자">
-      <span class="pb-label">이 방</span>
+      <span class="pb-label" id="pbLabel" aria-label="이 방 참가자"></span>
       <div class="pb-chips" id="peopleChips"></div>
     </div>
 
@@ -2542,6 +2554,10 @@ window.__KKIRI_BOOT = (function () {
           <button type="button" class="pick" data-rounds="10" aria-pressed="false">10라운드</button>
         </div>
         <p class="rt-round-note">설정한 라운드는 <b>최대 상한</b>이에요. 의견이 모이면 일찍 끝나고, 실제로 말한 만큼만 크레딧을 써요.</p>
+      </div>
+      <div class="field"><span>사회자 (첫 발언 · 마지막 정리)</span>
+        <div class="pick-row" id="rtMods"></div>
+        <p class="rt-round-note">1라운드는 참여 AI가 <b>모두 한 번씩</b> 말해요. 2라운드부터는 <b>사회자만</b> 결론이 모였다고 판단될 때 토론을 일찍 마무리할 수 있어요.</p>
       </div>
       <div class="field"><span>이번 토론 크레딧 상한</span>
         <div class="pick-row" id="rtCap">
@@ -3205,6 +3221,20 @@ function save() {
   } catch (e) {
     if (!saveWarned) { saveWarned = true; toast("브라우저 저장 공간이 부족해 이번 대화는 저장되지 않아요"); }
   }
+  saveView();
+}
+/* 마지막 화면 — 카톡 등으로 나갔다 돌아와 페이지가 새로 열려도 방을 보고 있었으면 그 방을 다시 연다.
+   홈 버튼(goHome)이나 로그아웃(resetSessionView)처럼 명시적으로 나갈 때만 지운다. */
+var VIEW_KEY = "kkiri.view.v1";
+function saveView() {
+  try {
+    if (state.view === "room" && state.activeRoomId) localStorage.setItem(VIEW_KEY, String(state.activeRoomId));
+    else if (state.view === "home") localStorage.removeItem(VIEW_KEY);
+    /* state.view 가 아직 정해지지 않은 부팅 첫 순간에는 건드리지 않는다(복원값을 지우면 안 된다) */
+  } catch (e) {}
+}
+function savedViewRoomId() {
+  try { return String(localStorage.getItem(VIEW_KEY) || ""); } catch (e) { return ""; }
 }
 
 function activeRoom() {
@@ -3297,11 +3327,12 @@ function creditsLabel(n) { return Math.round(Number(n) || 0).toLocaleString("ko-
 /* =========================================================
    3. 실행 상태
    ========================================================= */
+var RELAY_WAIT_MS = 30000;   /* 내 AI(릴레이) 응답을 기다리는 시간(30초) */
 var run = {
   epoch: 0, active: false, paused: false, typingAgent: null, cooldownLeft: 0,
   schedule: [], idx: 0, freeConsec: 0, lastSpeaker: null,
   lastBy: {}, lastAt: {}, lastGlobalAt: 0, recent: [], moderator: null, mode: null,
-  relayPeople: [], typingName: null, relayWait: null, relayMs: 45000   /* 내 AI 응답을 기다리는 시간(45초) */
+  relayPeople: [], typingName: null, relayWait: null, relayMs: RELAY_WAIT_MS   /* 내 AI 응답을 기다리는 시간(30초) */
 };
 
 /* =========================================================
@@ -4015,6 +4046,8 @@ function applyView() {
 }
 function goHome() {
   state.view = "home";
+  aiIdleClear();                  /* 방을 나가면 무응답 퇴장 시계도 멈춘다 */
+  saveView();                     /* 홈으로 나가면 기억해 둔 방을 잊는다 */
   closeSidebar();
   renderHome();
   applyView();
@@ -4031,7 +4064,6 @@ function updateMeters() {
     return !!(a && a.type === "expert");
   }).length;
   var bmEl = $("budgetMeter");
-  if (bmEl) bmEl.hidden = kkiriAiN < 1;
   var s = r.session || freshSession();
   var discussing = run.active && run.mode === "roundtable";
   var aiN = Math.max(1, (r.members || []).filter(function (id) { return !!state.agents[id]; }).length);
@@ -4052,6 +4084,9 @@ function updateMeters() {
   var cap = Math.max(1, r.budget || 0);
   if (discussing && run.cap) cap = Math.min(cap, run.cap);
   var used = s.credits || 0;
+  /* 크레딧 상한 미터도 라운드 미터와 같다 — 끼리 AI가 있는 방이라도 자동토론 전(turn 0 · 쓴 크레딧 0)에는
+     제어 바를 버튼 한 줄로 남긴다. 토론을 시작하거나 발언·사용이 생기면 보인다. */
+  if (bmEl) bmEl.hidden = kkiriAiN < 1 || !(discussing || cur > 0 || used > 0);
   var costPct = clamp(used / cap * 100, 0, 100);
   $("costVal").textContent = creditsLabel(used) + " / " + creditsLabel(cap);
   $("costBar").style.width = costPct + "%";
@@ -4083,7 +4118,11 @@ function updateMeters() {
   else st.textContent = "대기 중";
   /* 미터가 하나만 남으면 그 하나가 전체 폭을 쓰게 — 빈 반쪽이 생기지 않도록 */
   var mBox = document.querySelector(".meters");
-  if (mBox) mBox.classList.toggle("one", ((tmEl && !tmEl.hidden) ? 1 : 0) + (bmEl && !bmEl.hidden ? 1 : 0) === 1);
+  if (mBox) {
+    var shown = ((tmEl && !tmEl.hidden) ? 1 : 0) + (bmEl && !bmEl.hidden ? 1 : 0);
+    mBox.hidden = shown === 0;          /* 둘 다 숨김 — 미터 자리 높이도 남기지 않는다 */
+    mBox.classList.toggle("one", shown === 1);
+  }
 }
 
 /* =========================================================
@@ -4208,6 +4247,7 @@ var SUGGEST = {
   travel: ["동선 안 꼬이게 코스 짜 줘", "비 올 때 대안도 넣어 줘", "예산 아끼는 팁 알려 줘"],
   daily: ["분위기·가격 비교해서 3곳 추천", "웨이팅 적은 시간대 알려 줘", "장단점 한눈에 비교해 줘"],
   counsel: ["장단점 냉정하게 비교해 줘", "제3자 시선에서 조언해 줘", "지금 당장 할 1가지만 정해 줘"],
+  free: ["가볍게 아이스브레이킹 해 줘", "오늘 얘깃거리 3개 던져 줘", "분위기 살리는 한마디 부탁해"],
   etc: ["다들 의견 하나씩 말해 줘", "핵심만 3줄로 정리해 줘", "찬성·반대 나눠서 얘기해 줘"]
 };
 function suggestList(r) { return SUGGEST[categoryKeyOf(r)] || SUGGEST.etc; }
@@ -4453,6 +4493,20 @@ function allMentionCount() {
   });
   return aiN + people.length;
 }
+/* ‘이 방’ 인원수 — 나 + 접속 중인 사람 + 이 방 AI(끼리 AI·내 AI)를 이름 기준으로 중복 없이 센다 */
+function roomPeopleCount(r) {
+  if (!r) return 0;
+  var seen = {}, n = 0;
+  function add(name) {
+    var k = String(name == null ? "" : name).trim().toLowerCase();
+    if (!k || seen[k]) return;
+    seen[k] = 1; n++;
+  }
+  add(selfLabel());
+  onlinePeople().forEach(add);
+  (r.members || []).forEach(function (id) { var a = state.agents[id]; if (a) add(a.name); });
+  return n;
+}
 /* 방 머리 아래 참여 줄 — 🟢 접속 중인 참가자 · 🤖 이 방의 AI. 없으면 줄 자체를 숨긴다. */
 function renderPeople() {
   var bar = $("peopleBar"), host = $("peopleChips");
@@ -4461,6 +4515,13 @@ function renderPeople() {
   /* 초대 링크로 자동 입장하는 동안에는 데모 방 참가자를 보여 주지 않는다 */
   var joining = currentView() !== "home" && (inviteJoinPending() || joinFlow.busy);
   if (!r || currentView() === "home" || joining) { host.innerHTML = ""; bar.hidden = true; return; }
+  /* ‘이 방’ 라벨 없이 인원수만 — 사람 아이콘 + 숫자 배지 + 명 */
+  var lab = $("pbLabel");
+  if (lab) {
+    var cnt = roomPeopleCount(r);
+    lab.innerHTML = icoHtml("user", "xs") + '<b class="pb-n">' + cnt + "</b>명";
+    lab.setAttribute("aria-label", "이 방 참가자 " + cnt + "명");
+  }
   var h = "";
   /* 방장 표시 — 누가 이 방의 크레딧을 쓰는지(끼리 AI·토론) 한눈에 */
   if (isRoomOwner(r)) h += '<span class="pb-chip owner" title="이 방 방장 · 끼리 AI와 토론은 방장이 시작해요">' + icoHtml("crown", "xs") + " 방장</span>";
@@ -4537,6 +4598,7 @@ function addUserMessage(text) {
   scrollBottom(true);            /* 내가 보낸 말은 위를 보고 있었어도 바로 보이게 */
   renderSidebar();
   dbSendMessage(m);
+  aiIdleReset();                 /* 본인이 말하면 무응답 시계가 되감긴다 */
   return m;
 }
 
@@ -4548,6 +4610,7 @@ function addSystem(text, kind, acts) {
   save();
   renderTimeline(true);
   dbSendMessage(m);
+  aiIdleReset();
   return m;
 }
 
@@ -4585,6 +4648,7 @@ function addAgentMessage(agent, d, phase) {
   updateMeters();
   renderSidebar();
   if (!d.noSend) dbSendMessage(m);
+  aiIdleReset();
   return m;
 }
 
@@ -4925,17 +4989,26 @@ function loopDetected() {
   return false;
 }
 
-/* 라운드 = 참여 AI 전원이 한 번씩 발언. 마지막 발언은 사회자가 정리안으로 마무리한다.
-   내 AI(릴레이 참가자)도 같은 순서에 들어가고, 그 차례에는 채팅으로 호명해 답을 기다린다. */
+/* 라운드 = 참여 AI 전원이 한 번씩 발언. 첫 발언과 마지막 정리는 사회자가 맡는다.
+   내 AI(릴레이 참가자)도 같은 순서에 들어가고, 그 차례에는 채팅으로 호명해 답을 기다린다.
+   사회자는 사용자가 시트에서 고른 AI(끼리 AI 또는 내 AI)를 그대로 쓴다. */
 function buildSchedule(room) {
   var agents = (room.members || []).filter(function (id) { return !!state.agents[id]; });
   var people = (run.relayPeople || []).slice();
   if (!agents.length && !people.length) return [];
-  var mod = run.moderator && agents.indexOf(run.moderator) > -1 ? run.moderator : (agents[0] || null);
+  var modAgent = run.moderator && agents.indexOf(run.moderator) > -1 ? run.moderator : null;
+  var modRelay = null;
+  if (!modAgent && run.moderator) {
+    var keep = people.filter(function (n) { return sameName(n, run.moderator); });
+    if (keep.length) modRelay = keep[0];
+  }
+  if (!modAgent && !modRelay) modAgent = agents[0] || null;   /* 사회자를 못 찾으면 첫 끼리 AI가 맡는다 */
+  if (!modAgent && !modRelay) return [];
   var order = [];
-  if (mod) order.push({ kind: "agent", id: mod });
-  agents.forEach(function (id) { if (id !== mod) order.push({ kind: "agent", id: id }); });
-  people.forEach(function (n) { order.push({ kind: "relay", nick: n }); });
+  if (modAgent) order.push({ kind: "agent", id: modAgent });
+  else order.push({ kind: "relay", nick: modRelay });
+  agents.forEach(function (id) { if (id !== modAgent) order.push({ kind: "agent", id: id }); });
+  people.forEach(function (n) { if (!modRelay || !sameName(n, modRelay)) order.push({ kind: "relay", nick: n }); });
   var n = order.length;
   if (!n) return [];
   var rounds = Math.max(1, Number(room.rounds) || Math.round((Number(room.maxTurns) || n * RT_DEFAULT_ROUNDS) / n));
@@ -4946,8 +5019,15 @@ function buildSchedule(room) {
     var phase = i === 0 ? "open" : (i === total - 1 ? "converge" : (i < n ? "opinion" : "rebuttal"));
     steps.push({ kind: s.kind, id: s.id, nick: s.nick, phase: phase });
   }
-  /* 마무리는 끼리 AI 사회자가 있을 때만 사회자로 바꾼다(내 AI 혼자면 마지막 발언자가 그대로 마무리) */
-  if (mod) steps[steps.length - 1] = { kind: "agent", id: mod, phase: "converge" };
+  /* 마무리는 사회자가 있을 때만 사회자로 바꾼다(사회자가 없으면 마지막 발언자가 그대로 마무리).
+     1라운드만 도는 토론은 마지막 차례를 지우면 그 AI가 아예 말하지 못하므로 정리 발언을 뒤에 붙인다. */
+  if (modAgent) {
+    if (rounds <= 1) steps.push({ kind: "agent", id: modAgent, phase: "converge" });
+    else steps[steps.length - 1] = { kind: "agent", id: modAgent, phase: "converge" };
+  } else if (modRelay) {
+    if (rounds <= 1) steps.push({ kind: "relay", nick: modRelay, phase: "converge" });
+    else steps[steps.length - 1] = { kind: "relay", nick: modRelay, phase: "converge" };
+  }
   return steps;
 }
 /* 이 내 AI 참가자가 아직 이 방에 있는가 */
@@ -5012,7 +5092,12 @@ async function relayTurn(step, ep) {
   var n = Math.max(1, Math.round(run.schedule.length / total));
   var roundNo = clamp(Math.floor(run.idx / n) + 1, 1, total);
   var agenda = String(r.agenda || r.name || "").trim();
-  var ask = "@" + step.nick + " [" + agenda + "]에 대해 앞선 의견을 참고해 짧게 답해 주세요 (토론 라운드 " + roundNo + "/" + total + ")";
+  /* 2라운드부터는 사회자 차례에만 결론을 좁혀도 된다고 알려 준다(1라운드는 전원 발언 보장이라 표시 금지) */
+  var modHint = "";
+  if (run.roundNo >= 2 && !run.lastRound && run.moderator && sameName(step.nick, run.moderator)) {
+    modHint = " · 사회자 · 결론이 모였다고 판단될 때만 답변 끝에 [종결]";
+  }
+  var ask = "@" + step.nick + " [" + agenda + "]에 대해 앞선 의견을 참고해 짧게 답해 주세요 (토론 라운드 " + roundNo + "/" + total + modHint + ")";
   var known = {};
   r.messages.forEach(function (m) { known[m.id] = 1; });          /* 이미 있던 말은 응답으로 세지 않는다 */
   run.typingName = step.nick;
@@ -5020,15 +5105,18 @@ async function relayTurn(step, ep) {
   renderTimeline(true);
   updateMeters();
   addUserMessage(ask);                                            /* 방장 이름으로 호명 — 그 AI가 이 글을 보고 답한다 */
-  var reply = await waitRelayReply(step.nick, known, ep, run.relayMs || 45000);
+  var reply = await waitRelayReply(step.nick, known, ep, run.relayMs || RELAY_WAIT_MS);
   run.typingName = null;
   run.relayWait = null;
   if (ep !== run.epoch) return;
   if (reply) {
-    var relayEarly = run.mode === "roundtable" && hasEarlyMark(reply.text);
-    if (relayEarly) {
+    /* 조기 종결은 2라운드부터 사회자만 — 1라운드·다른 AI의 [종결]은 표시만 지우고 계속 진행한다 */
+    var relayMarked = run.mode === "roundtable" && hasEarlyMark(reply.text);
+    var relayEarly = relayMarked && canEndEarly(step.nick);
+    if (relayMarked) {
       reply.text = stripEarlyMark(reply.text);
-      if (!reply.text) reply.text = "더 논의할 쟁점이 없어 여기서 마무리합니다.";
+      if (!reply.text) reply.text = relayEarly ? "더 논의할 쟁점이 없어 여기서 마무리합니다."
+                                              : "앞선 의견에 더 보탤 내용이 없어 이번 차례는 여기서 접겠습니다.";
     }
     reply.relay = step.nick;
     reply.phase = step.phase;
@@ -5043,12 +5131,12 @@ async function relayTurn(step, ep) {
     return;
   }
   addSystem("‘" + step.nick + "’ 응답이 없어 다음 차례로 넘어갔어요 · " +
-    Math.round((run.relayMs || 45000) / 1000) + "초 기다렸어요", "warn");
+    Math.round((run.relayMs || RELAY_WAIT_MS) / 1000) + "초 기다렸어요", "warn");
 }
 /* 그 이름의 새 말이 올라올 때까지 기다린다 — 일시정지 중에는 시간을 세지 않는다. */
 function waitRelayReply(name, known, ep, ms) {
   return new Promise(function (resolve) {
-    var left = Math.max(1000, Number(ms) || 45000);
+    var left = Math.max(1000, Number(ms) || RELAY_WAIT_MS);
     var last = Date.now();
     (function tick() {
       if (ep !== run.epoch) return resolve(null);
@@ -5216,11 +5304,14 @@ async function speak(agent, phase, ep) {
     return;
   }
   if (out && out.text) {
-    /* 조기 종결 신호 — 남은 라운드를 채우지 않고 정리안으로 끝낸다(표시는 화면에 남기지 않는다) */
-    var early = run.mode === "roundtable" && hasEarlyMark(out.text);
-    if (early) {
+    /* 조기 종결 신호 — 남은 라운드를 채우지 않고 정리안으로 끝낸다(표시는 화면에 남기지 않는다).
+       1라운드는 전원 발언 보장, 2라운드부터는 지정된 사회자만 종결할 수 있다. */
+    var marked = run.mode === "roundtable" && hasEarlyMark(out.text);
+    var early = marked && canEndEarly(agent.id);
+    if (marked) {
       out.text = stripEarlyMark(out.text);
-      if (!out.text) out.text = "더 논의할 쟁점이 없어 여기서 마무리합니다.";
+      if (!out.text) out.text = early ? "더 논의할 쟁점이 없어 여기서 마무리합니다."
+                                      : "앞선 의견에 더 보탤 내용이 없어 이번 차례는 여기서 접겠습니다.";
     }
     if (similarity(out.text, run.lastBy[agent.id] || "") >= 0.9) {
       var rr = activeRoom();
@@ -5258,8 +5349,15 @@ function startRoundtable(opts) {
   var parts = (opts.participants || r.members).filter(function (id) { return !!state.agents[id]; });
   var people = (opts.people || []).filter(function (n) { return !!n; });
   if (parts.length + people.length < 2) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
-  var mod = opts.moderator && parts.indexOf(opts.moderator) > -1 ? opts.moderator : (parts[0] || null);
+  /* 사회자 — 시트에서 고른 AI(끼리 AI 또는 내 AI)를 그대로 쓴다. 없으면 자동 추천 */
+  var pickedMod = opts.moderator &&
+    (parts.indexOf(opts.moderator) > -1 || people.some(function (n) { return sameName(n, opts.moderator); }))
+    ? opts.moderator : null;
+  var mod = pickedMod || rtAutoModerator(r, parts);
+  if (mod) r.moderator = mod;              /* 고른 사회자를 이 방에 기억한다 */
   r.agenda = agenda;
+  /* 안건을 방장(나)의 말풍선으로 먼저 올린다 — AI들이 그 말을 받아 토론하는 자연스러운 흐름 */
+  addUserMessage("📌 토론 안건: " + agenda);
   r.members = parts;
   r.rounds = clamp(Number(opts.rounds) || RT_DEFAULT_ROUNDS, 1, 10);      /* 1·3·5·10 — 최대 상한 */
   r.maxTurns = clamp(r.rounds * (parts.length + people.length), 1, 400);   /* 한 라운드 = 참여 AI 전원 1회 발언 */
@@ -5338,6 +5436,14 @@ function endRun(reason, ep) {
 var EARLY_TEST_RE = /\[\s*(?:토론\s*)?종결\s*\]/;
 var EARLY_ALL_RE = /\[\s*(?:토론\s*)?종결\s*\]/g;
 function hasEarlyMark(t) { return EARLY_TEST_RE.test(String(t == null ? "" : t)); }
+/* 조기 종결 권한 — 1라운드는 참여 AI 전원 발언을 보장하므로 금지하고,
+   2라운드부터는 지정된 사회자(run.moderator)만 조기 종결할 수 있다. */
+function canEndEarly(by) {
+  if (!(run.active && run.mode === "roundtable")) return false;
+  if (Number(run.roundNo) < 2) return false;
+  if (!run.moderator) return false;
+  return sameName(by, run.moderator);
+}
 function stripEarlyMark(t) {
   var s = String(t == null ? "" : t);
   if (!EARLY_TEST_RE.test(s)) return s;
@@ -5354,7 +5460,7 @@ function finishEarly(byName) {
   r.session.endedAt = Date.now();
   r.discussingAt = 0;
   dbSaveSettings(r);
-  addSystem((byName ? byName + " AI가 " : "AI가 ") + "더 논의할 쟁점이 없다고 판단해 " +
+  addSystem((byName ? "사회자 " + byName + " AI가 " : "AI가 ") + "더 논의할 쟁점이 없다고 판단해 " +
     (where ? where + "에서 " : "") + "조기 종결했어요 · 정리안을 만들었어요", "info");
   save();
   renderAll();
@@ -5433,7 +5539,7 @@ function parseMentions(text) {
 /* =========================================================
    9. 실제 API 호출
    ========================================================= */
-var API_TIMEOUT = 60000;
+var API_TIMEOUT = 30000;   /* AI 응답 대기 — 30초 넘으면 끊고 안내한다 */
 
 /* Gemini 모델 이름이 404일 때 — 새 키에서 접근 가능한 flash 모델을 찾아 대신 쓴다.
    선호 순서대로 찾고, 없으면 목록의 flash 계열 하나를 고른다. 한 번 찾으면 기억한다. */
@@ -5501,7 +5607,7 @@ function friendlyError(err) {
   var st = err.status || 0;
   var raw = String(err.raw || "").toLowerCase();
   var code = String(err.code || "").toUpperCase();
-  if (err.timeout) return "응답이 너무 늦어요(60초). 잠시 뒤 다시 시도해 주세요.";
+  if (err.timeout) return "응답이 너무 늦어요(30초). 잠시 뒤 다시 시도해 주세요.";
   if (err.empty) return err.raw || "빈 응답을 받았어요.";
   if (st === 0) return "AI에 연결하지 못했어요. 인터넷 연결과 브라우저의 외부 호출 차단(광고 차단 확장·회사망)을 확인해 주세요.";
   if (st === 401 || st === 403) return "API 키가 올바르지 않거나 권한이 없어요. 설정에서 키를 다시 확인해 주세요.";
@@ -5611,16 +5717,19 @@ function systemFor(agent, phase) {
   return base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
     "\n함께 있는 AI: " + team +
     "\n규칙: " + lengthRule + ". 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다." +
-    roundRule() +
+    roundRule(agent) +
     "\n" + SPECIFICITY_RULE;
 }
 
-/* 라운드 진행 규칙 — 마지막이 아닌 라운드에서는 결론이 모이면 [종결]로 스스로 끝낼 수 있고,
-   마지막 라운드에서는 반드시 추천안 1~2개로 좁혀 마무리한다. */
-function roundRule() {
+/* 라운드 진행 규칙 — 1라운드는 전원 발언 보장(종결 금지), 2라운드부터는 사회자만 [종결]로 일찍 마무리할 수 있고,
+   마지막 라운드에서는 반드시 추천안 1~2개로 좁혀 마무리한다. agent는 지금 말하는 AI. */
+function roundRule(agent) {
   if (!(run.active && run.mode === "roundtable")) return "";
+  if (Number(run.roundNo) < 2) return " 아직 1라운드다. 절대 [종결]을 붙이지 말고 의견을 충분히 내라.";
   if (run.lastRound) return " 이번이 마지막 라운드다. 반드시 최종 추천안 1~2개로 결론을 좁혀 마무리하라.";
-  return " 충분히 논의돼 결론을 낼 수 있으면 답변 끝에 [종결]을 붙이고 핵심 결론 1~2개로 좁혀 마무리하라. 아직 쟁점이 남았으면 붙이지 마라.";
+  var isMod = agent && run.moderator && sameName(agent.id, run.moderator);
+  if (isMod) return " 지금까지 모든 참여자의 의견을 보고, 충분히 결론이 모였다고 판단될 때만 답변 끝에 [종결]을 붙이고 핵심 결론 1~2개로 좁혀 마무리하라. 아직 쟁점이 남았으면 붙이지 마라.";
+  return " [종결]은 붙이지 말고, 앞선 의견에 대한 보완·반박이나 핵심 근거를 제시하라.";
 }
 
 function phaseInstruction(phase, r) {
@@ -6233,6 +6342,7 @@ function selectRoom(id) {
     dbSubscribe(id);
     presenceJoin(id);
   }
+  aiIdleStart();
 }
 
 /* 방의 역할 배정 방식 바꾸기 — 사이드바 '역할 자동/수동'과 방 설정이 같이 씁니다. */
@@ -6352,9 +6462,28 @@ function rtTalkParts(r) {
   return { agents: agents, people: people, total: agents.length + people.length };
 }
 function rtCanTalk(r) { return rtTalkParts(r).total >= 2; }
-/* 사회자 자동 결정 — 방 역할이 사회자인 AI → 피크리 → 참여 AI 첫 번째 */
+/* 사회자 후보 — 방의 끼리 AI(에이전트) + 접속 중인 내 AI(릴레이). 둘 다 응답을 제어할 수 있어 사회자가 될 수 있다. */
+function rtModCandidates(r) {
+  var p = rtTalkParts(r);
+  var out = [];
+  p.agents.forEach(function (id) { out.push({ kind: "agent", id: id, name: agentName(id) }); });
+  p.people.forEach(function (n) { out.push({ kind: "relay", id: n, name: n }); });
+  return out;
+}
+/* 사회자 표기 — 끼리 AI면 이름, 내 AI(릴레이)면 닉네임 그대로 */
+function rtModLabel(r, id) {
+  if (!id) return "";
+  return rtRoomParts(r).indexOf(id) > -1 ? agentName(id) : String(id);
+}
+/* 사회자 자동 추천 — 방에 저장된 사회자(아직 멤버) → 방 역할이 사회자인 AI → 피크리 → 참여 AI 첫 번째 */
 function rtAutoModerator(r, parts) {
-  if (!parts.length) return null;
+  var people = relayPeopleOf(r);
+  if (r && r.moderator) {                       /* 사용자가 고른 사회자를 기억한다 */
+    if (parts.indexOf(r.moderator) > -1) return r.moderator;
+    var kept = people.filter(function (n) { return sameName(n, r.moderator); });
+    if (kept.length) return kept[0];
+  }
+  if (!parts.length) return people[0] || null;
   var byRole = parts.filter(function (id) {
     var ro = roleOf(r, id);
     var txt = ro ? [(ro.key || ""), (ro.label || ""), (ro.focus || "")].join(" ") : "";
@@ -6377,14 +6506,14 @@ function rtRoomPlan(r) {
     budget: clamp(Math.round(Number(r.budget) || 300), 100, 5000)
   };
 }
-function rtSummaryText(plan) {
+function rtSummaryText(plan, r) {
   var ai = plan.participants.length;
   var people = (plan.people || []).length;
   var n = Math.max(1, ai + people);
   var bits = [];
-  if (plan.moderator) bits.push("사회자 " + agentName(plan.moderator));
+  if (plan.moderator) bits.push("사회자 " + rtModLabel(r, plan.moderator));
   bits.push("크레딧 상한 " + creditsLabel(plan.budget));
-  if (people) bits.push("내 AI 차례는 채팅으로 불러 45초 기다려요");
+  if (people) bits.push("내 AI 차례는 채팅으로 불러 " + Math.round(RELAY_WAIT_MS / 1000) + "초 기다려요");
   var txt = bits.join(" · ");
   if (n < 2) txt = "AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · " + txt;
   return txt;
@@ -6392,6 +6521,37 @@ function rtSummaryText(plan) {
 /* 토론 시작 시트의 라운드 칩 — AI 전원이 한 번씩 말하면 1라운드 */
 var RT_ROUNDS = [1, 3, 5, 10];
 var RT_DEFAULT_ROUNDS = 3;
+/* 사회자 선택 칩 — 이 방에서 지금 말할 수 있는 AI(끼리 AI + 내 AI) 전부 */
+function rtRenderMods(r) {
+  var row = $("rtMods");
+  if (!row || !r) return;
+  var cands = rtModCandidates(r);
+  var cur = rtPickMod(r);
+  var h = "";
+  cands.forEach(function (c) {
+    h += '<button type="button" class="pick" data-mod="' + esc(c.id) + '" aria-pressed="' +
+      (cur && sameName(c.id, cur) ? "true" : "false") + '">' + esc(c.name) +
+      (c.kind === "relay" ? ' <span class="mod-tag">내 AI</span>' : "") + "</button>";
+  });
+  row.innerHTML = h;
+}
+/* 지금 선택된 사회자 — 눌린 칩 → 없으면 자동 추천 */
+function rtPickMod(r) {
+  var on = document.querySelector("#rtMods [data-mod][aria-pressed=\"true\"]");
+  if (on) return on.getAttribute("data-mod");
+  return rtAutoModerator(r, rtRoomParts(r));
+}
+/* 다른 AI 칩을 누르면 그 AI가 이번 토론의 사회자 — 방(r.moderator)에 기억한다 */
+function rtSetMod(id) {
+  var r = activeRoom();
+  if (!r || !id) return;
+  Array.prototype.forEach.call(document.querySelectorAll("#rtMods [data-mod]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-mod") === id ? "true" : "false");
+  });
+  r.moderator = id;
+  save();
+  rtRefreshSummary();
+}
 function rtAiCost() { return configCost("kkiri-lite") || 10; }
 function rtSpeakerCount(r) { return Math.max(1, rtTalkParts(r).total); }
 function rtPickRounds() {
@@ -6479,7 +6639,7 @@ function rtRefreshSummary() {
   plan.rounds = rounds;
   plan.turns = rounds * rtSpeakerCount(r);
   var sum = $("rtSummary");
-  if (sum) sum.textContent = rtSummaryText(plan);
+  if (sum) sum.textContent = rtSummaryText(plan, r);
 }
 function openRoundtable(prefill) {
   var r = activeRoom();
@@ -6490,6 +6650,7 @@ function openRoundtable(prefill) {
   if (!rtCanTalk(r)) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 내 AI는 방 설정에서 ‘AI로 표시’하면 함께 참여해요"); return; }
   $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
   rtSetRounds(r.rounds || RT_DEFAULT_ROUNDS);
+  rtRenderMods(r);
   rtRenderCapChips(Math.max(1, Math.round(Number(r.budget)) || 300));
   rtSetCap(r.discussCap || 0);
   rtRefreshSummary();
@@ -6504,6 +6665,7 @@ function rtStart() {
   if (!agenda) { toast("토론 주제를 적어 주세요"); $("rtAgenda").focus(); return; }
   var plan = rtRoomPlan(r);
   var rounds = rtPickRounds();
+  plan.moderator = rtPickMod(r);          /* 시트에서 고른 사회자(없으면 자동 추천) */
   if (plan.participants.length + plan.people.length < 2) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   closeModal("rtModal");
   startRoundtable({ agenda: agenda, participants: plan.participants, people: plan.people, moderator: plan.moderator,
@@ -6533,6 +6695,7 @@ var ROOM_CATS = [
   { key: "travel", label: "여행·코스", emoji: "✈️" },
   { key: "daily", label: "일상·맛집", emoji: "🍽️" },
   { key: "counsel", label: "고민·상담", emoji: "💭" },
+  { key: "free", label: "자유수다", emoji: "💬" },
   { key: "etc", label: "기타", emoji: "💡" }
 ];
 var EMOJIS = ["🚀", "✈️", "🍽️", "💭", "💡", "☕", "🎯", "📦", "🎨", "🌙", "🧩"];
@@ -6548,6 +6711,7 @@ var RF_NAME_PH = {
   travel: "예: 주말 가족 나들이, 2박 3일 제주 여행",
   daily: "예: 성수동 데이트 맛집, 오늘 저녁 메뉴",
   counsel: "예: 이직 고민, 부모님 선물 추천",
+  free: "예: 주말에 뭐 하지, 오늘의 잡담",
   etc: "예: 편하게 이야기 나눌 주제"
 };
 function renderRfNamePh() {
@@ -7155,7 +7319,7 @@ function renderMineKeys() {
     var saved = mineProvider === "openai" ? api.openaiKey : api.geminiKey;
     hint.innerHTML = (mineProvider === "openai"
       ? "ChatGPT를 만든 OpenAI 키 — 쓴 만큼 요금이 따로 나가요. 기본 모델 <b>gpt-4o-mini</b> · <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">키 발급 안내 열기</a>"
-      : "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-3.6-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a>") +
+      : "구글 제미나이 <b>무료 키</b>로 시작할 수 있어요. 기본 모델 <b>gemini-3.6-flash</b> · <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" rel=\"noopener\">무료 키 발급 안내 열기</a><br>구글 무료 키 특성상 응답이 다소 느리거나 일시적으로 지연될 수 있어요.") +
       (saved ? "<br>이 기기에 <b>" + providerLabel(mineProvider) + " 키가 저장돼 있어요</b> · 아래에 새 키를 넣으면 바뀌어요." : "");
   }
   fillMineFields();
@@ -8021,6 +8185,57 @@ function presenceJoin(roomId, force) {
       }
     });
 }
+/* =========================================================
+   17.7 초대된 ‘내 AI’ 무응답 자동 퇴장 (10분)
+   — 초대 링크(&ai=1)나 방 설정의 ‘AI로 표시’로 들어온 AI 세션이
+     방장이 아닌 채로 10분 동안 새 대화가 없으면 presenceLeave 로 접속을 끊는다.
+     방에 새 메시지가 올라오거나 본인이 말을 하면 시계가 되감긴다.
+   ========================================================= */
+var AI_IDLE_EXIT_MS = 600000;                 /* 10분 — 테스트는 이 값을 줄인 사본으로 확인한다 */
+var aiIdle = { timer: null, lastAt: 0, done: false };
+/* 이 화면이 ‘초대된 AI’인가 — AI 표시가 있고, 방장(사람)이 아닐 때만 대상이다 */
+function aiIdleEligible() {
+  var r = activeRoom();
+  if (!r) return false;
+  if (currentView() !== "room") return false;
+  if (isRoomOwner(r)) return false;
+  if (selfIsAI()) return true;                 /* &ai=1 초대 링크로 들어온 AI */
+  var me = String(nick() || "").toLowerCase(); /* 방 설정에서 ‘AI로 표시’한 내 이름 */
+  return !!(me && roomAiMarks(r)[me]);
+}
+function aiIdleClear() {
+  if (aiIdle.timer) { clearTimeout(aiIdle.timer); aiIdle.timer = null; }
+}
+function aiIdleArm() {
+  aiIdleClear();
+  if (aiIdle.done || !aiIdleEligible()) return;
+  var left = AI_IDLE_EXIT_MS - (Date.now() - (aiIdle.lastAt || Date.now()));
+  aiIdle.timer = setTimeout(aiIdleTick, Math.max(0, left));
+}
+function aiIdleTick() {
+  aiIdle.timer = null;
+  if (aiIdle.done || !aiIdleEligible()) return;
+  if (Date.now() - aiIdle.lastAt < AI_IDLE_EXIT_MS) { aiIdleArm(); return; }
+  aiIdleExit();
+}
+function aiIdleExit() {
+  aiIdle.done = true;
+  aiIdleClear();
+  aiIdle.lastAt = Date.now();
+  try { presenceLeave(); } catch (e) {}
+  toast("10분간 새 대화가 없어 자동 퇴장했어요");
+}
+/* 새 대화(내 말·AI 말·들어온 메시지)마다 시계를 되감는다 */
+function aiIdleReset() {
+  aiIdle.lastAt = Date.now();
+  aiIdleArm();
+}
+/* 방에 들어올 때 — 지난번 자동 퇴장 상태를 풀고 새로 시작한다 */
+function aiIdleStart() {
+  aiIdle.done = false;
+  aiIdle.lastAt = Date.now();
+  aiIdleArm();
+}
 /* 내보내기 알림 — 같은 방 접속자 채널로 퇴장을 알린다. 그 화면에서는 방이 바로 닫힌다. */
 function sendKick(roomId, name, cid) {
   var ch = presence.channel;
@@ -8253,6 +8468,7 @@ function dbOnMessage(row) {
   r.messages.push(m);
   renderTimeline(true);
   renderSidebar();
+  aiIdleReset();                 /* 새 대화가 올라오면 무응답 시계가 되감긴다 */
 }
 function dbOnSummary(row) {
   var r = activeRoom();
@@ -8263,6 +8479,7 @@ function dbOnSummary(row) {
   r.messages.push(dbCardFromRow(row));
   renderTimeline(true);
   renderSidebar();
+  aiIdleReset();
 }
 function dbRefreshSoon() {
   clearTimeout(refreshTimer);
@@ -8818,6 +9035,20 @@ var EXPERT_SETS = {
     { id: "counsel_sort", name: "선택지 정리", avatar: "🧾", role: "비교 · 결론", config: "kkiri-lite",
       desc: "고민을 선택지로 나눠 비교표처럼 정리한다.",
       persona: "너는 선택지 정리 담당이야. 고민을 선택지 2~3개로 나누고 각각의 장단점·비용·후회 가능성을 비교해 결론 후보를 제시한다." }
+  ],
+  free: [
+    { id: "free_talker", name: "수다 친구", avatar: "💬", role: "잡담 · 공감", config: "kkiri-lite",
+      desc: "가볍게 받아 주고 말을 이어 준다.",
+      persona: "너는 수다 친구야. 가볍게 받아 주고 대화를 자연스럽게 이어 간다. 무겁게 설교하지 않고, 상대 말에서 한 가지를 집어 물어봐 대화를 넓힌다." },
+    { id: "free_wit", name: "재치러", avatar: "✨", role: "유머 · 반전", config: "kkiri-lite",
+      desc: "분위기를 살리는 한마디와 반전을 준다.",
+      persona: "너는 재치 담당이야. 과하지 않은 유머와 반전으로 분위기를 살린다. 비아냥·비하는 쓰지 않고, 짧게 웃음이 나는 한마디를 붙인다." },
+    { id: "free_empathy", name: "공감러", avatar: "💗", role: "공감 · 위로", config: "kkiri-lite",
+      desc: "먼저 마음을 읽고 편을 들어 준다.",
+      persona: "너는 공감 담당이야. 먼저 마음을 읽고 편을 들어 준다. 조언은 청하지 않았으면 하지 않고, 짧게 인정하고 곁에 있어 주는 말을 한다." },
+    { id: "free_topic", name: "화제 수집가", avatar: "🔎", role: "화제 · 소재", config: "kkiri-lite",
+      desc: "대화가 멈추면 새 얘깃거리를 던진다.",
+      persona: "너는 화제 수집가야. 대화가 멈칫하면 지금 흐름에 맞는 새 얘깃거리를 2~3개 던진다. 뉴스·계절·일상 소재에서 고르고, 바로 이어서 물어볼 질문을 붙인다." }
   ],
   etc: [
     { id: "etc_idea", name: "아이디어 메이커", avatar: "💡", role: "발상 · 제안", config: "kkiri-lite",
@@ -10103,16 +10334,41 @@ function mockExpertText(agent, phase) {
     ],
     default: [
       "제 담당 범위에서 보면, 지금 정한 것 중 하나는 확인이 더 필요해요. 그 부분만 분리해서 표시하겠습니다.",
-      "앞선 발언에 한 가지를 보태면, 실행 순서를 지금 정해 두면 다음 판단이 빨라집니다."
+      "앞선 발언에 한 가지를 보태면, 실행 순서를 지금 정해 두면 다음 판단이 빨라집니다.",
+      "시간을 아끼려면 결정할 것과 확인할 것만 남기죠. 오늘은 결정 한 건으로 좁히겠습니다."
     ]
   };
   var arr = pool[agent.expert] || pool.default;
   var seed = hash(String(r ? r.id : "") + agent.id + String(phase || "") + String((r ? r.messages.length : 0)));
+  /* mock 답변이 같은 문장만 골라 '중복 건너뛰기'·'루프 감지'에 먼저 걸리지 않게 —
+     바로 앞 발언과 이 AI의 직전 발언은 피해서 고른다. */
+  var prev = (run.recent && run.recent.length) ? run.recent[run.recent.length - 1] : "";
+  var own = (run.lastBy && run.lastBy[agent.id]) || "";
+  for (var k = 0; k < arr.length; k++) {
+    var cand = arr[(seed + k) % arr.length];
+    if (similarity(cand, prev) < 0.86 && similarity(cand, own) < 0.9) return cand;
+  }
   return arr[seed % arr.length];
 }
-/* 테스트용 훅 — ?mock=1&early=1 이면 2라운드(반박) 발언 끝에 [종결]을 붙여 화면 흐름을 확인한다.
+/* 테스트용 훅 — ?mock=1&early=… 이면 지정한 AI·차례의 답변 끝에 [종결]을 붙여 화면 흐름을 확인한다.
+   early=1: 반박(2라운드 이후) 전원 · all: 모든 발언 · mod: 사회자만 · other: 사회자가 아닌 AI만
    실제 모드(mock 아님)에서는 절대 동작하지 않는다. */
-var MOCK_EARLY = /[?&]mock(=1)?(&|$)/.test(String(location.search || "")) && /[?&]early(=1)?(&|$)/.test(String(location.search || ""));
+var MOCK_EARLY_MODE = (function () {
+  var q = String(location.search || "");
+  if (!/[?&]mock(=1)?(&|$)/.test(q)) return "";
+  var m = q.match(/[?&]early(?:=([^&]*))?/);
+  return m ? (m[1] || "1") : "";
+})();
+function mockShouldMark(agent, phase) {
+  var m = MOCK_EARLY_MODE;
+  if (!m) return false;
+  if (m === "1") return phase === "rebuttal";
+  var isMod = !!(agent && run.moderator && sameName(agent.id, run.moderator));
+  if (m === "all") return true;
+  if (m === "mod") return isMod;
+  if (m === "other") return !isMod;
+  return false;
+}
 async function mockExpertTurn(agent, phase) {
   var cost = configCost(agent.model);
   if (!canSpendCredits(activeRoom())) return { skip: true, note: "끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요" };
@@ -10121,7 +10377,7 @@ async function mockExpertTurn(agent, phase) {
   if (creditsNow() < cost) return { skip: true, note: agent.name + " · 크레딧이 부족해요(남은 " + creditsNow() + "). 설정에서 내 API 키를 연결하면 크레딧 없이 계속 쓸 수 있어요." };
   await sleep(rand(420, 820));
   var text = mockExpertText(agent, phase);
-  if (MOCK_EARLY && phase === "rebuttal") text += " [종결]";
+  if (MOCK_EARLY_MODE && mockShouldMark(agent, phase)) text += " [종결]";
   var r = activeRoom();
   var left = Math.max(0, creditsNow() - cost);
   V3.profile.credits = left;
@@ -10148,13 +10404,13 @@ async function cloudExpertTurn(agent, phase) {
     config: kkiriConfigFor(agent),
     expert: { id: agent.id, name: agent.name, role: ro ? ro.label : (agent.role || ""), persona: (agent.prompt || "") + roleDirective(r, agent), avatar: agent.avatar || "" },
     phase: phase || "",
-    instruction: phaseInstruction(phase, r) + roundRule() + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : "") +
+    instruction: phaseInstruction(phase, r) + roundRule(agent) + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : "") +
       " " + SPECIFICITY_RULE,
     speakers: memberNames(r),
     context: ctx,
     message_id: uid("a")
   };
-  var sig = timeoutSignal(60000);
+  var sig = timeoutSignal(API_TIMEOUT);
   var res, data = null;
   try {
     res = await fetch(SB_FUNCS + "/kkiri-ai", {
@@ -10404,6 +10660,7 @@ async function bootV3() {
   maybeAskAuth();
   /* 재설정 링크로 들어왔다면 부팅 중 다른 창이 위를 덮었을 수 있으니 마지막으로 한 번 더 올린다 */
   if (recoveryFlow.want && !recoveryFlow.dismissed) openRecovery();
+  aiIdleStart();   /* 직전 방을 복원했다면 그 방에서 무응답 시계를 새로 시작한다 */
 }
 
 /* =========================================================
@@ -10640,6 +10897,12 @@ function wire() {
       x.setAttribute("aria-pressed", x === b ? "true" : "false");
     });
     rtRefreshSummary();
+  });
+  var rtmod = $("rtMods");
+  if (rtmod) rtmod.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-mod]");
+    if (!b) return;
+    rtSetMod(b.getAttribute("data-mod"));
   });
 
   /* 크레딧 상한 시트 */
@@ -11027,8 +11290,16 @@ if (!bootedLocal || (MOCK && !state.rooms.length)) {
   state = seedState();
   save();
 }
-/* ?code=·?room= 초대 링크로 들어오면 그 대화방, 아니면 끼리 홈에서 시작한다. */
+/* ?code=·?room= 초대 링크로 들어오면 그 대화방, 아니면 끼리 홈에서 시작한다.
+   초대 링크가 아니고 직전에 방을 보고 있었다면 그 방을 그대로 다시 연다 — 새로고침·카톡 공유 후 복귀 대비. */
 state.view = pendingJoin ? "room" : "home";
+if (!pendingJoin) {
+  var lastViewRoom = savedViewRoomId();
+  if (lastViewRoom && state.rooms.some(function (r) { return r.id === lastViewRoom; })) {
+    state.activeRoomId = lastViewRoom;
+    state.view = "room";
+  }
+}
 ensurePool();
 renderSwatches();
 wire();
