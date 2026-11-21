@@ -499,6 +499,7 @@
   .q-chip.start{background:var(--brand);border-color:var(--brand);color:#fff}
   .q-chip.start:hover{background:var(--brand-deep)}
   /* 지금 접속 중인 참가자(사람) 칩 — 초록 점으로 AI 칩과 구분. 누르면 @이름만 들어가고 AI는 부르지 않는다. */
+  .q-chip .q-dot{width:6px;height:6px;border-radius:50%;background:var(--c,#5B38E0);flex:0 0 6px;display:inline-block;margin-right:5px;vertical-align:0}
   .q-chip.guest{color:#5B38E0;background:#F7F4FF;border-color:#DACDFF;max-width:46vw;overflow:hidden}
   .q-chip.guest:hover{background:var(--brand-tint);border-color:#C7B6FF}
   .q-chip.guest::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--brand);flex:0 0 6px}
@@ -1417,15 +1418,18 @@
   .inv-seg button{border:0;background:transparent;border-radius:10px;padding:9px 2px;cursor:pointer;color:#6F6889;font-weight:900;font-size:11.5px;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:4px;line-height:1.2;font-family:inherit}
   .inv-seg button[aria-pressed="true"]{background:#fff;color:#3A2E6B;box-shadow:0 2px 6px rgba(90,60,180,.14)}
   .inv-seg button b{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:900;letter-spacing:-.02em}
-  .inv-credit-line{display:flex;align-items:center;gap:5px;flex-wrap:wrap;width:100%;text-align:left;margin-top:11px;padding:8px 10px;border:1px solid #EDE6FF;background:#FAF8FF;border-radius:11px;font-size:10.5px;font-weight:700;color:#6F6889;line-height:1.5;letter-spacing:-.01em;cursor:pointer;font-family:inherit}
-  .inv-credit-line:hover{border-color:#DCCFFF;background:#F6F1FF}
-  .inv-credit-line b{color:#3A2E6B;font-weight:900}
-  .inv-credit-line .sub{color:#8B84A3;font-size:10px;font-weight:800}
+  .mine-quick{margin-top:12px;padding:10px 11px;border:1px solid #EDE6FF;background:#FAF8FF;border-radius:12px}
+  .mine-quick-lead{margin:0 0 8px;font-size:10.5px;font-weight:800;color:#6F6889;letter-spacing:-.01em;line-height:1.5}
+  .mine-quick-row{display:flex;gap:7px;flex-wrap:wrap}
+  .mine-quick-row .btn{flex:1 1 130px;min-height:40px;font-size:12px}
+  #expertHint .hint-credit{color:#5B38E0;font-weight:900}
+  #expertHint .hint-bal{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#F1EDFF;color:#5B38E0;font-size:10px;font-weight:900;white-space:nowrap}
   .inv-person-lead{font-size:11px;color:#6F6889;font-weight:700;line-height:1.6;margin:0 0 10px;letter-spacing:-.01em}
   .auth-forgot{display:inline-block;margin-top:9px;border:0;background:none;padding:2px 0;color:#6F6889;font-size:10.5px;font-weight:800;text-decoration:underline;text-underline-offset:2px;cursor:pointer;letter-spacing:-.01em;font-family:inherit}
   .auth-forgot:hover{color:#5B38E0}
   .auth-resend{margin-top:7px;font-size:10.5px;font-weight:800;color:#5B38E0}
   .auth-mini{border:0;background:none;color:#5B38E0;font-size:10.5px;font-weight:900;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:2px 0;font-family:inherit}
+  .home-biz{margin:16px 0 4px;text-align:center;font-size:10px;line-height:1.75;color:#9A93B0;letter-spacing:-.01em;word-break:keep-all}
   .empty .e-cta.single{justify-content:center}
   .empty .e-cta.single .btn{min-width:168px}
   .meter[hidden]{display:none !important}
@@ -1682,6 +1686,15 @@
   }
   @media (max-width:380px){
     .ctrl-act{padding:0 10px;font-size:13px}
+  }
+  /* ============ 합의안 카드 공유 버튼 — 세로로 늘어나지 않게 (2026-11-21) ============ */
+  .timeline-inner > .card{flex:0 0 auto;height:auto;align-self:stretch}
+  .card > .card-actions{flex:0 0 auto;height:auto;align-content:start;grid-auto-rows:min-content}
+  .card > .card-actions button{flex:0 0 auto;align-self:center;height:42px;min-height:42px;max-height:42px;padding:8px 10px;line-height:1.2}
+  .card > .card-actions.more button{height:36px;min-height:36px;max-height:36px;font-size:11.5px}
+  @media (max-width:560px){
+    .card > .card-actions{gap:7px;padding:9px 12px 12px}
+    .card > .card-actions button{height:42px;min-height:42px;max-height:42px;font-size:12px}
   }
 </style>
 </head>
@@ -1958,6 +1971,7 @@
           </div>
           <div class="room-grid" id="homeRoomGrid"></div>
         </section>
+        <p class="home-biz">커플러스 · 대표 이지용 · 사업자등록번호 289-11-01404 · 통신판매업 2020-경기부천-0206 · 문의 gcchon@naver.com</p>
         <div class="home-foot" id="homeFoot">
           <button type="button" class="home-donate" id="homeDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
           <button type="button" class="home-donate home-feedback" id="homeFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
@@ -2046,9 +2060,9 @@
     <div class="sheet-head"><h2 id="inviteTitle">초대하기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <div class="seg wide ai-seg inv-seg" id="aiSeg" role="tablist" aria-label="초대 종류">
-        <button type="button" role="tab" data-tab="kkiri" aria-pressed="true" aria-selected="true"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> 끼리 AI</b></button>
+        <button type="button" role="tab" data-tab="mine" aria-pressed="true" aria-selected="true"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> 내 AI</b></button>
+        <button type="button" role="tab" data-tab="kkiri" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bot"></use></svg> 끼리 AI</b></button>
         <button type="button" role="tab" data-tab="person" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-hand"></use></svg> 사람 초대</b></button>
-        <button type="button" role="tab" data-tab="mine" aria-pressed="false" aria-selected="false"><b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> 내 AI</b></button>
       </div>
 
       <!-- ---------- 탭 1 · 끼리 AI ---------- -->
@@ -2056,7 +2070,6 @@
         <p class="hint" id="expertHint" style="margin-top:0">필요한 역할의 끼리 AI를 누르면 바로 이 방에 들어와요.</p>
         <div class="expert-grid" id="expertGrid"></div>
         <p class="modal-note" id="expertNote"></p>
-        <button type="button" class="inv-credit-line" id="invCreditBtn" title="내 크레딧과 사용 내역 보기"><b>사람·내 AI 대화는 무료</b><span>끼리 AI만 답변 1회당 10크레딧</span><span class="sub" id="inviteBalance"></span></button>
 
         <div class="field" id="invQuickWrap" hidden style="margin-top:14px"><span>이미 만든 AI 바로 추가</span>
           <div class="pick-row" id="invQuick"></div>
@@ -2110,8 +2123,15 @@
         </div>
 
         <details class="spec" id="byokWrap">
-          <summary><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg> 내 제미나이(무료)·GPT 키로 무제한 쓰기</summary>
+          <summary><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-key"></use></svg> 내 제미나이·GPT 부르기 (내 키 · 역할 구분 없음)</summary>
           <div class="spec-body">
+            <div class="mine-quick" id="mineQuickWrap" hidden>
+              <p class="mine-quick-lead">저장된 키로 바로 부를 수 있어요 · 역할 구분 없이 내 제미나이·GPT 그대로</p>
+              <div class="mine-quick-row">
+                <button type="button" class="btn green" id="mineQuickGemini" hidden>+ 내 제미나이 부르기</button>
+                <button type="button" class="btn" id="mineQuickOpenai" hidden>+ 내 GPT 부르기</button>
+              </div>
+            </div>
             <div class="field" style="margin-top:10px"><span>어떤 AI 키인가요</span>
               <div class="pick-row" id="byokSeg" role="group" aria-label="내 키 제공자">
                 <button type="button" class="pick" data-byok="gemini" aria-pressed="true">구글 제미나이 (무료 키)<span class="kb mini" id="kbMineGemini" title="Gemini 키 저장 여부">OFF</span></button>
@@ -2131,7 +2151,7 @@
             <p class="hint" id="mineKeyHint"></p>
             <div class="btn-row"><button class="btn green" id="mineKeyAdd">키 저장하고 이 방에 추가</button></div>
             <p class="api-status" id="mineKeyStatus" role="status" aria-live="polite" hidden></p>
-            <p class="modal-note">키는 이 기기에만 저장되고 <b>🙋 나의 AI</b> 탭의 키 입력칸과 같은 값이에요. 이 키로 답하는 AI는 끼리 크레딧을 쓰지 않아요.</p>
+            <p class="modal-note">내 AI의 하위 기능이에요. 키는 이 기기에만 저장되고, 이 키로 답하는 내 제미나이·내 GPT는 끼리 크레딧을 쓰지 않아요.</p>
           </div>
         </details>
 
@@ -2430,7 +2450,7 @@ Content-Type: application/json
           <li>만 14세 미만은 가입할 수 없습니다.</li>
           <li>회원은 본인의 계정과 비밀번호를 스스로 관리해야 합니다.</li>
           <li>크레딧은 서비스 안에서만 쓰이며, 무료 크레딧(오늘 무료·보너스)은 정해진 기간이 지나면 사라집니다. 충전 크레딧은 만료가 없습니다.</li>
-          <li>크레딧을 현금으로 환불하지 않습니다. 다만 충전 후 7일 이내에 사용하지 않은 충전 크레딧은 요청 시 환불해 드립니다.</li>
+          <li>유료 충전 크레딧은 <b>구매일로부터 7일 이내에 사용하지 않은 경우 전액 환불</b>받을 수 있습니다. 일부를 사용한 경우에는 <b>사용분을 제외한 나머지</b>를 환불해 드립니다. 환불은 구매하신 계정의 이메일로 <b>gcchon@naver.com</b> 에 요청해 주세요.</li>
           <li>타인을 괴롭히거나 불법·유해한 내용을 만드는 데 서비스를 쓰면 이용이 제한될 수 있습니다.</li>
           <li>서비스 내용과 요금은 바뀔 수 있으며, 바뀔 때는 앱 안에서 미리 알립니다.</li>
         </ul>
@@ -2446,6 +2466,26 @@ Content-Type: application/json
           <li><b>처리 위탁</b> — 서버·데이터 보관: Supabase, AI 답변 생성: OpenAI (대화 내용이 답변 생성을 위해 전송됩니다)</li>
           <li><b>이용자의 권리</b> — 본인 정보의 열람·정정·삭제·처리 정지를 언제든 요청할 수 있습니다.</li>
           <li>동의를 거부할 수 있으나, 이 경우 회원 가입과 서비스 이용이 제한됩니다.</li>
+        </ul>
+      </section>
+      <section class="terms-sec">
+        <h3>환불 규정</h3>
+        <ul>
+          <li>유료 충전 크레딧은 구매일로부터 <b>7일 이내</b>에 사용하지 않은 경우 <b>전액 환불</b>됩니다.</li>
+          <li>일부를 사용한 경우에는 <b>사용분을 제외한 나머지 금액</b>을 돌려 드립니다.</li>
+          <li>무료로 지급된 크레딧(오늘 무료·보너스)은 환불 대상이 아닙니다.</li>
+          <li>환불 요청은 구매하신 계정의 이메일에서 <b>gcchon@naver.com</b> 으로 보내 주세요. 확인 후 영업일 기준 3일 이내에 처리해 드립니다.</li>
+        </ul>
+      </section>
+      <section class="terms-sec">
+        <h3>사업자 정보</h3>
+        <ul>
+          <li><b>상호</b> 커플러스</li>
+          <li><b>대표자</b> 이지용</li>
+          <li><b>사업자등록번호</b> 289-11-01404</li>
+          <li><b>통신판매업 신고번호</b> 2020-경기부천-0206</li>
+          <li><b>주소</b> 경기도 부천시 조마루로 385번길 92 부천테크노밸리 U1센터 1808호</li>
+          <li><b>문의</b> gcchon@naver.com · 010-3611-8616</li>
         </ul>
       </section>
       <section class="terms-sec">
@@ -2657,6 +2697,22 @@ function isLegacyAutoNick(n) {
   var t = String(n == null ? "" : n).trim();
   /* 옛 자동 닉네임(‘참여자1’·‘참여자 #A7K2’·‘참가자 #A7K2’)은 지금 이름 규칙으로 다시 만든다 */
   return /^참가자\s*#[A-Z0-9]{2,6}$/i.test(t) || /^참여자\s*(#[A-Z0-9]{2,6}|\d+)?$/i.test(t);
+}
+/* 자동으로 붙은 닉네임(참가자1·참가자2…)인지 — 화면에서는 본인을 '나'로 부른다 */
+function isAutoNick(n) {
+  var t = String(n == null ? "" : n).trim();
+  if (!t || t === DEFAULT_NICK) return true;
+  if (nickNum(t) > 0) return true;
+  if (isLegacyAutoNick(t)) return true;
+  var auto = "";
+  try { auto = localStorage.getItem(NICK_AUTO_KEY) || ""; } catch (e) {}
+  return !!auto && t === auto;
+}
+/* 본인 표시 — 자동 닉네임이면 '나', 직접 정한 닉네임이면 '닉네임 (나)'.
+   다른 사람 화면에서는 그대로 '참가자1'·닉네임으로 보인다(서버에 저장되는 이름은 바꾸지 않는다). */
+function selfLabel() {
+  var n = nick();
+  return isAutoNick(n) ? "나" : n + " (나)";
 }
 function autoNick() {
   var n = "";
@@ -3642,8 +3698,11 @@ function msgHtml(m) {
     var myName = nick();
     var mine = !m.name || m.name === myName;   /* 예전 메시지처럼 이름이 없으면 내 말로 본다 */
     if (mine) {
+      var mineName = m.name || myName;
+      /* 내 말은 '나'로 — 자동 닉네임(참가자1…)이면 이름 없이, 직접 정했으면 '닉네임 (나)' */
+      var mineWho = isAutoNick(mineName) ? "나" : esc(mineName) + "<em>나</em>";
       return '<div class="msg me"><div class="body">' +
-        '<div class="who me">' + esc(m.name || myName) + "<em>나</em></div>" +
+        '<div class="who me">' + mineWho + "</div>" +
         '<div class="bubble">' + fmtText(m.text) + "</div>" +
         '<div class="meta"><time>' + esc(timeLabel(m.at)) + "</time></div></div></div>";
     }
@@ -3682,7 +3741,7 @@ function cardHtml(m) {
     return "<li>" + esc(t.t) + '<span class="own"> · ' + esc(t.o || "") + (t.d ? " · " + esc(t.d) : "") + "</span></li>";
   });
   var stats = '<div class="c-stats">' +
-    "<span>참여 " + c.stats.members.length + " AI</span>" +
+    "<span>끼리 AI " + c.stats.members.length + "명</span>" +
     "<span>" + c.stats.turns + "턴</span>" +
     (c.stats.credits ? "<span>" + creditsLabel(c.stats.credits) + " 크레딧</span>" : "") +
     "<span>" + esc(c.stats.duration) + "</span></div>";
@@ -3890,7 +3949,9 @@ function renderQuick() {
   if (ids.length + people.length >= 2) h += '<button type="button" class="q-chip" data-mention="AI전원">@AI전원</button>';
   ids.forEach(function (id) {
     var a = state.agents[id];
-    h += '<button type="button" class="q-chip" data-mention="' + esc(a.name) + '">@' + esc(a.name) + "</button>";
+    /* 이 방에 들어와 있는 AI도 ON 점으로 표시 — 사람·외부 AI 칩과 같은 표기 */
+    h += '<button type="button" class="q-chip on" data-mention="' + esc(a.name) + '" title="이 방에 있어요 · 눌러서 @이름 부르기">' +
+      '<i class="q-dot" aria-hidden="true" style="--c:' + esc(a.color || "#5B38E0") + '"></i>@' + esc(a.name) + "</button>";
   });
   people.forEach(function (n) {
     h += '<button type="button" class="q-chip guest" data-mention="' + esc(n) + '" title="지금 접속 중인 참가자 · 이 이름은 AI를 부르지 않아요">@' + esc(n) + "</button>";
@@ -3947,13 +4008,14 @@ function renderPeople() {
   if (!r || currentView() === "home") { host.innerHTML = ""; bar.hidden = true; return; }
   var h = "";
   /* 나부터 — 방에 들어와 있으면 늘 보인다(사이드바 접속 현황을 없앤 뒤 유일한 실시간 표시) */
-  h += '<span class="pb-chip me" title="나">' + '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>' + esc(nick()) + "</span>";
+  h += '<span class="pb-chip me" title="나' + (isAutoNick(nick()) ? "" : " · " + esc(nick())) + '">' + '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>' + esc(selfLabel()) + "</span>";
   onlinePeople().forEach(function (n) {
     h += '<span class="pb-chip on" title="지금 접속 중인 참가자"><i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(n).c + '"></i>' + esc(n) + "</span>";
   });
   r.members.forEach(function (id) {
     var a = state.agents[id];
-    if (a) h += '<button type="button" class="pb-chip ai" data-ai-id="' + esc(a.id) + '" title="' + esc(a.name) + ' · 눌러서 이 방에서 빼기" aria-label="' + esc(a.name) + ' 이 방에서 빼기">' + icoHtml("bot", "xs") + ' ' + esc(a.name) + "</button>";
+    if (a) h += '<button type="button" class="pb-chip ai" data-ai-id="' + esc(a.id) + '" title="' + esc(a.name) + ' · 눌러서 이 방에서 빼기" aria-label="' + esc(a.name) + ' 이 방에서 빼기">' +
+      '<i class="pb-dot" aria-hidden="true" style="--c:' + esc(a.color || "#5B38E0") + '"></i>' + icoHtml("bot", "xs") + ' ' + esc(a.name) + "</button>";
   });
   host.innerHTML = h;
   bar.hidden = !h;
@@ -4446,6 +4508,13 @@ function kkiriConfigFor(a) {
 function turnRoute(a) {
   if (agentClassOf(a) === "mine") return (a && a.url) ? "webhook" : "external";
   if (V3.mode === "mock") return "kkiri-mock";
+  /* 끼리 AI(주제별 전문가·직접 만들기)는 오직 끼리 크레딧(10크레딧/회)으로만 답한다.
+     내 API 키(BYOK)는 '내 AI'의 내 제미나이·내 GPT만 쓴다 — 두 서비스를 섞지 않는다. */
+  if (a && a.type === "expert") {
+    if (V3.mode === "local") return "local-demo";
+    if (V3.signedIn && !V3.guestTrialUsed) return "kkiri-cloud";
+    return "need-connect";
+  }
   if (V3.mode === "local") return anyKey() ? "kkiri-byok" : "local-demo";
   /* 내 API 키로 만들어진 AI는 그 키로 부른다(키를 연결해 둔 이유) */
   var byokAgent = a && (a.type === "byok" || (a.type === "builtin" && (a.model === "gemini" || a.model === "openai")));
@@ -4459,10 +4528,17 @@ function routeGuide(a, route) {
     text: "‘" + a.name + "’은(는) 초대 링크로 직접 접속해야 답할 수 있어요. 상단 🔗 이 방 초대로 링크를 보내 주세요.",
     acts: [{ label: "🔗 이 방 초대 링크", act: "invite" }]
   };
-  if (route === "need-connect") return {
-    text: "끼리 AI를 쓰려면 로그인(매일 300크레딧 무료)하거나 설정에서 내 API 키를 연결해 주세요. 끼리는 대신 다른 AI를 부르지 않아요.",
-    acts: [{ label: "로그인 · 매일 300크레딧 무료", act: "login" }, { label: "설정 · API 키", act: "settings" }]
-  };
+  if (route === "need-connect") {
+    /* 끼리 AI는 크레딧 전용 — 내 API 키로 대신 부르지 않는다 */
+    if (a && a.type === "expert") return {
+      text: "끼리 AI는 끼리 크레딧으로 답해요. 로그인하면 매일 300크레딧이 무료로 채워져요.",
+      acts: [{ label: "로그인 · 매일 300크레딧 무료", act: "login" }]
+    };
+    return {
+      text: "끼리 AI를 쓰려면 로그인(매일 300크레딧 무료)하거나, 내 AI에서 내 제미나이·GPT 키를 연결해 주세요.",
+      acts: [{ label: "로그인 · 매일 300크레딧 무료", act: "login" }, { label: "내 AI · 내 키 연결", act: "settings" }]
+    };
+  }
   return null;
 }
 /* 안내 메시지의 버튼 */
@@ -5493,10 +5569,11 @@ function rtSummaryText(plan) {
   var n = Math.max(1, plan.participants.length);
   var rounds = plan.rounds || Math.max(1, Math.round((plan.turns || n * RT_DEFAULT_ROUNDS) / n));
   var est = rounds * n * rtAiCost() + rtAiCost();
-  var txt = "참여 AI " + n + "명" +
+  var txt = "끼리 AI " + n + "명" +
     (plan.moderator ? " · 사회자 " + agentName(plan.moderator) : "") +
     " · " + rounds + "라운드(" + (n * rounds) + "번 발언)" +
-    " · 예상 약 " + creditsLabel(est) + " 크레딧 · 방 한도 " + creditsLabel(plan.budget) + " 크레딧";
+    " · 예상 약 " + creditsLabel(est) + " 크레딧 · 방 한도 " + creditsLabel(plan.budget) + " 크레딧"
+    + " (끼리 AI에만 크레딧 사용)";
   if (plan.participants.length < 2) txt += " · AI 두 명 이상이어야 토론할 수 있어요.";
   return txt;
 }
@@ -5527,8 +5604,8 @@ function rtRefreshSummary() {
   var est = rtEstimateCredits(r, rounds);
   var el = $("rtRoundCredits");
   if (el) {
-    el.innerHTML = "AI " + est.ai + "명 × " + rounds + "라운드 = <b>" + est.speeches + "번 발언</b> · 예상 약 <b>" +
-      creditsLabel(est.credits) + " 크레딧</b> <em>(마무리 합의안 포함)</em>";
+    el.innerHTML = "끼리 AI " + est.ai + "명 × " + rounds + "라운드 = <b>" + est.speeches + "번 발언</b> · 예상 약 <b>" +
+      creditsLabel(est.credits) + " 크레딧</b> <em>(마무리 합의안 포함 · 끼리 AI에만 크레딧 사용)</em>";
   }
   var plan = rtRoomPlan(r);
   plan.rounds = rounds;
@@ -5734,6 +5811,25 @@ function openRoomForm(roomId) {
 }
 /* (예전 결정 유지) 방 설정 시트에는 멤버 넣고 빼기 칸을 두지 않는다.
    AI 빼기는 방 화면 참여 줄의 AI 칩을 눌러서 한다. */
+/* 기본 프리셋 끼리 AI인가 — 직접 만든 AI(expert:"custom")·내 AI·초대 AI는 아니다 */
+function isPresetExpertAgent(a) {
+  return !!(a && a.type === "expert" && a.expert !== "custom");
+}
+/* 방 주제(분류)를 바꾸면 기본 프리셋 끼리 AI를 새 주제 라인업으로 함께 바꾼다.
+   직접 만든 AI·내 제미나이/GPT·초대 AI는 그대로 둔다. (roleMode auto일 때만 호출) */
+function swapDraftPresetsToCategory() {
+  var cat = EXPERT_SETS[roomForm.category] || EXPERT_SETS.etc;
+  var keep = (roomForm.members || []).filter(function (id) {
+    return !isPresetExpertAgent(state.agents[id]);
+  });
+  var out = keep.slice();
+  cat.forEach(function (ex) {
+    var id = findExpertAgent(ex.id);
+    if (!id) id = createExpertAgent(ex);
+    if (out.indexOf(id) < 0) out.push(id);
+  });
+  roomForm.members = out;
+}
 function rfSelectedMembers() {
   return Array.isArray(roomForm.members) ? roomForm.members.slice() : [];
 }
@@ -5747,6 +5843,11 @@ function submitRoomForm() {
   var category = roomForm.category || "work";
   captureRfRoles();
   var roleMode = roomForm.roleMode === "manual" ? "manual" : "auto";
+  if (roomForm.id && roleMode === "auto") {
+    var curRoom = state.rooms.filter(function (x) { return x.id === roomForm.id; })[0];
+    if (curRoom && categoryKeyOf(curRoom) !== (roomForm.category || "work")) swapDraftPresetsToCategory();
+    members = rfSelectedMembers();
+  }
   var roles = {};
   if (roleMode === "manual") {
     members.forEach(function (id) {
@@ -5880,9 +5981,9 @@ function renderSwatches() {
   });
   $("invColors").innerHTML = h;
 }
-/* 초대 허브 3탭 — [끼리 AI / 사람 초대 / 내 AI]. 처음 여는 사람이 바로 써볼 수 있게 끼리 AI가 첫 탭이다. */
+/* 초대 허브 3탭 — [내 AI / 끼리 AI / 사람 초대]. 지용 님 지시(2026-11-21)로 내 AI가 첫 탭·기본값. */
 function aiTab(tab) {
-  tab = (tab === "person" || tab === "mine") ? tab : "kkiri";
+  tab = (tab === "kkiri" || tab === "person") ? tab : "mine";
   Array.prototype.forEach.call($("aiSeg").querySelectorAll("[data-tab]"), function (b) {
     var on = b.getAttribute("data-tab") === tab;
     b.setAttribute("aria-pressed", on ? "true" : "false");
@@ -5911,15 +6012,16 @@ function renderPersonInvite() {
   renderInviteBalance();
 }
 function renderInviteBalance() {
+  /* 잔액은 끼리 AI 탭 상단 안내 안에 있다 — 로그인 상태일 때만 새 값으로 */
   var bal = $("inviteBalance");
-  if (bal) bal.textContent = V3.signedIn ? "· 내 크레딧 " + creditsNow() : "· 로그인하면 매일 300";
+  if (bal && V3.signedIn) bal.textContent = "내 크레딧 " + creditsNow();
 }
 /* 초대하기 하나로 여는 창 — 기본은 끼리 AI 탭, 사람은 '사람 초대', 내 AI는 '내 AI'로 바로 연다. */
 function openInviteHub(tab) {
   if (needStartFirst()) return;
   if (!activeRoom()) { toast("방을 먼저 만들어 주세요"); return; }
   invTarget = "room";
-  aiTab(tab || "kkiri");
+  aiTab(tab || "mine");
   openModal("inviteModal");
 }
 /* AI 한 명을 방에 넣거나, 방 만들기 목록(draft)에 넣는다. 넣은 곳을 돌려준다.
@@ -5986,6 +6088,11 @@ var mineProvider = "gemini";
 function renderMineKeys() {
   setKeyBadge($("kbMineGemini"), !!api.geminiKey, "");
   setKeyBadge($("kbMineOpenai"), !!api.openaiKey, "");
+  /* 이미 저장된 키가 있으면 한 번에 방에 부를 수 있게 */
+  var qw = $("mineQuickWrap"), qg = $("mineQuickGemini"), qo = $("mineQuickOpenai");
+  if (qw) qw.hidden = !(api.geminiKey || api.openaiKey);
+  if (qg) qg.hidden = !api.geminiKey;
+  if (qo) qo.hidden = !api.openaiKey;
   Array.prototype.forEach.call(document.querySelectorAll("#byokSeg [data-byok]"), function (b) {
     b.setAttribute("aria-pressed", b.getAttribute("data-byok") === mineProvider ? "true" : "false");
   });
@@ -6007,6 +6114,30 @@ function setMineKeyStatus(kind, msg) {
   el.textContent = msg;
 }
 function hideMineKeyStatus() { var el = $("mineKeyStatus"); if (el) { el.hidden = true; el.textContent = ""; } }
+/* 저장된 내 키로 '내 제미나이'·'내 GPT'를 바로 방에 부른다(내 AI 하위 기능) */
+function addQuickMine(p) {
+  var key = p === "openai" ? api.openaiKey : api.geminiKey;
+  if (!key) { setMineKeyStatus("err", providerLabel(p) + " 키를 먼저 저장해 주세요."); return; }
+  var name = p === "openai" ? "내 GPT" : "내 제미나이";
+  var exist = allAgents().filter(function (a) { return a.name === name; })[0];
+  var id;
+  if (exist) id = exist.id;
+  else {
+    id = "mine_" + hash(name + p + Date.now()).toString(36);
+    state.agents[id] = {
+      id: id, name: name, role: "내 AI", color: COLORS[2], type: "byok", model: p, prompt: "",
+      desc: "내 " + providerLabel(p) + " 키로 답하는 AI"
+    };
+  }
+  var r = activeRoom();
+  var how = invAttach(id, true);
+  closeModal("inviteModal");
+  renderAll();
+  if (how === "room" && r) {
+    dbUpsertAgent(r.id, id);
+    toast(name + " · 이 방에 들어왔어요 · 끼리 크레딧 없이 답해요");
+  } else toast("‘" + name + "’ · 방 만들기 목록에 넣었어요");
+}
 /* 내 키를 저장하고 그 키로 답하는 AI를 이 방에 넣는다. 이미 같은 이름의 내 AI가 있으면 키·모델만 바꿔 다시 들인다. */
 function addMineKeyAgent() {
   var p = mineProvider;
@@ -7159,7 +7290,7 @@ function openShare() {
   openModal("inviteModal");
 }
 /* 예전 이름 유지 — 초대는 이제 '초대하기' 창 하나로 연다. */
-function openInviteChoice() { openInviteHub("kkiri"); }
+function openInviteChoice() { openInviteHub("mine"); }
 
 
 /* =========================================================
@@ -7434,9 +7565,13 @@ function renderExpertPicker() {
   var hint = $("expertHint");
   if (hint) {
     var catLabel = draft ? catByKey(roomForm.category).label : categoryLabelOf(r);
-    hint.innerHTML = (draft
-      ? catLabel + " 방에 맞는 끼리 AI예요. 누르면 <b>방 만들기 목록</b>에 들어가요."
-      : catLabel + " 방에 맞는 끼리 AI예요. 누르면 바로 이 방에 들어와요.");
+    /* 크레딧은 끼리 AI를 부를 때만 나간다 — 탭 맨 위 안내에서 바로 보이게 */
+    hint.innerHTML = catLabel + " 방에 맞는 끼리 AI예요. "
+      + (draft ? "누르면 <b>방 만들기 목록</b>에 들어가요." : "누르면 바로 이 방에 들어와요.")
+      + '<br><b class="hint-credit">답변 1회당 ' + configCost("kkiri-lite") + "크레딧을 써요</b>"
+      + '<span class="hint-bal" id="inviteBalance">'
+      + (V3.signedIn ? "내 크레딧 " + creditsNow() : (V3.mode === "local" ? "로컬 데모" : "로그인하면 매일 300크레딧"))
+      + "</span>";
   }
   var inRoom = {};
   (r ? r.members : []).forEach(function (id) {
@@ -7458,7 +7593,7 @@ function renderExpertPicker() {
   if (note) {
     note.innerHTML = V3.mode === "local"
       ? "지금은 <b>로컬 데모</b>라 끼리 AI가 규칙 기반으로 답합니다."
-      : (V3.signedIn ? "내 API 키를 연결해 두었다면 그 키로 동작해요."
+      : (V3.signedIn ? ""
                      : "게스트는 100크레딧으로 끼리 AI를 한 번 체험할 수 있어요. 로그인하면 매일 300크레딧이 무료로 채워져요.");
   }
   renderCustomTarget();
@@ -7479,7 +7614,9 @@ function authFriendly(err) {
     return "이 프로젝트에서 익명 로그인이 아직 꺼져 있어요. Supabase → Authentication → Providers → Anonymous Sign-Ins 를 켜면 이 버튼이 바로 동작합니다.";
   }
   if (code.indexOf("email_address_invalid") > -1) return "이메일 주소를 확인해 주세요.";
-  if (code.indexOf("over_email_send_rate_limit") > -1 || code.indexOf("rate_limit") > -1) return "메일 발송 한도에 닿았어요. 잠시 뒤 다시 시도해 주세요.";
+  if (code.indexOf("over_request_rate_limit") > -1) return "요청이 잠시 몰렸어요(같은 곳에서 로그인·재설정 요청이 많을 때). 1시간쯤 뒤 다시 시도해 주세요.";
+  if (/anonymous/i.test(msg) || code.indexOf("anonymous") > -1) return "게스트 입장 요청이 잠시 몰렸어요. 1시간쯤 뒤 다시 시도하거나, 이메일로 로그인하면 바로 들어올 수 있어요.";
+  if (code.indexOf("over_email_send_rate_limit") > -1 || code.indexOf("rate_limit") > -1) return "요청이 잠시 몰렸어요. 1시간쯤 뒤 다시 시도해 주세요.";
   if (code.indexOf("invalid_credentials") > -1) return "이메일 또는 비밀번호가 맞지 않아요.";
   if (code.indexOf("email_not_confirmed") > -1) return "메일 확인이 아직 안 됐어요. 메일함의 확인 링크를 눌러 주세요.";
   if (code.indexOf("user_already_exists") > -1) return "이미 있는 계정이에요. 비밀번호로 로그인해 주세요.";
@@ -8747,7 +8884,7 @@ function wire() {
     var t = e.target.closest("[data-member-team]");
     if (t) { addToPool(t.getAttribute("data-member-team")); return; }
     var aa = e.target.closest("[data-add-ai]");
-    if (aa) { closeSidebar(); openInviteHub("kkiri"); return; }
+    if (aa) { closeSidebar(); openInviteHub("mine"); return; }
     var b = e.target.closest("[data-member-remove]");
     if (b) toggleMember(b.getAttribute("data-member-remove"));
   });
@@ -8777,7 +8914,7 @@ function wire() {
   if ($("newMsgBtn")) $("newMsgBtn").addEventListener("click", jumpToLatest);
   $("timelineInner").addEventListener("click", function (e) {
     var inv = e.target.closest("[data-empty-invite]");
-    if (inv) { openInviteHub("kkiri"); return; }
+    if (inv) { openInviteHub("mine"); return; }
     var sg = e.target.closest("[data-suggest]");
     if (sg) { useSuggestion(sg.getAttribute("data-suggest")); return; }
     var sa = e.target.closest("[data-sys-act]");
@@ -8808,7 +8945,7 @@ function wire() {
   $("roomSettingsBtn").addEventListener("click", function () { openRoomForm(state.activeRoomId); });
   var aab = $("addAiBtn");
   if (aab) aab.addEventListener("click", function () {
-    closeSidebar(); openInviteHub("kkiri");
+    closeSidebar(); openInviteHub("mine");
   });
   $("invQuick").addEventListener("click", function (e) {
     var del = e.target.closest("[data-quick-del]");
@@ -8962,6 +9099,8 @@ function wire() {
     if (key === roomForm.category) return;
     roomForm.category = key;
     roomForm.colorEmoji = catByKey(key).emoji;   /* 분류를 고르면 아이콘도 함께 바뀌고, 아래에서 다시 고를 수 있다 */
+    /* 방 설정에서 주제를 바꾸면 그 주제의 끼리 AI 프리셋으로 함께 바뀐다(자동 역할 배정일 때) */
+    if (roomForm.id && roomForm.roleMode !== "manual") swapDraftPresetsToCategory();
     renderRfCat();
     renderEmojiPick();
     renderRfRoles();
@@ -8979,7 +9118,7 @@ function wire() {
 
   /* 공유 · 닉네임 */
   /* 초대하기 — 빈 방·상단 어디서 눌러도 같은 3탭 창(끼리 AI / 사람 초대 / 내 AI) */
-  $("shareBtn").addEventListener("click", function () { openInviteHub("kkiri"); });
+  $("shareBtn").addEventListener("click", function () { openInviteHub("mine"); });
   if ($("forgotBtn")) $("forgotBtn").addEventListener("click", sendPasswordReset);
   if ($("resendBtn")) $("resendBtn").addEventListener("click", resendConfirm);
   if ($("rcSave")) $("rcSave").addEventListener("click", saveRecoveryPassword);
@@ -9030,6 +9169,8 @@ function wire() {
     var v = saveNick($("nickInput").value);
     $("nickInput").value = v;
     renderTimeline(false);
+    renderPeople();          /* 참여 줄의 '나' 칩도 새 닉네임으로 */
+    renderSidebar();
     if (db.ready) presenceJoin(state.activeRoomId, true);
     closeModal("nickModal");
     toast("닉네임을 ‘" + v + "’(으)로 저장했어요");
@@ -9102,6 +9243,8 @@ function wire() {
     renderSwatches();
   });
   $("invAdd").addEventListener("click", addByokAgent);
+  if ($("mineQuickGemini")) $("mineQuickGemini").addEventListener("click", function () { addQuickMine("gemini"); });
+  if ($("mineQuickOpenai")) $("mineQuickOpenai").addEventListener("click", function () { addQuickMine("openai"); });
   $("hookTest").addEventListener("click", testHook);
   $("hookAdd").addEventListener("click", addHookAgent);
 
