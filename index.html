@@ -4055,7 +4055,7 @@ function renderPeople() {
   if (!r || currentView() === "home") { host.innerHTML = ""; bar.hidden = true; return; }
   var h = "";
   /* 나부터 — 방에 들어와 있으면 늘 보인다(사이드바 접속 현황을 없앤 뒤 유일한 실시간 표시) */
-  h += '<span class="pb-chip me" title="나' + (isAutoNick(nick()) ? "" : " · " + esc(nick())) + '">' + '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>' + esc(selfLabel()) + "</span>";
+  h += '<span class="pb-chip me" title="나' + (selfIsAI() ? " · AI로 접속" : "") + (isAutoNick(nick()) ? "" : " · " + esc(nick())) + '">' + '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>' + (selfIsAI() ? "🤖 " : "") + esc(selfLabel()) + "</span>";
   onlinePeople().forEach(function (n) {
     var isAI = isRoomAiName(r, n);
     h += '<span class="pb-chip on' + (isAI ? " relay" : "") + '" title="' + (isAI ? "내 AI · 접속 중" : "지금 접속 중인 참가자") + '"><i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(n).c + '"></i>' + (isAI ? "🤖 " : "") + esc(n) + "</span>";
@@ -5761,7 +5761,7 @@ function rtRefreshSummary() {
   if (el) {
     var who = "끼리 AI " + est.ai + "명" + (est.people ? " + 내 AI " + est.people + "명(무료)" : "");
     el.innerHTML = who + " × " + rounds + "라운드 = <b>" + (est.total * rounds) + "번 발언</b> · 예상 <b>" +
-      creditsLabel(est.credits) + " 크레딧</b>" + (est.people ? " <em>· 내 AI는 0 크레딧</em>" : "");
+      creditsLabel(est.credits) + " 크레딧</b>";
   }
   var plan = rtRoomPlan(r);
   plan.rounds = rounds;
@@ -7078,9 +7078,9 @@ function presenceState() {
 /* 내 접속 정보를 다시 알린다(닉네임이 바뀌었을 때 포함) */
 /* 이 브라우저가 ‘내 AI’로 접속했는가 — 초대 링크에 &ai=1 을 붙이면 AI로 표시된다.
    (사람끼리 대화는 그대로 무료, 접속자 표시만 AI로 바뀐다) */
-var SELF_AI_KEY = "kkiri.selfai.v1";
-function selfIsAI() { try { return sessionStorage.getItem(SELF_AI_KEY) === "1"; } catch (e) { return false; } }
-function setSelfAI(on) { try { if (on) sessionStorage.setItem(SELF_AI_KEY, "1"); else sessionStorage.removeItem(SELF_AI_KEY); } catch (e) {} }
+/* 키를 문자열 그대로 쓴다 — parseJoin 이 파일 앞부분에서 먼저 돌기 때문에 var 값은 아직 비어 있다 */
+function selfIsAI() { try { return sessionStorage.getItem("kkiri.selfai.v1") === "1"; } catch (e) { return false; } }
+function setSelfAI(on) { try { if (on) sessionStorage.setItem("kkiri.selfai.v1", "1"); else sessionStorage.removeItem("kkiri.selfai.v1"); } catch (e) {} }
 /* 내보낸 사람 — 그 화면에서도 방이 닫히지만, 닫히기 전 몇 초는 내 목록에서 먼저 빼 둔다 */
 var KICK_KEY = "kkiri.kicked.v1";
 var KICK_TTL = 2 * 60 * 1000;
