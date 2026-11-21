@@ -3255,22 +3255,22 @@ function freshSession() {
 function seedAgents() {
   var a = {};
   a.pikri = {
-    id: "pikri", name: "피크리", role: "사회자 · 실행", color: "#7352FF", type: "builtin", model: "auto",
+    id: "pikri", name: "피크리", role: "사회자 · 실행", color: "#7352FF", type: "builtin", model: "kkiri-lite",
     prompt: "너는 '피크리'다. " + nick() + " 님의 개인 AI 비서이자 이 방의 사회자다. 맡은 일: 안건을 확인하고 발언 순서를 진행하며, 실행할 일과 담당·기한을 정한다. 말투: 결론부터, 다정하지만 단호한 '제가 ~할게요' 체.",
     desc: nick() + " 님의 일을 챙기는 비서 · 사회자"
   };
   a.kirini = {
-    id: "kirini", name: "키리니", role: "리서처 · 데이터", color: "#2f6ff0", type: "builtin", model: "auto",
+    id: "kirini", name: "키리니", role: "리서처 · 데이터", color: "#2f6ff0", type: "builtin", model: "kkiri-gemini-lite",
     prompt: "너는 '키리니'다. 이 방의 리서처다. 맡은 일: 숫자와 자료로 근거를 만들고, 비교 기준을 세운다. 확인한 수치와 추정을 구분해 표시한다. 말투: 담백하고 논리적, 짧은 문장.",
     desc: "숫자와 근거로 정리하는 리서처"
   };
   a.muu = {
-    id: "muu", name: "뮤우즈", role: "카피라이터 · 기획", color: "#a855f7", type: "builtin", model: "auto",
+    id: "muu", name: "뮤우즈", role: "카피라이터 · 기획", color: "#a855f7", type: "builtin", model: "kkiri-claude-lite",
     prompt: "너는 '뮤우즈'다. 이 방의 카피라이터 겸 기획자다. 맡은 일: 사용자 관점의 문장과 캠페인 구성을 제안하고, 선택지 두 개를 만든다. 말투: 밝고 감각적, 과장 없이.",
     desc: "카피와 캠페인을 만드는 기획자"
   };
   a.red = {
-    id: "red", name: "레드", role: "비판자 · 검증가", color: "#e2534d", type: "builtin", model: "auto",
+    id: "red", name: "레드", role: "비판자 · 검증가", color: "#e2534d", type: "builtin", model: "kkiri-lite",
     prompt: "너는 '레드'다. 이 방의 비판자다. 맡은 일: 전제의 약한 고리와 리스크를 찾아 반대 논리를 만든다. 확인되지 않은 것을 확인된 것처럼 두지 않는다. 말투: 직설적, 짧고 또렷하게.",
     desc: "전제를 의심하는 검증가"
   };
@@ -3472,7 +3472,7 @@ var RELAY_WAIT_MS = 30000;   /* 내 AI(릴레이) · 사람 참가자 응답을 
    내 제미나이·GPT(내 키 AI)와 끼리 AI는 각자의 호출 경로(API_TIMEOUT 60초)를 그대로 쓴다. */
 var RELAY_WAIT_EXTERNAL_MS = 60000;
 var run = {
-  epoch: 0, active: false, paused: false, typingAgent: null, cooldownLeft: 0,
+  epoch: 0, active: false, paused: false, typingAgent: null, typingSet: [], cooldownLeft: 0,
   schedule: [], idx: 0, freeConsec: 0, lastSpeaker: null,
   lastBy: {}, lastAt: {}, lastGlobalAt: 0, recent: [], moderator: null, mode: null,
   relayPeople: [], typingName: null, relayWait: null, relayMs: RELAY_WAIT_MS   /* 내 AI 응답을 기다리는 시간(30초) */
@@ -4400,6 +4400,12 @@ function cardHtml(m) {
     "</div></div>";
 }
 
+/* 이 AI의 '답장 작성 중' 말풍선을 지운다 — @AI전원 병렬 호출 때 여러 개를 동시에 관리한다 */
+function typingStop(id) {
+  if (!run.typingSet) run.typingSet = [];
+  run.typingSet = run.typingSet.filter(function (x) { return x !== id; });
+  if (run.typingAgent === id) run.typingAgent = run.typingSet.length ? run.typingSet[run.typingSet.length - 1] : null;
+}
 function typingHtml(id) {
   var a = state.agents[id];
   if (!a) return "";
@@ -4526,8 +4532,11 @@ function renderTimeline(autoScroll) {
       h += msgHtml(m);
     });
   }
-  if (run.active && run.typingAgent) h += typingHtml(run.typingAgent);
-  else if (run.active && run.typingName) h += relayTypingHtml(run.typingName);
+  var typingIds = run.active
+    ? ((run.typingSet && run.typingSet.length) ? run.typingSet.slice() : (run.typingAgent ? [run.typingAgent] : []))
+    : [];
+  typingIds.forEach(function (tid) { h += typingHtml(tid); });
+  if (run.active && !typingIds.length && run.typingName) h += relayTypingHtml(run.typingName);
   box.innerHTML = h;
   if (pendingCardScroll) {
     var cid = pendingCardScroll;
@@ -5542,9 +5551,10 @@ function aiUsesCredits(id) {
 /* 끼리 서버가 아는 모델 이름으로 맞춘다(내 AI를 끼리 서버로 부를 때) */
 function kkiriConfigFor(a) {
   var m = String((a && a.model) || "");
-  if (/^kkiri-/.test(m)) return m;
+  if (/^kkiri-/.test(m)) return m;                 /* 서버 등급을 그대로(끼리 경량 · 제미나이 · 클로드) */
   if (m === "gemini") return "kkiri-gemini-lite";
-  return "kkiri-lite";
+  if (m === "claude" || m === "anthropic") return "kkiri-claude-lite";
+  return "kkiri-lite";                             /* 기본값 = GPT(gpt-4o-mini) */
 }
 /* 지금 이 AI를 어떤 길로 부를지 */
 function turnRoute(a) {
@@ -5602,14 +5612,16 @@ function sysAct(name) {
 
 async function speak(agent, phase, ep) {
   run.typingAgent = agent.id;
+  if (!run.typingSet) run.typingSet = [];
+  if (run.typingSet.indexOf(agent.id) < 0) run.typingSet.push(agent.id);
   renderTimeline(true);
   updateMeters();
   await sleep(rand(240, 460));
-  if (ep !== run.epoch) { run.typingAgent = null; return; }
+  if (ep !== run.epoch) { typingStop(agent.id); return; }
   var route = turnRoute(agent);
   /* 최종 안전장치 — 크레딧이 나가는 끼리 AI 턴은 방장만. (멘션·토론 경로를 모두 거쳐 여기까지 온다) */
   if (aiUsesCredits(agent.id) && !canSpendCredits(activeRoom())) {
-    run.typingAgent = null;
+    typingStop(agent.id);
     addSystem(agent.name + " · 끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요", "warn");
     updateMeters();
     return;
@@ -5643,8 +5655,8 @@ async function speak(agent, phase, ep) {
       };
     }
   }
-  if (ep !== run.epoch) { run.typingAgent = null; renderTimeline(true); return; }
-  run.typingAgent = null;
+  if (ep !== run.epoch) { typingStop(agent.id); renderTimeline(true); return; }
+  typingStop(agent.id);
   if (out && out.skip) {                 /* v3: 크레딧 부족·로그인 필요 → 데모로 대신하지 않고 건너뜀 */
     var sk = String(out.note || "");
     var skActs = null;
@@ -5724,7 +5736,7 @@ function startRoundtable(opts) {
   r.status = "running";
   run.epoch++;
   var ep = run.epoch;
-  run.active = true; run.paused = false; run.typingAgent = null; run.typingName = null; run.cooldownLeft = 0;
+  run.active = true; run.paused = false; run.typingAgent = null; run.typingSet = []; run.typingName = null; run.cooldownLeft = 0;
   run.idx = 0; run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
   run.freeConsec = 0; run.moderator = mod; run.mode = "roundtable";
   run.cap = r.discussCap ? rtEffectiveCap(r, r.discussCap) : 0;
@@ -5743,7 +5755,7 @@ function startRoundtable(opts) {
 function finishRoundtable(ep) {
   if (ep !== run.epoch) return;
   var r = activeRoom();
-  run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
+  run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
   run.cap = 0; run.lastRound = false; run.isLastStep = false;
   r.status = "ended";
   r.session.endedAt = Date.now();
@@ -5758,7 +5770,7 @@ function finishRoundtable(ep) {
 function endRun(reason, ep) {
   if (ep != null && ep !== run.epoch) return;
   run.epoch++;
-  run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
+  run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
   var r = activeRoom();
   if (!r) return;
   var cap = Math.max(1, Math.round(Number(r.budget)) || 0);
@@ -5808,7 +5820,7 @@ function finishEarly(byName) {
   if (!r) return;
   var where = run.maxRound ? run.roundNo + "/" + run.maxRound + "라운드" : "";
   run.epoch++;                        /* 남은 차례를 즉시 멈춘다 */
-  run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
+  run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
   run.cap = 0;
   r.status = "ended";
   r.session.endedAt = Date.now();
@@ -5847,24 +5859,41 @@ async function runMentions(text) {
   run.lastBy = {}; run.lastAt = {}; run.lastGlobalAt = 0; run.recent = [];
   r.status = "running";
   renderRoom();
-  /* @AI전원 = 방 안의 내장 AI 전원이 차례대로 한 번씩 답한다(인원 제한 없음).
+  /* @AI전원 = 방 안의 내장 AI 전원이 함께 답한다(인원 제한 없음).
      이름을 지정한 @멘션은 크레딧이 한꺼번에 나가지 않도록 3명까지만 답한다. */
   var ids = parsed.all ? parsed.ids.slice() : parsed.ids.slice(0, 3);
-  for (var i = 0; i < ids.length; i++) {
-    if (ep !== run.epoch) return;
-    if (budgetExceeded(r)) { endRun("budget", ep); return; }
-    var ag = state.agents[ids[i]];
-    if (!ag) continue;
-    await cooldown(ag.id, ep);
-    if (ep !== run.epoch) return;
-    await speak(ag, "mention", ep);
-    if (ep !== run.epoch) return;
-    /* @멘션 응답은 AI마다 1회로 끝나는 유한한 반복이라 루프 감지로 중간에 끊지 않는다
-       (전원 호출에서 답이 비슷하다고 뒷사람 차례가 사라지면 ‘전원 응답’이 깨진다). */
-    await sleep(rand(300, 620));
+  if (parsed.all && ids.length > 1) {
+    /* 🔀 병렬 — 서버 AI 여러 명을 한 명씩 기다리지 않고 동시에 부른다(2초 안팎에 함께 도착).
+       크레딧·한도·중복 검사는 speak() 안의 기존 장치를 그대로 지나고,
+       자동토론(순서대로 앞 발언을 참고해야 함)은 건드리지 않는다(이 경로는 @멘션 전용). */
+    await Promise.all(ids.map(function (id) {
+      return (async function () {
+        if (ep !== run.epoch) return;
+        if (budgetExceeded(r)) return;
+        var ag = state.agents[id];
+        if (!ag) return;
+        await sleep(rand(0, 200));          /* 말풍선이 한 점에 겹치지 않게 아주 짧게 흩뜨린다 */
+        if (ep !== run.epoch) return;
+        await speak(ag, "mention", ep);
+      })();
+    }));
+  } else {
+    for (var i = 0; i < ids.length; i++) {
+      if (ep !== run.epoch) return;
+      if (budgetExceeded(r)) { endRun("budget", ep); return; }
+      var ag = state.agents[ids[i]];
+      if (!ag) continue;
+      await cooldown(ag.id, ep);
+      if (ep !== run.epoch) return;
+      await speak(ag, "mention", ep);
+      if (ep !== run.epoch) return;
+      /* @멘션 응답은 AI마다 1회로 끝나는 유한한 반복이라 루프 감지로 중간에 끊지 않는다
+         (전원 호출에서 답이 비슷하다고 뒷사람 차례가 사라지면 ‘전원 응답’이 깨진다). */
+      await sleep(rand(300, 620));
+    }
   }
   if (ep !== run.epoch) return;
-  run.active = false; run.typingAgent = null; r.status = "idle";
+  run.active = false; run.typingAgent = null; run.typingSet = []; r.status = "idle";
   save(); renderRoom(); renderSidebar();
 }
 
@@ -6787,7 +6816,7 @@ function selectRoom(id) {
   if (!target) return;
   if (run.active) {
     run.epoch++;
-    run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
+    run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
     var prev = activeRoom();
     if (prev && prev.status === "running") prev.status = "idle";
     save();
@@ -8027,7 +8056,7 @@ async function deleteAgentEverywhere(id) {
     if (run.moderator === id) run.moderator = r.members[0] || null;
   });
   if (Array.isArray(state.pool)) state.pool = state.pool.filter(function (x) { return x !== id; });
-  if (run.typingAgent === id) { run.typingAgent = null; run.typingName = null; }
+  if (run.typingAgent === id) { run.typingAgent = null; run.typingSet = []; run.typingName = null; }
   if (roomForm && roomForm.members) roomForm.members = roomForm.members.filter(function (x) { return x !== id; });
   save();
   renderAll();
@@ -8310,7 +8339,7 @@ async function resetRoom() {
     });
     if (!okRemote) return;
     run.epoch++;
-    run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
+    run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.freeConsec = 0;
     r.session = freshSession();
     r.status = "idle";
     save();
@@ -8327,7 +8356,7 @@ async function resetRoom() {
   });
   if (!okLocal) return;
   run.epoch++;
-  run.active = false; run.paused = false; run.typingAgent = null; run.freeConsec = 0;
+  run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.freeConsec = 0;
   r.messages = [{ id: uid("s"), who: "system", kind: "info", at: Date.now(), text: "대화를 초기화했어요. 방 주제와 설정은 그대로입니다." }];
   r.session = freshSession();
   r.status = "idle";
@@ -8748,7 +8777,7 @@ function onKickBroadcast(payload) {
   if (!mine) return;
   if (payload.by && String(payload.by).toLowerCase() === me) return;   /* 내가 보낸 알림은 무시 */
   run.epoch++;
-  run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null;
+  run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.typingName = null;
   run.relayWait = null; run.cooldownLeft = 0;
   save();
   hideRoomLocal(r.id);
@@ -9486,7 +9515,8 @@ var V3 = {
 var DEFAULT_MODELS = {
   "kkiri-lite":         { display_name: "끼리 경량",         cost_per_turn_credits: 10 },
   "kkiri-standard":     { display_name: "끼리 표준",         cost_per_turn_credits: 30 },
-  "kkiri-gemini-lite":  { display_name: "끼리 경량(Gemini)", cost_per_turn_credits: 10 }
+  "kkiri-gemini-lite":  { display_name: "끼리 경량(Gemini)", cost_per_turn_credits: 10 },
+  "kkiri-claude-lite":  { display_name: "끼리 경량(Claude)", cost_per_turn_credits: 10 }
 };
 
 /* 끼리 제공 전문가 AI 6명 — 역할 카드. 단가는 kkiri_model_configs가 기준. */
@@ -9494,30 +9524,30 @@ var DEFAULT_MODELS = {
    모두 같은 엔진(kkiri-lite · 10크레딧/발언)이고, 역할 프롬프트만 분류에 맞춰 다르다. */
 var EXPERT_SETS = {
   work: [
-    { id: "copywriter", name: "카피라이터", avatar: "✍️", role: "카피 · 문장", config: "kkiri-lite",
+    { id: "copywriter", name: "카피라이터", avatar: "✍️", role: "카피 · 문장", config: "kkiri-claude-lite",
       desc: "짧고 리듬 있는 문장, 늘 선택지 두 개. 상세페이지·광고 문구.",
       persona: "너는 브랜드 카피라이터다. 짧고 리듬 있는 한국어 문장을 쓰고, 늘 선택지 2개를 붙인다. 과장·미사여구는 쓰지 않는다." },
-    { id: "marketer", name: "마케터", avatar: "📣", role: "캠페인 · 채널", config: "kkiri-lite",
+    { id: "marketer", name: "마케터", avatar: "📣", role: "캠페인 · 채널", config: "kkiri-gemini-lite",
       desc: "예산과 기간을 먼저 고정하고 채널·타이밍을 짠다.",
       persona: "너는 퍼포먼스 마케터다. 예산·기간·목표를 먼저 확인하고, 채널별로 나눠 실행안을 만든다. ‘다양한 채널을 활용하세요’ 같은 일반론 대신 채널 이름·예산 배분·첫 실행 항목을 숫자와 함께 제시한다. 예상 수치는 추정임을 표시한다." },
     { id: "redteam", name: "검증가", avatar: "🔻", role: "허점 · 리스크", config: "kkiri-lite",
       desc: "전제의 약한 고리와 되돌릴 수 없는 결정을 먼저 지적.",
       persona: "너는 검증가다. 전제의 약한 고리와 리스크를 찾아 반대 논리를 만든다. 확인되지 않은 것을 확인된 것처럼 두지 않는다. 직설적으로 짧게." },
-    { id: "planner", name: "기획자", avatar: "🧩", role: "구조 · 우선순위", config: "kkiri-lite",
+    { id: "planner", name: "기획자", avatar: "🧩", role: "구조 · 우선순위", config: "kkiri-claude-lite",
       desc: "안건을 결정·확인·다음 할 일로 쪼개 순서를 정한다.",
       persona: "너는 기획자다. 안건을 결정할 것·확인할 것·다음 할 일로 나누고 우선순위를 정한다. 회의가 결론으로 끝나게 만든다." },
     { id: "analyst", name: "분석가", avatar: "📊", role: "숫자 · 근거", config: "kkiri-lite",
       desc: "마진·원가·전환을 숫자로 비교하고 가정을 표시.",
       persona: "너는 데이터 분석가다. 마진·원가·전환·재고를 숫자로 비교한다. 주어진 숫자와 가정을 구분해 표시하고, 결론은 ‘지금 바꿀 지표 1개’로 좁혀 말한다." },
-    { id: "researcher", name: "리서처", avatar: "🔎", role: "조사 · 비교", config: "kkiri-lite",
+    { id: "researcher", name: "리서처", avatar: "🔎", role: "조사 · 비교", config: "kkiri-gemini-lite",
       desc: "경쟁·시장 사례를 비교 기준으로 정리한다.",
       persona: "너는 리서처다. 비교 기준을 먼저 세우고 사례를 정리한다. 확인한 사실과 추정을 구분한다." }
   ],
   travel: [
-    { id: "travel_route", name: "동선 플래너", avatar: "🗺️", role: "일정 · 이동", config: "kkiri-lite",
+    { id: "travel_route", name: "동선 플래너", avatar: "🗺️", role: "일정 · 이동", config: "kkiri-gemini-lite",
       desc: "이동 시간을 먼저 계산해 하루 동선을 짠다.",
       persona: "너는 여행 동선 플래너야. 이동 시간·거리를 먼저 계산하고 하루 동선을 짠다. ‘주변’, ‘어디든’ 같은 두루뭉술한 말 대신 실제 장소 이름(역·거리·건물·식당)과 이동 수단·소요 시간을 1~2곳 이상 콕 집어 제시한다. 무리한 일정은 줄이고 대안 순서를 함께 준다. 추정 시간은 추정이라고 밝힌다." },
-    { id: "travel_spot", name: "맛집·스팟 추천", avatar: "📍", role: "로컬 · 포토존", config: "kkiri-lite",
+    { id: "travel_spot", name: "맛집·스팟 추천", avatar: "📍", role: "로컬 · 포토존", config: "kkiri-gemini-lite",
       desc: "현지에서 실제로 가는 맛집·포토존을 고른다.",
       persona: "너는 로컬 맛집·스팟 추천가야. ‘주변 카페’, ‘현지 맛집’ 같은 뻔한 표현은 쓰지 않는다. 반드시 실제 가게·음식·명소 이름과 대표 메뉴·특징, 대략적인 위치(동네·거리·역), 한 가지 팁(웨이팅·예약·시간대)을 1~2곳 이상 콕 집어 추천한다. 영업시간·예약 여부처럼 확인이 필요한 것은 ‘확인 필요’로 표시한다." },
     { id: "travel_budget", name: "예산 매니저", avatar: "💰", role: "가성비 · 비용", config: "kkiri-lite",
@@ -9526,18 +9556,18 @@ var EXPERT_SETS = {
     { id: "travel_risk", name: "변수 체크", avatar: "🌦️", role: "날씨 · 주차 · 대기", config: "kkiri-lite",
       desc: "비·주차·대기처럼 일정을 망치는 변수를 먼저 본다.",
       persona: "너는 여행 변수 체크 담당이야. 날씨·주차·대기·휴무처럼 일정을 망칠 수 있는 변수를 먼저 짚고, ‘조심하세요’ 같은 일반론 대신 지금 바꿀 행동(대체 장소·시간대·주차장 이름)을 구체적으로 준다. 확인되지 않은 것은 단정하지 않는다." },
-    { id: "travel_idea", name: "아이디어 메이커", avatar: "✨", role: "색다른 코스", config: "kkiri-lite",
+    { id: "travel_idea", name: "아이디어 메이커", avatar: "✨", role: "색다른 코스", config: "kkiri-gemini-lite",
       desc: "흔한 코스 대신 색다른 한 끼·한 곳을 제안한다.",
       persona: "너는 색다른 여행 코스를 만드는 사람이야. 흔한 관광 코스 대신 그 동네에서만 가능한 경험을 실제 이름(시장·골목·체험·가게)으로 1~2개 제안하고, 왜 그곳인지 한 줄 붙인다. 실행 가능한 것만 말한다." }
   ],
   daily: [
-    { id: "daily_taste", name: "취향 큐레이터", avatar: "🍽️", role: "맛집 · 메뉴", config: "kkiri-lite",
+    { id: "daily_taste", name: "취향 큐레이터", avatar: "🍽️", role: "맛집 · 메뉴", config: "kkiri-gemini-lite",
       desc: "지금 기분과 취향에 맞는 메뉴·가게를 골라 준다.",
       persona: "너는 취향 큐레이터야. 지금 상황(시간·날씨·동행)과 취향을 먼저 확인하고, ‘아무 데나’, ‘주변 카페’ 대신 실제 가게 이름과 대표 메뉴를 1~2곳 콕 집어 고른다. 왜 그곳인지 한 줄 이유를 붙인다." },
     { id: "daily_value", name: "가성비 체크", avatar: "💸", role: "가격 · 구성", config: "kkiri-lite",
       desc: "같은 값이면 구성이 나은 쪽을 계산해 준다.",
       persona: "너는 가성비 체크 담당이야. 가격 대비 양·구성·재료를 비교해 실제로 이득인 쪽을 알려 준다. ‘가성비 좋은 곳’ 대신 실제 메뉴·세트 이름과 숫자(가격·중량·할인)를 넣어 비교하고, 확인된 값과 추정을 구분한다." },
-    { id: "daily_mood", name: "분위기 파인더", avatar: "🕯️", role: "무드 · 자리", config: "kkiri-lite",
+    { id: "daily_mood", name: "분위기 파인더", avatar: "🕯️", role: "무드 · 자리", config: "kkiri-claude-lite",
       desc: "조용한지 시끄러운지, 앉을 자리까지 본다.",
       persona: "너는 분위기 파인더야. 조용함·조명·좌석·소음 같은 분위기 요소로 장소를 골라 준다. ‘분위기 좋은 곳’ 대신 실제 가게·공간 이름과 좌석·시간대 팁을 붙여 데이트·모임·혼밥 상황에 맞춰 제안한다." },
     { id: "daily_review", name: "솔직 리뷰어", avatar: "⭐", role: "장단점 · 팁", config: "kkiri-lite",
@@ -9545,44 +9575,44 @@ var EXPERT_SETS = {
       persona: "너는 솔직 리뷰어야. ‘무난해요’ 같은 총평 대신 실제 메뉴·가격·대기 시간처럼 확인 가능한 항목으로 장점과 단점·주의할 점·가는 팁을 함께 말하고, 방문 전에 확인할 것을 마지막에 정리한다." }
   ],
   counsel: [
-    { id: "counsel_empathy", name: "공감 코치", avatar: "💗", role: "마음 · 경청", config: "kkiri-lite",
+    { id: "counsel_empathy", name: "공감 코치", avatar: "💗", role: "마음 · 경청", config: "kkiri-claude-lite",
       desc: "먼저 마음을 읽고 감정을 정리해 준다.",
       persona: "너는 공감 코치야. 먼저 감정을 읽고 인정해 준 뒤, 지금 마음이 어떤지 한 문장으로 정리해 준다. 섣부른 조언은 하지 않는다." },
     { id: "counsel_real", name: "현실 조언가", avatar: "🧭", role: "해결책 · 실행", config: "kkiri-lite",
       desc: "지금 당장 할 수 있는 한 가지를 정해 준다.",
       persona: "너는 현실 조언가야. 감정은 짧게 인정하고, 지금 당장 할 수 있는 행동 1~2개를 구체적으로 정해 준다. 확인되지 않은 사실은 단정하지 않는다." },
-    { id: "counsel_other", name: "다른 시선", avatar: "🔭", role: "반대 관점", config: "kkiri-lite",
+    { id: "counsel_other", name: "다른 시선", avatar: "🔭", role: "반대 관점", config: "kkiri-gemini-lite",
       desc: "내가 못 본 쪽을 정중하게 짚어 준다.",
       persona: "너는 다른 시선을 주는 역할이야. 상대 입장과 반대 관점을 정중하게 짚어 준다. 비난하지 않고 선택지를 넓힌다." },
-    { id: "counsel_sort", name: "선택지 정리", avatar: "🧾", role: "비교 · 결론", config: "kkiri-lite",
+    { id: "counsel_sort", name: "선택지 정리", avatar: "🧾", role: "비교 · 결론", config: "kkiri-claude-lite",
       desc: "고민을 선택지로 나눠 비교표처럼 정리한다.",
       persona: "너는 선택지 정리 담당이야. 고민을 선택지 2~3개로 나누고 각각의 장단점·비용·후회 가능성을 비교해 결론 후보를 제시한다." }
   ],
   free: [
-    { id: "free_talker", name: "수다 친구", avatar: "💬", role: "잡담 · 공감", config: "kkiri-lite",
+    { id: "free_talker", name: "수다 친구", avatar: "💬", role: "잡담 · 공감", config: "kkiri-claude-lite",
       desc: "가볍게 받아 주고 말을 이어 준다.",
       persona: "너는 수다 친구야. 가볍게 받아 주고 대화를 자연스럽게 이어 간다. 무겁게 설교하지 않고, 상대 말에서 한 가지를 집어 물어봐 대화를 넓힌다." },
-    { id: "free_wit", name: "재치러", avatar: "✨", role: "유머 · 반전", config: "kkiri-lite",
+    { id: "free_wit", name: "재치러", avatar: "✨", role: "유머 · 반전", config: "kkiri-gemini-lite",
       desc: "분위기를 살리는 한마디와 반전을 준다.",
       persona: "너는 재치 담당이야. 과하지 않은 유머와 반전으로 분위기를 살린다. 비아냥·비하는 쓰지 않고, 짧게 웃음이 나는 한마디를 붙인다." },
-    { id: "free_empathy", name: "공감러", avatar: "💗", role: "공감 · 위로", config: "kkiri-lite",
+    { id: "free_empathy", name: "공감러", avatar: "💗", role: "공감 · 위로", config: "kkiri-claude-lite",
       desc: "먼저 마음을 읽고 편을 들어 준다.",
       persona: "너는 공감 담당이야. 먼저 마음을 읽고 편을 들어 준다. 조언은 청하지 않았으면 하지 않고, 짧게 인정하고 곁에 있어 주는 말을 한다." },
-    { id: "free_topic", name: "화제 수집가", avatar: "🔎", role: "화제 · 소재", config: "kkiri-lite",
+    { id: "free_topic", name: "화제 수집가", avatar: "🔎", role: "화제 · 소재", config: "kkiri-gemini-lite",
       desc: "대화가 멈추면 새 얘깃거리를 던진다.",
       persona: "너는 화제 수집가야. 대화가 멈칫하면 지금 흐름에 맞는 새 얘깃거리를 2~3개 던진다. 뉴스·계절·일상 소재에서 고르고, 바로 이어서 물어볼 질문을 붙인다." }
   ],
   etc: [
-    { id: "etc_idea", name: "아이디어 메이커", avatar: "💡", role: "발상 · 제안", config: "kkiri-lite",
+    { id: "etc_idea", name: "아이디어 메이커", avatar: "💡", role: "발상 · 제안", config: "kkiri-gemini-lite",
       desc: "막힌 지점에서 쓸 수 있는 아이디어를 여러 개 낸다.",
       persona: "너는 아이디어 메이커야. 막힌 지점을 기준으로 서로 다른 방향의 아이디어를 3개 내고, 그중 하나를 골라 이유를 붙인다." },
-    { id: "etc_research", name: "정보 리서처", avatar: "🔎", role: "조사 · 비교", config: "kkiri-lite",
+    { id: "etc_research", name: "정보 리서처", avatar: "🔎", role: "조사 · 비교", config: "kkiri-gemini-lite",
       desc: "확인된 사실과 추정을 구분해 정리한다.",
       persona: "너는 정보 리서처야. 비교 기준을 먼저 세우고 확인된 사실·추정·확인이 필요한 것을 나눠 정리한다." },
     { id: "etc_reality", name: "현실 검증가", avatar: "🔻", role: "리스크 · 체크", config: "kkiri-lite",
       desc: "될 것 같은 계획의 허점을 먼저 본다.",
       persona: "너는 현실 검증가야. 계획의 허점·비용·일정 리스크를 먼저 짚고, 되돌릴 수 없는 결정을 표시한다. 짧고 직설적으로." },
-    { id: "etc_tidy", name: "정리 도우미", avatar: "🧹", role: "구조 · 요약", config: "kkiri-lite",
+    { id: "etc_tidy", name: "정리 도우미", avatar: "🧹", role: "구조 · 요약", config: "kkiri-claude-lite",
       desc: "지금까지 나온 이야기를 한 장으로 정리한다.",
       persona: "너는 정리 도우미야. 지금까지 나온 이야기를 결정·확인 필요·다음 할 일로 나눠 짧게 정리한다. 없는 내용은 만들지 않는다." }
   ]
@@ -10246,7 +10276,7 @@ function clearJoinQuery() {
 function resetSessionView() {
   /* 1) 진행 중이던 토론·자동 진행을 멈춘다(타이머가 남으면 로그아웃 뒤에도 계속 돈다) */
   run.epoch++;
-  run.active = false; run.paused = false; run.typingAgent = null; run.cooldownLeft = 0;
+  run.active = false; run.paused = false; run.typingAgent = null; run.typingSet = []; run.cooldownLeft = 0;
   run.schedule = []; run.idx = 0; run.mode = null; run.moderator = null;
   /* 2) 실시간 구독·접속자(Presence)를 내린다 — 서버 연결이 끊긴 뒤 401 안내가 뜨지 않게 */
   try { presenceLeave(); } catch (e) {}
