@@ -465,7 +465,16 @@
   .msg .who .src.ext{color:#2b5cc4;background:#EEF0FF}
   .msg .who .src.demo{color:#8a5a12;background:var(--amber-tint)}
   /* 이름 옆 작은 엔진 태그 — Claude 코랄주황 · Gemini 블루 · GPT 민트초록.
-     아바타 테두리·이모지 배지는 두지 않는다(2026-11-22 지용 님 선택) */
+     아바타 테두리·이모지 배지는 두지 않는다(2026-11-22 지용 님 선택)
+     .eng 는 말풍선·초대 목록·전문가 카드에서 같이 쓰는 공용 클래스다. */
+  .eng{
+    flex:0 0 auto;display:inline-flex;align-items:center;line-height:1;
+    padding:2px 5px 1.5px;border-radius:6px;font-size:8.5px;font-weight:900;
+    letter-spacing:.01em;font-style:normal;white-space:nowrap;
+  }
+  .eng.claude{color:#B4572F;background:#FDF0E9;border:1px solid #F6DACB}
+  .eng.gemini{color:#2F5FB3;background:#EDF2FE;border:1px solid #D5E2FB}
+  .eng.gpt{color:#1E7B52;background:#EAF8F0;border:1px solid #CFEDDD}
   .msg .who .eng{
     flex:0 0 auto;display:inline-flex;align-items:center;line-height:1;
     padding:2px 5px 1.5px;border-radius:6px;font-size:8.5px;font-weight:900;
@@ -996,6 +1005,9 @@
   .expert-card .e-top{display:flex;align-items:center;gap:8px}
   .expert-card .e-ava{width:30px;height:30px;flex:0 0 30px;border-radius:10px;display:grid;place-items:center;background:var(--brand-tint);font-size:15px}
   .expert-card .e-name{min-width:0}
+  .expert-card .e-title{display:flex;align-items:center;gap:5px;min-width:0}
+  .expert-card .e-title b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .expert-card .e-name .eng{font-size:8px;padding:2px 4px 1.5px}
   .expert-card .e-name b{display:block;font-size:12px;font-weight:900;letter-spacing:-.02em}
   .expert-card .e-name small{display:block;font-size:9px;font-weight:800;color:#5B38E0;margin-top:1px}
   .expert-card p{font-size:10px;line-height:1.62;color:#6F6889;letter-spacing:-.01em;word-break:keep-all}
@@ -1096,6 +1108,8 @@
   .pick .p-tag{font-size:8px;font-weight:900;color:#93a0aa;margin-left:3px;letter-spacing:-.01em}
   /* v3.5 — 이미 만든 AI: 들어간 AI 는 ✓ 로 남기고, 다시 누르면 빼기 · ✕ 는 목록에서 지우기 */
   .pick-slot{display:inline-flex;align-items:center;gap:4px;max-width:100%}
+  .pick-slot .pick{display:inline-flex;align-items:center;gap:5px;max-width:100%;min-width:0}
+  .pick-slot .pick .eng{font-size:8px;padding:2px 4px 1.5px}
   .pick-slot .pick.on{border-color:#8B6BFF;background:linear-gradient(180deg,#F7F1FF,#EDE4FF);color:#4B2ED1;font-weight:900}
   .pick-slot .pick-x{
     width:22px;height:22px;flex:0 0 22px;border-radius:7px;border:1px solid var(--line);
@@ -4409,6 +4423,11 @@ function engineOf(m) {
 }
 function engineBadge(m) {
   var k = engineOf(m);
+  return k ? '<span class="eng ' + k + '">' + ENGINE_TAG[k] + "</span>" : "";
+}
+/* 모델 설정 id 로 바로 만드는 엔진 태그 — 초대 목록·전문가 카드에서 말풍선과 같은 모양을 쓴다 */
+function engTag(cfg) {
+  var k = engineKeyOfConfig(cfg);
   return k ? '<span class="eng ' + k + '">' + ENGINE_TAG[k] + "</span>" : "";
 }
 
@@ -8191,7 +8210,7 @@ function renderInviteAgents() {
       '<button type="button" class="pick' + (on ? " on" : "") + '" data-quick-add="' + esc(a.id) + '"' +
       ' aria-pressed="' + (on ? "true" : "false") + '"' +
       ' title="' + (on ? "다시 누르면 이 방에서 빼요" : "이 방에 추가") + '">' +
-      (on ? "✓ " : "+ ") + esc(a.name) + "</button>" +
+      (on ? "✓ " : "+ ") + esc(a.name) + engTag(a.model) + "</button>" +
       '<button type="button" class="pick-x" data-quick-del="' + esc(a.id) + '" aria-label="삭제" title="목록에서 지우기">✕</button>' +
       "</span>";
   });
@@ -10037,7 +10056,7 @@ function renderExpertPicker() {
     var tail = !ownerNow ? (icoHtml("lock", "xs") + " 방장만") : (added ? (draft ? "✓ 목록에 있음 · 눌러서 빼기" : "✓ 이 방에 있음 · 눌러서 빼기") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가"));
     h += '<button type="button" class="expert-card' + (added ? " added" : "") + (ownerNow ? "" : " locked") + '" data-expert="' + esc(ex.id) + '"' + (added ? ' aria-disabled="true"' : "") + '>' +
       '<span class="e-top"><span class="e-ava" aria-hidden="true">' + iconForEmoji(ex.avatar, "", "spark") + '</span>' +
-      '<span class="e-name"><b>' + esc(ex.name) + '</b><small>' + esc(ex.role) + '</small></span></span>' +
+      '<span class="e-name"><span class="e-title"><b>' + esc(ex.name) + '</b>' + engTag(ex.config) + '</span><small>' + esc(ex.role) + '</small></span></span>' +
       '<span class="e-foot"><span class="e-add">' + tail + '</span></span></button>';
   });
   grid.innerHTML = h;
