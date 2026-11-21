@@ -1696,8 +1696,10 @@
   .charge-btn:hover{filter:brightness(1.04)}
   .charge-note{font-size:11px;font-weight:800;color:#8C84A8;text-align:center;margin-top:7px;letter-spacing:-.01em}
   .invite-box{border:1px dashed #DCCFFF;border-radius:16px;background:linear-gradient(180deg,#FCFAFF,#F6F1FF);padding:12px 13px 13px;margin-top:12px}
-  .invite-box b{display:block;font-size:13px;font-weight:900;color:#3A2E6B;letter-spacing:-.02em}
+  .invite-box > b{display:block;font-size:13px;font-weight:900;color:#3A2E6B;letter-spacing:-.02em}
   .invite-box p{font-size:11px;font-weight:700;color:#6F6889;line-height:1.65;margin-top:5px;letter-spacing:-.01em}
+  /* 문장 속 숫자(300·200)는 줄을 바꾸지 않고 글자 안에 이어지게 */
+  .invite-box p b{display:inline;font-weight:900;color:#3A2E6B}
   .invite-row{display:flex;align-items:center;gap:7px;margin-top:9px;flex-wrap:wrap}
   .invite-row code{
     flex:1 1 auto;min-width:0;border:1px solid var(--line);background:#fff;border-radius:10px;
@@ -2693,6 +2695,14 @@ window.__KKIRI_BOOT = (function () {
         </ul>
         <p class="cg-foot">@이름 없이 보내면 AI는 답하지 않고 채팅만 올라가요(크레딧 0).</p>
       </div>
+      <div class="invite-box">
+        <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg> 친구 초대하고 +300 크레딧 받기</b>
+        <p>친구가 내 링크로 가입하면 나는 <b>300</b>, 친구는 <b>200</b>크레딧을 받아요. (각 30일 유효 · 가입 1회)</p>
+        <div class="invite-row">
+          <code id="refCodeText">········</code>
+          <button type="button" class="mini-btn" id="refCopyBtn">초대 링크 복사</button>
+        </div>
+      </div>
       <div class="credit-guide alt">
         <h4><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-spark"></use></svg> 더 쓰고 싶을 때</h4>
         <div class="cg-opt">
@@ -2702,19 +2712,6 @@ window.__KKIRI_BOOT = (function () {
         </div>
         <button type="button" class="charge-btn" id="openChargeBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-bolt"></use></svg> 크레딧 충전하기</button>
         <p class="charge-note">1,000원부터 · 카카오페이로 보내고 요청하면 입금 확인 후 채워 드려요</p>
-      </div>
-      <div class="invite-box">
-        <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg> 친구 초대하고 +300 크레딧 받기</b>
-        <p>친구가 내 링크로 가입하면 나는 <b>300</b>, 친구는 <b>200</b>크레딧을 받아요. (각 30일 유효 · 가입 1회)</p>
-        <div class="invite-row">
-          <code id="refCodeText">········</code>
-          <button type="button" class="mini-btn" id="refCopyBtn">초대 링크 복사</button>
-        </div>
-      </div>
-      <div class="donate-box">
-        <b><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 끼리 응원하기</b>
-        <p>무료로 잘 쓰고 계신다면 커피 한 잔 후원해 주세요.</p>
-        <button type="button" class="btn" id="donateBtn"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg> 커피 한 잔 후원하기</button>
       </div>
       <div class="sec-head" style="padding:0 2px 6px"><span>최근 사용 내역</span></div>
       <div class="ledger" id="ledgerList"></div>
@@ -2825,7 +2822,7 @@ window.__KKIRI_BOOT = (function () {
         <button type="button" class="pkg" data-pkg="1" aria-pressed="false"><b>3,000원</b><span>3,300 크레딧</span><em>+10%</em></button>
         <button type="button" class="pkg" data-pkg="2" aria-pressed="false"><b>5,000원</b><span>6,000 크레딧</span><em>+20%</em></button>
       </div>
-      <div class="field" style="margin-top:12px"><span>입금자명</span><input id="chargeDepositor" type="text" maxlength="30" placeholder="송금할 때 쓸 이름" autocomplete="name"></div>
+      <div class="field" style="margin-top:12px"><span>입금자명</span><input id="chargeDepositor" type="text" maxlength="30" placeholder="실제 입금하신 분 이름을 적어 주세요" autocomplete="name"></div>
       <div class="charge-pay">
         <img id="chargeQr" alt="카카오페이 송금 QR 코드" decoding="async">
         <div class="charge-pay-txt">
@@ -9824,7 +9821,7 @@ function openCharge() {
   setChargeMsg("", "");
   renderChargePkgs();
   var dep = $("chargeDepositor");
-  if (dep) dep.value = (V3.profile && V3.profile.nickname) || nick() || "";
+  if (dep) { dep.value = ""; dep.placeholder = "실제 입금하신 분 이름을 적어 주세요"; }
   var btn = $("chargeSend");
   if (btn) { btn.disabled = false; btn.textContent = "충전 요청하기"; }
   var qr = $("chargeQr"), src = $("donateQrImg");
@@ -9840,7 +9837,7 @@ async function sendChargeRequest() {
   }
   var dep = $("chargeDepositor");
   var name = String((dep && dep.value) || "").trim();
-  if (!name) { setChargeMsg("err", "입금자명을 적어 주세요."); if (dep) { try { dep.focus(); } catch (e) {} } return; }
+  if (!name) { setChargeMsg("err", "입금자명을 입력해 주세요."); if (dep) { try { dep.focus(); } catch (e) {} } return; }
   var pkg = CHARGE_PKGS[charge.idx] || CHARGE_PKGS[0];
   charge.busy = true;
   var btn = $("chargeSend");
