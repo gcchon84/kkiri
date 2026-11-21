@@ -603,6 +603,9 @@
   .donate-box .btn:hover{background:#fdeed6}
   .side-donate{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;border:1px dashed #2f4352;background:transparent;color:#D2C8EF;font:inherit;font-size:11.5px;font-weight:800;border-radius:10px;padding:8px 9px;cursor:pointer;letter-spacing:-.01em;transition:background .12s ease,color .12s ease}
   .side-donate:hover{background:#241D45;color:#fff;border-color:#4A407E}
+  /* 🎁 친구 초대 — 홈 하단과 같은 선물 아이콘·문구. 어두운 사이드바에서도 한눈에 보이게 보라 테두리·옅은 배경 */
+  .side-donate.side-invite{border-style:solid;border-color:#4B3A96;background:rgba(115,82,255,.16);color:#D6C9FF}
+  .side-donate.side-invite:hover{background:rgba(115,82,255,.30);border-color:#6E57C8;color:#fff}
   .home-foot{margin:20px 0 6px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
   .home-donate{border:1px dashed var(--line);background:#fff;color:#8A819F;font:inherit;font-size:11.5px;font-weight:800;border-radius:999px;padding:8px 15px;cursor:pointer;letter-spacing:-.01em;transition:border-color .12s ease,color .12s ease,background .12s ease}
   .home-donate:hover{border-color:#eccd9f;color:#8a5a1f;background:#fffaf2}
@@ -2231,9 +2234,10 @@ window.__KKIRI_BOOT = (function () {
     </div>
 
     <!-- 접속 현황·이 방의 AI 는 방 화면 상단(접속 N명 · 이 방 참여 줄 · 🔗 이 방 초대)과
-         방 설정(⋯) 시트가 맡는다 — 사이드바는 대화방 목록과 아래 두 버튼만 남긴다. -->
+         방 설정(⋯) 시트가 맡는다 — 사이드바는 대화방 목록과 아래 버튼들(친구 초대·응원·의견·설치)만 남긴다. -->
 
     <div class="side-foot">
+      <button type="button" class="side-donate side-invite" id="sideInviteBtn" title="친구 초대 · 끼리 소개하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gift"></use></svg><span>친구 초대</span></button>
       <button type="button" class="side-donate" id="sideDonateBtn" title="끼리 응원하기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-coffee"></use></svg><span>끼리 응원하기</span></button>
       <button type="button" class="side-donate side-feedback" id="sideFeedbackBtn" title="불편한 점·아이디어 보내기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg><span>의견 보내기</span></button>
       <button type="button" class="side-donate side-install" id="sideInstallBtn" title="홈 화면에 추가 · 즐겨찾기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-star"></use></svg><span>홈 화면에 추가</span></button>
@@ -10322,11 +10326,15 @@ function wireV3() {
   if (dcp) dcp.addEventListener("click", function () {
     copyText(DONATE_URL, "송금 링크를 복사했어요");
   });
-  /* 🎁 친구 초대 — 서비스를 소개하며 내 초대 링크를 보낸다 */
-  var hInvite = $("homeInviteBtn");
-  if (hInvite) hInvite.addEventListener("click", function () {
-    if (typeof closeSidebar === "function") closeSidebar();
-    openReferralShare();
+  /* 🎁 친구 초대 — 서비스를 소개하며 내 초대 링크를 보낸다 (홈 하단·사이드바 하단 어디서 눌러도 같은 시트) */
+  ["homeInviteBtn", "sideInviteBtn"].forEach(function (id) {
+    var b = $(id);
+    if (!b) return;
+    b.addEventListener("click", function () {
+      /* 모바일에서는 사이드바가 화면을 덮고 있으니 먼저 닫고 시트를 연다 */
+      if (typeof closeSidebar === "function") closeSidebar();
+      openReferralShare();
+    });
   });
   var rk = $("refShareKakao");
   if (rk) rk.addEventListener("click", shareReferral);
