@@ -764,12 +764,20 @@
   .spec-body{padding:2px 11px 13px}
   .spec-body .btn-row{margin-top:12px}
   .spec-body .btn-row #mineKeyTest{flex:0 0 auto;white-space:nowrap;padding-left:16px;padding-right:16px}
+  /* 직접 만들기 — 위 ‘내 제미나이·GPT 설정’과 같은 폰트·여백 톤의 아코디언 제목 (2026-11-21) */
+  #customWrap > summary{font-size:15px;font-weight:900;color:#3F2A8E;padding:13px 12px;gap:8px;letter-spacing:-.02em}
+  #customWrap > summary::before{font-size:11px}
+  /* 이름 | 역할 2열이 아코디언 첫 줄 — 위 설정 아코디언과 같은 위쪽 여백 */
+  #customWrap .spec-body > .field-row:first-child{margin-top:10px}
+  #customWrap .spec-body .btn-row{margin-top:8px}
   /* 내 제미나이·GPT 설정 — 보조 설명은 12px 단정한 2줄 (2026-11-21) */
   .spec-body .byok-note{font-size:12px;line-height:1.6;color:var(--muted-2);margin-top:8px;letter-spacing:-.01em;word-break:keep-all}
   .spec-body .byok-note:empty{display:none}
   .spec-body .byok-note a{color:var(--brand-deep);font-weight:800;text-decoration:none;border-bottom:1px solid rgba(101,70,240,.3)}
-  .connect-line{margin:0;font-size:10.5px;line-height:1.6;font-weight:800;color:#5B38E0;background:var(--brand-tint);border-radius:10px;padding:9px 11px;letter-spacing:-.01em}
-  .connect-line.demo{color:#8a5a12;background:var(--amber-tint)}
+  /* 이 AI가 어떻게 답하는지 — 큰 회색 박스 대신 버튼 위 한 줄 보조 안내 (2026-11-21) */
+  .connect-line{margin:14px 2px 0;font-size:11px;line-height:1.5;font-weight:700;color:#6C6488;letter-spacing:-.01em}
+  .connect-line.demo{color:#8a5a12}
+  .connect-line:empty{display:none}
   .auto-hint{font-style:normal;font-size:8.5px;font-weight:900;color:#5B38E0;background:var(--brand-tint);border-radius:999px;padding:2px 6px;margin-left:4px;vertical-align:middle}
   .ai-seg button{display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.25;padding:12px 4px}
   .ai-seg button b{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:900;letter-spacing:-.02em}
@@ -2438,17 +2446,15 @@ window.__KKIRI_BOOT = (function () {
         </div>
 
         <details class="spec" id="customWrap">
-          <summary>+ 직접 만들기 · 이름과 성격을 정해 끼리 AI로 만들기</summary>
+          <summary>+ 직접 만들기</summary>
           <div class="spec-body">
-            <label class="field"><span>이름</span><input id="invName" type="text" maxlength="14" placeholder="예: 카피봇" autocomplete="off"></label>
             <div class="field-row">
+              <label class="field"><span>이름</span><input id="invName" type="text" maxlength="14" placeholder="예: 카피봇" autocomplete="off"></label>
               <label class="field"><span>역할</span><input id="invRole" type="text" maxlength="20" placeholder="예: 카피라이터" autocomplete="off"></label>
-              <div class="field"><span>아바타 색</span><div class="swatches" id="invColors"></div></div>
             </div>
+            <div class="field"><span>아바타 색</span><div class="swatches" id="invColors"></div></div>
             <label class="field"><span>성격·역할 프롬프트</span><textarea id="invPrompt" placeholder="예: 너는 브랜드의 카피라이터다. 짧고 리듬 있는 한국어 문장을 쓰고, 늘 선택지 2개를 붙인다." maxlength="600"></textarea></label>
-            <div class="field"><span>이 AI는 이렇게 답해요<em class="auto-hint">자동 연결</em></span>
-              <p class="connect-line" id="customConnect">—</p>
-            </div>
+            <p class="connect-line" id="customConnect">끼리 서버 AI · 턴당 10크레딧</p>
             <div class="btn-row"><button class="btn green" id="invAdd">이 방에 추가</button></div>
             <p class="modal-note">끼리 AI 엔진으로 답하는 커스텀 AI예요. 만들면 이 방에 들이고, 다음에 다른 방에서 <b>+ AI 추가</b>로 다시 부를 수 있게 저장해요.</p>
           </div>
@@ -7652,12 +7658,12 @@ function addMemberToRoom(id) {
 function customTarget() {
   if (V3.signedIn && (V3.mode === "cloud" || V3.mode === "mock")) {
     return { type: "expert", model: "kkiri-lite", demo: false,
-      label: "끼리 서버 AI로 답해요 · 턴당 " + configCost("kkiri-lite") + "크레딧" };
+      label: "끼리 서버 AI · 턴당 " + configCost("kkiri-lite") + "크레딧" };
   }
-  if (api.geminiKey) return { type: "byok", model: "gemini", demo: false, label: "내 Gemini 키로 답해요 · 끼리 크레딧 없이" };
-  if (api.openaiKey) return { type: "byok", model: "openai", demo: false, label: "내 OpenAI 키로 답해요 · 끼리 크레딧 없이" };
+  if (api.geminiKey) return { type: "byok", model: "gemini", demo: false, label: "내 Gemini 키 · 끼리 크레딧 0" };
+  if (api.openaiKey) return { type: "byok", model: "openai", demo: false, label: "내 OpenAI 키 · 끼리 크레딧 0" };
   return { type: "byok", model: "demo", demo: true,
-    label: "아직 키가 없어 데모로 답해요 · 설정에서 키를 넣으면 실제 AI로 바뀌어요" };
+    label: "키 없음 · 데모로 답해요" };
 }
 function renderCustomTarget() {
   var el = $("customConnect");
