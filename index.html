@@ -3519,6 +3519,8 @@ function estimateTin(r) {
 }
 function budgetExceeded(r) {
   if (!r) return false;
+  /* 무제한 무료 런치 — 크레딧 상한으로 대화·토론을 멈추지 않는다 */
+  if (FREE_LAUNCH_MODE) return false;
   var used = Number(r.session && r.session.credits) || 0;
   var cap = Number(r.budget) || 0;
   if (cap > 0 && used >= cap) return true;
@@ -5797,7 +5799,7 @@ async function speak(agent, phase, ep) {
       save();
       updateMeters();
       renderSidebar();
-      addSystem(agent.name + " 답변이 앞선 발언과 겹쳐 이번 턴을 건너뛰었어요(중복 방지 · 쓴 크레딧은 반영).", "warn");
+      addSystem(agent.name + " 답변이 앞선 발언과 겹쳐 이번 턴을 건너뛰었어요(중복 방지).", "warn");
       return;
     }
     /* v3: 서버가 저장한 발언(id·noSend·credits)까지 그대로 넘겨 중복 저장/중복 표시를 막는다 */
@@ -10185,7 +10187,9 @@ async function afterSignIn(user) {
     if (claim.referral_code) V3.profile.refCode = claim.referral_code;
     if (claim.referred) V3.profile.referred = true;
   }
-  if (!V3.ready) setAuthMsg("info", "v3 스키마가 아직 적용되지 않아 크레딧을 로컬로 표시합니다. SQL(v3_schema.sql)을 적용하면 서버 크레딧으로 바뀝니다.");
+  if (!V3.ready) setAuthMsg("info", FREE_LAUNCH_MODE
+    ? "서버 연결을 준비하고 있어요. 잠시 뒤 다시 시도해 주세요."
+    : "v3 스키마가 아직 적용되지 않아 크레딧을 로컬로 표시합니다. SQL(v3_schema.sql)을 적용하면 서버 크레딧으로 바뀝니다.");
   await loadModels();
   await dbLoadMyRoles();
   /* 게스트 → 정식 로그인: 방금 만든 방을 내 계정 방장으로 이어받는다(로그인 창을 닫자마자 '방장만'으로 막히던 원인) */
