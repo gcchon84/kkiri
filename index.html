@@ -6909,7 +6909,21 @@ function renderInviteAgents() {
   var host = $("invQuick"), wrap = $("invQuickWrap");
   if (!host || !wrap) return;
   if (!r) { wrap.hidden = true; host.innerHTML = ""; return; }
-  var list = allAgents().filter(function (a) { return a && a.type !== "human"; });
+  /* 여기는 '내가 만든 AI' 목록이다 — 기본 프리셋 끼리 AI(전문가)는 위 카탈로그에서 부르는 것이므로
+     여기에 쌓지 않는다. (방을 오가며 넣었다 뺐다 해도 목록이 불어나지 않게) */
+  var list = allAgents().filter(function (a) { return a && a.type !== "human" && !isPresetExpertAgent(a); });
+  /* 같은 이름의 내 AI가 여러 번 저장돼 있어도 한 번만 — 이 방에 들어와 있는 것을 우선 */
+  var seenId = {}, seenName = {}, uniq = [];
+  list.slice().sort(function (a, b) {
+    return (r.members.indexOf(b.id) > -1 ? 1 : 0) - (r.members.indexOf(a.id) > -1 ? 1 : 0);
+  }).forEach(function (a) {
+    var nm = String(a.name || "").trim();
+    if (seenId[a.id] || (nm && seenName[nm])) return;
+    seenId[a.id] = 1;
+    if (nm) seenName[nm] = 1;
+    uniq.push(a);
+  });
+  list = uniq;
   /* 방장이 아니면 끼리 AI(크레딧 AI)는 이 목록에서도 감춘다 — 눌러도 막히는 목록을 보여 주지 않는다 */
   if (!canSpendCredits(r)) list = list.filter(function (a) { return !aiUsesCredits(a.id); });
   var inRoom = function (id) { return r.members.indexOf(id) > -1; };
