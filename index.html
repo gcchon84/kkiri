@@ -2481,8 +2481,8 @@ window.__KKIRI_BOOT = (function () {
 
         <div class="mine-quick" id="mineQuickWrap" hidden>
           <div class="mine-quick-row">
-            <button type="button" class="btn green" id="mineQuickGemini" hidden>+ 내 제미나이 초대</button>
-            <button type="button" class="btn" id="mineQuickOpenai" hidden>+ 내 GPT 초대</button>
+            <button type="button" class="btn green" id="mineQuickGemini" hidden>+ 기존 제미나이 초대</button>
+            <button type="button" class="btn" id="mineQuickOpenai" hidden>+ 기존 GPT 초대</button>
           </div>
           <p class="mine-quick-lead">저장된 정보로 바로 불러보세요 (역할 지정 없음)</p>
         </div>
@@ -7269,13 +7269,13 @@ function renderMineKeys() {
     qg.hidden = !api.geminiKey;
     qg.disabled = !!dupG;
     qg.className = dupG ? "btn" : "btn green";
-    qg.textContent = dupG ? "✓ 이 방에 참여 중" : "+ 내 제미나이 초대";
+    qg.textContent = dupG ? "✓ 이 방에 참여 중" : "+ 기존 제미나이 초대";
   }
   if (qo) {
     qo.hidden = !api.openaiKey;
     qo.disabled = !!dupO;
     qo.className = "btn";
-    qo.textContent = dupO ? "✓ 이 방에 참여 중" : "+ 내 GPT 초대";
+    qo.textContent = dupO ? "✓ 이 방에 참여 중" : "+ 기존 GPT 초대";
   }
   Array.prototype.forEach.call(document.querySelectorAll("#byokSeg [data-byok]"), function (b) {
     b.setAttribute("aria-pressed", b.getAttribute("data-byok") === mineProvider ? "true" : "false");
