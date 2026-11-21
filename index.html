@@ -2896,7 +2896,11 @@ function activeRoom() {
   for (var i = 0; i < state.rooms.length; i++) if (state.rooms[i].id === state.activeRoomId) return state.rooms[i];
   return state.rooms[0] || null;
 }
-function allAgents() { return Object.keys(state.agents).map(function (id) { return state.agents[id]; }); }
+/* 목록에 보이는 AI — 지운 AI(‘지운 AI’ 표시)는 뺀다. 옛 대화의 이름 표시용으로 state.agents 에는 남는다. */
+function allAgents() {
+  return Object.keys(state.agents).map(function (id) { return state.agents[id]; })
+    .filter(function (a) { return a && !isDeletedAgent(a.id); });
+}
 function agentById(id) { return state.agents[id] || null; }
 function agentName(id) {
   if (id === "user") return nick();
@@ -6311,6 +6315,7 @@ function openInviteHub(tab) {
    toPool=true 면 다른 방에서도 부를 수 있게 내 AI로 함께 저장한다(직접 만들기·웹훅). */
 function invAttach(id, toPool) {
   if (!state.agents[id]) return "";
+  if (isDeletedAgent(id)) unmarkDeletedAgent(id);   /* 지운 AI를 다시 부르면 살아난다 */
   if (toPool || invTarget === "draft") {
     ensurePool();
     if (state.pool.indexOf(id) < 0) state.pool.push(id);
@@ -6474,7 +6479,7 @@ function addMineKeyAgent() {
 }
 /* 끼리 AI 탭 상단 — '이미 만든 AI'.
    이 방에 들어간 AI 도 목록에서 사라지지 않고 ✓ 로 남는다(다시 누르면 이 방에서 빼기).
-   오른쪽 ✕ 는 AI 자체를 목록에서 지우기(확인 후 내 AI 목록·서버에서 삭제). */
+   오른쪽 ✕ 는 AI 자체를 목록에서 지우기(확인 후 내 AI 목록·방 멤버·서버에서 함께 빠짐). */
 function renderInviteAgents() {
   var r = activeRoom();
   var host = $("invQuick"), wrap = $("invQuickWrap");
@@ -6498,7 +6503,9 @@ function renderInviteAgents() {
   });
   host.innerHTML = h;
 }
-/* ✕ — AI 자체를 내 목록에서 지운다(확인 후 state.agents·서버 kkiri_agents·방 멤버에서 삭제) */
+/* ✕ — AI 자체를 내 목록에서 지운다.
+   화면은 바로 빠지고(state.agents·방 멤버·내 AI 목록), 서버는 is_active=false 로 끈 뒤
+   실제로 꺼졌는지 확인한다. 서버가 받지 않으면 화면을 되돌리고 사실대로 알린다. */
 function askDeleteAgent(id) {
   var a = state.agents[id];
   var name = a ? a.name : "이 AI";
@@ -6510,25 +6517,89 @@ function askDeleteAgent(id) {
   }).then(function (ok) { if (ok) deleteAgentEverywhere(id); });
 }
 async function deleteAgentEverywhere(id) {
-  var name = agentName(id);
+  var a = state.agents[id] || null;
+  var name = a ? a.name : agentName(id);
   var rooms = state.rooms.slice();
+  var remoteIds = rooms.filter(function (r) { return r.remote; }).map(function (r) { return r.id; });
+  var wasIn = rooms.filter(function (r) { return r.members.indexOf(id) > -1; });
+
+  /* 1) 화면에서 먼저 뺀다 — 방 목록·역할·@칩·초대 창 목록에서 바로 사라진다.
+     바로 ‘지운 AI’ 표시를 남겨, 서버 확인이 오기 전에 다른 변경으로 다시 조회되어도 되살아나지 않게 한다. */
+  markDeletedAgent(id);
   rooms.forEach(function (r) {
     var i = r.members.indexOf(id);
     if (i > -1) r.members.splice(i, 1);
-    if (run.moderator === id) run.moderator = r.members[0];
+    if (r.roles && r.roles[id]) delete r.roles[id];
+    if (run.moderator === id) run.moderator = r.members[0] || null;
   });
   if (Array.isArray(state.pool)) state.pool = state.pool.filter(function (x) { return x !== id; });
-  delete state.agents[id];
+  if (run.typingAgent === id) { run.typingAgent = null; run.typingName = null; }
+  if (roomForm && roomForm.members) roomForm.members = roomForm.members.filter(function (x) { return x !== id; });
   save();
   renderAll();
-  try { renderInviteAgents(); } catch (e) {}
-  toast("'" + name + "'을(를) 목록에서 지웠어요");
-  if (V3.mode === "cloud" && db.ready && db.client) {
-    for (var k = 0; k < rooms.length; k++) {
-      if (!rooms[k].remote) continue;
-      try { await db.client.from("kkiri_agents").delete().eq("id", dbAgentRowId(rooms[k].id, id)); } catch (e) {}
-    }
+  try { refreshRoomFormLists(); } catch (e) {}
+  try { renderInviteAgents(); } catch (e2) {}
+
+  /* 2) 서버 — 모든 방에서 끄고(is_active=false), 정말 꺼졌는지 다시 읽어 확인한다. */
+  var verdict = await dbRemoveAgentEverywhere(id, remoteIds);
+  if (verdict.ok) {
+    toast("'" + name + "'을(를) 목록에서 지웠어요");
+    return;
   }
+
+  /* 3) 서버가 받지 않았다 — 거짓으로 지운 척하지 않고 화면을 되돌리며 이유를 알린다. */
+  unmarkDeletedAgent(id);
+  if (a) state.agents[id] = a;
+  wasIn.forEach(function (r) { if (r.members.indexOf(id) < 0) r.members.push(id); });
+  save();
+  renderAll();
+  try { await dbRefresh(); } catch (e3) {}
+  try { refreshRoomFormLists(); } catch (e4) {}
+  try { renderInviteAgents(); } catch (e5) {}
+  toast("'" + name + "'을(를) 지우지 못했어요" + (verdict.why || " · 권한을 확인해 주세요"));
+}
+/* 이 AI 를 서버의 모든 방에서 끈다(is_active=false). 실제로 꺼졌는지 다시 읽어 확인한다.
+   · DELETE 는 스키마가 막아 두었고, 쓰더라도 RLS 로 0행이 되면 오류 없이 ‘성공’처럼 보인다.
+   · 그래서 dbSetMember(내보내기와 같은 경로·검증)로 끄고, 마지막에 서버 목록으로 한 번 더 본다. */
+async function dbRemoveAgentEverywhere(localId, roomIds) {
+  if (!db.ready || !db.client) return { ok: true };            /* 로컬·mock 화면은 서버가 없다 */
+  if (!roomIds || !roomIds.length) return { ok: true };
+  /* 지금 서버에서 이 AI 가 켜져 있는 방만 손댄다(이미 꺼져 있으면 요청도 보내지 않는다) */
+  var rows = null;
+  try {
+    var sel = await db.client.from("kkiri_agents").select("id,room_id,is_active").in("room_id", roomIds);
+    if (!sel.error) rows = sel.data || [];
+  } catch (e) { rows = null; }
+  var targets = roomIds.slice();
+  if (rows) {
+    targets = [];
+    rows.forEach(function (row) {
+      if (!row || dbLocalAgentId(row.id) !== String(localId)) return;
+      if (row.is_active === false) return;
+      if (targets.indexOf(row.room_id) < 0) targets.push(row.room_id);
+    });
+    if (!targets.length) return { ok: true };                   /* 이미 모든 방에서 꺼져 있다 */
+  }
+  var reason = {}, failed = [];
+  for (var i = 0; i < targets.length; i++) {
+    var ok = await dbSetMember(targets[i], localId, false, { quiet: true, reason: reason });
+    if (!ok) failed.push(targets[i]);
+  }
+  /* ‘확인할 수 없음’으로 통과한 방까지 서버 목록으로 마지막 확인 */
+  try {
+    var chk = await db.client.from("kkiri_agents").select("id,room_id,is_active").in("room_id", targets);
+    if (!chk.error) {
+      (chk.data || []).forEach(function (row) {
+        if (!row || dbLocalAgentId(row.id) !== String(localId)) return;
+        if (row.is_active !== false && failed.indexOf(row.room_id) < 0) failed.push(row.room_id);
+      });
+    }
+  } catch (e2) {}
+  if (failed.length) {
+    if (typeof console !== "undefined" && console.warn) console.warn("[kkiri] agent delete failed", localId, failed);
+    return { ok: false, why: reason.msg || (" · " + failed.length + "개 방에서 서버가 받지 않았어요") };
+  }
+  return { ok: true };
 }
 function addMemberToRoom(id) {
   var r = activeRoom();
@@ -6814,6 +6885,24 @@ function dbKickPending(roomId, localId) {
   if (Date.now() > t) { delete kickTomb[k]; return false; }
   return true;
 }
+/* ‘지운 AI’ 표시 — 서버는 kkiri_agents 의 DELETE 를 RLS 로 막아 두었으므로(스키마 PART B4)
+   AI 지우기는 is_active=false 로 끄는 방식이다. 그러면 ‘방에서 내보낸 AI’(목록에 남아 다시 부를 수 있음)와
+   구분이 되지 않으므로, 지운 AI 를 이 브라우저가 기억해 어떤 목록에도 다시 올리지 않는다.
+   같은 AI를 다시 부르면 표시를 풀어 정상적으로 되살아난다(invAttach · dbSetMember). */
+var DEL_AGENTS_KEY = "kkiri.deletedAgents.v1";
+function deletedAgentMap() {
+  try { var d = JSON.parse(localStorage.getItem(DEL_AGENTS_KEY) || "{}"); return d && typeof d === "object" ? d : {}; } catch (e) { return {}; }
+}
+function isDeletedAgent(id) { return id == null ? false : !!deletedAgentMap()[String(id)]; }
+function markDeletedAgent(id) {
+  try { var d = deletedAgentMap(); d[String(id)] = Date.now(); localStorage.setItem(DEL_AGENTS_KEY, JSON.stringify(d)); } catch (e) {}
+}
+function unmarkDeletedAgent(id) {
+  try {
+    var d = deletedAgentMap();
+    if (d[String(id)] != null) { delete d[String(id)]; localStorage.setItem(DEL_AGENTS_KEY, JSON.stringify(d)); }
+  } catch (e) {}
+}
 
 /* 친구 초대 코드(?ref=XXXXXXXX) — 로그인(가입) 완료 때 한 번만 사용한다 */
 var REF_KEY = "kkiri.ref.v1";
@@ -6957,6 +7046,8 @@ function dbApply(roomRows, agentRows, fresh) {
   Object.keys(hooks).forEach(function (k) { if (agents[k]) agents[k].token = hooks[k]; });
   if (!Object.keys(agents).length) return false;
   state.agents = agents;
+  /* 지운 AI 는 내 AI 목록(인력풀)에도 다시 올리지 않는다 */
+  if (Array.isArray(state.pool)) state.pool = state.pool.filter(function (x) { return !isDeletedAgent(x); });
   var hidden = hiddenRooms();
   var rooms = [];
   roomRows.forEach(function (row) {
@@ -6970,7 +7061,7 @@ function dbApply(roomRows, agentRows, fresh) {
        되살리기는 두지 않는다 — 방에서 마지막 AI를 내보내면 그 AI가 곧바로 되살아나 보이던 원인이었다.
        (is_active 가 NULL 인 예전 행은 위에서 이미 활성으로 들어온다) */
     var mem = (members[row.id] || []).slice();
-    mem = mem.filter(function (id) { return !!agents[id] && !dbKickPending(row.id, id); });
+    mem = mem.filter(function (id) { return !!agents[id] && !dbKickPending(row.id, id) && !isDeletedAgent(id); });
     rooms.push({
       id: row.id, name: row.name, kind: row.kind === "lounge" ? "chat" : "project",
       agenda: row.description || "", emoji: s.emoji || (row.kind === "lounge" ? "☕" : "🚀"),
@@ -7525,13 +7616,13 @@ async function dbLeaveRoom(r) {
 }
 /* 멤버 상태(넣기/빼기)를 서버에 저장한다. 실제로 반영됐는지까지 확인해 true/false 로 돌려준다.
    행 id 형식이 예전과 달라 0행이 되는 경우를 위해 id → room_id+id → room_id+이름 순서로 다시 시도한다. */
-async function dbSetMember(roomId, localId, on) {
+async function dbSetMember(roomId, localId, on, opts) {
   on = !!on;
   if (!db.ready || !db.client) return true;          /* 로컬·mock 화면은 서버가 없다 */
   var r = null;
   state.rooms.forEach(function (x) { if (x.id === roomId) r = x; });
   if (!r || !r.remote) return true;
-  if (on) dbClearKick(roomId, localId); else dbTombKick(roomId, localId);
+  if (on) { dbClearKick(roomId, localId); unmarkDeletedAgent(localId); } else dbTombKick(roomId, localId);
   var rowId = dbAgentRowId(roomId, localId);
   var name = agentName(localId);
   var writes = [
@@ -7564,7 +7655,8 @@ async function dbSetMember(roomId, localId, on) {
   if (unverified) return true;
   dbClearKick(roomId, localId);
   var why = lastErr && (lastErr.message || lastErr.code) ? " · " + (lastErr.message || lastErr.code) : " · 서버에 반영되지 않았어요(권한·연결을 확인해 주세요)";
-  toast((on ? "AI를 방에 저장하지 못했어요" : "AI를 내보내지 못했어요") + why);
+  if (opts && opts.reason && typeof opts.reason === "object") opts.reason.msg = why;
+  if (!opts || !opts.quiet) toast((on ? "AI를 방에 저장하지 못했어요" : "AI를 내보내지 못했어요") + why);
   if (typeof console !== "undefined" && console.warn) console.warn("[kkiri] member write failed", roomId, localId, on, why);
   return false;
 }
@@ -7576,6 +7668,7 @@ async function dbUpsertAgent(roomId, localId) {
   var a = state.agents[localId];
   if (!a) return;
   if (a.type === "webhook" && a.token) saveHookToken(localId, a.token);
+  unmarkDeletedAgent(localId);                      /* 다시 부르는 AI 는 ‘지운 AI’ 표시를 끈다 */
   var row = {
     id: dbAgentRowId(roomId, localId), room_id: roomId,
     name: String(a.name || "AI").slice(0, 40), avatar: String(a.avatar || "").slice(0, 16),
