@@ -142,6 +142,7 @@
   /* ⭐ 홈 화면에 추가 안내 */
   .rt-round-credits{font-size:11.5px;font-weight:800;color:#5B38E0;line-height:1.6;margin-top:8px;letter-spacing:-.01em}
   .rt-round-credits em{font-style:normal;color:#8C84A8;font-weight:700}
+  .rt-round-credits .muted{color:#8C84A8;font-weight:700;font-size:11px}
   .install-lead{font-size:13px;font-weight:800;color:#3A2E6B;line-height:1.6;letter-spacing:-.01em}
   .install-steps{margin:12px 0 0 16px;list-style:decimal;padding:0}
   .install-steps li{font-size:12.5px;font-weight:700;color:#5F5780;line-height:1.8;letter-spacing:-.01em;margin-bottom:3px}
@@ -354,7 +355,7 @@
   }
   .rt-btn:hover{background:var(--brand-deep);border-color:var(--brand-deep)}
   .rt-btn:disabled{opacity:.45;cursor:default}
-  .rt-btn span{font-size:9px}
+  .rt-btn span{font-size:9px;white-space:nowrap}
   .ctrl-lead{margin:0;flex:1 1 140px;min-width:0;font-size:10px;line-height:1.45;color:#948BAF;letter-spacing:-.01em}
   .ctrl-lead b{color:#5F5780;font-weight:900}
   .rmode-btn{font-size:9px}
@@ -500,9 +501,9 @@
   .q-chip.start:hover{background:var(--brand-deep)}
   /* 지금 접속 중인 참가자(사람) 칩 — 초록 점으로 AI 칩과 구분. 누르면 @이름만 들어가고 AI는 부르지 않는다. */
   .q-chip .q-dot{width:6px;height:6px;border-radius:50%;background:var(--c,#5B38E0);flex:0 0 6px;display:inline-block;margin-right:5px;vertical-align:0}
-  .q-chip.guest{color:#5B38E0;background:#F7F4FF;border-color:#DACDFF;max-width:46vw;overflow:hidden}
-  .q-chip.guest:hover{background:var(--brand-tint);border-color:#C7B6FF}
-  .q-chip.guest::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--brand);flex:0 0 6px}
+  .q-chip.guest{color:#454C58;background:#fff;border-color:#E6E2F0;max-width:46vw;overflow:hidden}
+  .q-chip.guest:hover{background:#F6F4FD;border-color:#D9D2EA}
+  .q-chip.guest::before{content:"";width:6px;height:6px;border-radius:50%;background:#B9C0CC;flex:0 0 6px}
   /* ============ 방 성격별 추천 질문 칩 (빈 방 안내 카드) ============ */
   .sugg{margin-top:17px;display:flex;flex-direction:column;gap:7px;align-items:center}
   .sugg-label{font-size:9.5px;font-weight:900;color:#93a0aa;letter-spacing:-.01em;line-height:1.5}
@@ -775,6 +776,17 @@
   }
   .people-bar[hidden]{display:none}
   .pb-label{flex:0 0 auto;font-size:9.5px;font-weight:900;letter-spacing:-.01em;color:#948BAF}
+  /* ===== 방장이 아닌 참여자 — 채팅만 크게 보이고, 자동토론이 돌 때만 작은 상태 띄우기 ===== */
+  .auto-banner{
+    display:flex;align-items:center;gap:6px;flex:0 0 auto;
+    margin:8px 18px 0;padding:7px 11px;border-radius:999px;
+    background:linear-gradient(135deg,#F7F1FF 0%,#FFF1F8 100%);border:1px solid #D9C6FF;
+    color:#5B38E0;font-size:11px;font-weight:900;letter-spacing:-.02em;
+    width:fit-content;max-width:calc(100% - 36px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .auto-banner .ico{--ico-fill:#E6DAFF;color:#6C43E8;flex:0 0 auto}
+  .auto-banner[hidden]{display:none}
+
   .pb-chips{display:flex;align-items:center;gap:5px;min-width:0;flex:1 1 auto;overflow-x:auto;scrollbar-width:none}
   .pb-chips::-webkit-scrollbar{display:none}
   .pb-chip{
@@ -784,11 +796,28 @@
   }
   .pb-chip.on{color:#5B38E0;background:var(--brand-tint);border-color:#DACDFF}
   .pb-chip.me{color:#251B4D;background:#fff;border-color:#DCD3F8;font-weight:900}
-  button.pb-chip{font:inherit;cursor:pointer}
+  button.pb-chip{font-family:inherit;cursor:pointer}
   button.pb-chip:hover{border-color:#C4B2FF;background:var(--brand-soft)}
   button.pb-chip:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
   .pb-chip.ai{color:#474068;background:#F6F4FD}
   .pb-dot{width:6px;height:6px;border-radius:50%;background:var(--c,var(--brand));flex:0 0 6px}
+  /* ===== 참여 칩 ― 사람 / 내 AI(무료) / 끼리 AI(크레딧)를 모양과 색으로 구분 =====
+     세 종류 모두 기본 칩의 글자 크기·줄 높이·여백을 그대로 쓰고(같은 규격), 색·테두리·아이콘으로만 구분한다. */
+  .pb-chip.people,.pb-chip.myai,.pb-chip.kkiriai,
+  .q-chip.people,.q-chip.myai,.q-chip.kkiriai{font-weight:800;letter-spacing:-.02em}
+  .pb-chip.people,.q-chip.people{color:#454C58;background:#fff;border-color:#E6E2F0}
+  /* 내 AI(외부 AI·내 키 AI) ― 연한 하늘/민트 틴트 + 듀오톤 로봇 아이콘(무료) */
+  .pb-chip.myai,.q-chip.myai{
+    color:#12796B;background:linear-gradient(180deg,#F3FEFB,#E7FAF5);border-color:#B9EBDD;
+  }
+  .pb-chip.myai .ico,.q-chip.myai .ico{--ico-fill:#C8EFE4;color:#17997F}
+  /* 끼리 AI(공식 전문가) ― 연보라·핑크 그라데이션 틴트 + 보라 테두리/글자 + 스파크 아이콘(크레딧) */
+  .pb-chip.kkiriai,.q-chip.kkiriai{
+    color:#5B38E0;
+    background:linear-gradient(135deg,#F7F1FF 0%,#FFF1F8 100%);border-color:#D9C6FF;
+  }
+  .pb-chip.kkiriai .ico,.q-chip.kkiriai .ico{--ico-fill:#E6DAFF;color:#6C43E8}
+  .pb-chip .ico,.q-chip .ico{margin-right:1px}
   .live-pill.local{color:#8a5a12;background:var(--amber-tint)}
   .live-pill.off{color:#8b3a32;background:var(--red-tint)}
   .live-pill.wait{color:#5F5780;background:#F1EEFC}
@@ -1580,6 +1609,31 @@
     .gate-logo{width:96px;height:96px}
     .gate-copy{font-size:22px}
   }
+  /* ============ 초대 링크 자동 입장 — 로그인 창 없이 바로 방으로 ============ */
+  .join-gate{display:none}
+  .join-gate:not([hidden]){
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    flex:1 1 auto;width:100%;min-height:62vh;text-align:center;padding:30px 22px 54px;
+  }
+  .join-gate .gate-copy{font-size:19px}
+  .join-gate .gate-sub{margin-top:10px}
+  .join-spin{
+    width:26px;height:26px;margin-top:22px;border-radius:999px;
+    border:3px solid #E6DCFF;border-top-color:#7B4DFF;animation:joinSpin .9s linear infinite;
+  }
+  @keyframes joinSpin{to{transform:rotate(360deg)}}
+  .join-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-top:24px}
+  .join-actions .gate-cta{margin-top:0}
+  .join-actions .ghost-btn{height:46px;justify-content:center;font-size:13.5px;font-weight:900}
+  /* 방장 전용 표시 */
+  .pb-chip.owner{background:#FFF6DA;border:1px solid #F1DC9A;color:#7A5A05;font-weight:900}
+  .expert-card.locked{opacity:.55;cursor:not-allowed}
+  .expert-card.locked .e-add{color:#8C84A8}
+  .owner-note{
+    display:block;margin:0 0 10px;padding:9px 11px;border-radius:12px;
+    background:#FFF8E4;border:1px solid #F1E0AB;color:#7A5A05;
+    font-size:11.5px;font-weight:800;line-height:1.6;letter-spacing:-.01em;word-break:keep-all;
+  }
   /* ============ v3.5 · 3단 지갑 · 충전 · 초대 · 약관 ============ */
   .wallet-buckets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:10px 0 4px}
   .wb{border:1px solid var(--line-2);background:#FAF9FF;border-radius:12px;padding:9px 9px 10px;text-align:center}
@@ -1664,7 +1718,7 @@
   .auth-guest.ghost:hover{border-color:#B39CFF;background:#FAF8FF}
   .auth-guest.ghost small{color:#6F6889}
 
-  /* ============ 제어 바 — 토론 시작·일시중지·정지 가독성 (2026-11-21 피드백) ============ */
+  /* ============ 제어 바 — AI 자동토론·일시중지·정지 가독성 (2026-11-21 피드백) ============ */
   .rt-btn{
     min-height:44px;padding:0 20px;font-size:15px;gap:8px;border-radius:14px;
     background:var(--grad-cta);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(115,82,255,.26);
@@ -2036,15 +2090,30 @@ window.__KKIRI_BOOT = (function () {
       </div>
     </header>
 
+    <!-- 초대 링크 자동 입장 — 로그인·게스트 창 대신 이 자리에서 바로 초대된 방으로 들어간다 -->
+    <section class="join-gate" id="joinGate" hidden aria-live="polite" aria-label="초대받은 방으로 들어가는 중">
+      <div class="gate-logo kk-mark" aria-hidden="true"></div>
+      <h2 class="gate-copy" id="joinGateTitle">초대받은 방으로 들어가는 중…</h2>
+      <p class="gate-sub" id="joinGateSub">로그인 없이 바로 들어가요 · 사람·내 AI 대화는 무료예요</p>
+      <div class="join-spin" id="joinGateSpin" aria-hidden="true"></div>
+      <div class="join-actions" id="joinGateActions" hidden>
+        <button type="button" class="gate-cta" id="joinRetryBtn">다시 시도</button>
+        <button type="button" class="ghost-btn" id="joinLoginBtn">로그인·게스트로 시작</button>
+      </div>
+    </section>
+
     <!-- 방 머리 아래 참여 줄 — 🟢 지금 접속 중인 참가자 / 🤖 이 방의 AI. 모바일에서도 사이드바 없이 보인다. -->
     <div class="people-bar" id="peopleBar" hidden aria-label="이 방 참가자">
       <span class="pb-label">이 방</span>
       <div class="pb-chips" id="peopleChips"></div>
     </div>
 
+    <!-- 방장이 AI 자동토론을 진행할 때만, 방장이 아닌 참여자에게 보이는 작은 상태 안내 -->
+    <div class="auto-banner" id="autoTalkBanner" hidden role="status" aria-live="polite"></div>
+
     <section class="ctrl" id="ctrl" aria-label="대화 제어" hidden>
       <div class="ctrl-top">
-        <button type="button" class="rt-btn" id="discussBtn" title="이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg><span>토론 시작</span></button>
+        <button type="button" class="rt-btn" id="discussBtn" title="AI들끼리 알아서 의견을 주고받고 마지막에 합의안까지 정리해요"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg><span>AI 자동토론</span></button>
         <p class="ctrl-lead" id="ctrlLead">평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요</p>
         <div class="ctrl-actions">
           <button class="ctrl-act pause" id="pauseBtn" type="button" title="일시정지" aria-label="일시정지"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-pause"></use></svg><span class="ca-lbl">일시중지</span></button>
@@ -2269,8 +2338,9 @@ Content-Type: application/json
 <!-- ================= 라운드테이블 시작 시트 (안건 1칸) ================= -->
 <div class="modal" id="rtModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtTitle">
-    <div class="sheet-head"><h2 id="rtTitle">토론 시작</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><h2 id="rtTitle">AI 자동토론</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
+      <p class="modal-note rt-lead" style="margin:0 0 12px">내가 계속 지시하지 않아도 AI들끼리 알아서 의견을 주고받고, 마지막에 <b>합의안</b>까지 정리해요.</p>
       <label class="field"><span>토론 주제(안건)</span><textarea id="rtAgenda" placeholder="방 이름(주제)이 그대로 들어가요 · 필요하면 더 좁혀 적어도 돼요" maxlength="300"></textarea></label>
       <div class="field"><span>라운드 (AI 전원이 한 번씩 말하면 1라운드)</span>
         <div class="pick-row" id="rtTurns">
@@ -2282,7 +2352,7 @@ Content-Type: application/json
         <p class="rt-round-credits" id="rtRoundCredits"></p>
       </div>
       <p class="modal-note" id="rtSummary"></p>
-      <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">토론 시작</button></div>
+      <div class="btn-row"><button class="btn" data-close>취소</button><button class="btn green" id="rtStart">AI 자동토론 시작</button></div>
     </div>
   </div>
 </div>
@@ -2851,7 +2921,7 @@ function seedState() {
         agenda: "연말 캠페인 기획", mode: "mention", settings: { category: "work" }, roleMode: "auto", roles: {}, maxTurns: 30, rounds: 3, budget: 200,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
-        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 · 데모 모드로 시작합니다. 주제가 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 ▶ 토론 시작을 누르면 역할을 나눠 토론해요." }]
+        messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 · 데모 모드로 시작합니다. 주제가 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 ▶ AI 자동토론을 켜면 AI끼리 알아서 합의안까지 정리해요." }]
       }
     ]
   };
@@ -3219,11 +3289,26 @@ function avatarHtml(id, size) {
 }
 
 /* 방 목록은 하나 — 종류를 나누지 않고 아이콘·이름만으로 구분한다. */
-/* 내가 이 방의 주인인가? (로컬 데모 방은 항상 내 것, 서버 방은 owner_id 비교) */
+/* 내가 이 방의 방장(owner)인가?
+   · 로컬·mock 방(서버 없는 데모·방 만들기 직후) = 이 브라우저가 만든 방이라 항상 방장
+   · 서버 방 = kkiri_rooms.owner_id 가 내 계정이거나, 멤버십 역할(kkiri_room_members.role)이 'owner'
+   · owner_id 가 비어 있는 예전 방은 내 역할이 확인되지 않았을 때만 내 방으로 본다(만든 사람 보호) */
 function isRoomOwner(rm) {
   if (!rm) return false;
   if (!rm.remote) return true;
-  return !!(rm.ownerId && V3.user && rm.ownerId === V3.user.id);
+  if (!V3.user || !V3.user.id) return false;
+  if (rm.ownerId && String(rm.ownerId) === String(V3.user.id)) return true;
+  var mine = (V3.myRoles || {})[String(rm.id)];
+  if (mine) return mine === "owner";
+  return !rm.ownerId;
+}
+/* 크레딧을 쓰는 행위(끼리 AI 부르기·AI 자동토론·끼리 AI 추가·빼기)는 방장만 한다.
+   초대받은 사람은 사람 대화·내 AI 대화를 무료로 그대로 쓴다. */
+function canSpendCredits(rm) { return isRoomOwner(rm || activeRoom()); }
+function ownerOnlyBlocked(what) {
+  if (canSpendCredits(activeRoom())) return false;
+  toast((what ? what + " · " : "") + "방장만 할 수 있어요 · 사람·내 AI 대화는 무료예요");
+  return true;
 }
 function roomRowHtml(rm) {
   var meta = categoryLabelOf(rm) + " · " + rm.members.length + "명";
@@ -3382,12 +3467,14 @@ function hintFor(r) {
   var n = r.members.filter(function (id) { return !!state.agents[id]; }).length;
   var rel = relayPeopleOf(r).length;
   var total = n + rel;
-  var talk = total >= 2
-    ? " 필요할 때 <b>▶ 토론 시작</b>을 누르면 AI들이 역할을 나눠 토론하고 <b>합의안 카드</b>를 만들어요."
-    : " AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 토론할 수 있어요.";
+  var talk = !isRoomOwner(r)
+    ? " <b>끼리 AI·AI 자동토론</b>은 방장이 시작해요."
+    : total >= 2
+    ? " 필요할 때 <b>▶ AI 자동토론</b>을 켜면 AI들끼리 알아서 의견을 주고받고 <b>합의안</b>까지 정리해요."
+    : " AI가 2명 이상이면 <b>▶ AI 자동토론</b>을 켤 수 있어요.";
   if (!n) {
     var pp = onlinePeople();
-    if (total >= 2) return "지금 접속 중인 <b>" + total + "명</b>(내 AI 포함)과 바로 토론할 수 있어요. <b>@이름</b>을 붙이면 그 AI가 답해요." + talk;
+    if (total >= 2) return "지금 접속 중인 <b>" + total + "명</b>(내 AI 포함)과 바로 대화할 수 있어요. <b>@이름</b>을 붙이면 그 AI가 답해요." + talk;
     if (pp.length) return "지금 접속 중인 <b>" + pp.length + "명</b>과 바로 대화할 수 있어요. <b>@이름</b>을 붙여 보내면 그분께 전해져요(무료)." + talk;
     return "이 방에는 아직 AI가 없어요. <b>" + icoHtml("bot", "xs") + " AI 부르기</b>로 AI를 부르면 대화를 시작할 수 있어요.";
   }
@@ -3425,35 +3512,42 @@ function renderRoom() {
   var topic = String(r.agenda || "").trim();
   if (topic && topic !== String(r.name || "").trim()) subBits.push("토론 주제: " + topic);
   subBits.push(categoryLabelOf(r) + " · AI " + r.members.length + "명 · 역할 " + (roleModeOf(r) === "manual" ? "수동" : "자동"));
+  if (isRoomOwner(r)) subBits.push("👑 방장");
   $("roomSub").textContent = subBits.join(" · ");
   document.title = "끼리 · " + r.name;
 
-  /* 토론 시작 — 끼리 AI + 내 AI 합계 2명 이상이고 진행 중이 아닐 때 누를 수 있다 */
+  /* AI 자동토론 — 끼리 AI + 내 AI 합계 2명 이상이고 진행 중이 아닐 때 켤 수 있다.
+     크레딧을 쓰는 제어(AI 자동토론·일시정지·정지)는 방장만 한다. */
+  var ownerNow = isRoomOwner(r);
   var rtP = rtTalkParts(r);
   var aiN = rtP.total;
-  var canDiscuss = aiN >= 2 && !run.active;
+  var canDiscuss = ownerNow && aiN >= 2 && !run.active;
   var dbt = $("discussBtn");
   if (dbt) {
     dbt.disabled = !canDiscuss;
-    dbt.title = aiN < 2 ? "AI 2명 이상일 때 토론을 시작할 수 있어요"
-      : (run.active ? "토론이 진행 중이에요" : "이 방 주제로 AI들이 역할을 나눠 토론하고 합의안 카드를 만들어요");
+    dbt.title = !ownerNow ? "AI 자동토론은 방장만 켤 수 있어요 · 사람·내 AI 대화는 무료예요"
+      : aiN < 2 ? "AI가 2명 이상이면 AI 자동토론을 켤 수 있어요"
+      : (run.active ? "AI 자동토론이 진행 중이에요" : "AI들끼리 알아서 의견을 주고받고 마지막에 합의안까지 정리해요");
   }
   var clead = $("ctrlLead");
-  if (clead) clead.innerHTML = aiN >= 2
-    ? "평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>토론</b>을 시작하세요"
-    : "AI를 <b>2명 이상</b> 부르면 <b>토론</b>을 시작할 수 있어요";
+  if (clead) clead.innerHTML = !ownerNow
+    ? "사람·내 AI 대화는 무료로 그대로예요 · <b>AI 자동토론은 방장</b>이 켜요"
+    : aiN >= 2
+    ? "평상시엔 <b>@이름</b>으로 부르고, 필요할 때 <b>AI 자동토론</b>을 켜세요"
+    : "AI를 <b>2명 이상</b> 부르면 <b>AI 자동토론</b>을 켤 수 있어요";
   var pbt = $("pauseBtn"), sbt = $("stopBtn");
   if (pbt) {
-    pbt.disabled = !run.active;
+    pbt.disabled = !run.active || !ownerNow;
+    pbt.title = !ownerNow ? "토론 제어는 방장만 할 수 있어요" : (run.paused ? "재개" : "일시정지");
     pbt.classList.toggle("paused", !!run.paused);
     var puse = pbt.querySelector("use");
     if (puse) puse.setAttribute("href", run.paused ? "#i-play" : "#i-pause");
     var plbl = pbt.querySelector(".ca-lbl");
     if (plbl) plbl.textContent = run.paused ? "재개" : "일시중지";
     pbt.setAttribute("aria-label", run.paused ? "재개" : "일시정지");
-    pbt.title = run.paused ? "재개" : "일시정지";
+    pbt.title = !ownerNow ? "토론 제어는 방장만 할 수 있어요" : (run.paused ? "재개" : "일시정지");
   }
-  if (sbt) sbt.disabled = !run.active;
+  if (sbt) { sbt.disabled = !run.active || !ownerNow; sbt.title = !ownerNow ? "토론 제어는 방장만 할 수 있어요" : "즉시 정지"; }
   $("sendBtn").textContent = "보내기";
   $("sendBtn").disabled = run.active && run.mode === "roundtable";
   $("input").placeholder = inputPlaceholder(r);
@@ -3462,6 +3556,7 @@ function renderRoom() {
   renderQuick();
   renderPeople();
   renderTimeline(false);
+  renderAutoTalkBanner(r);
 }
 
 function renderAll() { renderSidebar(); renderRoom(); renderHome(); applyView(); renderStartUI(); }
@@ -3608,24 +3703,16 @@ var nickAskDone = false;
 /* 초대 링크로 처음 들어온 사람에게 한 번만 — 이 방에서 부를 이름을 묻는다(닫아도 고유 이름 유지). */
 function maybeAskNick() {
   if (nickAskDone) return;
-  /* 시작(로그인·게스트) 전에는 시작 모달이 먼저다 — 이름은 시작을 마친 뒤에 묻는다. */
+  /* 시작(로그인·게스트) 전에는 시작 모달이 먼저다 — 이름은 시작을 마친 뒤에 본다. */
   if (!V3.signedIn) return;
   nickAskDone = true;
-  if (!pendingJoin) return;
-  try {
-    if (localStorage.getItem(NICK_KEY)) return;
-    if (localStorage.getItem(NICK_ASKED_KEY)) return;
-    localStorage.setItem(NICK_ASKED_KEY, "1");
-  } catch (e) { return; }
-  var lead = $("nickLead");
-  if (lead) {
-    lead.hidden = false;
-    lead.innerHTML = "이 방에서 부를 <b>내 이름</b>을 정해 주세요. 지금은 <b>" + esc(nick()) +
-      "</b>로 들어와 있어요. 그냥 닫아도 이 이름으로 대화할 수 있어요.";
+  if (!pendingJoin && !joinFlow.joined && !joinFlow.auto) return;
+  /* 초대 링크로 들어온 사람에게는 이름 창을 띄우지 않는다 — 방에 먼저 들어가고,
+     ?nick=·&ai=1 로 왔으면 그 이름·AI 표시를 그대로 쓴다. 일반 사람 초대는 상단 ‘내 이름’ 칩에서 바꾼다. */
+  try { localStorage.setItem(NICK_ASKED_KEY, "1"); } catch (e) {}
+  if (!JOIN_NICK && !selfIsAI() && !localStorage.getItem(NICK_KEY) && V3.user && V3.user.isAnonymous) {
+    setTimeout(function () { toast("이름은 상단 내 이름 칩에서 바꿀 수 있어요"); }, 1400);
   }
-  var inp = $("nickInput");
-  if (inp) inp.value = "";
-  setTimeout(function () { openModal("nickModal"); }, 500);
 }
 function applyView() {
   var home = currentView() === "home";
@@ -3639,9 +3726,28 @@ function applyView() {
      가운데 '새 방 만들기' 하나만 남긴다. */
   var noRoom = !home && !r;
   var mainEl = document.querySelector(".main");
-  if (mainEl) mainEl.classList.toggle("norooms-mode", noRoom);
+  if (mainEl) mainEl.classList.remove("norooms-mode");
   var pane = $("noRoomsPane");
-  if (pane) pane.hidden = !noRoom;
+  if (pane) pane.hidden = true;
+  /* 초대 링크로 들어와 자동 연결하는 동안에는 데모 방 대신 ‘초대받은 방으로 들어가는 중’ 화면을 보여 준다 */
+  var joining = !home && (inviteJoinPending() || joinFlow.busy);
+  var jg = $("joinGate");
+  if (jg) jg.hidden = !joining;
+  if (joining) {
+    ["roomHead", "peopleBar", "ctrl", "timeline", "composer", "newMsgBtn", "autoTalkBanner"].forEach(function (id) {
+      var el = $(id); if (el) el.hidden = true;
+    });
+  } else {
+    if (mainEl) mainEl.classList.toggle("norooms-mode", noRoom);
+    if (pane) pane.hidden = !noRoom;
+  }
+  /* 방장이 아닌 참여자 — 자동토론 제어·방 한도·크레딧 배지를 숨겨 채팅만 크게 본다 */
+  var ownerView = r ? isRoomOwner(r) : true;
+  var hideOwnerOnly = !home && !!r && !ownerView;
+  var cb = $("creditBadge");
+  if (cb) cb.hidden = hideOwnerOnly;
+  if (hideOwnerOnly && !joining) { var ctl = $("ctrl"); if (ctl) ctl.hidden = true; }
+  renderAutoTalkBanner(r);
   document.title = home ? (startDone() ? "끼리 · 내 홈" : "끼리") : (r ? "끼리 · " + r.name : "끼리");
   renderPeople();
   if (!home) maybeAskNick();
@@ -3907,7 +4013,9 @@ function emptyHtml(r) {
     "<p>" + (names ? "<b>" + esc(names) + "</b> " : "") + ids.length + "명이 이 방에 있어요." +
     (roleLine ? "<br><span class=\"empty-roles\">" + roleLine + "</span>" : "") +
     "<br><b>@이름</b>으로 AI를 불러 바로 대화를 시작해 보세요." +
-    (ids.length + relayPeopleOf(r).length >= 2 ? " 토론이 필요하면 상단 <b>▶ 토론 시작</b>을 누르면 돼요." : " AI가 2명 이상 모이면 <b>▶ 토론 시작</b>으로 토론할 수 있어요.") + "</p>" +
+    (ids.length + relayPeopleOf(r).length >= 2
+      ? (isRoomOwner(r) ? " 토론이 필요하면 상단 <b>▶ AI 자동토론</b>을 켜면 AI끼리 알아서 정리해요." : " 방장이 <b>AI 자동토론</b>을 켜면 AI끼리 알아서 정리해요.")
+      : (isRoomOwner(r) ? " AI가 2명 이상이면 <b>▶ AI 자동토론</b>을 켤 수 있어요." : " 사람·내 AI 대화는 무료로 이어갈 수 있어요.")) + "</p>" +
     "</div>";
 }
 
@@ -4005,13 +4113,20 @@ function renderQuick() {
   if (ids.length + people.length >= 2) h += '<button type="button" class="q-chip" data-mention="AI전원">@AI전원</button>';
   ids.forEach(function (id) {
     var a = state.agents[id];
-    /* 이 방에 들어와 있는 AI도 ON 점으로 표시 — 사람·외부 AI 칩과 같은 표기 */
-    h += '<button type="button" class="q-chip on" data-mention="' + esc(a.name) + '" title="이 방에 있어요 · 눌러서 @이름 부르기">' +
-      '<i class="q-dot" aria-hidden="true" style="--c:' + esc(a.color || "#5B38E0") + '"></i>@' + esc(a.name) + "</button>";
+    /* 이 방에 들어와 있는 AI도 같은 규칙 — 끼리 AI는 보라·스파크, 내 AI는 민트·로봇 */
+    if (a.type === "expert") {
+      h += '<button type="button" class="q-chip kkiriai" data-mention="' + esc(a.name) + '" title="끼리 AI · 답변 1회당 ' + configCost(a.model) + '크레딧 · 눌러서 @이름 부르기">' +
+        icoHtml("spark", "xs") + "@" + esc(a.name) + "</button>";
+    } else {
+      h += '<button type="button" class="q-chip myai" data-mention="' + esc(a.name) + '" title="내 AI · 대화 무료 · 눌러서 @이름 부르기">' +
+        icoHtml("bot", "xs") + "@" + esc(a.name) + "</button>";
+    }
   });
   people.forEach(function (n) {
     var isAI = isRoomAiName(r, n);
-    h += '<button type="button" class="q-chip guest" data-mention="' + esc(n) + '" title="' + (isAI ? "지금 접속 중인 내 AI · 눌러서 @이름 부르기" : "지금 접속 중인 참가자 · 이 이름은 AI를 부르지 않아요") + '">' + (isAI ? "🤖 " : "") + "@" + esc(n) + "</button>";
+    h += isAI
+      ? '<button type="button" class="q-chip myai" data-mention="' + esc(n) + '" title="지금 접속 중인 내 AI · 대화 무료 · 눌러서 @이름 부르기">' + icoHtml("bot", "xs") + "@" + esc(n) + "</button>"
+      : '<button type="button" class="q-chip people" data-mention="' + esc(n) + '" title="지금 접속 중인 참가자 · 이 이름은 AI를 부르지 않아요">' + "@" + esc(n) + "</button>";
   });
   /* 방 이름이 곧 주제라 따로 안건 칩을 두지 않는다(헤더의 ▶ 토론 시작으로 바로 시작).
      퀵바는 @이름 부르기만 — 합의안은 헤더의 📋 합의안 버튼 한 곳에서만 연다. */
@@ -4078,26 +4193,61 @@ function renderPeople() {
   var bar = $("peopleBar"), host = $("peopleChips");
   if (!bar || !host) return;
   var r = activeRoom();
-  if (!r || currentView() === "home") { host.innerHTML = ""; bar.hidden = true; return; }
+  /* 초대 링크로 자동 입장하는 동안에는 데모 방 참가자를 보여 주지 않는다 */
+  var joining = currentView() !== "home" && (inviteJoinPending() || joinFlow.busy);
+  if (!r || currentView() === "home" || joining) { host.innerHTML = ""; bar.hidden = true; return; }
   var h = "";
+  /* 방장 표시 — 누가 이 방의 크레딧을 쓰는지(끼리 AI·토론) 한눈에 */
+  if (isRoomOwner(r)) h += '<span class="pb-chip owner" title="이 방 방장 · 끼리 AI와 토론은 방장이 시작해요">👑 방장</span>';
+  else if (r.hostName) h += '<span class="pb-chip owner" title="이 방을 만든 방장">👑 ' + esc(r.hostName) + '</span>';
   /* 나부터 — 방에 들어와 있으면 늘 보인다(사이드바 접속 현황을 없앤 뒤 유일한 실시간 표시) */
-  h += '<span class="pb-chip me" title="나' + (selfIsAI() ? " · AI로 접속" : "") + (isAutoNick(nick()) ? "" : " · " + esc(nick())) + '">' + '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>' + (selfIsAI() ? "🤖 " : "") + esc(selfLabel()) + "</span>";
+  h += '<span class="pb-chip ' + (selfIsAI() ? "myai" : "me people") + '" title="나' + (selfIsAI() ? " · AI로 접속" : "") + (isAutoNick(nick()) ? "" : " · " + esc(nick())) + '">' + (selfIsAI() ? icoHtml("bot", "xs") : '<i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(nick()).c + '"></i>') + esc(selfLabel()) + "</span>";
   onlinePeople().forEach(function (n) {
     var isAI = isRoomAiName(r, n);
-    h += '<span class="pb-chip on' + (isAI ? " relay" : "") + '" title="' + (isAI ? "내 AI · 접속 중" : "지금 접속 중인 참가자") + '"><i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(n).c + '"></i>' + (isAI ? "🤖 " : "") + esc(n) + "</span>";
+    /* 사람은 회색 캡슐 + 접속 점, 내 AI는 민트 틴트 + 듀오톤 로봇 아이콘 */
+    h += isAI
+      ? '<span class="pb-chip myai" title="내 AI · 접속 중(대화 무료)">' + icoHtml("bot", "xs") + esc(n) + "</span>"
+      : '<span class="pb-chip people" title="지금 접속 중인 참가자"><i class="pb-dot" aria-hidden="true" style="--c:' + peopleLook(n).c + '"></i>' + esc(n) + "</span>";
   });
   r.members.forEach(function (id) {
     var a = state.agents[id];
-    if (a) h += '<button type="button" class="pb-chip ai" data-ai-id="' + esc(a.id) + '" title="' + esc(a.name) + ' · 눌러서 이 방에서 빼기" aria-label="' + esc(a.name) + ' 이 방에서 빼기">' +
-      '<i class="pb-dot" aria-hidden="true" style="--c:' + esc(a.color || "#5B38E0") + '"></i>' + icoHtml("bot", "xs") + ' ' + esc(a.name) + "</button>";
+    if (!a) return;
+    /* 끼리 AI(크레딧)는 연보라·핑크 틴트 + 스파크, 내 AI는 민트 틴트 + 로봇 — 아이콘·색 통일 */
+    var kkiri = a.type === "expert";
+    h += '<button type="button" class="pb-chip ' + (kkiri ? "kkiriai" : "myai") + '" data-ai-id="' + esc(a.id) + '" title="' + esc(a.name) + (kkiri ? " · 끼리 AI · 답변 1회당 " + configCost(a.model) + "크레딧" : " · 내 AI · 대화 무료") + (isRoomOwner(r) ? ' · 눌러서 이 방에서 빼기' : '') + '" aria-label="' + esc(a.name) + '">' +
+      icoHtml(kkiri ? "spark" : "bot", "xs") + esc(a.name) + "</button>";
   });
   host.innerHTML = h;
   bar.hidden = !h;
+}
+/* 방장이 아닌 참여자 화면 — 방장이 켠 AI 자동토론이 돌 때만 작은 상태 배너를 보여 준다.
+   (제어 버튼·방 한도·크레딧 배지는 방장 것이라 숨긴다) */
+function renderAutoTalkBanner(rm) {
+  var el = $("autoTalkBanner");
+  if (!el) return;
+  var r = rm || activeRoom();
+  var localRun = !!(run.active && run.mode === "roundtable");
+  /* 방장이 아닌 참여자는 방 설정에 기록된 discussingAt 으로도 ‘진행 중’을 안다(최대 20분까지 유효) */
+  var remoteRun = !!(r && r.discussingAt && Date.now() - r.discussingAt < 20 * 60 * 1000);
+  var ownerHere = r ? isRoomOwner(r) : true;
+  var show = !!(r && !ownerHere && currentView() !== "home" && (localRun || remoteRun));
+  el.hidden = !show;
+  if (!show) return;
+  var txt = "AI 자동토론 진행 중";
+  if (localRun) {
+    var rounds = clamp(Number(r.rounds) || RT_DEFAULT_ROUNDS, 1, 20);
+    var aiN = Math.max(1, rtTalkParts(r).total);
+    var cur = (r.session && r.session.turn) || 0;
+    var curRound = Math.min(rounds, Math.max(1, Math.ceil(cur / aiN)));
+    txt += " · " + curRound + "/" + rounds + "라운드" + (run.paused ? " · 일시정지" : "");
+  }
+  el.innerHTML = icoHtml("spark", "xs") + " " + esc(txt);
 }
 /* 참여 줄의 AI 칩을 누르면 이 방에서 뺄지 묻는다(사이드바 AI 목록을 없앤 대신) */
 async function askRemoveAi(id) {
   var r = activeRoom();
   if (!r) return;
+  if (!canSpendCredits(r)) { ownerOnlyBlocked("끼리 AI 빼기"); return; }
   var name = agentName(id);
   var ok = await askConfirm({
     title: "‘" + name + "’을(를) 이 방에서 뺄까요?",
@@ -4658,6 +4808,17 @@ function agentClassOf(a) {
   return "mine";   /* webhook · 초대 링크로 들어온 외부 AI */
 }
 function isKkiriAI(a) { return agentClassOf(a) === "kkiri"; }
+/* 이 AI를 부르면 끼리 크레딧이 나가는가 — 방장 전용 판단에 쓴다(내 AI·웹훅은 내 키·내 서버라 무료).
+   끼리 AI(전문가·직접 만들기)는 로그인 여부와 상관없이 크레딧 AI로 본다 — 초대받은 사람에게는
+   ‘로그인하면 돼요’가 아니라 ‘방장만 불러요’를 먼저 알려야 하기 때문. */
+function aiUsesCredits(id) {
+  var a = state.agents[id];
+  if (!a) return false;
+  if (a.type === "expert") return true;
+  if (a.type === "webhook" || (a.type === "builtin" && !isKkiriAI(a))) return false;
+  var route = turnRoute(a);
+  return route === "kkiri-cloud" || route === "kkiri-mock";
+}
 /* 끼리 서버가 아는 모델 이름으로 맞춘다(내 AI를 끼리 서버로 부를 때) */
 function kkiriConfigFor(a) {
   var m = String((a && a.model) || "");
@@ -4726,6 +4887,13 @@ async function speak(agent, phase, ep) {
   await sleep(rand(240, 460));
   if (ep !== run.epoch) { run.typingAgent = null; return; }
   var route = turnRoute(agent);
+  /* 최종 안전장치 — 크레딧이 나가는 끼리 AI 턴은 방장만. (멘션·토론 경로를 모두 거쳐 여기까지 온다) */
+  if (aiUsesCredits(agent.id) && !canSpendCredits(activeRoom())) {
+    run.typingAgent = null;
+    addSystem(agent.name + " · 끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요", "warn");
+    updateMeters();
+    return;
+  }
   var out = null, note = "", guide = routeGuide(agent, route);
   try {
     if (route === "webhook") {
@@ -4797,12 +4965,13 @@ async function speak(agent, phase, ep) {
 function startRoundtable(opts) {
   var r = activeRoom();
   if (!r) return;
+  if (!canSpendCredits(r)) { ownerOnlyBlocked("AI 자동토론"); return; }
   if (run.active) { toast("이미 진행 중이에요 · 먼저 멈춰 주세요"); return; }
   var agenda = String(opts.agenda || "").trim();
   if (!agenda) { toast("토론 주제를 적어 주세요"); return; }
   var parts = (opts.participants || r.members).filter(function (id) { return !!state.agents[id]; });
   var people = (opts.people || []).filter(function (n) { return !!n; });
-  if (parts.length + people.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
+  if (parts.length + people.length < 2) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   var mod = opts.moderator && parts.indexOf(opts.moderator) > -1 ? opts.moderator : (parts[0] || null);
   r.agenda = agenda;
   r.members = parts;
@@ -4821,6 +4990,7 @@ function startRoundtable(opts) {
   run.relayPeople = people.slice();
   run.roundId = uid("rd");
   run.schedule = buildSchedule(r);
+  r.discussingAt = Date.now();
   save();
   dbSaveSettings(r);
   renderAll();
@@ -4834,10 +5004,12 @@ function finishRoundtable(ep) {
   run.active = false; run.paused = false; run.typingAgent = null; run.typingName = null; run.relayWait = null; run.cooldownLeft = 0;
   r.status = "ended";
   r.session.endedAt = Date.now();
+  r.discussingAt = 0;
+  dbSaveSettings(r);
   save();
   renderAll();
   var card = generateCard({ auto: true, draft: false });
-  toast(card ? "라운드테이블 종료 · 합의안 카드를 만들었어요" : "라운드테이블 종료 · 정리할 발언이 없어 카드는 만들지 않았어요");
+  toast(card ? "AI 자동토론 종료 · 합의안 카드를 만들었어요" : "AI 자동토론 종료 · 정리할 발언이 없어 카드는 만들지 않았어요");
 }
 
 function endRun(reason, ep) {
@@ -4848,6 +5020,8 @@ function endRun(reason, ep) {
   if (!r) return;
   r.status = "ended";
   r.session.endedAt = Date.now();
+  r.discussingAt = 0;
+  dbSaveSettings(r);
   if (reason === "budget") addSystem("크레딧 상한 " + creditsLabel(r.budget) + "에 닿아 자동으로 정지했어요. 대화는 그대로이고, 합의안으로 정리할 수 있습니다.", "warn");
   else if (reason === "loop") addSystem("같은 말이 반복되어 자동으로 정지했어요(루프 감지). 합의안 요약으로 정리해 보세요.", "warn");
   else if (reason === "stop") addSystem("멈췄어요. 대화는 남아 있고, 합의안으로 정리할 수 있습니다.", "info");
@@ -4863,6 +5037,16 @@ async function runMentions(text) {
   if (run.active) return;
   var parsed = parseMentions(text);
   if (!parsed.ids.length) return;
+  /* 크레딧을 쓰는 끼리 AI 호출은 방장만 — 초대받은 사람은 사람·내 AI에게만 말을 건다 */
+  if (!canSpendCredits(r)) {
+    var blocked = parsed.ids.filter(aiUsesCredits);
+    if (blocked.length) {
+      parsed.ids = parsed.ids.filter(function (id) { return blocked.indexOf(id) < 0; });
+      addSystem("끼리 AI 호출은 방장만 할 수 있어요 · 사람·내 AI에게는 그대로 말을 걸 수 있어요.", "warn");
+      toast("끼리 AI 호출은 방장만 할 수 있어요");
+    }
+    if (!parsed.ids.length) return;
+  }
   if (budgetExceeded(r)) {
     addSystem("이 방의 크레딧 한도에 닿아 AI가 답하지 못했어요 · 위 방 한도를 눌러 올리거나 사용 기록을 초기화해 주세요.", "warn");
     return;
@@ -5668,6 +5852,11 @@ function toggleMember(id) {
   var r = activeRoom();
   if (!r) return;
   var on = r.members.indexOf(id) < 0;
+  /* 이 방의 AI 목록(끼리 AI 넣기·빼기)은 방장만 바꾼다 */
+  if (aiUsesCredits(id) && !canSpendCredits(r)) {
+    ownerOnlyBlocked(on ? "끼리 AI 부르기" : "끼리 AI 빼기");
+    return;
+  }
   toast(on ? agentName(id) + " · 이 방에 추가했어요" : agentName(id) + " · 이 방에서 뺐어요");
   applyMember(r.id, id, on);
 }
@@ -5782,7 +5971,7 @@ function rtSummaryText(plan) {
   bits.push("방 한도 " + creditsLabel(plan.budget) + " 크레딧");
   if (people) bits.push("내 AI 차례는 채팅으로 불러 45초 기다려요");
   var txt = bits.join(" · ");
-  if (n < 2) txt = "AI 두 명 이상이어야 토론할 수 있어요 · " + txt;
+  if (n < 2) txt = "AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · " + txt;
   return txt;
 }
 /* 토론 시작 시트의 라운드 칩 — AI 전원이 한 번씩 말하면 1라운드 */
@@ -5814,8 +6003,10 @@ function rtRefreshSummary() {
   var el = $("rtRoundCredits");
   if (el) {
     var who = "끼리 AI " + est.ai + "명" + (est.people ? " + 내 AI " + est.people + "명(무료)" : "");
+    /* 마지막 합의안 정리 1회(끼리 AI 턴)도 크레딧에 들어간다 — 왜 30인지 화면에서 바로 보이게 */
+    var settle = est.ai ? ' <span class="muted">(합의안 정리 +' + creditsLabel(rtAiCost()) + " 포함)</span>" : "";
     el.innerHTML = who + " × " + rounds + "라운드 = <b>" + (est.total * rounds) + "번 발언</b> · 예상 <b>" +
-      creditsLabel(est.credits) + " 크레딧</b>";
+      creditsLabel(est.credits) + " 크레딧</b>" + settle;
   }
   var plan = rtRoomPlan(r);
   plan.rounds = rounds;
@@ -5826,9 +6017,10 @@ function rtRefreshSummary() {
 function openRoundtable(prefill) {
   var r = activeRoom();
   if (!r) return;
+  if (!canSpendCredits(r)) { ownerOnlyBlocked("AI 자동토론"); return; }
   if (run.active) { toast("이미 진행 중이에요"); return; }
-  /* 토론은 선택 사항 — 끼리 AI·내 AI를 합쳐 2명 이상 모인 뒤에 시작한다. */
-  if (!rtCanTalk(r)) { toast("AI가 2명 이상 모이면 토론을 시작할 수 있어요 · 내 AI는 방 설정에서 ‘AI로 표시’하면 함께 참여해요"); return; }
+  /* AI 자동토론은 선택 — 끼리 AI·내 AI를 합쳐 2명 이상 모인 뒤에 켠다. */
+  if (!rtCanTalk(r)) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 내 AI는 방 설정에서 ‘AI로 표시’하면 함께 참여해요"); return; }
   $("rtAgenda").value = prefill != null ? prefill : (r.agenda || r.name || "");
   rtSetRounds(r.rounds || RT_DEFAULT_ROUNDS);
   rtRefreshSummary();
@@ -5838,17 +6030,21 @@ function openRoundtable(prefill) {
 function rtStart() {
   var r = activeRoom();
   if (!r) return;
+  if (!canSpendCredits(r)) { ownerOnlyBlocked("AI 자동토론"); return; }
   var agenda = $("rtAgenda").value.trim();
   if (!agenda) { toast("토론 주제를 적어 주세요"); $("rtAgenda").focus(); return; }
   var plan = rtRoomPlan(r);
   var rounds = rtPickRounds();
-  if (plan.participants.length + plan.people.length < 2) { toast("토론은 AI 두 명 이상일 때 시작할 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
+  if (plan.participants.length + plan.people.length < 2) { toast("AI가 2명 이상이면 AI 자동토론을 켤 수 있어요 · 한 명이면 @이름으로 부르면 바로 답해요"); return; }
   closeModal("rtModal");
   startRoundtable({ agenda: agenda, participants: plan.participants, people: plan.people, moderator: plan.moderator,
                     rounds: rounds, turns: rounds * (plan.participants.length + plan.people.length), budget: plan.budget });
 }
 function openBudgetSheet() {
   var r = activeRoom();
+  if (!r) return;
+  /* 방 한도(크레딧 상한)는 방장 것 — 초대받은 사람은 바꿀 수 없다 */
+  if (!canSpendCredits(r)) { ownerOnlyBlocked("방 크레딧 한도 바꾸기"); return; }
   $("budgetInput").value = r.budget || 200;
   $("budgetSpent").textContent = creditsLabel(r.session.credits) + " 크레딧";
   Array.prototype.forEach.call($("budgetChips").querySelectorAll("[data-budget]"), function (b) {
@@ -5991,11 +6187,11 @@ function renderRfParticipants() {
     var nativeAi = presenceAiFlag(n);
     var mark = "";
     if (owner) {
-      if (nativeAi) mark = '<span class="ppl-btn on">🤖 AI</span>';
+      if (nativeAi) mark = '<span class="ppl-btn on">' + icoHtml("bot", "xs") + " AI</span>";
       else if (isAI) mark = '<button type="button" class="ppl-btn on" data-mark-ai="' + esc(n) + '">AI 표시 해제</button>';
       else mark = '<button type="button" class="ppl-btn" data-mark-ai="' + esc(n) + '">AI로 표시</button>';
     }
-    h += '<div class="ppl-row"><span class="pn">' + (isAI ? "🤖 " : "") + esc(n) +
+    h += '<div class="ppl-row"><span class="pn">' + (isAI ? icoHtml("bot", "xs") + " " : "") + esc(n) +
       "<em>" + (isAI ? "내 AI · 접속 중" : "사람 · 접속 중") + "</em></span>" + '<span class="pact">' + mark +
       (owner ? '<button type="button" class="ppl-btn danger" data-kick-person="' + esc(n) + '">내보내기</button>' : "") +
       "</span></div>";
@@ -6393,8 +6589,8 @@ function focusPrompt() {
   return "지금 아래 끼리 대화방에 들어와서 " + m + "분 동안만 집중해서 같이 대화해 줘.\n" +
     "· 방: " + (r.name || "이름 없는 방") + " (" + categoryLabelOf(r) + ")\n" +
     "· 내 이름: " + who + " — @" + who + " 으로 부르는 말은 나에게 하는 말이야.\n" +
-    "· @AI전원 으로 부를 때도 같이 답해 줘.\n" +
-    "· 들어가면 최근 대화를 읽고, 방 주제에 맞춰 짧게 답해 줘.\n" +
+    "· 들어갈 때 짧은 인사 한 줄만 남기고, 이후엔 @" + who + " 이나 @AI전원 으로 부르거나 사람이 직접 물을 때만 답해 줘.\n" +
+    "· AI 자동토론 중이 아니면 다른 AI 말엔 이어 말하지 마.\n" +
     "· 대화가 오가는 동안은 중간에 나가지 말고 끝까지 함께해 줘. 마지막 대화 이후 " + m + "분 동안 아무 말이 없을 때만 자동으로 나와도 돼.\n" +
     "방 링크: " + roomInviteLink(r);
 }
@@ -6517,6 +6713,8 @@ function renderInviteAgents() {
   if (!host || !wrap) return;
   if (!r) { wrap.hidden = true; host.innerHTML = ""; return; }
   var list = allAgents().filter(function (a) { return a && a.type !== "human"; });
+  /* 방장이 아니면 끼리 AI(크레딧 AI)는 이 목록에서도 감춘다 — 눌러도 막히는 목록을 보여 주지 않는다 */
+  if (!canSpendCredits(r)) list = list.filter(function (a) { return !aiUsesCredits(a.id); });
   var inRoom = function (id) { return r.members.indexOf(id) > -1; };
   /* 아직 안 들어간 AI 를 먼저, 들어간 AI 는 ✓ 로 뒤에 */
   list = list.slice().sort(function (a, b) { return (inRoom(a.id) ? 1 : 0) - (inRoom(b.id) ? 1 : 0); });
@@ -6655,6 +6853,7 @@ function addMemberToRoom(id) {
     return;
   }
   if (!r) return;
+  if (aiUsesCredits(id) && !canSpendCredits(r)) { ownerOnlyBlocked("끼리 AI 부르기"); return; }
   if (r.members.indexOf(id) > -1) { toast(a.name + "은(는) 이미 이 방에 있어요"); return; }
   invAttach(id);
   dbSetMember(r.id, id, true);
@@ -6682,6 +6881,11 @@ function renderCustomTarget() {
 function addByokAgent() {
   var name = $("invName").value.trim();
   if (!name) { toast("이름을 적어 주세요"); $("invName").focus(); return; }
+  /* 끼리 서버 AI로 답하는 ‘직접 만들기’는 크레딧을 쓰므로 방장만 (내 키·웹훅 AI는 누구나) */
+  if (invTarget !== "draft" && customTarget().type === "expert" && !canSpendCredits(activeRoom())) {
+    ownerOnlyBlocked("끼리 AI 만들기");
+    return;
+  }
   if (allAgents().some(function (a) { return a.name === name; })) { toast("같은 이름의 AI가 이미 있어요"); return; }
   var role = $("invRole").value.trim() || "새 멤버";
   var prompt = $("invPrompt").value.trim() || ("너는 ‘" + name + "’다. 역할: " + role + ". 한국어로 짧고 분명하게 말하고, 자기 몫에 집중한다.");
@@ -6958,17 +7162,29 @@ function setPendingRef(code) {
 function clearPendingRef() {
   try { localStorage.removeItem(REF_KEY); } catch (e) {}
 }
+var JOIN_NICK = "";   /* 초대 링크 ?nick=... 로 지정된 이름 — 닉네임 창 없이 그대로 사용 */
 (function parseJoin() {
   var q = String(location.search || "");
   var mr = /[?&]room=([^&]+)/.exec(q);
   var mc = /[?&]code=([^&]+)/.exec(q);
   var rf = /[?&]ref=([A-Za-z0-9]{8})/.exec(q);
+  var nk = /[?&]nick=([^&]+)/.exec(q);
   /* &ai=1 이 붙은 초대 링크 = 내 AI가 들어오는 링크. 접속자 목록에 AI로 표시되고 토론에 참여할 수 있다. */
   var ai = /[?&]ai=1(&|$)/.test(q);
   if (ai) setSelfAI(true);
   if (mr) pendingJoin = { room: decodeURIComponent(mr[1]) };
   else if (mc) pendingJoin = { code: decodeURIComponent(mc[1]).toUpperCase() };
   if (rf) setPendingRef(rf[1]);
+  /* ?nick=이름 — 링크를 받은 AI·사람이 자기 이름으로 바로 들어온다(이름 묻는 창을 띄우지 않는다) */
+  if (nk) {
+    var nm = "";
+    try { nm = displayName(decodeURIComponent(nk[1].replace(/\+/g, " ")).trim().slice(0, 20)); } catch (e) { nm = ""; }
+    if (nm) {
+      JOIN_NICK = nm;
+      try { sessionStorage.setItem(NICK_KEY, nm); } catch (e2) {}
+      try { localStorage.setItem(NICK_KEY, nm); } catch (e3) {}
+    }
+  }
 })();
 
 function dbToast(msg) {
@@ -7120,7 +7336,8 @@ function dbApply(roomRows, agentRows, fresh) {
       messages: (!fresh && p) ? p.messages : [],
       inviteCode: row.invite_code, hostName: row.host_name, isPublic: row.is_public, remote: true,
       ownerId: row.owner_id || null,
-      settings: { category: s.category || "" }
+      settings: { category: s.category || "" },
+      discussingAt: Number(s.discussingAt) || 0
     });
   });
   if (!roomRows.length) return false;
@@ -7792,7 +8009,9 @@ function dbSaveSettings(r) {
     name: String(r.name || "방").slice(0, 60),
     kind: r.kind === "chat" ? "lounge" : "project",
     description: String(r.agenda || "").slice(0, 600),
-    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [] }
+    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [],
+                /* 방장이 켜 둔 AI 자동토론 표시 — 방장이 아닌 참여자 화면의 작은 상태 배너용 */
+                discussingAt: (run.active && run.mode === "roundtable") ? Date.now() : 0 }
   }).eq("id", r.id).then(function (res) {
     if (res && res.error) dbToast("방 설정을 서버에 저장하지 못했어요 · " + res.error.message);
   }, function () {});
@@ -7890,6 +8109,7 @@ var V3 = {
   user: null,
   profile: { nickname: "", plan: "free", credits: 0, daily: 0, bonus: 0, paid: 0, refCode: "", referred: false },
   models: {},             /* config id -> { display_name, cost_per_turn_credits } */
+  myRoles: {},            /* 방 id -> 내 멤버십 역할('owner'·'member'·'guest') — 방장 여부 판별 */
   roomId: null,
   joined: {},
   guestTrialUsed: false    /* 이 기기에서 게스트 100크레딧 체험을 이미 마쳤는가 */
@@ -8074,7 +8294,11 @@ function renderAccount() {
   btn.hidden = false;
   if (al) { al.classList.remove("start"); al.removeAttribute("tabindex"); al.removeAttribute("role"); }
   var u = V3.user || {};
-  var nickName = displayName(V3.profile.nickname) || (u.email ? String(u.email).split("@")[0] : "게스트");
+  var anonUser = !!(u.is_anonymous || u.isAnonymous);
+  var profNick = displayName(V3.profile.nickname);
+  /* 서버 기본 닉네임(끼리손님)은 정식 회원 화면에서만 ‘끼리멤버’로 — 게스트(익명)에게는 손님 그대로 */
+  if (profNick === "끼리손님" && !anonUser) profNick = "끼리멤버";
+  var nickName = profNick || (u.email ? String(u.email).split("@")[0] : (anonUser ? "끼리손님" : "끼리멤버"));
   name.textContent = nickName;
   /* 계정 카드 둘째 줄 — 플랜 이름 없이 남은 크레딧만 */
   sub.textContent = V3.ready ? creditsLabel(creditsNow()) + " 크레딧" : "크레딧 " + creditsLabel(creditsNow());
@@ -8113,7 +8337,7 @@ function renderExperts() {
     h += '<div class="member-row">' + avatarHtml(id, "sm") +
       '<span class="m-txt"><b>' + esc(a.name) + '</b><small>' + esc(a.role) + ' · 턴당 ' + configCost(a.model) + '크레딧</small></span>' +
       '<span class="mode-chip cloud">끼리 AI</span>' +
-      '<button type="button" class="mini-btn" data-expert-remove="' + esc(id) + '">빼기</button></div>';
+      (canSpendCredits(r) ? '<button type="button" class="mini-btn" data-expert-remove="' + esc(id) + '">빼기</button>' : '') + '</div>';
   });
   host.innerHTML = h;
 }
@@ -8122,16 +8346,24 @@ function renderExpertPicker() {
   if (!grid) return;
   var r = activeRoom();
   var draft = invTarget === "draft";
+  var ownerNow = draft || canSpendCredits(r);
   var hint = $("expertHint");
   if (hint) {
-    var catLabel = draft ? catByKey(roomForm.category).label : categoryLabelOf(r);
-    /* 크레딧은 끼리 AI를 부를 때만 나간다 — 탭 맨 위 안내에서 바로 보이게 */
-    hint.innerHTML = catLabel + " 방에 맞는 끼리 AI예요. "
-      + (draft ? "누르면 <b>방 만들기 목록</b>에 들어가요." : "누르면 바로 이 방에 들어와요.")
-      + '<br><b class="hint-credit">답변 1회당 ' + configCost("kkiri-lite") + "크레딧을 써요</b>"
-      + '<span class="hint-bal" id="inviteBalance">'
-      + (V3.signedIn ? "내 크레딧 " + creditsNow() : (V3.mode === "local" ? "로컬 데모" : "로그인하면 매일 300크레딧"))
-      + "</span>";
+    if (!ownerNow) {
+      /* 초대받은 참여자 — 끼리 AI 탭은 보이되 잠금(방장 전용). 사람·내 AI 탭은 그대로 무료 */
+      hint.innerHTML = '<b class="hint-credit">👑 방장 전용</b> · 이 방의 끼리 AI는 방장이 부르고 빼요.'
+        + '<br>사람·내 AI 대화는 무료로 그대로 쓸 수 있어요.'
+        + '<span class="hint-bal">' + (r && r.hostName ? "방장 " + esc(r.hostName) : "방장만") + '</span>';
+    } else {
+      var catLabel = draft ? catByKey(roomForm.category).label : categoryLabelOf(r);
+      /* 크레딧은 끼리 AI를 부를 때만 나간다 — 탭 맨 위 안내에서 바로 보이게 */
+      hint.innerHTML = catLabel + " 방에 맞는 끼리 AI예요. "
+        + (draft ? "누르면 <b>방 만들기 목록</b>에 들어가요." : "누르면 바로 이 방에 들어와요.")
+        + '<br><b class="hint-credit">답변 1회당 ' + configCost("kkiri-lite") + "크레딧을 써요</b>"
+        + '<span class="hint-bal" id="inviteBalance">'
+        + (V3.signedIn ? "내 크레딧 " + creditsNow() : (V3.mode === "local" ? "로컬 데모" : "로그인하면 매일 300크레딧"))
+        + "</span>";
+    }
   }
   var inRoom = {};
   (r ? r.members : []).forEach(function (id) {
@@ -8142,16 +8374,22 @@ function renderExpertPicker() {
   var catalog = expertCatalogFor(invTarget === "draft" ? { category: roomForm.category } : r);
   catalog.forEach(function (ex) {
     var added = draft ? !!(findExpertAgent(ex.id) && inPool(findExpertAgent(ex.id))) : (!!inRoom[ex.id] || !!inRoom[ex.name]);
-    h += '<button type="button" class="expert-card' + (added ? " added" : "") + '" data-expert="' + esc(ex.id) + '"' + (added ? ' aria-disabled="true"' : "") + '>' +
+    var tail = !ownerNow ? "🔒 방장만" : (added ? (draft ? "✓ 목록에 있음 · 눌러서 빼기" : "✓ 이 방에 있음 · 눌러서 빼기") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가"));
+    h += '<button type="button" class="expert-card' + (added ? " added" : "") + (ownerNow ? "" : " locked") + '" data-expert="' + esc(ex.id) + '"' + (added ? ' aria-disabled="true"' : "") + '>' +
       '<span class="e-top"><span class="e-ava" aria-hidden="true">' + esc(ex.avatar) + '</span>' +
       '<span class="e-name"><b>' + esc(ex.name) + '</b><small>' + esc(ex.role) + '</small></span></span>' +
-      '<span class="e-foot"><span class="e-add">' + (added ? (draft ? "✓ 목록에 있음 · 눌러서 빼기" : "✓ 이 방에 있음 · 눌러서 빼기") : (draft ? "+ 방에 넣기" : "+ 이 방에 추가")) + '</span></span></button>';
+      '<span class="e-foot"><span class="e-add">' + tail + '</span></span></button>';
   });
   grid.innerHTML = h;
+  /* 방장이 아니면 ‘직접 만들기(끼리 AI)’는 잠근다 — 내 AI 탭에서 내 키·웹훅 AI를 넣는 길은 그대로 */
+  var cw = $("customWrap");
+  if (cw) { cw.hidden = !ownerNow; }
   renderInviteBalance();
   var note = $("expertNote");
   if (note) {
-    note.innerHTML = V3.mode === "local"
+    note.innerHTML = !ownerNow
+      ? "내 AI·사람은 그대로 무료로 부를 수 있어요 · 끼리 AI만 방장이 추가·제거합니다."
+      : V3.mode === "local"
       ? "지금은 <b>로컬 데모</b>라 끼리 AI가 규칙 기반으로 답합니다."
       : (V3.signedIn ? ""
                      : "게스트는 100크레딧으로 끼리 AI를 한 번 체험할 수 있어요. 로그인하면 매일 300크레딧이 무료로 채워져요.");
@@ -8208,6 +8446,8 @@ async function loadModels() {
 async function afterSignIn(user) {
   V3.user = { id: user.id, email: user.email || "", isAnonymous: !!(user.is_anonymous || !user.email) };
   V3.signedIn = true;
+  /* 이 기기에서 게스트 체험을 이미 썼다면, 새로고침·재접속으로 익명 세션이 다시 붙어도 체험 상태를 유지한다 */
+  if (V3.user.isAnonymous && guestClaimed() && !V3._guestFresh) V3.guestTrialUsed = true;
   var got = null;
   /* 2차 안전장치: 정식 로그인 유저는 접속할 때 매일 300크레딧을 한 번 더 조용히 확인한다.
      (pg_cron 00:00 KST 지급이 멈춰 있을 때를 대비. 익명 게스트는 대상이 아니므로 건너뜀) */
@@ -8247,6 +8487,7 @@ async function afterSignIn(user) {
   }
   if (!V3.ready) setAuthMsg("info", "v3 스키마가 아직 적용되지 않아 크레딧을 로컬로 표시합니다. SQL(v3_schema.sql)을 적용하면 서버 크레딧으로 바뀝니다.");
   await loadModels();
+  await dbLoadMyRoles();
   if (pendingJoin && pendingJoin.code && V3.ready) {
     var j = await joinByCode(pendingJoin.code);
     if (j && j.error) toast("초대 링크를 확인하지 못했어요 · " + j.error);
@@ -8290,10 +8531,14 @@ async function authInit() {
         /* 이미 띄운 상태라면 openRecovery 가 입력값을 건드리지 않고 창만 맨 위로 다시 올린다 */
         if (!recoveryFlow.dismissed) openRecovery();
       }
-      else if (evt === "SIGNED_IN" && sess && sess.user) { afterSignIn(sess.user); }
+      else if (evt === "SIGNED_IN" && sess && sess.user) {
+        /* 자동 입장(autoJoinPending)이 직접 afterSignIn 을 부르는 중이면 이벤트 쪽은 생략한다 */
+        if (!joinFlow.busy) afterSignIn(sess.user);
+      }
       else if (evt === "SIGNED_OUT") {
         V3.signedIn = false; V3.user = null; V3.ready = false;
         V3.guestTrialUsed = false;
+        V3.myRoles = {};
         V3.profile = { nickname: "", plan: "free", credits: 0 };
         /* 세션 만료·다른 탭 로그아웃도 같은 화면으로 — 열려 있던 방을 내리고 게이트로 되돌린다 */
         resetSessionView();
@@ -8350,7 +8595,9 @@ async function signInGuest() {
     V3.guestTrialUsed = !!trialUsed;
     setAuthMsg("ok", trialUsed ? "게스트로 계속했어요 · 사람·내 AI 대화는 무료" : "게스트로 시작했어요 · 100크레딧 체험");
     closeModal("authModal");
+    V3._guestFresh = !trialUsed;      /* 이번에 처음 쓰는 체험 — afterSignIn 이 ‘체험 소진’으로 덮어쓰지 않게 */
     await afterSignIn(res.data.user);
+    V3._guestFresh = false;
     if (trialUsed) { V3.profile.credits = 0; renderCredit(); renderAccount(); }
     toast(trialUsed ? "게스트로 계속 · 사람·내 AI 대화는 무료예요" : "게스트로 시작 · 크레딧 " + creditsNow());
   } catch (e) { setAuthMsg("err", "네트워크 오류로 로그인하지 못했어요."); }
@@ -8624,6 +8871,7 @@ async function signOutAll() {
     mockWrite(MOCK_USER_KEY, null);
     V3.signedIn = false; V3.user = null; V3.ready = false;
     V3.guestTrialUsed = false;
+    V3.myRoles = {};
     V3.profile = { nickname: "", plan: "free", credits: 0 };
     resetSessionView();          /* 열려 있던 방을 내리고 게이트로 */
     toast("로그아웃했어요 · 크레딧은 이 브라우저에 남아 있어요");
@@ -8632,6 +8880,7 @@ async function signOutAll() {
   /* 화면·방 상태를 먼저 내린다 — 서버 응답을 기다리지 않고 게이트가 바로 보인다 */
   V3.signedIn = false; V3.user = null; V3.ready = false;
   V3.guestTrialUsed = false;
+  V3.myRoles = {};
   V3.profile = { nickname: "", plan: "free", credits: 0 };
   resetSessionView();
   /* 게스트 체험 이력(쿠키·localStorage)은 로그아웃해도 남긴다 — 다시 게스트로 무한 체험하지 못하게 */
@@ -8639,10 +8888,71 @@ async function signOutAll() {
   setLiveStatus(V3.mode === "cloud" ? "wait" : "local", V3.mode === "cloud" ? "로그인하면 연결" : "로컬 모드 · 데모");
   toast("로그아웃했어요");
 }
+/* ---------- 초대 링크 자동 입장 ----------
+   초대받은 사람·외부 AI는 방에 들어와 사람·내 AI와 대화하는 것이 무료다.
+   그래서 초대 링크(?code=·?room=)로 들어왔을 때는 로그인/게스트 창 대신
+   백그라운드에서 익명(anon) 세션을 만들고 곧바로 그 방으로 들어간다.
+   이 기기에서 게스트 체험(100크레딧)을 이미 쓴 브라우저라도 입장은 막지 않는다 —
+   끼리 AI를 직접 부를 때만 guestAskLogin 으로 정식 로그인을 안내한다.
+   자동 연결이 네트워크·429로 실패했을 때만 안내와 함께 로그인 창을 띄운다. */
+var joinFlow = { busy: false, failed: false, joined: false, auto: false };
+function inviteJoinPending() {
+  return !!(pendingJoin && V3.mode === "cloud" && !V3.signedIn);
+}
+function renderJoinGate() {
+  var g = $("joinGate");
+  if (!g) return;
+  var on = inviteJoinPending() || joinFlow.busy;
+  g.hidden = !on;
+  if (!on) return;
+  var title = $("joinGateTitle"), sub = $("joinGateSub"), acts = $("joinGateActions"), spin = $("joinGateSpin");
+  if (joinFlow.failed) {
+    if (title) title.textContent = "초대받은 방으로 들어가지 못했어요";
+    if (sub) sub.textContent = "연결이 잠시 몰렸어요 · 다시 시도하거나 로그인해서 들어와 주세요";
+    if (acts) acts.hidden = false;
+    if (spin) spin.hidden = true;
+  } else {
+    if (title) title.textContent = "초대받은 방으로 들어가는 중…";
+    if (sub) sub.textContent = "로그인 없이 바로 들어가요 · 사람·내 AI 대화는 무료예요";
+    if (acts) acts.hidden = true;
+    if (spin) spin.hidden = false;
+  }
+}
+async function autoJoinPending() {
+  if (!inviteJoinPending() || joinFlow.busy) return;
+  joinFlow.busy = true; joinFlow.failed = false;
+  renderJoinGate();
+  try {
+    var res = await db.client.auth.signInAnonymously();
+    if (!res || res.error) throw (res && res.error) || new Error("anonymous sign-in failed");
+    var user = res.data && res.data.user;
+    if (!user) throw new Error("anonymous sign-in failed");
+    /* 익명 세션은 ‘초대 방 입장’용 — 이 기기에서 체험 크레딧을 이미 쓴 경우 그 사실을 그대로 기억한다.
+       (입장·사람·내 AI 대화는 막지 않고, 끼리 AI 호출에서만 로그인을 안내) */
+    V3.guestTrialUsed = guestClaimed();
+    joinFlow.auto = true;
+    /* afterSignIn 안에서 joinByCode → dbReload 까지 끝나면 이미 초대된 방 화면이다 */
+    await afterSignIn(user);
+    joinFlow.joined = true;
+    joinFlow.busy = false; joinFlow.failed = false;
+    pendingJoin = null;
+    renderAll();
+    renderJoinGate();
+    var r = activeRoom();
+    if (r && currentView() === "room") toast("초대받은 방 ‘" + r.name + "’(으)로 들어왔어요");
+  } catch (e) {
+    joinFlow.busy = false; joinFlow.failed = true;
+    renderJoinGate();
+    renderAll();
+    setAuthMode("login");
+    setAuthMsg("info", "초대받은 방으로 자동 연결하지 못했어요. 로그인하거나 게스트로 계속하면 그 방으로 들어갑니다.");
+    openModal("authModal");
+  }
+}
 function maybeAskAuth() {
   if (V3.mode === "local" || V3.signedIn) return;
-  /* 초대 링크(?code=·?room=)로 들어왔으면 시작 전에는 늘 먼저 시작을 안내한다(세션 1회 제한 없음). */
-  if (pendingJoin) { setAuthMsg("", ""); openModal("authModal"); return; }
+  /* 초대 링크(?code=·?room=)로 들어왔으면 로그인 창 대신 곧바로 익명 세션으로 방에 입장한다. */
+  if (pendingJoin) { setAuthMsg("", ""); autoJoinPending(); return; }
   var shown = false;
   try { shown = sessionStorage.getItem(AUTH_SHOWN_KEY) === "1"; } catch (e) {}
   if (shown) return;
@@ -8674,9 +8984,26 @@ async function joinByCode(code) {
     var res = await db.client.rpc("kkiri_join_room", { p_code: String(code || "") });
     if (res && res.error) return { error: res.error.message };
     var row = Array.isArray(res.data) ? res.data[0] : res.data;
-    if (row && row.room_id) { V3.joined[row.room_id] = 1; unhideRoomLocal(row.room_id); return { room_id: row.room_id, role: row.role }; }
+    if (row && row.room_id) {
+      V3.joined[row.room_id] = 1;
+      V3.myRoles[row.room_id] = String(row.role || "member");
+      unhideRoomLocal(row.room_id);
+      return { room_id: row.room_id, role: row.role };
+    }
     return null;
   } catch (e) { return { error: "네트워크" }; }
+}
+/* 내 멤버십 역할을 한 번에 받아 둔다 — 방장(owner)만 끼리 AI·토론으로 크레딧을 쓸 수 있다. */
+async function dbLoadMyRoles() {
+  if (V3.mode !== "cloud" || !db.client || !V3.signedIn || !V3.user) return;
+  try {
+    var res = await db.client.from("kkiri_room_members").select("room_id,role").eq("user_id", V3.user.id);
+    if (res && !res.error && res.data) {
+      var m = {};
+      res.data.forEach(function (row) { if (row && row.room_id) m[String(row.room_id)] = String(row.role || "member"); });
+      V3.myRoles = m;
+    }
+  } catch (e) {}
 }
 async function dbReload() {
   if (!db.client) return;
@@ -9043,6 +9370,8 @@ async function addExpert(exId) {
   var ex = expertDef(exId);
   var r = activeRoom();
   if (!ex) return;
+  /* 끼리 AI 추가는 방장만 — 이 AI가 답할 때 방장 크레딧이 나간다 */
+  if (invTarget !== "draft" && r && !canSpendCredits(r)) { ownerOnlyBlocked("끼리 AI 부르기"); return; }
   /* 게스트 체험 크레딧을 마친 기기 — 끼리 AI는 정식 로그인 안내로 */
   if (V3.guestTrialUsed && invTarget !== "draft" && V3.user && V3.user.isAnonymous) { guestAskLogin(ex.name); return; }
   var id = findExpertAgent(ex.id);
@@ -9088,6 +9417,7 @@ async function addExpert(exId) {
 function removeExpert(id) {
   var r = activeRoom();
   if (!r) return;
+  if (!canSpendCredits(r)) { ownerOnlyBlocked("끼리 AI 빼기"); return; }
   applyMember(r.id, id, false);
   try { renderInviteAgents(); } catch (e) {}
   toast(agentName(id) + " 이 방에서 빠졌어요 · 다시 누르면 들어와요");
@@ -9147,6 +9477,7 @@ function mockExpertText(agent, phase) {
 }
 async function mockExpertTurn(agent, phase) {
   var cost = configCost(agent.model);
+  if (!canSpendCredits(activeRoom())) return { skip: true, note: "끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요" };
   if (!V3.signedIn) return { skip: true, note: "로그인(또는 게스트 시작)하면 끼리 AI를 부를 수 있어요." };
   if (V3.guestTrialUsed) return guestAskLogin(agent.name);
   if (creditsNow() < cost) return { skip: true, note: agent.name + " · 크레딧이 부족해요(남은 " + creditsNow() + "). 설정에서 내 API 키를 연결하면 크레딧 없이 계속 쓸 수 있어요." };
@@ -9165,6 +9496,7 @@ async function mockExpertTurn(agent, phase) {
 async function cloudExpertTurn(agent, phase) {
   var r = activeRoom();
   if (!r) return { skip: true, note: "" };
+  if (!canSpendCredits(r)) return { skip: true, note: "끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요" };
   if (V3.guestTrialUsed) return guestAskLogin(agent.name);
   var token = await accessToken();
   if (!token) return { skip: true, note: "로그인하면 끼리 AI를 부를 수 있어요 · 상단 💎에서 시작하세요." };
@@ -9254,6 +9586,11 @@ function wireV3() {
   if (hsc) hsc.addEventListener("click", openStart);
   var gateBtn = $("gateStartBtn");
   if (gateBtn) gateBtn.addEventListener("click", openStart);
+  /* 초대 링크 자동 입장 게이트 — 실패했을 때 다시 시도 / 로그인·게스트로 들어가기 */
+  var jr = $("joinRetryBtn");
+  if (jr) jr.addEventListener("click", function () { joinFlow.failed = false; joinFlow.busy = false; autoJoinPending(); });
+  var jl = $("joinLoginBtn");
+  if (jl) jl.addEventListener("click", function () { setAuthMsg("", ""); openModal("authModal"); });
   ["homeInstallBtn", "sideInstallBtn"].forEach(function (id) {
     var b = $(id);
     if (b) b.addEventListener("click", function () {
@@ -9491,7 +9828,10 @@ function wire() {
   });
   var rmb = $("roleModeBtn");
   if (rmb) rmb.addEventListener("click", function () { toggleRoleMode(); });
-  $("discussBtn").addEventListener("click", function () { openRoundtable(); });
+  $("discussBtn").addEventListener("click", function () {
+    if (!canSpendCredits(activeRoom())) { ownerOnlyBlocked("AI 자동토론"); return; }
+    openRoundtable();
+  });
   var pc = $("peopleChips");
   if (pc) pc.addEventListener("click", function (e) {
     var b = e.target.closest("[data-ai-id]");
@@ -9586,6 +9926,7 @@ function wire() {
   });
 
   $("pauseBtn").addEventListener("click", function () {
+    if (!canSpendCredits(activeRoom())) { ownerOnlyBlocked("토론 제어"); return; }
     if (!run.active) { toast("진행 중일 때만 일시정지할 수 있어요"); return; }
     run.paused = !run.paused;
     updateMeters();
@@ -9593,12 +9934,16 @@ function wire() {
     toast(run.paused ? "일시정지했어요 · ▶ 로 다시 시작" : "다시 진행합니다");
   });
   $("stopBtn").addEventListener("click", function () {
+    if (!canSpendCredits(activeRoom())) { ownerOnlyBlocked("토론 제어"); return; }
     if (!run.active) { toast("지금은 진행 중이 아니에요"); return; }
     endRun("stop");
     toast("멈췄어요 · 대화는 그대로 남아 있어요");
   });
 
-  $("turnMeter").addEventListener("click", function () { openRoundtable(); });
+  $("turnMeter").addEventListener("click", function () {
+    if (!canSpendCredits(activeRoom())) { ownerOnlyBlocked("토론 설정"); return; }
+    openRoundtable();
+  });
   $("turnMeter").style.cursor = "pointer";
   $("budgetMeter").addEventListener("click", openBudgetSheet);
   $("budgetMeter").style.cursor = "pointer";
