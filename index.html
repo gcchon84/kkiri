@@ -3346,6 +3346,13 @@ function memberNames(r) { return r.members.map(agentName); }
    2. API 키 · 모델
    ========================================================= */
 var api = { provider: "gemini", geminiKey: "", openaiKey: "", geminiModel: DEFAULT_MODEL.gemini, openaiModel: DEFAULT_MODEL.openai };
+/* 예전에 저장된 모델명을 지금 쓰는 이름으로 맞춘다 — gemini-3.8-flash 는 지금 목록에 없어서
+   매 호출이 404 → 모델 목록 조회 → 폴백 재시도를 타 30초 타임아웃에 걸린다(2026-11-21 지용 님 제보). */
+var GEMINI_MODEL_FIX = { "gemini-3.8-flash": "gemini-3.6-flash" };
+function fixGeminiModel(m) {
+  var v = String(m == null ? "" : m).trim();
+  return GEMINI_MODEL_FIX[v.toLowerCase()] || v;
+}
 
 function loadApi() {
   try {
@@ -3358,10 +3365,14 @@ function loadApi() {
     if (typeof d.openaiKey === "string") api.openaiKey = d.openaiKey.trim();
     if (typeof d.geminiModel === "string" && d.geminiModel.trim()) api.geminiModel = d.geminiModel.trim();
     if (typeof d.openaiModel === "string" && d.openaiModel.trim()) api.openaiModel = d.openaiModel.trim();
+    /* 저장값이 옛 모델명이면 지금 이름으로 바꿔 다시 저장한다 — 설정 화면 안내와 입력칸도 함께 맞춰진다 */
+    var fixed = fixGeminiModel(api.geminiModel);
+    if (fixed !== api.geminiModel) { api.geminiModel = fixed; saveApi(); }
   } catch (e) {}
 }
 function saveApi() {
   try {
+    api.geminiModel = fixGeminiModel(api.geminiModel) || DEFAULT_MODEL.gemini;
     localStorage.setItem(API_KEY, JSON.stringify({
       version: 2, provider: api.provider, geminiKey: api.geminiKey, openaiKey: api.openaiKey,
       geminiModel: api.geminiModel, openaiModel: api.openaiModel, savedAt: Date.now()
@@ -3413,7 +3424,10 @@ function creditsLabel(n) { return Math.round(Number(n) || 0).toLocaleString("ko-
 /* =========================================================
    3. 실행 상태
    ========================================================= */
-var RELAY_WAIT_MS = 30000;   /* 내 AI(릴레이) 응답을 기다리는 시간(30초) */
+var RELAY_WAIT_MS = 30000;   /* 내 AI(릴레이) · 사람 참가자 응답을 기다리는 시간(30초) */
+/* 초대 링크(&ai=1)로 들어온 외부 AI는 모델이 느릴 수 있어 더 넉넉하게 기다린다(60초).
+   내 제미나이·GPT(내 키 AI)와 끼리 AI는 각자의 호출 경로(API_TIMEOUT 30초)를 그대로 쓴다. */
+var RELAY_WAIT_EXTERNAL_MS = 60000;
 var run = {
   epoch: 0, active: false, paused: false, typingAgent: null, cooldownLeft: 0,
   schedule: [], idx: 0, freeConsec: 0, lastSpeaker: null,
@@ -4160,7 +4174,9 @@ function updateMeters() {
   var discussing = run.active && run.mode === "roundtable";
   var aiN = Math.max(1, (r.members || []).filter(function (id) { return !!state.agents[id]; }).length);
   var maxTurns = clamp(Number(r.maxTurns) || aiN * RT_DEFAULT_ROUNDS, 1, 400);
-  var maxRounds = clamp(Number(r.rounds) || Math.max(1, Math.ceil(maxTurns / aiN)), 1, 40);
+  var maxRounds = (discussing && run.maxRound)
+    ? clamp(Number(run.maxRound), 1, 40)
+    : clamp(Number(r.rounds) || Math.max(1, Math.ceil(maxTurns / aiN)), 1, 40);
   /* 이번 토론에 더 낮은 상한을 골랐으면 그 값을 보여 준다 */
   var max = maxTurns;
   var cur = s.turn || 0;
@@ -5165,6 +5181,20 @@ function relayStillHere(room, name) {
   return relayPeopleOf(room).some(function (n) { return sameName(n, name); });
 }
 
+/* 이번 차례가 몇 라운드인지 계산해 run 에 적는다.
+   라운드 수는 토론을 시작할 때 정한 run.maxRound 를 그대로 쓴다 — 방 설정이 dbRefresh 동기화로
+   새 객체가 되며 rounds 를 잃어도 ‘1/1’로 떨어지지 않는다(2026-11-21 지용 님 제보).
+   한 라운드 = 참여자 전원 1회라 올림으로 나눈다(내림이면 마지막 라운드가 한 칸 적게 보인다). */
+function roundProgress(room) {
+  room = room || activeRoom() || {};
+  run.maxRound = Math.max(1, Number(run.maxRound) || Number(room.rounds) || 1);
+  var perRound = Math.max(1, Math.ceil((run.schedule || []).length / run.maxRound));
+  run.roundNo = clamp(Math.floor(run.idx / perRound) + 1, 1, run.maxRound);
+  run.lastRound = run.roundNo >= run.maxRound;
+  run.isLastStep = run.idx === (run.schedule || []).length - 1;
+  return { roundNo: run.roundNo, maxRound: run.maxRound, perRound: perRound };
+}
+
 async function loopRoundtable(room, ep) {
   try {
     for (run.idx = 0; run.idx < run.schedule.length; run.idx++) {
@@ -5173,12 +5203,8 @@ async function loopRoundtable(room, ep) {
       if (ep !== run.epoch) return;
       var step = run.schedule[run.idx];
       if (!step) break;
-      /* 지금 몇 라운드인지 · 마지막 라운드/마지막 발언인지 — 프롬프트와 조기 종결 판단에 쓴다 */
-      var perRound = Math.max(1, Math.round(run.schedule.length / Math.max(1, Number(room.rounds) || 1)));
-      run.maxRound = Math.max(1, Number(room.rounds) || 1);
-      run.roundNo = clamp(Math.floor(run.idx / perRound) + 1, 1, run.maxRound);
-      run.lastRound = run.roundNo >= run.maxRound;
-      run.isLastStep = run.idx === run.schedule.length - 1;
+      /* 지금 몇 라운드인지 · 마지막 라운드/마지막 발언인지 — 프롬프트와 조기 종결 판단에 준다 */
+      roundProgress(room);
       if (budgetExceeded(room)) { endRun("budget", ep); return; }
       /* 내 AI 차례 — 채팅으로 호명하고 답이 올 때까지 기다린다(크레딧 0) */
       if (step.kind === "relay") {
@@ -5223,11 +5249,6 @@ async function relayTurn(step, ep) {
   var total = Math.max(1, Number(run.maxRound) || Number(r.rounds) || 1);
   var roundNo = clamp(Number(run.roundNo) || 1, 1, total);
   var agenda = String(r.agenda || r.name || "").trim();
-  /* 2라운드부터는 사회자 차례에만 결론을 좁혀도 된다고 알려 준다(1라운드는 전원 발언 보장이라 표시 금지) */
-  var modHint = "";
-  if (run.roundNo >= 2 && !run.lastRound && run.moderator && sameName(step.nick, run.moderator)) {
-    modHint = " · 사회자 · 결론이 모였다고 판단될 때만 답변 끝에 [종결]";
-  }
   var known = {};
   r.messages.forEach(function (m) { known[m.id] = 1; });          /* 이미 있던 말은 응답으로 세지 않는다 */
   run.typingName = step.nick;
@@ -5238,8 +5259,12 @@ async function relayTurn(step, ep) {
      겹쳐 내가 두 번 말한 것처럼 보였다(2026-11-21 지용 님 제보). 이제 작은 시스템 차례 줄 하나로만 알린다.
      외부 AI(&ai=1)·내 AI는 이 줄의 @이름을 보고 자기 차례를 알아채고, DB에도 그대로 남아 전파된다.
      끼리 AI·내 키 AI는 speak()가 호출 프롬프트로 직접 차례를 넘긴다. */
-  addSystem("@" + step.nick + " 님 차례 · 짧게 답해 주세요 (" + roundNo + "/" + total + "라운드" + modHint + ")", "turn");
-  var reply = await waitRelayReply(step.nick, known, ep, run.relayMs || RELAY_WAIT_MS);
+  /* 외부 AI(&ai=1)는 60초, 내 AI·사람 참가자는 30초까지 기다린다.
+     화면 차례 줄에는 라운드 숫자만 적는다 — 결론을 좁혀도 된다는 안내([종결])는
+     AI 호출 프롬프트(roundRule)가 담당하고, 표시 단계에서 지워지는 문장을 화면에 붙이지 않는다. */
+  var waitMs = presenceAiFlag(step.nick) ? RELAY_WAIT_EXTERNAL_MS : RELAY_WAIT_MS;
+  addSystem("@" + step.nick + " 님 차례 · 짧게 답해 주세요 (" + roundNo + "/" + total + "라운드)", "turn");
+  var reply = await waitRelayReply(step.nick, known, ep, waitMs);
   run.typingName = null;
   run.relayWait = null;
   if (ep !== run.epoch) return;
@@ -5265,7 +5290,7 @@ async function relayTurn(step, ep) {
     return;
   }
   addSystem("‘" + step.nick + "’ 응답이 없어 다음 차례로 넘어갔어요 · " +
-    Math.round((run.relayMs || RELAY_WAIT_MS) / 1000) + "초 기다렸어요", "warn");
+    Math.round(waitMs / 1000) + "초 기다렸어요", "warn");
 }
 /* 그 이름의 새 말이 올라올 때까지 기다린다 — 일시정지 중에는 시간을 세지 않는다. */
 function waitRelayReply(name, known, ep, ms) {
@@ -5683,7 +5708,7 @@ var API_TIMEOUT = 30000;   /* AI 응답 대기 — 30초 넘으면 끊고 안내
    선호 순서대로 찾고, 없으면 목록의 flash 계열 하나를 고른다. 한 번 찾으면 기억한다. */
 var GEMINI_MODEL_PREF = ["gemini-3.6-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"];
 /* 예전 기본값 — 저장된 채로 남아 있어도 ‘자동 모델’로 보고 자동 전환한다 */
-var GEMINI_LEGACY = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-latest"];
+var GEMINI_LEGACY = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-3.8-flash"];
 var geminiModelHit = "";
 /* 자동·기본 모델인가 — 사용자가 직접 다른 모델명을 넣었다면 자동 전환하지 않는다 */
 function geminiAutoModel(model) {
@@ -8172,6 +8197,9 @@ function dbApply(roomRows, agentRows, fresh) {
       roleMode: s.roleMode === "manual" ? "manual" : "auto",
       roles: (s.roles && typeof s.roles === "object" && !Array.isArray(s.roles)) ? s.roles : {},
       maxTurns: typeof s.maxTurns === "number" ? s.maxTurns : (row.kind === "lounge" ? 0 : 10),
+      /* 라운드 수도 서버 설정에서 되살린다 — 예전 행에는 없으니 직전 값 → 기본 3라운드 */
+      rounds: (typeof s.rounds === "number" && s.rounds >= 1) ? clamp(Math.round(s.rounds), 1, 10)
+            : (p && typeof p.rounds === "number") ? p.rounds : 3,
       budget: typeof s.budget === "number" ? clamp(Math.round(s.budget), 100, 5000) : 200,
       members: mem, status: p ? p.status : "idle",
       aiPeople: Array.isArray(s.aiPeople) ? s.aiPeople.filter(function (n) { return typeof n === "string" && n; }).slice(0, 40) : [],
@@ -8656,7 +8684,7 @@ async function dbCreateRoom(room, members) {
       is_public: !(V3.signedIn && V3.mode === "cloud"),
       owner_id: (V3.signedIn && V3.mode === "cloud" && V3.user) ? V3.user.id : null,
       host_name: nick(),
-      settings: { emoji: room.emoji, mode: "mention", roleMode: roleModeOf(room), roles: room.roles || {}, maxTurns: room.maxTurns, budget: room.budget, category: categoryKeyOf(room), aiPeople: room.aiPeople || [] }
+      settings: { emoji: room.emoji, mode: "mention", roleMode: roleModeOf(room), roles: room.roles || {}, maxTurns: room.maxTurns, rounds: room.rounds, budget: room.budget, category: categoryKeyOf(room), aiPeople: room.aiPeople || [] }
     };
     var res = await db.client.from("kkiri_rooms").insert(row);
     if (res.error) { dbToast("방을 서버에 만들지 못했어요 · " + res.error.message); return; }
@@ -8693,7 +8721,7 @@ async function dbUpdateRoom(r, members) {
       name: String(r.name).slice(0, 60),
       kind: r.kind === "chat" ? "lounge" : "project",
       description: String(r.agenda || "").slice(0, 600),
-      settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [] }
+      settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, rounds: r.rounds, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [] }
     }).eq("id", r.id);
     if (res.error) dbToast("방 설정을 저장하지 못했어요 · " + res.error.message);
     for (var i = 0; i < members.length; i++) await dbSetMember(r.id, members[i], true);
@@ -8911,7 +8939,7 @@ function dbSaveSettings(r) {
     name: String(r.name || "방").slice(0, 60),
     kind: r.kind === "chat" ? "lounge" : "project",
     description: String(r.agenda || "").slice(0, 600),
-    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [],
+    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, rounds: r.rounds, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [],
                 /* 방장이 켜 둔 AI 자동토론 표시 — 방장이 아닌 참여자 화면의 작은 상태 배너용 */
                 discussingAt: (run.active && run.mode === "roundtable") ? Date.now() : 0 }
   }).eq("id", r.id).then(function (res) {
@@ -11524,10 +11552,18 @@ function wire() {
   var modelTimer = null;
   $("apiModel").addEventListener("input", function () {
     var v = $("apiModel").value.trim();
-    if (api.provider === "gemini") api.geminiModel = v || DEFAULT_MODEL.gemini;
+    if (api.provider === "gemini") api.geminiModel = fixGeminiModel(v) || DEFAULT_MODEL.gemini;
     else api.openaiModel = v || DEFAULT_MODEL.openai;
     clearTimeout(modelTimer);
-    modelTimer = setTimeout(function () { saveApi(); renderApi(); }, 300);
+    modelTimer = setTimeout(function () {
+      /* 옛 모델명을 넣었으면 칸도 지금 이름으로 바꿔 보여 준다(안내 문구와 입력칸이 달라 보이지 않게) */
+      if (api.provider === "gemini") {
+        var fx = fixGeminiModel(api.geminiModel);
+        if (fx !== api.geminiModel) { api.geminiModel = fx; }
+        if (fx && $("apiModel").value.trim() !== fx) $("apiModel").value = fx;
+      }
+      saveApi(); renderApi();
+    }, 300);
   });
   $("keyEye").addEventListener("click", function () {
     var show = $("apiKey").type === "password";
