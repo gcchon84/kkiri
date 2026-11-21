@@ -199,8 +199,10 @@
   .main.norooms-mode #composer,
   .main.norooms-mode #newMsgBtn{display:none !important}
   .main.norooms-mode .room-head{background:transparent;border-bottom:0;backdrop-filter:none;box-shadow:none;flex-wrap:nowrap}
+  /* 방이 없을 때는 2행 액션 줄(초대·정리안·더보기)이 비므로 통째로 감춘다 */
+  .main.norooms-mode .room-actions{display:none !important}
   @media (max-width:900px){
-    .main.norooms-mode .room-actions{flex:0 0 auto;margin-left:0;order:0}
+    .main.norooms-mode .room-state{flex:0 0 auto;margin-left:0;order:0}
     .main.norooms-mode .room-head{gap:8px;padding:10px 12px}
   }
   .norooms{
@@ -340,7 +342,7 @@
   .room-head .room-emoji{font-size:22px;line-height:1;flex:0 0 auto}
   .room-titles{min-width:0;flex:1}
   .rt-line{display:flex;align-items:center;gap:7px;min-width:0}
-  .rt-line h1{font-size:15.5px;font-weight:900;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rt-line h1{font-size:15.5px;font-weight:900;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
   .kind-pill{
     flex:0 0 auto;font-size:9px;font-weight:900;letter-spacing:-.01em;color:#5B38E0;background:var(--brand-tint);
     padding:3px 7px;border-radius:999px;white-space:nowrap;
@@ -350,6 +352,7 @@
     margin-top:3px;font-size:10.5px;color:#6F6889;font-weight:600;letter-spacing:-.01em;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
+  .room-state{display:flex;align-items:center;gap:7px;flex:0 0 auto}
   .room-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
   .ghost-btn{
     display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink-2);
@@ -1096,17 +1099,19 @@
     .h-btn#homeEditBtn{width:36px;min-height:36px;padding:0;display:inline-grid;place-items:center}
     .room-grid{grid-template-columns:1fr}
     .room-actions{gap:5px;margin-left:auto}
-    /* 방 이름이 곧 주제 — 모바일에서는 이름이 한 줄을 다 쓴다(잘리지 않게) */
-    .room-titles{flex:1 1 100%;order:5;margin-top:1px}
-    .rt-line{flex-wrap:wrap;row-gap:3px}
-    .rt-line h1{font-size:14.5px;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    /* 2026-11-21 · 1행에 내 상태(크레딧·홈)까지 — 방 이름은 줄여서 오른쪽 버튼과 겹치지 않게 */
+    .room-titles{flex:1 1 0;order:1;margin-top:1px;min-width:0}
+    .room-head .room-state{order:2;flex:0 0 auto;gap:5px}
+    .room-head .room-state>*{flex:0 0 auto}
+    .rt-line{flex-wrap:nowrap;row-gap:0}
+    .rt-line h1{font-size:14.5px;white-space:nowrap;line-height:1.3;display:block;overflow:hidden;text-overflow:ellipsis;min-width:0}
     .kind-pill{font-size:8px}
     .room-titles p{font-size:9.5px}
     /* 모바일: 대화 공간 확보 — 입력창 아래 안내는 숨기고(placeholder가 같은 안내를 한다),
        상단은 제목 한 줄 + 얆은 참여 줄 + 슬림한 제어 바로 정리한다. */
     .comp-hint{display:none !important}
     .room-head{padding:6px 10px 7px;gap:5px 6px}
-    .room-titles{order:5;margin-top:0}
+    .room-titles{order:1;margin-top:0}
     .room-titles p{display:none}
     .people-bar{padding:4px 10px;gap:5px}
     .ctrl{margin:6px 8px 0;padding:6px 8px 7px;border-radius:14px}
@@ -1524,8 +1529,15 @@
   @media (max-width:900px){
     /* 제목은 1줄, 버튼 줄은 아래 한 줄을 다 써서 글씨를 줄이지 않는다 */
     .room-head{padding:8px 10px 9px;gap:8px 10px}
-    .room-head .room-titles{order:2;flex:1 1 auto;margin-top:0;min-width:0}
+    /* 1행: [≡] [방 아이콘·이름] …… [💎 크레딧] [🏠] / 2행: [초대하기] [정리안] [···] */
+    .room-head .room-titles{order:1;flex:1 1 0;margin-top:0;min-width:0}
+    .room-head .room-state{order:2;flex:0 0 auto;margin-left:0;gap:7px}
+    .room-head .room-state>*{flex:0 0 auto}
     .room-head .room-actions{order:3;flex:1 1 100%;margin-left:0;justify-content:flex-start;gap:7px;flex-wrap:wrap}
+    /* 2행 액션 — 두 버튼이 남는 폭을 나눠 쓰고, 더보기는 오른쪽 끝 */
+    .room-head .room-actions .ghost-btn{flex:1 1 0;max-width:220px;justify-content:center;min-height:42px}
+    .room-head .room-actions #shareBtn,.room-head .room-actions #cardBtn{min-height:42px}
+    .room-head #roomSettingsBtn{margin-left:auto}
     .room-actions .ghost-btn{font-size:13px;padding:9px 12px;min-height:38px}
     .room-actions .ghost-btn .lbl{display:inline;font-size:13px}
     .room-actions #shareBtn,.room-actions #cardBtn{padding:9px 12px;gap:6px}
@@ -2376,9 +2388,13 @@ window.__KKIRI_BOOT = (function () {
         <div class="rt-line"><h1 id="roomName">방</h1><span class="live-pill wait" id="livePill">연결 중</span></div>
         <p id="roomSub"></p>
       </div>
-      <div class="room-actions">
-        <button class="icon-btn" id="roomHomeBtn" type="button" title="끼리 홈" aria-label="끼리 홈"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-home"></use></svg></button>
+      <!-- 1행 오른쪽(내 상태): 크레딧 · 홈 — 좁은 화면에서도 방 이름 옆 오른쪽 끝에 붙는다 (2026-11-21) -->
+      <div class="room-state">
         <button class="credit-chip off" id="creditBadge" type="button" title="내 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> <b>—</b></button>
+        <button class="icon-btn" id="roomHomeBtn" type="button" title="끼리 홈" aria-label="끼리 홈"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-home"></use></svg></button>
+      </div>
+      <!-- 2행(방 액션): 초대하기 · 정리안 · 더보기 -->
+      <div class="room-actions">
         <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참가자">접속 0명</span>
         <button class="ghost-btn" id="shareBtn" type="button" title="사람·AI 초대하기" aria-label="초대하기"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg><span class="lbl">초대하기</span></button>
         <button class="ghost-btn" id="cardBtn" type="button" title="정리안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="정리안 카드"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-card"></use></svg><span class="lbl">정리안</span></button>
