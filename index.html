@@ -4810,8 +4810,8 @@ function finishRoundtable(ep) {
   r.session.endedAt = Date.now();
   save();
   renderAll();
-  generateCard({ auto: true, draft: false });
-  toast("라운드테이블 종료 · 합의안 카드를 만들었어요");
+  var card = generateCard({ auto: true, draft: false });
+  toast(card ? "라운드테이블 종료 · 합의안 카드를 만들었어요" : "라운드테이블 종료 · 정리할 발언이 없어 카드는 만들지 않았어요");
 }
 
 function endRun(reason, ep) {
@@ -5089,14 +5089,8 @@ function sentences(t) {
 function buildCard(r, opts) {
   opts = opts || {};
   var start = (r.session && r.session.startIndex) || 0;
-  /* 내 AI(릴레이) 발언도 합의안 재료로 쓴다 — 사람 채팅만 뺀다 */
-  function keep(m) {
-    if (m.who === "system" || m.who === "card") return false;
-    if (m.who === "user" && !m.relay) return false;
-    return true;
-  }
-  var all = r.messages.slice(start).filter(keep);
-  if (!all.length) all = r.messages.filter(keep);
+  var all = r.messages.slice(start).filter(isCardSource);
+  if (!all.length) all = r.messages.filter(isCardSource);
   var relayNames = [];
   all.forEach(function (m) { if (m.relay && relayNames.indexOf(m.relay) < 0) relayNames.push(m.relay); });
 
@@ -5445,10 +5439,16 @@ function redoCard(mid) {
   toast("합의안을 다시 정리했어요");
 }
 
+/* 합의안 재료 — AI 발언과 내 AI(릴레이) 발언만. 사람 채팅과 호명 글은 빼 둔다. */
+function isCardSource(m) {
+  if (!m || m.who === "system" || m.who === "card") return false;
+  if (m.who === "user" && !m.relay) return false;
+  return true;
+}
 function generateCard(opts) {
   opts = opts || {};
   var r = activeRoom();
-  var all = r.messages.filter(function (m) { return m.who !== "system" && m.who !== "card"; });
+  var all = r.messages.filter(isCardSource);
   if (!all.length && !opts.force) { toast("아직 정리할 대화가 없어요"); return null; }
   var card = buildCard(r, { draft: !!opts.draft });
   var m = { id: uid("c"), who: "card", at: Date.now(), card: card, cost: 0, tin: 0, tout: 0 };
