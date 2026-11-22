@@ -353,7 +353,9 @@
   .room-head .room-emoji{font-size:22px;line-height:1;flex:0 0 auto}
   .room-titles{min-width:0;flex:1}
   .rt-line{display:flex;align-items:center;gap:7px;min-width:0}
-  .rt-line h1{font-size:15.5px;font-weight:900;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+  .rt-line h1{font-size:15.5px;font-weight:900;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto;
+    /* 굵은 글꼴의 오른쪽 오버행이 잘리지 않게 — 끝 글자 획이 1~2px 깎이던 문제 (2026-11-22) */
+    padding-right:4px;box-sizing:border-box}
   .kind-pill{
     flex:0 0 auto;font-size:9px;font-weight:900;letter-spacing:-.01em;color:#5B38E0;background:var(--brand-tint);
     padding:3px 7px;border-radius:999px;white-space:nowrap;
@@ -1164,7 +1166,7 @@
     .room-head .room-state{order:2;flex:0 0 auto;gap:5px}
     .room-head .room-state>*{flex:0 0 auto}
     .rt-line{flex-wrap:nowrap;row-gap:0}
-    .rt-line h1{font-size:14.5px;white-space:nowrap;line-height:1.3;display:block;overflow:hidden;text-overflow:ellipsis;min-width:0}
+    .rt-line h1{font-size:14.5px;white-space:nowrap;line-height:1.3;display:block;overflow:hidden;text-overflow:ellipsis;min-width:0;padding-right:4px;box-sizing:border-box}
     .kind-pill{font-size:8px}
     .room-titles p{font-size:9.5px}
     /* 모바일: 대화 공간 확보 — 입력창 아래 안내는 숨기고(placeholder가 같은 안내를 한다),
