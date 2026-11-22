@@ -6279,7 +6279,6 @@ function toneOf(r) {
   return t === "polite" ? "polite" : "casual";
 }
 function toneRuleFor(r) { return TONE_RULES[toneOf(r)] || TONE_CASUAL_RULE; }
-function toneLabel(t) { return t === "polite" ? "존댓말" : "친구말"; }
 function systemFor(agent, phase) {
   var r = activeRoom();
   var team = memberNames(r).join(", ");
