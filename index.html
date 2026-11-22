@@ -2743,6 +2743,13 @@ window.__KKIRI_BOOT = (function () {
     <div class="sheet-body">
       <div class="field" style="margin-top:0"><span>주제 분류</span><div class="pick-row" id="rfCat"></div></div>
       <label class="field"><span>방 이름 (주제)</span><input id="rfName" type="text" maxlength="40" placeholder="예: 연말 프로모션 기획, 신제품 론칭" autocomplete="off"></label>
+      <div class="field"><span>말투</span>
+        <div class="pick-row" id="rfTone">
+          <button type="button" class="pick" data-tone="casual" aria-pressed="true">친구말 (기본)</button>
+          <button type="button" class="pick" data-tone="polite" aria-pressed="false">존댓말</button>
+        </div>
+        <p class="modal-note" id="rfToneNote" style="margin-top:6px">친구말은 다정한 ~했어체 · 존댓말은 ~요/~습니다</p>
+      </div>
       <div class="field-row">
         <div class="field" id="rfEmojiField"><span>아이콘</span><div class="pick-row" id="rfEmoji"></div></div>
         <label class="field" id="rfTurnField"><span>최대 턴</span>
@@ -3394,7 +3401,7 @@ function seedState() {
     rooms: [
       {
         id: "r_promo", emoji: "🚀", name: "연말 캠페인 기획", kind: "project",
-        agenda: "연말 캠페인 기획", mode: "mention", settings: { category: "work" }, roleMode: "auto", roles: {}, maxTurns: 30, rounds: 3, budget: 200,
+        agenda: "연말 캠페인 기획", mode: "mention", settings: { category: "work", tone: "casual" }, tone: "casual", roleMode: "auto", roles: {}, maxTurns: 30, rounds: 3, budget: 200,
         members: ["pikri", "kirini", "muu", "red"], status: "idle", createdAt: now - 6000,
         session: freshSession(),
         messages: [{ id: uid("m"), who: "system", kind: "info", at: now - 6000, text: "끼리 v3 · 데모 모드로 시작합니다. 주제가 준비되어 있어요. @이름으로 부르면 그 AI가 답하고, 필요할 때 AI 자동토론을 켜면 AI끼리 알아서 토론요약까지 만들어요." }]
@@ -6261,17 +6268,30 @@ async function callProvider(provider, key, model, systemText, userText, retried,
 
 /* 모든 끼리 AI 공통 — 뻔한 일반론 대신 실제 이름·수치로 답하게 한다. */
 var SPECIFICITY_RULE = "구체성: ‘주변 카페’, ‘현지 맛집’, ‘적당히’, ‘잘 알아보세요’ 같은 두루뭉술한 일반론을 쓰지 않는다. 실제 가게·장소·메뉴·대안의 이름과 숫자(가격·시간·거리), 지금 할 행동을 1~2개 이상 콕 집어 넣어 2~3문장으로 날카롭게 답한다.";
-/* 모든 끼리 AI 공통 — 어떤 상황에서도 반말 금지. 역할·말투(persona) 지시보다 이 규칙이 우선한다. */
-var HONORIFIC_RULE = "존댓말: 반드시 한국어 존댓말(~요/~습니다)로만 답하세요. 수다·농담·짧은 반응·감정 표현에서도 절대 반말을 쓰지 마세요. 상대가 반말로 말해도 똑같이 존댓말로 답하세요. 이 규칙은 아래 역할·말투 지시보다 우선합니다.";
+/* 방 말투 — 기본은 다정한 친구말(casual). 방 설정에서 존댓말(polite)로 바꾼다.
+   어떤 상황에서도 역할·말투(persona) 지시보다 이 규칙이 우선한다. */
+var TONE_CASUAL_RULE = "친구말: 반드시 다정하고 편한 친구 말투(~했어, ~같아, ~해 보자, ~어때?)로만 답하세요. 절대 '~한다 / ~그렇다 / ~필요하다' 같은 딱딱한 해라체·보고서체나 존댓말(~요/~습니다)을 쓰지 마세요.";
+var TONE_POLITE_RULE = "존댓말: 반드시 자연스러운 한국어 존댓말(~요/~습니다)로만 답하세요. 어떤 상황에서도 반말을 쓰지 마세요.";
+var TONE_RULES = { casual: TONE_CASUAL_RULE, polite: TONE_POLITE_RULE };
+/* 방의 말투 — tone 미지정(옛 방·옛 설정)은 친구말로 본다 */
+function toneOf(r) {
+  var t = r ? String(r.tone || (r.settings && r.settings.tone) || "").toLowerCase() : "";
+  return t === "polite" ? "polite" : "casual";
+}
+function toneRuleFor(r) { return TONE_RULES[toneOf(r)] || TONE_CASUAL_RULE; }
+function toneLabel(t) { return t === "polite" ? "존댓말" : "친구말"; }
 function systemFor(agent, phase) {
   var r = activeRoom();
   var team = memberNames(r).join(", ");
   var base = agent.prompt || (agent.type === "webhook" ? "너는 이 방의 AI 멤버다." : "너는 이 방의 AI 멤버다.");
   /* 모바일에서 한눈에 들어오게: 보통 답변은 1~2문장, 토론요약(converge)만 요약이라 2~4문장 */
   var lengthRule = phase === "converge" ? "한국어로 2~4문장" : "한국어로 핵심만 1~2문장(짧고 읽기 쉽게)";
-  return HONORIFIC_RULE + "\n" + base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
+  var toneClause = toneOf(r) === "polite"
+    ? "반드시 한국어 존댓말(~요/~습니다)로만 답하고, 가벼운 수다·농담·짧은 한마디에서도 반말을 쓰지 않는다. 문장 끝은 ‘~요’ 또는 ‘~습니다’로 맺고 ‘~죠/~지/~네/~군/~야’ 같은 반말·구어 종결로 끝내지 않는다."
+    : "다정하고 편한 친구 말투(~했어, ~같아, ~해 보자, ~어때?)로 답하고, ‘~한다/~그렇다/~필요하다’ 같은 해라체·보고서체와 ‘~요/~습니다’ 존댓말은 쓰지 않는다.";
+  return toneRuleFor(r) + "\n" + base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
     "\n함께 있는 AI: " + team +
-    "\n규칙: 반드시 한국어 존댓말(~요/~습니다)로만 답하고, 가벼운 수다·농담·짧은 한마디에서도 반말을 쓰지 않는다. " + lengthRule + ". 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다. 참여자를 부를 때는 채팅방에 보이는 닉네임으로만 부르고, 실명이나 다른 별명으로 부르지 않는다." +
+    "\n규칙: " + toneClause + " " + lengthRule + ". 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다. 참여자를 부를 때는 채팅방에 보이는 닉네임으로만 부르고, 실명이나 다른 별명으로 부르지 않는다." +
     roundRule(agent) +
     "\n" + SPECIFICITY_RULE;
 }
@@ -6293,7 +6313,9 @@ function phaseInstruction(phase, r) {
   if (phase === "issue") return "지금까지 발언에서 쟁점을 두 개로 압축하고, 각 쟁점에 대한 입장을 한 줄씩 정리하라.";
   if (phase === "rebuttal") return "직전 발언 중 하나를 이름으로 지목해 반박하거나 보완하라. 같은 말을 반복하지 마라.";
   if (phase === "converge") return "결정·근거·이견·다음 할 일을 담아 3~5문장으로 토론요약을 만들라. 숫자는 ‘제안’ 또는 ‘확인 필요’로 표시하라.";
-  if (phase === "chat") return "가벼운 수다입니다. 1~2문장으로 다정하고 정중한 존댓말(~요/~습니다)로 답하세요.";
+  if (phase === "chat") return toneOf(r) === "polite"
+    ? "가벼운 수다입니다. 1~2문장으로 자연스러운 존댓말(~요/~습니다)로 답하세요."
+    : "가벼운 수다입니다. 1~2문장으로 다정한 친구 말투(~했어, ~같아, ~어때?)로 답하세요.";
   if (phase === "mention") return "사용자가 이름을 불렀다. 짧게 답하고, 자기 몫에서 도울 일을 한 가지 제안하라.";
   return "안건에 맞게 짧게 발언하라.";
 }
@@ -7425,7 +7447,7 @@ function openBudgetSheet() {
 /* =========================================================
    15. 방 만들기 · 설정 시트
    ========================================================= */
-var roomForm = { id: null, colorEmoji: "🚀", kind: "project", category: "work", roleMode: "auto", roles: {}, members: [] };
+var roomForm = { id: null, colorEmoji: "🚀", kind: "project", category: "work", roleMode: "auto", roles: {}, members: [], tone: "casual" };
 /* 주제 분류 — 방을 만들 때 한 번 고르면 아이콘·역할·목록 표기가 함께 맞춰진다. */
 var ROOM_CATS = [
   { key: "work", label: "업무·기획", emoji: "🚀" },
@@ -7483,6 +7505,15 @@ function syncRfRoleVisibility() {
 function renderRfRoleMode() {
   Array.prototype.forEach.call($("rfRoleMode").querySelectorAll("[data-rolemode]"), function (b) {
     b.setAttribute("aria-pressed", b.getAttribute("data-rolemode") === roomForm.roleMode ? "true" : "false");
+  });
+}
+/* 말투 선택(친구말 기본 / 존댓말) — 새 방·방 설정 모두 같은 칸을 쓴다 */
+function renderRfTone() {
+  var box = $("rfTone");
+  if (!box) return;
+  var cur = roomForm.tone === "polite" ? "polite" : "casual";
+  Array.prototype.forEach.call(box.querySelectorAll("[data-tone]"), function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-tone") === cur ? "true" : "false");
   });
 }
 function rfDraftRoom() {
@@ -7662,6 +7693,8 @@ function openRoomForm(roomId) {
   roomForm.colorEmoji = r ? r.emoji : catByKey(roomForm.category).emoji;
   renderRfCat();
   renderEmojiPick();
+  roomForm.tone = toneOf(r);
+  renderRfTone();
   roomForm.roleMode = r ? roleModeOf(r) : "auto";
   try { roomForm.roles = r && r.roles ? JSON.parse(JSON.stringify(r.roles)) : {}; } catch (e) { roomForm.roles = {}; }
   renderRfRoleMode();
@@ -7775,6 +7808,7 @@ function submitRoomForm() {
       if (label || focus) roles[id] = { label: label, focus: focus };
     });
   }
+  var tone = roomForm.tone === "polite" ? "polite" : "casual";
   var maxTurns = Number($("rfTurns").value) || 10;
   var budget = clamp(Math.round(Number($("rfBudget").value) || 300), 100, 5000);
   if (roomForm.id) {
@@ -7786,6 +7820,8 @@ function submitRoomForm() {
     r.name = name; r.emoji = emoji; r.kind = kind;
     r.settings = (r.settings && typeof r.settings === "object" && !Array.isArray(r.settings)) ? r.settings : {};
     r.settings.category = category;
+    r.settings.tone = tone;
+    r.tone = tone;
     r.agenda = (!prevTopic || prevTopic === prevName) ? name : prevTopic;
     r.mode = "mention"; r.roleMode = roleMode; r.roles = roles;
     r.maxTurns = maxTurns; r.budget = budget; r.members = members;
@@ -7796,7 +7832,8 @@ function submitRoomForm() {
     var room = {
       id: "r_" + uid(""),
       emoji: emoji, name: name, kind: kind, agenda: name, mode: "mention",
-      settings: { category: category },
+      tone: tone,
+      settings: { category: category, tone: tone },
       roleMode: roleMode, roles: roles,
       maxTurns: maxTurns, budget: budget, members: members, status: "idle", aiPeople: [],
       createdAt: Date.now(), session: freshSession(), messages: [],
@@ -8007,7 +8044,9 @@ function focusPrompt() {
     "· 내 이름: " + who + " — @" + who + " 으로 부르는 말은 나에게 하는 말이야.\n" +
     "· 방 안에서 나를 부를 때는 실명이나 평소 별명을 쓰지 말고, 반드시 위 '내 이름'(" + who + " 님)으로만 불러 줘.\n" +
     "· 방에 들어가면 상단 내 이름(또는 설정)을 네 AI 이름으로 먼저 바꿔 줘.\n" +
-    "· 답변은 반드시 한국어 존댓말(~요/~습니다)로만 해 줘.\n" +
+    (toneOf(r) === "polite"
+      ? "· 답변은 반드시 한국어 존댓말(~요/~습니다)로만 해 줘.\n"
+      : "· 답변은 다정하고 편한 친구 말투(~했어, ~같아, ~해 보자, ~어때?)로만 해 줘. ‘~한다/~그렇다’ 같은 딱딱한 해라체나 존댓말(~요/~습니다)은 쓰지 마.\n") +
     "· 들어갈 때 짧은 인사 한 줄만 남기고, 이후엔 @" + who + " 이나 @AI전원 으로 부르거나 사람이 직접 물을 때만 답해 줘.\n" +
     "· 긴 검색·조사는 생략하고, 10초 안팎 간격으로 새 글을 확인해 바로 핵심 2문장만 답해 줘.\n" +
     "· AI 자동토론 중이 아니면 다른 AI 말엔 이어 말하지 마.\n" +
@@ -8905,7 +8944,8 @@ function dbApply(roomRows, agentRows, fresh) {
       inviteCode: row.invite_code, hostName: row.host_name, isPublic: row.is_public, remote: true,
       ownerId: row.owner_id || null,
       hostUid: (p && p.hostUid) ? String(p.hostUid) : "",
-      settings: { category: s.category || "" },
+      tone: s.tone === "polite" ? "polite" : "casual",
+      settings: { category: s.category || "", tone: s.tone === "polite" ? "polite" : "casual" },
       discussingAt: Number(s.discussingAt) || 0
     });
   });
@@ -9472,7 +9512,7 @@ async function dbCreateRoom(room, members) {
       is_public: !(V3.signedIn && V3.mode === "cloud"),
       owner_id: (V3.signedIn && V3.mode === "cloud" && V3.user) ? V3.user.id : null,
       host_name: nick(),
-      settings: { emoji: room.emoji, mode: "mention", roleMode: roleModeOf(room), roles: room.roles || {}, maxTurns: room.maxTurns, rounds: room.rounds, budget: room.budget, category: categoryKeyOf(room), aiPeople: room.aiPeople || [] }
+      settings: { emoji: room.emoji, mode: "mention", roleMode: roleModeOf(room), roles: room.roles || {}, maxTurns: room.maxTurns, rounds: room.rounds, budget: room.budget, category: categoryKeyOf(room), tone: toneOf(room), aiPeople: room.aiPeople || [] }
     };
     var res = await db.client.from("kkiri_rooms").insert(row);
     if (res.error) { dbToast("방을 서버에 만들지 못했어요 · " + res.error.message); return; }
@@ -9509,7 +9549,7 @@ async function dbUpdateRoom(r, members) {
       name: String(r.name).slice(0, 60),
       kind: r.kind === "chat" ? "lounge" : "project",
       description: String(r.agenda || "").slice(0, 600),
-      settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, rounds: r.rounds, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [] }
+      settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, rounds: r.rounds, budget: r.budget, category: categoryKeyOf(r), tone: toneOf(r), aiPeople: r.aiPeople || [] }
     }).eq("id", r.id);
     if (res.error) dbToast("방 설정을 저장하지 못했어요 · " + res.error.message);
     for (var i = 0; i < members.length; i++) await dbSetMember(r.id, members[i], true);
@@ -9728,7 +9768,7 @@ function dbSaveSettings(r) {
     name: String(r.name || "방").slice(0, 60),
     kind: r.kind === "chat" ? "lounge" : "project",
     description: String(r.agenda || "").slice(0, 600),
-    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, rounds: r.rounds, budget: r.budget, category: categoryKeyOf(r), aiPeople: r.aiPeople || [],
+    settings: { emoji: r.emoji, mode: "mention", roleMode: roleModeOf(r), roles: r.roles || {}, maxTurns: r.maxTurns, rounds: r.rounds, budget: r.budget, category: categoryKeyOf(r), tone: toneOf(r), aiPeople: r.aiPeople || [],
                 /* 방장이 켜 둔 AI 자동토론 표시 — 방장이 아닌 참여자 화면의 작은 상태 배너용 */
                 discussingAt: (run.active && run.mode === "roundtable") ? Date.now() : 0 }
   }).eq("id", r.id).then(function (res) {
@@ -10051,7 +10091,7 @@ var EXPERT_SETS = {
       persona: "너는 리서처다. 비교 기준을 먼저 세우고 사례를 정리한다. 확인한 사실과 추정을 구분한다." }
   ],
   travel: [
-    { id: "travel_route", name: "동선 플래너", avatar: "🗺️", role: "일정 · 이동", config: "kkiri-gemini-lite",
+    { id: "travel_route", name: "동선 플래너", avatar: "🗺️", role: "일정 · 이동", config: "kkiri-claude-lite",
       desc: "이동 시간을 먼저 계산해 하루 동선을 짠다.",
       persona: "너는 여행 동선 플래너야. 이동 시간·거리를 먼저 계산하고 하루 동선을 짠다. ‘주변’, ‘어디든’ 같은 두루뭉술한 말 대신 실제 장소 이름(역·거리·건물·식당)과 이동 수단·소요 시간을 1~2곳 이상 콕 집어 제시한다. 무리한 일정은 줄이고 대안 순서를 함께 준다. 추정 시간은 추정이라고 밝힌다." },
     { id: "travel_spot", name: "맛집·스팟 추천", avatar: "📍", role: "로컬 · 포토존", config: "kkiri-gemini-lite",
@@ -10084,7 +10124,7 @@ var EXPERT_SETS = {
   counsel: [
     { id: "counsel_empathy", name: "공감 코치", avatar: "💗", role: "마음 · 경청", config: "kkiri-claude-lite",
       desc: "먼저 마음을 읽고 감정을 정리해 준다.",
-      persona: "너는 공감 코치야. 먼저 감정을 읽고 인정해 준 뒤, 지금 마음이 어떤지 존댓말 한 문장으로 정리해 준다. 섣부른 조언은 하지 않는다." },
+      persona: "너는 공감 코치야. 먼저 감정을 읽고 인정해 준 뒤, 지금 마음이 어떤지 한 문장으로 정리해 준다. 섣부른 조언은 하지 않는다." },
     { id: "counsel_real", name: "현실 조언가", avatar: "🧭", role: "해결책 · 실행", config: "kkiri-lite",
       desc: "지금 당장 할 수 있는 한 가지를 정해 준다.",
       persona: "너는 현실 조언가야. 감정은 짧게 인정하고, 지금 당장 할 수 있는 행동 1~2개를 구체적으로 정해 준다. 확인되지 않은 사실은 단정하지 않는다." },
@@ -10098,13 +10138,13 @@ var EXPERT_SETS = {
   free: [
     { id: "free_talker", name: "수다 친구", avatar: "💬", role: "잡담 · 공감", config: "kkiri-claude-lite",
       desc: "가볍게 받아 주고 말을 이어 준다.",
-      persona: "너는 수다 친구야. 존댓말로 가볍게 받아 주고 대화를 자연스럽게 이어 간다. 무겁게 설교하지 않고, 상대 말에서 한 가지를 집어 물어봐 대화를 넓힌다." },
-    { id: "free_wit", name: "재치러", avatar: "✨", role: "유머 · 반전", config: "kkiri-gemini-lite",
+      persona: "너는 수다 친구야. 가볍게 받아 주고 대화를 자연스럽게 이어 간다. 무겁게 설교하지 않고, 상대 말에서 한 가지를 집어 물어봐 대화를 넓힌다." },
+    { id: "free_wit", name: "재치러", avatar: "✨", role: "유머 · 반전", config: "kkiri-lite",
       desc: "분위기를 살리는 한마디와 반전을 준다.",
-      persona: "너는 재치 담당이야. 존댓말을 유지한 채 과하지 않은 유머와 반전으로 분위기를 살린다. 비아냥·비하는 쓰지 않고, 짧게 웃음이 나는 한마디를 붙인다." },
+      persona: "너는 재치 담당이야. 과하지 않은 유머와 반전으로 분위기를 살린다. 비아냥·비하는 쓰지 않고, 짧게 웃음이 나는 한마디를 붙인다." },
     { id: "free_empathy", name: "공감러", avatar: "💗", role: "공감 · 위로", config: "kkiri-claude-lite",
       desc: "먼저 마음을 읽고 편을 들어 준다.",
-      persona: "너는 공감 담당이야. 먼저 마음을 읽고 존댓말로 편을 들어 준다. 조언은 청하지 않았으면 하지 않고, 짧게 인정하고 곁에 있어 주는 말을 한다." },
+      persona: "너는 공감 담당이야. 먼저 마음을 읽고 편을 들어 준다. 조언은 청하지 않았으면 하지 않고, 짧게 인정하고 곁에 있어 주는 말을 한다." },
     { id: "free_topic", name: "화제 수집가", avatar: "🔎", role: "화제 · 소재", config: "kkiri-gemini-lite",
       desc: "대화가 멈추면 새 얘깃거리를 던진다.",
       persona: "너는 화제 수집가야. 대화가 멈칫하면 지금 흐름에 맞는 새 얘깃거리를 2~3개 던진다. 뉴스·계절·일상 소재에서 고르고, 바로 이어서 물어볼 질문을 붙인다." }
@@ -11595,13 +11635,47 @@ var ENTRY_GREET = {
   etc_reality: "안녕하세요! 계획의 허점과 리스크부터 볼게요.",
   etc_tidy: "안녕하세요! 이야기를 한 장으로 정리해 드릴게요."
 };
-function entryGreetingText(agent) {
+/* 같은 인사말의 친구말(기본 말투) 버전 — 방 말투가 casual 이면 이쪽을 쓴다. */
+var ENTRY_GREET_CASUAL = {
+  copywriter: "안녕! 짧고 리듬 있는 문장으로 문구 다듬어 줄게.",
+  marketer: "안녕! 예산이랑 기간부터 정하고 채널·타이밍 짜 줄게.",
+  redteam: "안녕! 계획 허점이랑 리스크부터 짚어 줄게.",
+  planner: "안녕! 결정할 것, 확인할 것, 다음 할 일로 나눠서 순서 잡아 줄게.",
+  analyst: "안녕! 숫자랑 근거로 비교해서 보여 줄게.",
+  researcher: "안녕! 비교 기준부터 세우고 사례 정리해 줄게.",
+  travel_route: "안녕! 이동 동선이랑 시간표 깔끔하게 짜 줄게.",
+  travel_spot: "안녕! 분위기랑 동선에 맞는 곳으로 골라 줄게.",
+  travel_budget: "안녕! 교통·숙소·식비 숫자로 나눠서 총액 맞춰 줄게.",
+  travel_risk: "안녕! 날씨·주차·대기처럼 일정 흔드는 변수부터 볼게.",
+  travel_idea: "안녕! 흔한 코스 말고 그 동네에서만 되는 한 곳 찾아 줄게.",
+  daily_taste: "안녕! 지금 기분이랑 같이 가는 사람에 맞춰 메뉴·가게 골라 줄게.",
+  daily_value: "안녕! 같은 값이면 구성 나은 쪽으로 계산해 줄게.",
+  daily_mood: "안녕! 조용한지 시끄러운지, 앉을 자리까지 보고 골라 줄게.",
+  daily_review: "안녕! 좋은 점만 말하지 않고 단점이랑 팁도 같이 말해 줄게.",
+  counsel_empathy: "안녕! 편하게 얘기해 줘, 마음부터 같이 들을게.",
+  counsel_real: "안녕! 현실적인 장단점이랑 선택지 짚어 줄게.",
+  counsel_other: "안녕! 네가 못 본 쪽을 정중하게 짚어 줄게.",
+  counsel_sort: "안녕! 고민을 선택지로 나눠서 비교해 줄게.",
+  free_talker: "안녕! 가볍게 얘기 나누자.",
+  free_wit: "안녕! 분위기 살리는 한마디 곁들일게.",
+  free_empathy: "안녕! 편하게 말해 줘, 마음부터 들을게.",
+  free_topic: "안녕! 대화 멈추면 새 얘깃거리 꺼내 줄게.",
+  etc_idea: "안녕! 막힌 지점에서 쓸 아이디어 꺼내 줄게.",
+  etc_research: "안녕! 확인된 사실이랑 추정 나눠서 정리해 줄게.",
+  etc_reality: "안녕! 계획 허점이랑 리스크부터 볼게.",
+  etc_tidy: "안녕! 이야기 한 장으로 정리해 줄게."
+};
+function entryGreetingText(agent, room) {
   if (!agent) return "";
   var ex = String(agent.expert || "").trim();
-  if (ENTRY_GREET[ex]) return ENTRY_GREET[ex];
+  var casual = toneOf(room || activeRoom()) === "casual";
+  var table = casual ? ENTRY_GREET_CASUAL : ENTRY_GREET;
+  if (table[ex]) return table[ex];
   /* 매칭되지 않는 직접 만든 AI — 역할이 있으면 ‘역할 맡은 이름’, 없으면 이름만 */
   var name = String(agent.name || "").trim() || "끼리 AI";
   var role = String(agent.role || "").trim();
+  if (casual) return role ? "안녕! " + role + " 맡은 " + name + " 들어왔어."
+                          : "안녕! " + name + " 들어왔어.";
   return role ? "안녕하세요! " + role + " 맡은 " + name + " 들어왔습니다."
               : "안녕하세요! " + name + " 들어왔습니다.";
 }
@@ -11618,7 +11692,7 @@ function greetAgentOnEntry(agentId, room) {
   var recent = null;
   r.messages.forEach(function (m) { if (m.who === agentId && m.kind === "greet") recent = m; });
   if (recent && Date.now() - (recent.at || 0) < 20000) return Promise.resolve(false);
-  var text = entryGreetingText(a);
+  var text = entryGreetingText(a, r);
   if (!text) return Promise.resolve(false);
   var m = { id: uid("a"), who: agentId, text: text, at: Date.now(), kind: "greet", src: "greet", tin: 0, tout: 0, cost: 0, credits: 0 };
   r.messages.push(m);
@@ -11845,8 +11919,11 @@ async function cloudExpertTurn(agent, phase) {
     config: kkiriConfigFor(agent),
     expert: { id: agent.id, name: agent.name, role: ro ? ro.label : (agent.role || ""), persona: (agent.prompt || "") + roleDirective(r, agent), avatar: agent.avatar || "" },
     phase: phase || "",
+    tone: toneOf(r),
     instruction: phaseInstruction(phase, r) + roundRule(agent) + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : "") +
-      " 반드시 한국어 존댓말(~요/~습니다)로만 답하고, 수다·농담·짧은 반응에서도 반말을 쓰지 않는다." +
+      " " + (toneOf(r) === "polite"
+        ? "반드시 한국어 존댓말(~요/~습니다)로만 답하고, 수다·농담·짧은 반응에서도 반말을 쓰지 않는다."
+        : "다정하고 편한 친구 말투(~했어, ~같아, ~어때?)로 답하고, ‘~한다/~그렇다’ 같은 해라체·보고서체와 존댓말(~요/~습니다)은 쓰지 않는다.") +
       " " + SPECIFICITY_RULE,
     speakers: memberNames(r),
     context: ctx,
@@ -12477,6 +12554,13 @@ function wire() {
     roomForm.roleMode = next;
     renderRfRoleMode();
     renderRfRoles();
+  });
+  $("rfTone").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-tone]");
+    if (!b) return;
+    roomForm.tone = b.getAttribute("data-tone") === "polite" ? "polite" : "casual";
+    renderRfTone();
+    try { renderFocus(); } catch (e1) {}   /* 내 AI 초대 지시문 미리보기도 같이 바뀐다 */
   });
   $("rfCat").addEventListener("click", function (e) {
     var b = e.target.closest("[data-cat]");
