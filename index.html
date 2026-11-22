@@ -845,7 +845,7 @@
   .connect-line.demo{color:#8a5a12}
   .connect-line:empty{display:none}
   .auto-hint{font-style:normal;font-size:8.5px;font-weight:900;color:#5B38E0;background:var(--brand-tint);border-radius:999px;padding:2px 6px;margin-left:4px;vertical-align:middle}
-  .ai-seg button{display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.25;padding:12px 4px}
+  .ai-seg button{display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.25;padding:12px 4px;white-space:nowrap}
   .ai-seg button b{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:900;letter-spacing:-.02em}
   .ai-seg button small{font-size:10.5px;font-weight:800;color:#948BAF;letter-spacing:-.01em}
   .ai-seg button[aria-pressed="true"] small{color:#5B38E0}
@@ -1592,7 +1592,7 @@
   @media (max-width:900px){
     /* 제목은 1줄, 버튼 줄은 아래 한 줄을 다 써서 글씨를 줄이지 않는다 */
     .room-head{padding:8px 10px 9px;gap:8px 10px}
-    /* 1행: [≡] [방 아이콘·이름] …… [💎 크레딧] [🏠] / 2행: [초대하기] [정리안] [···] */
+    /* 1행: [≡] [방 아이콘·이름] …… [💎 크레딧] [🏠] / 2행: [초대하기] [정리안] [⚙] */
     .room-head .room-titles{order:1;flex:1 1 0;margin-top:0;min-width:0}
     .room-head .room-state{order:2;flex:0 0 auto;margin-left:0;gap:7px}
     .room-head .room-state>*{flex:0 0 auto}
@@ -2063,6 +2063,18 @@
   html.fl-free .credit-free-note{display:block;margin:2px 2px 14px;padding:16px 16px 15px;border:1px solid var(--line,#E7E2F4);border-radius:16px;background:var(--lav-soft,#F7F4FF)}
   .credit-free-note b{display:block;margin-bottom:6px;font-size:15px;color:var(--ink,#241C3C)}
   .credit-free-note p{margin:0;font-size:13px;line-height:1.6;color:var(--ink-2,#5B5372)}
+  .credit-free-note .cfn-fair{margin-top:7px;padding-top:7px;border-top:1px dashed #E3DAF6;font-size:11.5px;color:#6F6889}
+
+  /* ===== 2026-11-22 · 게스트 체험 안내 =====
+     게스트(익명) = 방 1개 · 끼리 AI 10회 체험 / 가입 멤버 = 무제한 무료 + 기록 영구 저장 */
+  .guest-note{margin:9px 2px 0;padding:9px 12px;border:1px solid #E6E0F7;border-radius:12px;background:#FAF8FF;
+    font-size:11px;line-height:1.6;color:#5B5372;letter-spacing:-.01em;word-break:keep-all}
+  .guest-note b{color:#5B38E0;font-weight:900}
+  .guest-note[hidden]{display:none!important}
+  .auth-guest-note{margin:0 0 12px;padding:11px 12px;border-radius:12px;background:#F3EEFF;border:1px solid #E2D9FB;
+    font-size:11.5px;line-height:1.62;color:#4B3F86;font-weight:800;letter-spacing:-.01em;word-break:keep-all}
+  .auth-guest-note b{color:#5B38E0}
+  .auth-guest-note[hidden]{display:none!important}
 </style>
 <!-- 비밀번호 재설정 링크로 돌아왔는지 — supabase-js 는 클라이언트를 만드는 순간 주소의 토큰을 읽고
      해시를 지우기 때문에, 그보다 먼저(스크립트 로드 전) 주소를 보고 표시를 남겨 둔다. -->
@@ -2254,6 +2266,11 @@ window.__KKIRI_BOOT = (function () {
       <circle style="fill:currentColor;stroke:none" cx="6.6" cy="12" r="1.5"/>
       <circle style="fill:currentColor;stroke:none" cx="12" cy="12" r="1.5"/>
       <circle style="fill:currentColor;stroke:none" cx="17.4" cy="12" r="1.5"/>
+    </symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24">
+      <path style="fill:var(--ico-fill,#EDE8FF);stroke:none" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      <circle cx="12" cy="12" r="3"/>
     </symbol>
     <symbol id="i-pencil" viewBox="0 0 24 24">
       <path d="M4.6 19.4l1-3.8L15.9 5.3a1.8 1.8 0 0 1 2.6 0l.2.2a1.8 1.8 0 0 1 0 2.6L8.4 18.4z"/>
@@ -2476,13 +2493,15 @@ window.__KKIRI_BOOT = (function () {
           <button type="button" class="home-chip" id="homeNickBtn" title="내 닉네임 바꾸기"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg> <b id="homeNick">참가자</b></button>
           <button type="button" class="home-chip" id="homeCreditBtn" title="내 크레딧"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-gem"></use></svg> <b id="homeCredit">—</b></button>
         </div>
+        <!-- 게스트 체험 안내 — 게스트만 보인다 (방 1개 · 끼리 AI 10회 / 가입하면 무제한) -->
+        <p class="guest-note" id="guestNote" hidden></p>
         <!-- 시작 전 메인 게이트 — 큰 ㄲㄹ 로고 · 카피 · 그라데이션 시작 버튼 하나 -->
         <div class="gate" id="homeGate" hidden>
           <div class="gate-logo kk-mark" aria-hidden="true"></div>
           <h2 class="gate-copy">AI와 함께, 뭐든지 끼리 하자</h2>
           <p class="gate-sub">AI와 사람이 한 방에서 만나 이야기하는 공간</p>
           <button type="button" class="gate-cta" id="gateStartBtn">끼리 시작하기</button>
-          <p class="gate-note"><span class="paid-only">내 AI·사람 대화는 무제한 무료 · 끼리 AI도 매일 무료 체험</span><span class="free-only">지금은 끼리 AI까지 모든 대화가 무제한 무료예요</span></p>
+          <p class="gate-note"><span class="paid-only">내 AI·사람 대화는 무제한 무료 · 끼리 AI도 매일 무료 체험</span><span class="free-only">게스트는 방 1개 · 끼리 AI 10회까지 체험 · 가입하면 무제한</span></p>
         </div>
         <section class="home-sec" id="homeRoomsSec" aria-label="내 대화방">
           <div class="home-sec-head">
@@ -2523,7 +2542,7 @@ window.__KKIRI_BOOT = (function () {
         <span class="pres-pill" id="roomPresence" title="지금 이 방에 접속 중인 참가자">접속 0명</span>
         <button class="ghost-btn" id="shareBtn" type="button" title="사람·AI 초대하기" aria-label="초대하기"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg><span class="lbl">초대하기</span></button>
         <button class="ghost-btn" id="cardBtn" type="button" title="정리안 카드 보기 · 없으면 지금 대화로 만들기" aria-label="정리안 카드"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-card"></use></svg><span class="lbl">정리안</span></button>
-        <button class="icon-btn" id="roomSettingsBtn" aria-label="방 설정"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-dots"></use></svg></button>
+        <button class="icon-btn" id="roomSettingsBtn" type="button" aria-label="방 설정" title="방 설정"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-gear"></use></svg></button>
       </div>
     </header>
 
@@ -2642,7 +2661,7 @@ window.__KKIRI_BOOT = (function () {
 
         <div class="focus-card" id="focusCard">
           <b>내 AI 비서 초대 <em>(무응답 10분 대기)</em></b>
-          <span class="focus-sub">피클·키링·뮤즈 같은 내 AI 앱에 붙여넣으세요. 대화 중엔 계속 함께하고, 10분간 새 대화가 없으면 자동으로 나와요.<span class="paid-only"> (끼리 크레딧 0)</span></span>
+          <span class="focus-sub">피클·키링·뮤즈 같은 내 AI 앱에 붙여넣으세요. 외부 앱이 직접 답하는 방식이라 끼리 AI보다 조금 느릴 수 있어요. 10분 새 대화가 없으면 자동으로 나와요.<span class="paid-only"> (끼리 크레딧 0)</span></span>
           <details class="focus-details">
             <summary>지시문 미리보기</summary>
             <pre class="focus-preview" id="focusPreview"></pre>
@@ -2682,10 +2701,10 @@ window.__KKIRI_BOOT = (function () {
             <p class="hint byok-note" id="mineKeyHint"></p>
             <div class="btn-row"><button type="button" class="btn dark" id="mineKeyTest">연결 테스트</button><button class="btn green" id="mineKeyAdd">키 저장하고 이 방에 추가</button></div>
             <p class="api-status" id="mineKeyStatus" role="status" aria-live="polite" hidden></p>
-            <p class="modal-note byok-note"><span class="paid-only">키는 이 기기에만 저장되며, 끼리 크레딧을 쓰지 않아요.</span><span class="free-only">키는 이 기기에만 저장돼요 · 지금은 키 없이도 끼리 AI를 무료로 쓸 수 있어요.</span></p>
+            <p class="modal-note byok-note"><span class="paid-only">키는 이 기기에만 저장되며, 끼리 크레딧을 쓰지 않아요.</span><span class="free-only">키는 이 기기에만 저장돼요 · 키 없이도 끼리 AI를 무료로 쓸 수 있어요.</span></p>
           </div>
         </details>
-
+      </section>
 
       <!-- ---------- 탭 3 · 사람 초대 ---------- -->
       <section id="aiTabPerson" role="tabpanel" aria-label="사람 초대" hidden>
@@ -2698,8 +2717,6 @@ window.__KKIRI_BOOT = (function () {
         <div class="btn-row" style="margin-top:12px"><button class="btn dark" id="shareCopy"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-copy"></use></svg> 초대 링크 복사</button></div>
         <div class="btn-row" style="margin-top:8px"><button class="btn" id="shareKakao"><svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg> 카카오톡으로 공유하기</button></div>
         <p class="hint" id="shareHint" style="margin-top:10px">링크를 받은 사람은 접속하면 바로 이 방으로 들어와요. 다른 AI에게 넘겨도 같은 방 대화를 이어갈 수 있습니다.</p>
-      </section>
-
       </section>
     </div>
     <div class="sheet-foot"><button class="btn dark" id="inviteDone" type="button">완료</button></div>
@@ -2853,8 +2870,10 @@ window.__KKIRI_BOOT = (function () {
         <div class="ah-logo kk-mark" aria-hidden="true"></div>
         <h2>끼리에 오신 걸 환영해요</h2>
         <p class="paid-only"><b>내 AI와 사람 대화는 무제한 무료</b><br>끼리 AI도 매일 무료로 체험할 수 있어요.</p>
-        <p class="free-only"><b>지금은 모든 AI 대화를 무료로</b><br>마음껏 쓸 수 있어요.</p>
+        <p class="free-only"><b>무료 가입하면 방·대화 무제한</b><br>기록도 영구 저장돼요 · 끼리 AI도 무제한 무료</p>
       </div>
+      <!-- 게스트 한도에 걸려 열렸을 때만 안내가 뜬다 (방 1개 · 끼리 AI 10회) -->
+      <p class="auth-guest-note" id="authGuestNote" hidden></p>
       <div class="auth-tabs" role="tablist" aria-label="로그인 또는 회원가입">
         <button type="button" class="auth-tab" data-auth="login" role="tab" aria-selected="true" aria-pressed="true">로그인</button>
         <button type="button" class="auth-tab" data-auth="signup" role="tab" aria-selected="false" aria-pressed="false">회원가입</button>
@@ -2874,7 +2893,7 @@ window.__KKIRI_BOOT = (function () {
       <div class="auth-or">또는</div>
       <button class="auth-guest ghost" id="guestBtn" type="button">
         <span class="ag-ico" aria-hidden="true"><svg class="ico md" aria-hidden="true" focusable="false"><use href="#i-bolt"></use></svg></span>
-        <span><b id="guestBtnTitle">게스트로 먼저 체험하기</b><small id="guestBtnSub">1회 100크레딧 무료 체험 · 이메일 없이 바로</small></span>
+        <span><b id="guestBtnTitle">게스트로 먼저 체험하기</b><small id="guestBtnSub">방 1개 · 끼리 AI 10회 체험 · 이메일 없이 바로</small></span>
       </button>
       <!-- 초대 링크는 이제 무로그인 바로 입장 — 옛 안내 문구는 제거 (2026-11-21) -->
     </div>
@@ -2887,8 +2906,9 @@ window.__KKIRI_BOOT = (function () {
     <div class="sheet-head"><h2 id="creditTitle">내 크레딧</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
     <div class="sheet-body">
       <div class="credit-free-note" id="creditFreeNote">
-        <b>지금은 무제한 무료예요</b>
+        <b>무제한 무료예요</b>
         <p>끼리 AI·사람·내 AI 대화를 모두 무료로 마음껏 쓸 수 있어요. 따로 결제하거나 충전할 필요가 없어요.</p>
+        <p class="cfn-fair">모두가 쾌적하게 쓸 수 있도록, 짧은 시간이나 하루에 지나치게 많은 호출은 일시 제한될 수 있어요.</p>
       </div>
       <div class="panel-card paid-only">
         <div class="row"><div class="k">남은 크레딧<small id="creditPlan">매일 300크레딧 무료</small></div><span class="pill" id="creditNow">0</span></div>
@@ -2974,7 +2994,8 @@ window.__KKIRI_BOOT = (function () {
           <li>만 14세 미만은 가입할 수 없습니다.</li>
           <li>회원은 본인의 계정과 비밀번호를 스스로 관리해야 합니다.</li>
           <li class="paid-only">크레딧은 서비스 안에서만 쓸 수 있습니다. 매일 자정에 채워지는 <b>기본</b> 크레딧과 친구 초대 <b>초대</b> 크레딧은 정해진 기간이 지나면 사라지고, <b>후원</b> 크레딧은 유효기간이 없습니다.</li>
-          <li class="free-only">지금은 무료 운영 기간으로, 끼리 AI·사람·내 AI 대화를 모두 무료로 이용할 수 있습니다. 무료 운영이 끝나면 앱 안에서 미리 안내합니다.</li>
+          <li class="free-only">끼리 AI·사람·내 AI 대화를 모두 무료로 이용할 수 있습니다. 사람·내 AI 대화는 로그인 없이도 무료이고, 기록은 계정에 저장됩니다.</li>
+          <li class="free-only">안정적인 무료 운영을 위해 과도하거나 비정상적인 대량 호출은 일시 제한될 수 있습니다. 게스트는 방 1개·끼리 AI 10회까지 체험할 수 있고, 무료 가입하면 그 제한 없이 무제한으로 쓸 수 있습니다.</li>
           <li class="paid-only">끼리는 광고 대신 후원으로 운영됩니다. 후원은 끼리를 응원하는 <b>자발적 의사</b>에 따른 것이며, 정해진 상품을 사고파는 결제나 크레딧을 미리 사 두는 충전이 아닙니다.</li>
           <li class="free-only">끼리는 광고 없이 후원으로 운영됩니다. 후원은 끼리를 응원하는 <b>자발적 의사</b>에 따른 것이며, 어떤 기능을 사고파는 결제가 아닙니다.</li>
           <li class="paid-only">후원해 주신 뒤 후원 크레딧을 요청하시면, 감사의 뜻으로 후원 금액과 1:1 비율로 지급해 드립니다(1,000원부터). 요청과 지급은 앱 안의 ‘끼리 후원하기’에서 합니다.</li>
@@ -3259,10 +3280,10 @@ function selfLabel() {
 function autoNick() {
   var n = "";
   try { n = localStorage.getItem(NICK_AUTO_KEY) || ""; } catch (e) {}
-  if (nickNum(n) < 1) {
-    n = NICK_BASE + "1";
-    try { localStorage.setItem(NICK_AUTO_KEY, n); } catch (e2) {}
-  }
+  /* 처음 시작하는 사람의 기본 이름 = 끼리장.
+     초대 링크로 들어온 사람은 이 방에서 비어 있는 '참가자N'을 따로 받는다(assignJoinNick). */
+  if (!n) n = DEFAULT_NICK;
+  try { localStorage.setItem(NICK_AUTO_KEY, n); } catch (e2) {}
   return n;
 }
 function nick() {
@@ -4147,8 +4168,9 @@ function renderHome() {
     if (V3.mode === "local") cr.textContent = "데모";
     else if (!V3.signedIn) cr.textContent = "매일 300 무료";
     else if (!FREE_LAUNCH_MODE) cr.textContent = creditsLabel(creditsNow()) + " 크레딧";
-    else cr.textContent = "무제한 무료";
+    else cr.textContent = isGuest() ? "게스트 체험" : "무제한 무료";
   }
+  try { renderGuestSpot(); } catch (e) {}
   var rc = $("homeRoomCount");
   if (rc) rc.textContent = state.rooms.length;
   var rh = "";
@@ -5062,12 +5084,12 @@ function addAgentMessage(agent, d, phase) {
 var DEMO = {
   open: {
     pikri: [
-      { t: "안건은 “{agenda}”입니다. 참여는 {members} {n}명, 최대 {turns}라운드" + (FREE_LAUNCH_MODE ? ", 지금은 무료로 진행해요. " : ", 크레딧 상한 {budget}으로 잡았습니다. ") + "1차 의견을 듣고 쟁점을 두 개로 좁힌 뒤 정리안까지 만들겠습니다." },
+      { t: "안건은 “{agenda}”입니다. 참여는 {members} {n}명, 최대 {turns}라운드" + (FREE_LAUNCH_MODE ? ", 무료로 진행해요. " : ", 크레딧 상한 {budget}으로 잡았습니다. ") + "1차 의견을 듣고 쟁점을 두 개로 좁힌 뒤 정리안까지 만들겠습니다." },
       { t: "오늘 안건은 “{agenda}”입니다. 목표는 결정 1개와 다음 할 일 3개입니다. {members} 순서로 의견을 듣고, 중간에 제가 쟁점을 정리하겠습니다." },
       { t: "“{agenda}” 시작하겠습니다. 참여 {n}명, 최대 {turns}라운드입니다. 서로 다른 관점을 먼저 듣고, 숫자로 확인할 것은 따로 표시하겠습니다." }
     ],
     generic: [
-      { t: "안건은 “{agenda}”입니다. 참여 {n}명, 최대 {turns}라운드" + (FREE_LAUNCH_MODE ? ", 지금은 무료로 진행합니다. " : ", 크레딧 상한 {budget}입니다. ") + "먼저 1차 의견을 듣고 쟁점을 정리하겠습니다." },
+      { t: "안건은 “{agenda}”입니다. 참여 {n}명, 최대 {turns}라운드" + (FREE_LAUNCH_MODE ? ", 무료로 진행합니다. " : ", 크레딧 상한 {budget}입니다. ") + "먼저 1차 의견을 듣고 쟁점을 정리하겠습니다." },
       { t: "“{agenda}” 시작하겠습니다. 목표는 결정 1개와 다음 할 일 3개입니다. 순서대로 말씀해 주세요." }
     ]
   },
@@ -5565,7 +5587,7 @@ async function relayTurn(step, ep) {
      화면 차례 줄에는 라운드 숫자만 적는다 — 결론을 좁혀도 된다는 안내([종결])는
      AI 호출 프롬프트(roundRule)가 담당하고, 표시 단계에서 지워지는 문장을 화면에 붙이지 않는다. */
   var waitMs = presenceAiFlag(step.nick) ? RELAY_WAIT_EXTERNAL_MS : RELAY_WAIT_MS;
-  addSystem("@" + step.nick + " 님 차례 · 짧게 답해 주세요 (" + roundNo + "/" + total + "라운드)", "turn");
+  addSystem("@" + step.nick + " 님 차례 (" + roundNo + "/" + total + "라운드)", "turn");
   var reply = await waitRelayReply(step.nick, known, ep, waitMs);
   run.typingName = null;
   run.relayWait = null;
@@ -5664,6 +5686,10 @@ function kkiriConfigFor(a) {
 /* 지금 이 AI를 어떤 길로 부를지 */
 function turnRoute(a) {
   if (agentClassOf(a) === "mine") return (a && a.url) ? "webhook" : "external";
+  /* 게스트 체험 한도 — 끼리 AI 10회를 다 쓰면 가입 안내로 보낸다.
+     내 키(BYOK)·내 AI 대화는 게스트도 그대로 무료라 여기서 막지 않는다. */
+  var ownKeyAI = !!(a && (a.type === "byok" || (a.type === "builtin" && (a.model === "gemini" || a.model === "openai"))));
+  if (!ownKeyAI && isGuest() && guestAiLeft() <= 0) return "guest-limit";
   if (V3.mode === "mock") return "kkiri-mock";
   /* 끼리 AI(주제별 전문가·직접 만들기)는 오직 끼리 크레딧(10크레딧/회)으로만 답한다.
      내 API 키(BYOK)는 '내 AI'의 내 제미나이·내 GPT만 쓴다 — 두 서비스를 섞지 않는다. */
@@ -5685,17 +5711,22 @@ function routeGuide(a, route) {
     text: "‘" + a.name + "’은(는) 초대 링크로 직접 접속해야 답할 수 있어요. 상단 ‘이 방 초대’로 링크를 보내 주세요.",
     acts: [{ label: "이 방 초대 링크", act: "invite" }]
   };
+  if (route === "guest-limit") return {
+    text: "끼리 AI 10회 체험을 다 썼어요 · 무료 가입하면 무제한으로 쓸 수 있어요",
+    acts: [{ label: "무료 가입 · 방·대화 무제한", act: "signup" }],
+    limit: true
+  };
   if (route === "need-connect") {
     /* 끼리 AI는 크레딧 전용 — 내 API 키로 대신 부르지 않는다 (무제한 무료 모드에서는 무료 안내) */
     if (a && a.type === "expert") return {
       text: FREE_LAUNCH_MODE
-        ? "끼리 AI는 지금 무료예요. 로그인하면 바로 부를 수 있어요."
+        ? "끼리 AI는 무료예요. 로그인하면 바로 부를 수 있어요."
         : "끼리 AI는 끼리 크레딧으로 답해요. 로그인하면 매일 300크레딧이 무료로 채워져요.",
       acts: [{ label: FREE_LAUNCH_MODE ? "로그인 · 무료로 시작" : "로그인 · 매일 300크레딧 무료", act: "login" }]
     };
     return {
       text: FREE_LAUNCH_MODE
-        ? "끼리 AI를 부르려면 로그인해 주세요. 지금은 로그인하면 무료로 쓸 수 있어요. 내 AI에서 내 제미나이·GPT 키를 연결해도 돼요."
+        ? "끼리 AI를 부르려면 로그인해 주세요. 로그인하면 무료로 쓸 수 있어요. 내 AI에서 내 제미나이·GPT 키를 연결해도 돼요."
         : "끼리 AI를 쓰려면 로그인(매일 300크레딧 무료)하거나, 내 AI에서 내 제미나이·GPT 키를 연결해 주세요.",
       acts: [{ label: FREE_LAUNCH_MODE ? "로그인 · 무료로 시작" : "로그인 · 매일 300크레딧 무료", act: "login" }, { label: "내 AI · 내 키 연결", act: "settings" }]
     };
@@ -5710,6 +5741,7 @@ function sysAct(name) {
     openModal("authModal");
     return;
   }
+  if (name === "signup") { openGuestLimit("ai"); return; }
   if (name === "settings") {
     syncFields(); renderApi(); renderStorage(); hideApiStatus();
     openModal("settingsModal");
@@ -5808,7 +5840,7 @@ async function speak(agent, phase, ep) {
     if (early) finishEarly(agent.name);
     return;
   }
-  if (guide) { addSystem(guide.text, "warn", guide.acts); updateMeters(); return; }
+  if (guide) { if (guide.limit) openGuestLimit("ai"); addSystem(guide.text, "warn", guide.acts); updateMeters(); return; }
   /* 여기까지 왔다는 건 끼리 AI·나의 AI 어느 쪽도 답을 주지 못했다는 뜻 — 다른 엔진으로 대신 답하지 않는다. */
   addSystem(agent.name + " 응답을 받지 못했어요. 잠시 뒤 다시 불러 주세요.", "warn");
 }
@@ -6215,15 +6247,17 @@ async function callProvider(provider, key, model, systemText, userText, retried,
 
 /* 모든 끼리 AI 공통 — 뻔한 일반론 대신 실제 이름·수치로 답하게 한다. */
 var SPECIFICITY_RULE = "구체성: ‘주변 카페’, ‘현지 맛집’, ‘적당히’, ‘잘 알아보세요’ 같은 두루뭉술한 일반론을 쓰지 않는다. 실제 가게·장소·메뉴·대안의 이름과 숫자(가격·시간·거리), 지금 할 행동을 1~2개 이상 콕 집어 넣어 2~3문장으로 날카롭게 답한다.";
+/* 모든 끼리 AI 공통 — 어떤 상황에서도 반말 금지. 역할·말투(persona) 지시보다 이 규칙이 우선한다. */
+var HONORIFIC_RULE = "존댓말: 반드시 한국어 존댓말(~요/~습니다)로만 답하세요. 수다·농담·짧은 반응·감정 표현에서도 절대 반말을 쓰지 마세요. 상대가 반말로 말해도 똑같이 존댓말로 답하세요. 이 규칙은 아래 역할·말투 지시보다 우선합니다.";
 function systemFor(agent, phase) {
   var r = activeRoom();
   var team = memberNames(r).join(", ");
   var base = agent.prompt || (agent.type === "webhook" ? "너는 이 방의 AI 멤버다." : "너는 이 방의 AI 멤버다.");
   /* 모바일에서 한눈에 들어오게: 보통 답변은 1~2문장, 정리안(converge)만 요약이라 2~4문장 */
   var lengthRule = phase === "converge" ? "한국어로 2~4문장" : "한국어로 핵심만 1~2문장(짧고 읽기 쉽게)";
-  return base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
+  return HONORIFIC_RULE + "\n" + base + roleDirective(r, agent) + "\n방: " + r.name + " / 안건: " + (r.agenda || "없음") +
     "\n함께 있는 AI: " + team +
-    "\n규칙: " + lengthRule + ". 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다." +
+    "\n규칙: 반드시 한국어 존댓말(~요/~습니다)로만 답하고, 가벼운 수다·농담·짧은 한마디에서도 반말을 쓰지 않는다. " + lengthRule + ". 마크다운 제목·이모지 금지. 확인하지 않은 수치·일정·재고를 아는 것처럼 말하지 말고 ‘확인 필요’로 표시한다. 다른 발언을 그대로 반복하지 않는다. 자기 이름을 매번 붙이지 않는다." +
     roundRule(agent) +
     "\n" + SPECIFICITY_RULE;
 }
@@ -6245,7 +6279,7 @@ function phaseInstruction(phase, r) {
   if (phase === "issue") return "지금까지 발언에서 쟁점을 두 개로 압축하고, 각 쟁점에 대한 입장을 한 줄씩 정리하라.";
   if (phase === "rebuttal") return "직전 발언 중 하나를 이름으로 지목해 반박하거나 보완하라. 같은 말을 반복하지 마라.";
   if (phase === "converge") return "결정·근거·이견·다음 할 일을 담아 3~5문장으로 정리안을 만들라. 숫자는 ‘제안’ 또는 ‘확인 필요’로 표시하라.";
-  if (phase === "chat") return "가벼운 수다다. 1~2문장으로 편하게 답하라.";
+  if (phase === "chat") return "가벼운 수다입니다. 1~2문장으로 다정하고 정중한 존댓말(~요/~습니다)로 답하세요.";
   if (phase === "mention") return "사용자가 이름을 불렀다. 짧게 답하고, 자기 몫에서 도울 일을 한 가지 제안하라.";
   return "안건에 맞게 짧게 발언하라.";
 }
@@ -6797,6 +6831,7 @@ async function redoCard(mid) {
 /* 정리안 재료 — AI 발언과 내 AI(릴레이) 발언만. 사람 채팅과 호명 글은 빼 둔다. */
 function isCardSource(m) {
   if (!m || m.who === "system" || m.who === "card") return false;
+  if (m.kind === "greet" || m.src === "greet") return false;   /* 입장 인사는 대화가 아니다 — 정리안 재료에서 뺀다 */
   if (m.who === "user" && !m.relay) return false;
   return true;
 }
@@ -6867,7 +6902,8 @@ async function generateCard(opts) {
   var r = activeRoom();
   if (!r) return null;
   var all = r.messages.filter(isCardSource);
-  if (!all.length && !opts.force) { toast("아직 정리할 대화가 없어요"); return null; }
+  /* 실제 대화(사람·AI 발언)가 하나도 없으면 카드를 만들지 않는다 — 입장 인사만 있는 방·자동토론 종료 포함 */
+  if (!all.length) { toast("아직 정리할 대화가 없어요 · 이야기를 나눈 뒤 눌러 주세요"); return null; }
   if (cardBusy) { toast("지금 정리안을 만들고 있어요"); return null; }
   cardBusy = true;
   var summary = null;
@@ -6894,7 +6930,7 @@ function onCardButton() {
   var lastCard = null, lastAt = 0;
   r.messages.forEach(function (m) {
     if (m.who === "card") lastCard = m;
-    else if (m.who !== "system") lastAt = Math.max(lastAt, m.at);
+    else if (m.who !== "system" && m.kind !== "greet" && m.src !== "greet") lastAt = Math.max(lastAt, m.at);
   });
   if (lastCard && lastAt <= lastCard.at) {
     var el = document.querySelector('[data-card="' + lastCard.card.id + '"]');
@@ -6921,7 +6957,7 @@ function openModal(id) {
   var m = $(id);
   if (!m) return;
   /* 시작 모달은 열 때마다 이 기기의 게스트 체험 이력에 맞춰 문구를 다시 그린다 */
-  if (id === "authModal") { try { renderGuestButton(); } catch (e) {} }
+  if (id === "authModal") { try { renderGuestButton(); clearGuestLimitNote(); } catch (e) {} }
   /* 초대 창을 열 때의 멤버를 기준점으로 — 닫을 때 새로 남은 AI만 인사하게 한다 */
   if (id === "inviteModal") { try { beginInviteSession(); } catch (e) {} }
   if (openStack.indexOf(id) < 0) openStack.push(id);
@@ -7361,7 +7397,7 @@ function openBudgetSheet() {
   var r = activeRoom();
   if (!r) return;
   /* 무제한 무료 런치 — 크레딧 상한을 볼 일이 없다(스위치를 끄면 그대로 되살아난다) */
-  if (FREE_LAUNCH_MODE) { toast("지금은 모든 대화가 무제한 무료예요"); return; }
+  if (FREE_LAUNCH_MODE) { toast("모든 대화가 무제한 무료예요"); return; }
   /* 크레딧 상한은 방장 것 — 초대받은 사람은 바꿀 수 없다 */
   if (!canSpendCredits(r)) { ownerOnlyBlocked("크레딧 상한 바꾸기"); return; }
   $("budgetInput").value = r.budget || 300;
@@ -7602,6 +7638,8 @@ async function rfKickPerson(name) {
 }
 function openRoomForm(roomId) {
   var r = roomId ? state.rooms.filter(function (x) { return x.id === roomId; })[0] : null;
+  /* 게스트는 방 1개까지 — 새 방을 더 만들려 하면 가입 안내(설정 창은 그대로 열린다) */
+  if (!r && guestRoomBlocked()) return;
   roomForm.id = r ? r.id : null;
   $("rfTitle").textContent = r ? "방 설정" : "새 방 만들기";
   $("rfName").value = r ? r.name : "";
@@ -7698,6 +7736,7 @@ function rfSelectedMembers() {
   return Array.isArray(roomForm.members) ? roomForm.members.slice() : [];
 }
 function submitRoomForm() {
+  if (!roomForm.id && guestRoomBlocked()) return;
   var name = $("rfName").value.trim();
   if (!name) { toast("방 이름을 적어 주세요"); $("rfName").focus(); return; }
   /* 새 방은 빈 방으로 시작한다(AI는 방 안에서 부른다). 방 설정은 이 방에 있는 AI 그대로 저장한다. */
@@ -7948,6 +7987,7 @@ function focusPrompt() {
     "· 방: " + (r.name || "이름 없는 방") + " (" + categoryLabelOf(r) + ")\n" +
     "· 내 이름: " + who + " — @" + who + " 으로 부르는 말은 나에게 하는 말이야.\n" +
     "· 방에 들어가면 상단 내 이름(또는 설정)을 네 AI 이름으로 먼저 바꿔 줘.\n" +
+    "· 답변은 반드시 한국어 존댓말(~요/~습니다)로만 해 줘.\n" +
     "· 들어갈 때 짧은 인사 한 줄만 남기고, 이후엔 @" + who + " 이나 @AI전원 으로 부르거나 사람이 직접 물을 때만 답해 줘.\n" +
     "· 긴 검색·조사는 생략하고, 10초 안팎 간격으로 새 글을 확인해 바로 핵심 2문장만 답해 줘.\n" +
     "· AI 자동토론 중이 아니면 다른 AI 말엔 이어 말하지 마.\n" +
@@ -9160,6 +9200,61 @@ function ensureAutoNick() {
   while (used[n]) n++;
   return applyAutoNick(NICK_BASE + n);
 }
+/* 이 방에서 이미 쓰는 이름(소문자 키) — 방장·참여자·대화에 남은 사람·이 방 AI 이름 */
+function roomUsedNames(r) {
+  var used = {};
+  function add(n) {
+    var t = displayName(String(n == null ? "" : n).trim().slice(0, 20));
+    if (t) used[t.toLowerCase()] = 1;
+  }
+  if (!r) return used;
+  add(r.hostName);
+  (r.aiPeople || []).forEach(add);
+  (r.members || []).forEach(function (id) { var a = state.agents[id]; if (a && a.name) add(a.name); });
+  (r.messages || []).forEach(function (m) {
+    if (!m) return;
+    if (m.name) add(m.name);
+    if (m.senderName) add(m.senderName);
+  });
+  /* 이 방에서 확인된 사람(서버 발언·접속 기록) */
+  var box = roomPeopleKnown[r.id] || {};
+  Object.keys(box).forEach(function (k) { add(box[k]); });
+  /* 지금 이 방에 붙어 있는 접속자 */
+  if (presence && presence.roomId === r.id) { try { onlinePeople().forEach(add); } catch (e) {} }
+  return used;
+}
+/* 본인이 직접 정한 닉네임이 있는가 — 기본값(끼리장)·자동 부여 이름은 ‘정한 것’이 아니다 */
+function customNickSet() {
+  var v = "";
+  try { v = String(localStorage.getItem(NICK_KEY) || "").trim(); } catch (e) {}
+  if (!v) return false;
+  if (v === DEFAULT_NICK) return false;
+  return !isAutoNick(v);
+}
+/* 초대받아 들어온 사람의 이름 — 이 방에 없는 가장 작은 ‘참가자N’.
+   (아무도 없거나 끼리장뿐이면 참가자1, 참가자1이 이미 있으면 참가자2 …) */
+function joinAutoNick(r) {
+  var used = roomUsedNames(r);
+  var mine = String(nick() || "").toLowerCase();
+  if (mine) delete used[mine];         /* 내가 이미 쓰던 자동 이름은 자리로 본다 */
+  var n = 1;
+  while (used[(NICK_BASE + n).toLowerCase()]) n++;
+  var name = NICK_BASE + n;
+  try { localStorage.setItem(NICK_AUTO_KEY, name); } catch (e) {}
+  return applyAutoNick(name);
+}
+/* 초대 링크(?code=·?room=)로 들어온 사람에게만 자동 이름을 붙인다 — 한 번만.
+   ?nick= 으로 이름을 지정했거나 직접 정한 닉네임이 있으면 그대로 쓴다. */
+var joinNickDone = false;
+function assignJoinNick() {
+  if (joinNickDone) return nick();
+  joinNickDone = true;
+  if (!pendingJoin) return nick();
+  if (JOIN_NICK || customNickSet()) return nick();
+  var r = activeRoom();
+  if (!r) return nick();
+  return joinAutoNick(r);
+}
 /* 지금 이 방에 실제로 접속해 있는 참가자(닉네임)만 — 나간 사람·내보낸 사람은 남기지 않는다 */
 function presenceRows() {
   var r = activeRoom();
@@ -9290,11 +9385,11 @@ async function dbLoadRoomHumans() {
     renderRoomList();
   } catch (e) { roomHumansAt = 0; }
 }
-function dbSendMessage(m) {
-  if (!db.ready || !db.client) return;
-  var r = activeRoom();
-  if (!r || !r.remote) return;
-  if (!m || m.who === "card") return;
+function dbSendMessage(m, room) {
+  if (!db.ready || !db.client) return Promise.resolve(null);
+  var r = room || activeRoom();
+  if (!r || !r.remote) return Promise.resolve(null);
+  if (!m || m.who === "card") return Promise.resolve(null);
   var a = m.who !== "user" && m.who !== "system" ? state.agents[m.who] : null;
   var row = {
     id: m.id, room_id: r.id,
@@ -9313,9 +9408,10 @@ function dbSendMessage(m) {
       tin: Math.round(m.tin || 0), tout: Math.round(m.tout || 0), cost: Number(m.cost) || 0
     }
   };
-  db.client.from("kkiri_messages").insert(row).then(function (res) {
+  return db.client.from("kkiri_messages").insert(row).then(function (res) {
     if (res && res.error) dbToast("메시지를 서버에 저장하지 못했어요 · " + res.error.message);
-  }, function () { dbToast("메시지를 서버에 저장하지 못했어요 · 네트워크"); });
+    return res;
+  }, function () { dbToast("메시지를 서버에 저장하지 못했어요 · 네트워크"); return null; });
 }
 function dbSendCard(m) {
   if (!db.ready || !db.client) return;
@@ -9756,6 +9852,89 @@ var V3 = {
   guestTrialUsed: false    /* 이 기기에서 게스트 100크레딧 체험을 이미 마쳤는가 */
 };
 
+/* =========================================================
+   게스트(익명) 체험 한도 (2026-11-22 확정)
+   ---------------------------------------------------------
+   게스트 = 방 1개 · 끼리 AI 10회 체험 / 가입 멤버 = 무제한 무료 + 기록 영구 저장
+   사람·내 AI 대화는 게스트도 그대로 무료다.
+   ========================================================= */
+var GUEST_ROOM_MAX = 1;
+var GUEST_AI_MAX = 10;
+var GUEST_AI_KEY = "kkiri.guest.ai.v1";
+function isGuest() {
+  return !!(V3.signedIn && V3.user && (V3.user.isAnonymous || V3.user.is_anonymous));
+}
+function guestAiUsed() {
+  try {
+    var v = JSON.parse(localStorage.getItem(GUEST_AI_KEY) || "{}");
+    var n = Number(v && v.count);
+    return (n > 0) ? Math.floor(n) : 0;
+  } catch (e) { return 0; }
+}
+function guestAiLeft() { return Math.max(0, GUEST_AI_MAX - guestAiUsed()); }
+function clearGuestAiUsed() { try { localStorage.removeItem(GUEST_AI_KEY); } catch (e) {} }
+function markGuestAiUsed(n) {
+  if (!isGuest()) return;
+  var count = Math.min(GUEST_AI_MAX + 5, guestAiUsed() + (Number(n) || 1));
+  try { localStorage.setItem(GUEST_AI_KEY, JSON.stringify({ count: count, at: Date.now() })); } catch (e) {}
+  try { renderGuestSpot(); } catch (e) {}
+}
+/* 게스트가 만든 방 수 — 서버 방(ownerId)·로컬 방(hostUid) 둘 다 같은 uid 로 센다 */
+function guestRoomCount() {
+  var uid = (V3.user && V3.user.id) ? String(V3.user.id) : "";
+  var n = 0;
+  (state.rooms || []).forEach(function (r) {
+    if (!r || !uid) return;
+    if (String(r.ownerId || "") === uid || String(r.hostUid || "") === uid) n++;
+  });
+  return n;
+}
+function guestRoomLeft() { return Math.max(0, GUEST_ROOM_MAX - guestRoomCount()); }
+/* 게스트 한도에 걸렸을 때 — 가입 모달을 열고 이유를 한 줄로 알려 준다 */
+function openGuestLimit(what) {
+  var msg = (what === "room")
+    ? "게스트는 방 1개만 체험할 수 있어요 · 무료 가입하면 방도 무제한이에요"
+    : "끼리 AI 10회 체험을 다 썼어요 · 무료 가입하면 무제한으로 쓸 수 있어요";
+  if (V3.mode === "local") { toast(msg); return; }
+  openModal("authModal");
+  setAuthMode("signup");
+  var note = $("authGuestNote");
+  if (note) {
+    note.hidden = false;
+    note.innerHTML = esc(msg) + "<br>무료 가입하면 방·대화 무제한 + 기록 영구 저장";
+  }
+  var em = $("authEmail");
+  if (em) setTimeout(function () { try { em.focus(); } catch (e) {} }, 180);
+}
+function clearGuestLimitNote() {
+  var note = $("authGuestNote");
+  if (note) { note.hidden = true; note.innerHTML = ""; }
+}
+/* 게스트로 들어왔을 때 한 줄 — 남은 체험 범위를 그대로 알려 준다 */
+function guestStartMsg() {
+  var left = guestAiLeft();
+  return left > 0
+    ? "게스트로 시작했어요 · 방 1개 · 끼리 AI " + left + "회까지 체험"
+    : "게스트로 시작했어요 · 끼리 AI 10회를 다 썼어요 · 가입하면 무제한";
+}
+/* 방 개설 게이트 — 게스트는 1개까지. 막혔으면 true */
+function guestRoomBlocked() {
+  if (!isGuest() || V3.mode === "local") return false;
+  if (guestRoomLeft() > 0) return false;
+  openGuestLimit("room");
+  return true;
+}
+/* 홈 상단 게스트 안내 — 게스트에게만 보인다 */
+function renderGuestSpot() {
+  var note = $("guestNote");
+  if (!note) return;
+  var g = isGuest() && V3.mode !== "local";
+  note.hidden = !g;
+  if (!g) { note.innerHTML = ""; return; }
+  note.innerHTML = "<b>게스트 체험 중</b> (방 1개 · 끼리 AI 10회) · 끼리 AI " + guestAiLeft() + "회 남음"
+    + "<br>무료 가입하면 방·대화 무제한 + 기록 영구 저장";
+}
+
 var DEFAULT_MODELS = {
   "kkiri-lite":         { display_name: "끼리 경량",         cost_per_turn_credits: 10 },
   "kkiri-standard":     { display_name: "끼리 표준",         cost_per_turn_credits: 30 },
@@ -9821,7 +10000,7 @@ var EXPERT_SETS = {
   counsel: [
     { id: "counsel_empathy", name: "공감 코치", avatar: "💗", role: "마음 · 경청", config: "kkiri-claude-lite",
       desc: "먼저 마음을 읽고 감정을 정리해 준다.",
-      persona: "너는 공감 코치야. 먼저 감정을 읽고 인정해 준 뒤, 지금 마음이 어떤지 한 문장으로 정리해 준다. 섣부른 조언은 하지 않는다." },
+      persona: "너는 공감 코치야. 먼저 감정을 읽고 인정해 준 뒤, 지금 마음이 어떤지 존댓말 한 문장으로 정리해 준다. 섣부른 조언은 하지 않는다." },
     { id: "counsel_real", name: "현실 조언가", avatar: "🧭", role: "해결책 · 실행", config: "kkiri-lite",
       desc: "지금 당장 할 수 있는 한 가지를 정해 준다.",
       persona: "너는 현실 조언가야. 감정은 짧게 인정하고, 지금 당장 할 수 있는 행동 1~2개를 구체적으로 정해 준다. 확인되지 않은 사실은 단정하지 않는다." },
@@ -9835,13 +10014,13 @@ var EXPERT_SETS = {
   free: [
     { id: "free_talker", name: "수다 친구", avatar: "💬", role: "잡담 · 공감", config: "kkiri-claude-lite",
       desc: "가볍게 받아 주고 말을 이어 준다.",
-      persona: "너는 수다 친구야. 가볍게 받아 주고 대화를 자연스럽게 이어 간다. 무겁게 설교하지 않고, 상대 말에서 한 가지를 집어 물어봐 대화를 넓힌다." },
+      persona: "너는 수다 친구야. 존댓말로 가볍게 받아 주고 대화를 자연스럽게 이어 간다. 무겁게 설교하지 않고, 상대 말에서 한 가지를 집어 물어봐 대화를 넓힌다." },
     { id: "free_wit", name: "재치러", avatar: "✨", role: "유머 · 반전", config: "kkiri-gemini-lite",
       desc: "분위기를 살리는 한마디와 반전을 준다.",
-      persona: "너는 재치 담당이야. 과하지 않은 유머와 반전으로 분위기를 살린다. 비아냥·비하는 쓰지 않고, 짧게 웃음이 나는 한마디를 붙인다." },
+      persona: "너는 재치 담당이야. 존댓말을 유지한 채 과하지 않은 유머와 반전으로 분위기를 살린다. 비아냥·비하는 쓰지 않고, 짧게 웃음이 나는 한마디를 붙인다." },
     { id: "free_empathy", name: "공감러", avatar: "💗", role: "공감 · 위로", config: "kkiri-claude-lite",
       desc: "먼저 마음을 읽고 편을 들어 준다.",
-      persona: "너는 공감 담당이야. 먼저 마음을 읽고 편을 들어 준다. 조언은 청하지 않았으면 하지 않고, 짧게 인정하고 곁에 있어 주는 말을 한다." },
+      persona: "너는 공감 담당이야. 먼저 마음을 읽고 존댓말로 편을 들어 준다. 조언은 청하지 않았으면 하지 않고, 짧게 인정하고 곁에 있어 주는 말을 한다." },
     { id: "free_topic", name: "화제 수집가", avatar: "🔎", role: "화제 · 소재", config: "kkiri-gemini-lite",
       desc: "대화가 멈추면 새 얘깃거리를 던진다.",
       persona: "너는 화제 수집가야. 대화가 멈칫하면 지금 흐름에 맞는 새 얘깃거리를 2~3개 던진다. 뉴스·계절·일상 소재에서 고르고, 바로 이어서 물어볼 질문을 붙인다." }
@@ -9920,7 +10099,7 @@ function renderCredit() {
     /* 무제한 무료 모드 — 크레딧 배지는 숨기고, 마크업·함수는 그대로 둔다 */
     el.className = "credit-chip off muted";
     el.innerHTML = icoHtml("gem", "sm") + " <b>무료</b>";
-    el.title = "지금은 모든 대화가 무제한 무료예요";
+    el.title = "모든 대화가 무제한 무료예요";
     el.hidden = true;
     return;
   }
@@ -9942,6 +10121,7 @@ function renderCredit() {
 function renderAccount() {
   var name = $("accountName"), sub = $("accountSub"), btn = $("accountBtn"), al = $("accountLine");
   if (!name || !sub || !btn) return;
+  try { renderGuestSpot(); } catch (e) {}
   var setSigned = function (on) { if (al) al.classList.toggle("signed", !!on); };
   if (V3.mode === "local") {
     setSigned(false);
@@ -9978,8 +10158,10 @@ function renderAccount() {
   if (profNick === "끼리손님" && !anonUser) profNick = "끼리멤버";
   var nickName = profNick || (u.email ? String(u.email).split("@")[0] : (anonUser ? "끼리손님" : "끼리멤버"));
   name.textContent = nickName;
-  /* 계정 카드 둘째 줄 — 무제한 무료 모드에서는 크레딧 숫자 대신 무료 안내 */
-  sub.textContent = FREE_LAUNCH_MODE ? "무제한 무료"
+  /* 계정 카드 둘째 줄 — 무제한 무료 모드에서는 크레딧 숫자 대신 안내
+     게스트는 체험 중인 범위를, 가입 멤버는 무제한·기록 저장 혜택을 보여 준다 */
+  sub.textContent = FREE_LAUNCH_MODE
+    ? (isGuest() ? "게스트 체험 중 · 방 1개 · 끼리 AI " + guestAiLeft() + "/10" : "무제한 무료 · 기록 영구 저장")
     : (V3.ready ? creditsLabel(creditsNow()) + " 크레딧" : "크레딧 " + creditsLabel(creditsNow()));
   btn.textContent = "로그아웃";
   renderStartUI();
@@ -10038,7 +10220,7 @@ function renderExpertPicker() {
       var catFree = draft ? catByKey(roomForm.category).label : categoryLabelOf(r);
       hint.innerHTML =
         '<b class="hint-lead">' + esc(catFree) + '에 특화된 <b>전문가 AI 팀</b>이에요.</b>'
-        + '<span class="hint-line">지금은 모든 끼리 AI가 무료예요 · 마음껏 불러 보세요.</span>';
+        + '<span class="hint-line">' + (isGuest() ? "게스트는 끼리 AI를 10회까지 체험할 수 있어요 · 남은 " + guestAiLeft() + "회 · 가입하면 무제한이에요." : "모든 끼리 AI가 무료예요 · 마음껏 불러 보세요.") + '</span>';
     } else {
       var catLabel = draft ? catByKey(roomForm.category).label : categoryLabelOf(r);
       /* 크레딧은 끼리 AI를 부를 때만 나간다 — 탭 맨 위 안내에서 바로 보이게 */
@@ -10207,6 +10389,8 @@ async function afterSignIn(user) {
   await dbReload();
   /* 인계한 방을 서버에서 읽지 못했더라도(연결 실패 등) 대화를 잃지 않게 이 브라우저에 남긴다 */
   keepClaimedRoomsLocal();
+  /* 초대 링크로 들어온 사람은 이 방에 없는 ‘참가자N’으로 — 방장은 기본 이름(끼리장) 그대로 */
+  try { assignJoinNick(); renderAll(); } catch (e) {}
 }
 async function authInit() {
   V3.mode = v3ModeNow();
@@ -10277,8 +10461,11 @@ function renderGuestButton() {
   var t = $("guestBtnTitle"), sub = $("guestBtnSub");
   if (!t || !sub) return;
   if (FREE_LAUNCH_MODE) {
-    t.textContent = "게스트로 바로 체험하기";
-    sub.textContent = "지금은 모든 대화가 무료 · 이메일 없이 바로";
+    var left = guestAiLeft();
+    t.textContent = left > 0 ? "게스트로 바로 체험하기" : "게스트로 계속하기";
+    sub.textContent = left > 0
+      ? "방 1개 · 끼리 AI " + left + "회까지 체험 · 이메일 없이 바로"
+      : "끼리 AI 10회를 다 썼어요 · 가입하면 무제한";
     return;
   }
   var used = guestClaimed();
@@ -10298,9 +10485,11 @@ async function signInGuest() {
     V3.signedIn = true; V3.user = u; V3.ready = true;
     V3.guestTrialUsed = false;
     V3.profile = { nickname: "게스트", plan: "free", credits: Number(mockRead(MOCK_CREDIT_KEY, 300)) || 0 };
+    /* 데모(목) 모드에서도 초대 링크로 들어왔다면 이 방에 없는 ‘참가자N’으로 */
+    if (pendingJoin) { try { assignJoinNick(); } catch (e) {} }
     closeModal("authModal");
     renderCredit(); renderAccount(); renderExperts(); renderAll();
-    toast(FREE_LAUNCH_MODE ? "게스트로 시작했어요 · 모든 대화가 무료예요" : "게스트로 시작 · 크레딧 " + creditsNow());
+    toast(FREE_LAUNCH_MODE ? guestStartMsg() : "게스트로 시작 · 크레딧 " + creditsNow());
     return;
   }
   try {
@@ -10308,13 +10497,13 @@ async function signInGuest() {
     if (res.error) { setAuthMsg("err", authFriendly(res.error)); return; }
     if (!trialUsed) markGuestClaimed(res.data && res.data.user ? res.data.user.id : "");
     V3.guestTrialUsed = !!trialUsed;
-    setAuthMsg("ok", FREE_LAUNCH_MODE ? "게스트로 시작했어요 · 모든 대화를 무료로 쓸 수 있어요" : (trialUsed ? "게스트로 계속했어요 · 사람·내 AI 대화는 무료" : "게스트로 시작했어요 · 100크레딧 체험"));
+    setAuthMsg("ok", FREE_LAUNCH_MODE ? guestStartMsg() : (trialUsed ? "게스트로 계속했어요 · 사람·내 AI 대화는 무료" : "게스트로 시작했어요 · 100크레딧 체험"));
     closeModal("authModal");
     V3._guestFresh = !trialUsed;      /* 이번에 처음 쓰는 체험 — afterSignIn 이 ‘체험 소진’으로 덮어쓰지 않게 */
     await afterSignIn(res.data.user);
     V3._guestFresh = false;
     if (trialUsed) { V3.profile.credits = 0; renderCredit(); renderAccount(); }
-    toast(FREE_LAUNCH_MODE ? "게스트로 시작했어요 · 모든 대화가 무료예요" : (trialUsed ? "게스트로 계속 · 사람·내 AI 대화는 무료예요" : "게스트로 시작 · 크레딧 " + creditsNow()));
+    toast(FREE_LAUNCH_MODE ? guestStartMsg() : (trialUsed ? "게스트로 계속 · 사람·내 AI 대화는 무료예요" : "게스트로 시작 · 크레딧 " + creditsNow()));
   } catch (e) { setAuthMsg("err", "네트워크 오류로 로그인하지 못했어요."); }
 }
 async function signInPassword() {
@@ -11308,27 +11497,40 @@ function entryGreetingText(agent) {
   return role ? "안녕하세요! " + role + " 맡은 " + name + " 들어왔습니다."
               : "안녕하세요! " + name + " 들어왔습니다.";
 }
-/* 방에 새로 들어온 끼리 AI의 인사 1줄 — 크레딧 0. 입장 액션에서만 1회 부른다. */
+/* 방에 새로 들어온 끼리 AI의 인사 1줄 — 크레딧 0. 입장 액션에서만 1회 부른다.
+   여러 명이 한꺼번에 들어올 때 INSERT 가 겹쳐 일부가 빠지지 않도록, 보낸 프로미스를 돌려주고
+   greetAgentsOnEntry 가 한 명씩 순서대로 기다렸다 보낸다. */
 function greetAgentOnEntry(agentId, room) {
   var r = room || activeRoom();
   var a = state.agents[agentId];
-  if (!r || !a) return false;
-  if (a.type !== "expert") return false;   /* 끼리 AI(프리셋·직접 만든 AI)만 — 내 AI는 자기 지시문대로 움직인다 */
-  if (r.members.indexOf(agentId) < 0) return false;
+  if (!r || !a) return Promise.resolve(false);
+  if (a.type !== "expert") return Promise.resolve(false);   /* 끼리 AI(프리셋·직접 만든 AI)만 — 내 AI는 자기 지시문대로 움직인다 */
+  if (r.members.indexOf(agentId) < 0) return Promise.resolve(false);
   /* 같은 입장이 아주 짧은 사이에 두 번 불려도 인사가 겹치지 않게(이중 클릭·재진입 경로 안전장치) */
   var recent = null;
   r.messages.forEach(function (m) { if (m.who === agentId && m.kind === "greet") recent = m; });
-  if (recent && Date.now() - (recent.at || 0) < 20000) return false;
+  if (recent && Date.now() - (recent.at || 0) < 20000) return Promise.resolve(false);
   var text = entryGreetingText(a);
-  if (!text) return false;
+  if (!text) return Promise.resolve(false);
   var m = { id: uid("a"), who: agentId, text: text, at: Date.now(), kind: "greet", src: "greet", tin: 0, tout: 0, cost: 0, credits: 0 };
   r.messages.push(m);
   save();
-  if (activeRoom() && activeRoom().id === r.id) { renderTimeline(true); renderSidebar(); dbSendMessage(m); }
-  return true;
+  if (activeRoom() && activeRoom().id === r.id) { renderTimeline(true); renderSidebar(); }
+  /* 화면이 다른 방이어도 인사는 그 방으로 저장한다 — dbSendMessage 의 방 인자를 직접 준다 */
+  return Promise.resolve(dbSendMessage(m, r)).then(function (res) {
+    return !(res && res.error);
+  }, function () { return false; });
 }
+/* 여러 명 동시 입장 — 하나씩 순서대로 보낸다(동시 INSERT 로 인사가 누락되던 문제).
+   체인은 실패해도 멈추지 않는다: 한 명이 실패해도 다음 AI 인사는 계속 보낸다. */
 function greetAgentsOnEntry(ids, room) {
-  (ids || []).slice().forEach(function (id) { try { greetAgentOnEntry(id, room); } catch (e) {} });
+  var chain = Promise.resolve(true);
+  (ids || []).slice().forEach(function (id) {
+    chain = chain.then(function () {
+      return Promise.resolve().then(function () { return greetAgentOnEntry(id, room); }).catch(function () { return false; });
+    });
+  });
+  return chain;
 }
 /* 초대 창 한 번의 세션 — 연 순간의 멤버(base)와 닫는 순간의 멤버를 비교한다. */
 var invGreet = { base: null };
@@ -11344,7 +11546,8 @@ function finishInviteSession() {
   if (!r) return;
   var added = (r.members || []).filter(function (id) { return base.indexOf(id) < 0; });
   if (!added.length) return;
-  added.forEach(function (id) { try { greetAgentOnEntry(id, r); } catch (e) {} });
+  /* 여러 명을 한 번에 추가해도 인사가 겹치지 않게 순서대로 보낸다 */
+  greetAgentsOnEntry(added, r);
 }
 function createExpertAgent(ex) {
   var id = "ex_" + ex.id + "_" + Math.random().toString(36).slice(2, 6);
@@ -11497,10 +11700,13 @@ async function mockExpertTurn(agent, phase) {
   var cost = configCost(agent.model);
   if (!canSpendCredits(activeRoom())) return { skip: true, note: "끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요" };
   if (!V3.signedIn) return { skip: true, note: "로그인(또는 게스트 시작)하면 끼리 AI를 무료로 부를 수 있어요." };
+  /* 게스트 10회 체험을 다 쓰면 가입 안내 */
+  if (isGuest() && guestAiLeft() <= 0) { openGuestLimit("ai"); return { skip: true, note: agent.name + " · 끼리 AI 10회 체험을 다 썼어요 · 무료 가입하면 무제한으로 쓸 수 있어요" }; }
   if (V3.guestTrialUsed && !FREE_LAUNCH_MODE) return guestAskLogin(agent.name);
   if (!FREE_LAUNCH_MODE && creditsNow() < cost) return { skip: true, note: agent.name + " · 크레딧이 부족해요(남은 " + creditsNow() + "). 설정에서 내 API 키를 연결하면 크레딧 없이 계속 쓸 수 있어요." };
   await sleep(rand(420, 820));
   var text = mockExpertText(agent, phase);
+  markGuestAiUsed(1);   /* 게스트 끼리 AI 10회 체험 카운트 */
   if (MOCK_EARLY_MODE && mockShouldMark(agent, phase)) text += " [종결]";
   var r = activeRoom();
   var left = Math.max(0, creditsNow() - cost);
@@ -11516,6 +11722,8 @@ async function cloudExpertTurn(agent, phase) {
   var r = activeRoom();
   if (!r) return { skip: true, note: "" };
   if (!canSpendCredits(r)) return { skip: true, note: "끼리 AI는 방장만 부를 수 있어요 · 사람·내 AI 대화는 무료예요" };
+  /* 게스트 10회 체험을 다 쓰면 가입 안내 */
+  if (isGuest() && guestAiLeft() <= 0) { openGuestLimit("ai"); return { skip: true, note: agent.name + " · 끼리 AI 10회 체험을 다 썼어요 · 무료 가입하면 무제한으로 쓸 수 있어요" }; }
   if (V3.guestTrialUsed && !FREE_LAUNCH_MODE) return guestAskLogin(agent.name);
   var token = await accessToken();
   if (!token) return { skip: true, note: "로그인하면 끼리 AI를 무료로 부를 수 있어요 · 다시 로그인해 주세요." };
@@ -11529,6 +11737,7 @@ async function cloudExpertTurn(agent, phase) {
     expert: { id: agent.id, name: agent.name, role: ro ? ro.label : (agent.role || ""), persona: (agent.prompt || "") + roleDirective(r, agent), avatar: agent.avatar || "" },
     phase: phase || "",
     instruction: phaseInstruction(phase, r) + roundRule(agent) + (ro ? " 너의 이 방 역할은 ‘" + ro.label + "’이다: " + ro.focus + "." : "") +
+      " 반드시 한국어 존댓말(~요/~습니다)로만 답하고, 수다·농담·짧은 반응에서도 반말을 쓰지 않는다." +
       " " + SPECIFICITY_RULE,
     speakers: memberNames(r),
     context: ctx,
@@ -11563,6 +11772,7 @@ async function cloudExpertTurn(agent, phase) {
   }
   if (data && typeof data.balance === "number") setCredits(data.balance);
   if (data && data.credits) updateMeters();
+  markGuestAiUsed(1);   /* 게스트 끼리 AI 10회 체험 카운트 */
   return {
     id: data.message_id, noSend: true, text: data.text, src: "expert",
     config: data.model || body.config,
