@@ -10477,7 +10477,7 @@ function renderGuestButton() {
     var left = guestAiLeft();
     t.textContent = left > 0 ? "게스트로 바로 체험하기" : "게스트로 계속하기";
     sub.textContent = left > 0
-      ? "방 1개 · 끼리 AI " + left + "회까지 체험 · 이메일 없이 바로"
+      ? "방 1개 · 끼리 AI " + (left === GUEST_AI_MAX ? "10회 체험" : left + "회 남음") + " · 이메일 없이 바로"
       : "끼리 AI 10회를 다 썼어요 · 가입하면 무제한";
     return;
   }
