@@ -9910,7 +9910,7 @@ var MOCK = /[?&]mock(=1)?(&|$)/.test(String(location.search || ""));
 var MOCK_USER_KEY = "kkiri.mock.user.v1";
 var MOCK_CREDIT_KEY = "kkiri.mock.credits.v1";
 var MOCK_LEDGER_KEY = "kkiri.mock.ledger.v1";
-var AUTH_SHOWN_KEY = "kkiri.auth.shown.v1";
+var AUTH_SHOWN_KEY = "kkiri.auth.shown.v1";   /* 2026-11-22 — 이제 첫 방문에 로그인 창을 자동으로 띄우지 않는다(게이트 화면 먼저) */
 /* 게스트(익명) 무료 체험은 이 기기에서 1회만 — 로그아웃해도 지우지 않는다 */
 var GUEST_KEY = "kkiri.guest.claimed.v1";
 var GUEST_COOKIE = "kkiri_guest_claimed";
@@ -11035,12 +11035,11 @@ function maybeAskAuth() {
   if (V3.mode === "local" || V3.signedIn) return;
   /* 초대 링크(?code=·?room=)로 들어왔으면 로그인 창 대신 곧바로 익명 세션으로 방에 입장한다. */
   if (pendingJoin) { setAuthMsg("", ""); autoJoinPending(); return; }
-  var shown = false;
-  try { shown = sessionStorage.getItem(AUTH_SHOWN_KEY) === "1"; } catch (e) {}
-  if (shown) return;
-  try { sessionStorage.setItem(AUTH_SHOWN_KEY, "1"); } catch (e) {}
+  /* 2026-11-22 지용 님 — 처음 온 사람 화면을 로그인 창이 덮지 않는다.
+     소개(게이트) 화면을 먼저 보여 주고, ‘끼리 시작하기’·‘로그인’·‘로그인이 필요한 기능’을 직접 눌렀을 때만
+     openStart()/openModal("authModal") 이 열린다.
+     (예전에는 첫 방문 1회에 authModal 을 자동으로 띄워 ?code= 값이 없는 공유 링크가 로그인 창으로 보였다.) */
   if (V3.mode === "mock") setAuthMsg("info", "데모 모드(mock)로 열렸어요 · 서버 없이 화면과 흐름을 확인할 수 있습니다.");
-  openModal("authModal");
 }
 
 /* ---------- 멤버십 ---------- */
