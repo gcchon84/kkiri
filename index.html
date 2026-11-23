@@ -3454,7 +3454,7 @@ window.__KKIRI_BOOT = (function () {
    같은 값을 version.json 의 v 로 올린다. 바로가기 앱이 백그라운드에서
    돌아올 때 version.json 과 이 값을 비교해 새 배포가 있으면 새로 연다.
    ========================================================= */
-var APP_BUILD_VER = "20261123-2335";
+var APP_BUILD_VER = "20261123-2405";
 
 /* =========================================================
    무제한 무료 런치 스위치 (2026-11-22)
@@ -10576,10 +10576,11 @@ function rtApplyRoles(r, roles, sig, modId) {
   return true;
 }
 async function rtEnsureRoles(r, agenda, brand, modId) {
-  if (!RT_ROLES_ON || !r) return { applied: false };
-  if (roleModeOf(r) === "manual") return { applied: false };   /* 사용자가 직접 정한 역할은 덮지 않는다 */
+  function log(x) { try { (window.__DYN_LOG = window.__DYN_LOG || []).push(x); } catch (e) {} }
+  if (!RT_ROLES_ON || !r) { log({ stop: "off" }); return { applied: false }; }
+  if (roleModeOf(r) === "manual") { log({ room: r.id, stop: "manual" }); return { applied: false }; }   /* 사용자가 직접 정한 역할은 덮지 않는다 */
   var ids = rtPresetIdsForRoles(r);
-  if (!ids.length) return { applied: false };
+  if (!ids.length) { log({ room: r.id, stop: "no-preset", members: (r.members || []).length }); return { applied: false }; }
   var sig = rtRolesSig(r, agenda, brand, modId);
   if (rtRolesFresh(r, sig)) return { applied: false, reused: true, roles: r.dynamicRoles };
   var roles = await rtFetchRoles(r, agenda, brand, modId, ids);
@@ -10587,6 +10588,7 @@ async function rtEnsureRoles(r, agenda, brand, modId) {
   if (!roles) roles = rtLocalRoleSet(agenda, brand, ids, r, modId);
   if (!roles || !roles.length) return { applied: false };
   var ok = rtApplyRoles(r, roles, sig, modId);
+  log({ room: r.id, ids: ids.length, src: source, ok: ok, n: Object.keys(r.dynamicRoles || {}).length });
   return { applied: ok, source: source, roles: r.dynamicRoles };
 }
 /* 역할이 바뀌었다는 것을 화면에서도 한 줄로 보여 준다. */
