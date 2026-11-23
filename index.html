@@ -3404,7 +3404,7 @@ window.__KKIRI_BOOT = (function () {
    같은 값을 version.json 의 v 로 올린다. 바로가기 앱이 백그라운드에서
    돌아올 때 version.json 과 이 값을 비교해 새 배포가 있으면 새로 연다.
    ========================================================= */
-var APP_BUILD_VER = "20261123-1051";
+var APP_BUILD_VER = "20261123-1052";
 
 /* =========================================================
    무제한 무료 런치 스위치 (2026-11-22)
@@ -8692,7 +8692,6 @@ function submitRedebate() {
    ---------------------------------------------------------------------
    끼리맘(kkirimom) 빌드에서는 build.py 가 DOC_MAKE_ENABLED 를 false 로 바꿔 이 UI 를 감춘다.
    ===================================================================== */
-var DOC_MAKE_ENABLED = true;
 var DOC_LIB = {
   xlsx: ["https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js",
          "https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"],
@@ -11964,7 +11963,7 @@ function dbSendMessage(m, room) {
   var r = room || activeRoom();
   if (!r || !r.remote) return Promise.resolve(null);
   if (!m || m.who === "card") return Promise.resolve(null);
-  /* 문서 카드 — 문서 JSON 을 meta.doc 에 함께 저장해 다른 기기·다른 참가자도 다시 내려받게 한다 */
+  /* 문서 카드 — 문서 JSON 을 meta.doc 에 함께 저장해 새로고침·다른 참가자도 다시 내려받게 한다 */
   if (m.who === "doc") {
     var drow = {
       id: m.id, room_id: r.id, sender_type: "system", sender_name: "문서",
